@@ -1,0 +1,112 @@
+{
+	"source": "http://www.di.fc.ul.pt/~jpn/gv/Archers.pdf",
+	"board": {
+		"height": 9,
+		"width": 9,
+		"terrain": [
+			{"pos":2002,"type":"base","plr":1},{"pos":2003,"type":"base","plr":1},{"pos":2004,"type":"base","plr":1},
+			{"pos":3002,"type":"base","plr":1},{"pos":3003,"type":"base","plr":1},{"pos":3004,"type":"base","plr":1},
+			{"pos":4002,"type":"base","plr":1},{"pos":4003,"type":"base","plr":1},{"pos":4004,"type":"base","plr":1},
+			{"pos":6006,"type":"base","plr":2},{"pos":6007,"type":"base","plr":2},{"pos":6008,"type":"base","plr":2},
+			{"pos":7006,"type":"base","plr":2},{"pos":7007,"type":"base","plr":2},{"pos":7008,"type":"base","plr":2},
+			{"pos":8006,"type":"base","plr":2},{"pos":8007,"type":"base","plr":2},{"pos":8008,"type":"base","plr":2}
+		],
+		"setup": [
+			{"pos":2002,"type":"archer","plr":1},{"pos":2003,"type":"archer","plr":1},{"pos":2004,"type":"archer","plr":1},
+			{"pos":3002,"type":"archer","plr":1},{"pos":3003,"type":"king","plr":1},{"pos":3004,"type":"archer","plr":1},
+			{"pos":4002,"type":"archer","plr":1},{"pos":4003,"type":"archer","plr":1},{"pos":4004,"type":"archer","plr":1},
+			{"pos":6006,"type":"archer","plr":2},{"pos":6007,"type":"archer","plr":2},{"pos":6008,"type":"archer","plr":2},
+			{"pos":7006,"type":"archer","plr":2},{"pos":7007,"type":"king","plr":2},{"pos":7008,"type":"archer","plr":2},
+			{"pos":8006,"type":"archer","plr":2},{"pos":8007,"type":"archer","plr":2},{"pos":8008,"type":"archer","plr":2}
+		]
+	},
+	"generators": {
+		"findinfiltrators": {
+			"type": "filter",
+			"layer": "MYUNITS",
+			"overlappingwithlayer": "TERRAIN",
+			"matching": {"plr":["ISNT","CURRENTPLAYER"]},
+			"tolayer": "infiltrators"
+		},
+		"findkilltargets": {
+			"type": "filter",
+			"layer": "bullseye",
+			"matching": {"shooterid":["IDAT","selectunit"]},
+			"tolayer": "gonnadie"
+		},
+		"finddeadkings": {
+			"type": "filter",
+			"starts": "DEADUNITS",
+			"matching": {
+				"type": "crown"
+			},
+			"layer": "deadking"
+		},
+		"arrows": {
+			"type": "walker",
+			"starts": "UNITS",
+			"dirs": [1],
+			"relativeto": ["DIRAT","START"],
+			"stops": "UNITS",
+			"max": 3,
+			"drawstep": {
+				"tolayer": ["IFELSE",["SAME",["LOOKUP","UNITS","START","plr"],"CURRENTPLAYER"],"myarrows","opparrows"],
+				"include": {
+					"plr": ["LOOKUP","UNITS","START","plr"]
+				}
+			},
+			"drawstop": {
+				"condition": ["AND",["ANYAT","UNITS","TARGET"],["DIFFERENT",["LOOKUP","UNITS","TARGET","plr"],["LOOKUP","UNITS","START","plr"]]],
+				"tolayer": "bullseye",
+				"include": {
+					"plr": ["LOOKUP","UNITS","START","plr"],
+					"shooterid": ["IDAT","START"]
+				}
+			}
+		},
+		"footing": {
+			"type": "nextto",
+			"start": ["FROMMARK","selectunit"],
+			"dirs": [1,5],
+			"dirrelativeto": ["DIRAT","START"],
+			"drawtarget": {
+				"condition": ["AND",["NONEAT","UNITS","TARGET"],["NONEAT","opparrows","TARGET"]],
+				"layer": ["IFELSE",["SAME","ORIGINALDIR",1],"forwardfooting","backwardfooting"],
+				"include": {
+					"id": ["IDAT","START"]
+				}
+			}
+		}
+	},
+	"marks": {
+		"selectunit": "MYUNITS"
+	},
+	"endturn": {
+		"condition":["SAME","PERFORMEDSTEPS",2],
+		"commandcap": true
+	},
+	"endgame": {
+		"infiltration":[["NOTEMPTY","infiltrators"],"CURRENTPLAYER"],
+		"kingkill":[["NOTEMPTY","deadking"],"CURRENTPLAYER"]
+	},
+	"commands": {
+		"stepforward": {
+			"condition": ["NOTEMPTY","forwardfooting"],
+			"effects": [["MOVEUNIT",["IDAT","selectunit"],["ONLYIN","forwardfooting"]]]
+		},
+		"stepbackward": {
+			"condition": ["NOTEMPTY","backwardfooting"],
+			"effects": [["MOVEUNIT",["IDAT","selectunit"],["ONLYIN","backwardfooting"]]]
+		},
+		"turnleft": {
+			"effects": [["TURNUNIT",["IDAT","selectunit"],-1]]
+		},
+		"turnright": {
+			"effects":[["TURNUNIT",["IDAT","selectunit"],1]]
+		},
+		"fire": {
+			"condition": ["AND",["NOTEMPTY","gonnadie"],["NOT",["AFFECTED",["IDAT","selectunit"]]]],
+			"effects": [["KILLUNIT",["IDAT",["ONLYIN","gonnadie"]]]]
+		}
+	}
+}

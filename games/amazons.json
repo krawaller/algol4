@@ -1,0 +1,79 @@
+{
+	"source": "http://www.chessvariants.org/other.dir/amazons.html",
+	"board": {
+		"height": 10,
+		"width": 10,
+		"setup": [
+			{"x":4,"y":1,"plr":1},{"x":7,"y":1,"plr":1},{"x":1,"y":4,"plr":1},{"x":10,"y":4,"plr":1},
+			{"x":4,"y":10,"plr":1},{"x":7,"y":10,"plr":1},{"x":1,"y":7,"plr":1},{"x":10,"y":7,"plr":1}
+		]
+	},
+	"marks": {
+		"selectunit": {
+			"condition": ["NOT",["HASPERFORMEDCOMMAND","move"]],
+			"from": "MYUNITS"
+		},
+		"selectmove": {
+			"condition": ["NOT",["HASPERFORMEDCOMMAND","move"]],
+			"from":"movetarget"
+		},
+		"selectfire": {
+			"from":"firetarget"
+		}
+	},
+	"endturn": {
+		"condition":["HASPERFORMEDCOMMAND","fire"],
+		"commandcap": true
+	},
+	"endgame": {
+		"blocked":[["EMPTY","enemymove"],"CURRENTPLAYER"]
+	},
+	"commands": {
+		"move": {
+			"effects": [
+				["MOVEUNIT",["IDAT","selectunit"],"selectmove"]
+			]
+		},
+		"fire": {
+			"effects": [
+				["CREATETERRAIN","selectfire",{"type":"fire"}]
+			]
+		}
+	},
+	"generators": {
+		"findblocks": {
+			"type": "spawn",
+			"start": ["FROMALLINLAYERS","UNITS","TERRAIN"],
+			"drawtarget": {
+				"layer": "block"
+			}
+		},
+		"movetargets": {
+			"type": "walker",
+			"start": ["FROMMARK","selectunit"],
+			"dirs": [1,2,3,4,5,6,7,8],
+			"stoplayer": "blocks",
+			"drawstep": {
+				"layer": "movetarget"
+			}
+		},
+		"firetargets": {
+			"type": "walker",
+			"starts": ["MARKINLAST","move","selectunit"],
+			"dirs": [1,2,3,4,5,6,7,8],
+			"stoplayer": "blocks",
+			"drawstep": {
+				"layer": "firetarget"
+			}
+		},
+		"enemymoves": {
+			"type": "walker",
+			"starts": "OPPUNITS",
+			"dirs": [1,2,3,4,5,6,7,8],
+			"stoplayer": "blocks",
+			"drawstep": {
+				"layer": "enemymove"
+			}
+		}
+	}
+}

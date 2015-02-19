@@ -1,0 +1,113 @@
+{
+	"source": "http://www.di.fc.ul.pt/~jpn/gv/daggers.htm",
+	"board": {
+		"height": 8,
+		"width": 8,
+		"terrain": [
+			{"x":1,"y":1,"type":"base","plr":1},{"x":2,"y":1,"type":"base","plr":1},{"x":3,"y":1,"type":"base","plr":1},{"x":4,"y":1,"type":"base","plr":1},{"x":5,"y":1,"type":"base","plr":1},{"x":6,"y":1,"type":"base","plr":1},{"x":7,"y":1,"type":"base","plr":1},{"x":8,"y":1,"type":"base","plr":1},
+			{"x":1,"y":8,"type":"base","plr":2},{"x":2,"y":8,"type":"base","plr":2},{"x":3,"y":8,"type":"base","plr":2},{"x":4,"y":8,"type":"base","plr":2},{"x":5,"y":8,"type":"base","plr":2},{"x":6,"y":8,"type":"base","plr":2},{"x":7,"y":8,"type":"base","plr":2},{"x":8,"y":8,"type":"base","plr":2}
+		],
+		"setup": [
+			{"pos":1004,"plr":1,"type":"crown"},{"pos":1005,"plr":1,"type":"crown"},
+			{"pos":2003,"plr":1,"type":"dagger"},{"pos":2004,"plr":1,"type":"dagger"},{"pos":2005,"plr":1,"type":"dagger"},{"pos":2006,"plr":1,"type":"dagger"},
+			{"pos":6003,"plr":2,"type":"dagger"},{"pos":6006,"plr":2,"type":"dagger"},
+			{"pos":7002,"plr":2,"type":"dagger"},{"pos":7003,"plr":2,"type":"dagger"},{"pos":7004,"plr":2,"type":"dagger"},{"pos":7005,"plr":2,"type":"dagger"},{"pos":7006,"plr":2,"type":"dagger"},{"pos":7007,"plr":2,"type":"dagger"},
+			{"pos":8003,"plr":2,"type":"crown"},{"pos":8006,"plr":2,"type":"crown"}
+		]
+	},
+	"endturn": {
+		"condition":["PERFORMEDANY"],
+		"commandcap": true
+	},
+	"endgame": {
+		"infiltration":[["NOTEMPTY","infiltrator"],"CURRENTPLAYER"],
+		"kingkill":[["NOTEMPTY","deadking"],"CURRENTPLAYER"]
+	},
+	"marks": {
+		"selectunit": "MYUNITS",
+		"selectmovetarget": {
+			"from":"movetarget",
+			"notwith": "selectkilltarget"
+		},
+		"selectkilltarget": "killtarget"
+	},
+	"commands": {
+		"move": {
+			"effects": [
+				["MOVEUNIT",["IDAT","selectunit"],"selectmovetarget"]
+			]
+		},
+		"kill": {
+			"effects": [
+				["KILLUNIT",["IDAT","selectkilltarget"]],
+				["MOVEUNIT",["IDAT","selectunit"],"selectkilltarget"]
+			]
+		}
+	},
+	"generators": {
+		"finddeadkings": {
+			"type": "filter",
+			"layer": "DEADUNITS",
+			"matching": {"type":"crown","plr":["ISNT","CURRENTPLAYER"]},
+			"tolayer": "deadking"
+		},
+		"activeunittype": {
+			"type": "spawn",
+			"starts": ["FROMSINGLEMARK","selectunit"],
+			"drawstart": {
+				"tolayer": ["IFELSE",["SAME",["LOOKUP","UNITS","START","type"],"crown"],"activecrown","activedagger"]
+			}
+		},
+		"findinfiltrators": {
+			"type": "spawn",
+			"start": ["FROMALLINLAYER","MYUNITS"],
+			"drawstart": {
+				"condition": ["AND",["ANYAT","TERRAIN","START"],["DIFFERENT",["LOOKUP","TERRAIN","START","plr"],"CURRENTPLAYER"]],
+				"tolayer": "infiltrator"
+			}
+		},
+		"nexttocrown": {
+			"type": "nextto",
+			"starts": ["FROMALLINLAYER","activecrown"],
+			"dirs": [1,2,3,4,5,6,7,8],
+			"drawtarget": {
+				"condition": ["NONEAT","MYUNITS","TARGET"],
+				"tolayer": ["IFELSE",["ANYAT","OPPUNITS","TARGET"],"killtarget","movetarget"]
+			}
+		},
+		"abovedagger": {
+			"type": "nextto",
+			"start": ["FROMALLINLAYER","activedagger"],
+			"dirs": [8,1,2],
+			"drawtarget": {
+				"condition": ["AND",
+					["NONEAT","MYUNITS","TARGET"],
+					["NOT",["AND",
+						["SAME","DIR",1],
+						["SAME",["LOOKUP","UNITS","type"],"dagger"]
+					]]
+				],
+				"tolayer": ["IFELSE",["ANYAT","UNITS","TARGET"],"killtarget","movetarget"]
+			}
+		},
+		"belowdagger": {
+			"type": "walker",
+			"start": ["FROMALLINLAYER","activedagger"],
+			"dirs": [4,5,6],
+			"stoplayer": "UNITS",
+			"drawstep": {
+				"tolayer": "movetarget"
+			},
+			"drawstop": {
+				"condition": ["AND",
+					["NONEAT","MYUNITS","TARGET"],
+					["NOT",["AND",
+						["SAME","DIR",5],
+						["SAME",["LOOKUP","UNITS","type"],"dagger"]
+					]]
+				],
+				"tolayer": ["IFELSE",["ANYAT","UNITS","TARGET"],"killtarget","movetarget"]
+			}
+		}
+	}
+}

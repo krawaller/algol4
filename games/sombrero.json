@@ -1,0 +1,88 @@
+{
+	"source": "http://www.di.fc.ul.pt/~jpn/gv/sombrero.htm",
+	"board": {
+		"shape": "square",
+		"height": 8,
+		"width": 8,
+		"setup": [
+			{"pos":1001,"type":"king","plr":1},{"pos":1002,"type":"king","plr":1},{"pos":1003,"type":"king","plr":1},{"pos":1004,"type":"king","plr":1},
+			{"pos":1005,"type":"king","plr":2},{"pos":1006,"type":"king","plr":2},{"pos":1007,"type":"king","plr":2},{"pos":1008,"type":"king","plr":2},
+			{"pos":8001,"type":"king","plr":2},{"pos":8002,"type":"king","plr":2},{"pos":8003,"type":"king","plr":2},{"pos":8004,"type":"king","plr":2},
+			{"pos":8005,"type":"king","plr":1},{"pos":8006,"type":"king","plr":1},{"pos":8007,"type":"king","plr":1},{"pos":8008,"type":"king","plr":1}
+		]
+	},
+	"endgame": {
+		"kingkill": [["MORE",2,["SIZE","oppkings"]],"CURRENTPLAYER"]
+	},
+	"endturn": {
+		"condition":["SAME","PERFORMEDSTEPS",1],
+		"commandcap": true
+	},
+	"marks": {
+		"selectking": {
+			"from": "mykings"
+		},
+		"selectswap": {
+			"from": "swaptarget"
+		},
+		"selectmove": {
+			"from": "movetarget",
+			"notwith": "selectswap"
+		}
+	},
+	"commands": {
+		"swap": {
+			"effects": [
+				["SWAP",["IDAT","selectking"],["IDAT","selectswap"]]
+			]
+		},
+		"move": {
+			"effects": [
+				["MOVETO",["IDAT","selectking"],"selectmove"],
+				["FORALLIN","demoted",
+					["SETDATA","ID","type","soldier"]
+				]
+			]
+		}
+	},
+	"generators": {
+		"findmykings": {
+			"type": "filter",
+			"layer": "MYUNITS",
+			"matching": {"type":"king"},
+			"tolayer": "mykings"
+		},
+		"findoppkings": {
+			"type": "filter",
+			"layer": "OPPUNITS",
+			"matching": {"type":"king"},
+			"tolayer": "oppkings"
+		},
+		"swaptarget": {
+			"type": "nextto",
+			"dirs": [1,2,3,4,5,6,7,8],
+			"start": ["FROMSINGLEMARK","selectking"],
+			"drawtarget": {
+				"tolayer": ["IF",["AND",["ANYAT","MYUNITS","END"],["NONEAT","mykings","END"]],"swaptarget"]
+			}
+		},
+		"movetarget": {
+			"type": "nextto",
+			"dirs": [1,2,3,4,5,6,7,8],
+			"start": ["FROMSINGLEMARK","selectking"],
+			"drawtarget": {
+				"tolayer": ["IF",["NONEAT","UNITS","END"],"movetarget"]
+			}
+		},
+		"paintdemoters": {
+			"type": "walker",
+			"dirs": [1,2,3,4,5,6,7,8],
+			"start": ["FROMSINGLEMARK","selectmove"],
+			"steplayer": "OPPUNITS",
+			"stoplayer": "mykings",
+			"drawstep": {
+				"tolayer": ["IF",["AND","HITSTOP",["ANYAT","oppkings","TARGET"]],"demoted"]
+			}
+		}
+	}
+}

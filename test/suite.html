@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>demo tests</title>
+		<link rel="stylesheet" type="text/css" href="html/jasmine/jasmine.css">
+	</head>
+	<body>
+		<script type="text/javascript" src="html/jasmine/jasmine.js"></script>
+		<script type="text/javascript" src="html/jasmine/jasmine-html.js"></script>
+		<script type="text/javascript" src="html/sinon.js"></script>
+		<script type="text/javascript" src="html/jasmine-sinon.js"></script>
+		<script type="text/javascript" src="html/lodash.js"></script>
+		<script type="text/javascript" src="../src/lodashmixins.js"></script>
+		
+		<script type="text/javascript" src="../src/index.js"></script>
+
+		<script type="text/javascript" src="specs/time.spec.js"></script>
+		<script type="text/javascript" src="specs/defaultify.spec.js"></script>
+
+		<script type="text/javascript">
+			var jasmineEnv = jasmine.getEnv();
+			jasmineEnv.updateInterval = 1000;
+
+			var htmlReporter = new jasmine.HtmlReporter();
+
+			jasmineEnv.addReporter(htmlReporter);
+
+			jasmineEnv.specFilter = function(spec) {
+				return htmlReporter.specFilter(spec);
+			};
+
+			jasmineEnv.execute();
+		</script>
+	</body>
+</html>

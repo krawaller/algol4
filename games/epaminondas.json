@@ -1,0 +1,133 @@
+{
+	"source": "https://boardgamegeek.com/filepage/55902/epaminondas-rules-nestorgames",
+	"board": {
+		"shape": "square",
+		"height": 12,
+		"width": 14,
+		"setup": [
+		]
+	},
+	"marks": {
+		"selecthead": {
+			"from": "MYUNITS"
+		},
+		"selecttail": {
+			"from": "potentialtail"
+		},
+		"selectmove": {
+			"from": "movetarget",
+			"notwith": "selecttail"
+		},
+		"selectkill": {
+			"from": "killtarget",
+			"notwith": "selectmarch"
+		},
+		"selectmarch": {
+			"from": "marchtarget"
+		}
+	},
+	"commands": {
+		"move": {
+			"effects": [
+				["MOVEUNIT",["IDAT","selecthead"],"movetarget"]
+			]
+		},
+		"march": {
+			"effects": [
+				["FORALLIN","phalanxmember",
+					["OFFSETUNIT","ID",["LOOKUP","marchtarget","selectmarch","DIR"],["LOOKUP","marchtarget","selectmarch","LENGTH",0]]
+				]
+			]
+		},
+		"charge": {
+			"effects": [
+				["FORALLIN","phalanxmember",
+					["OFFSETUNIT","ID",["LOOKUP","marchtarget","selectkill","DIR"],["LOOKUP","marchtarget","selectkill","LENGTH",0]]
+				],
+				["FORALLIN","doomed",
+					["KILLUNIT","ID"]
+				]
+			]	
+		}
+	},
+	"generators": {
+		"finddoomed": {
+			"type": "filter",
+			"layer": "tokill",
+			"matching": {"DIR":["LOOKUP","tokill","selectkill","DIR"]},
+			"tolayer": "doomed"
+		},
+		"movetarget": {
+			"type": "nextto",
+			"dirs": [1,2,3,4,5,6,7,8],
+			"start": ["FROMMARK","selecthead"],
+			"drawtarget": {
+				"condition": ["NONEAT","UNITS","TARGET"],
+				"tolayer": "movetarget"
+			}
+		},
+		"potentialphalanx": {
+			"type": "walker",
+			"dirs": [1,2,3,4,5,6,7,8],
+			"start": ["FROMMARK","selecthead"],
+			"steplayer": "MYUNITS",
+			"drawstep": {
+				"tolayer": "potentialtail"
+			}
+		},
+		"paintphalanx": {
+			"type":"walker",
+			"dirs": [5],
+			"dirrelativeto": ["LOOKUP","potentialtail","selecttail","DIR"],
+			"start": ["FROMMARK","selecttail"],
+			"stoplayer": "selecthead",
+			"drawstart": {
+				"tolayer": "phalanxend",
+				"include": {
+					"heading": ["LOOKUP","potentialtail","selecttail","DIR"]
+				}
+			},
+			"drawstop": {
+				"tolayer": "phalanxend",
+				"include": {
+					"heading": "DIR"
+				}
+			},
+			"drawall": {
+				"tolayer": "phalanxmember"
+			}
+		},
+		"march": {
+			"type": "walker",
+			"start": ["FROMMARK","phalanxend"],
+			"dirs": [1],
+			"dirrelativeto": ["LOOKUP","phalanxend","START","DIR"],
+			"stoplayer": "UNITS",
+			"max": ["SUM",1,["LOOKUP","phalanxend","START","LENGTH"]],
+			"drawstep": {
+				"tolayer": "marchtarget"
+			},
+			"drawstop": {
+				"condition": ["ANYAT","OPPUNITS","TARGET"],
+				"tolayer": "threatened",
+				"include": {
+					"strength": ["LOOKUP","phalanxend","START","LENGTH"]
+				}
+			}
+		},
+		"opposers": {
+			"type": "walker",
+			"start": ["FROMALLINLAYER","threatened"],
+			"dirs": [1],
+			"dirrelativeto": ["LOOKUP","threatened","START","DIR"],
+			"steplayer": "OPPUNITS",
+			"drawstart": {
+				"condition": ["MORE",["LOOKUP","threatened","START","strength"],"LENGTH"],
+				"tolayer": "killtarget"
+			},
+			"drawall": {
+				"tolayer": "tokill"
+			}
+		}
+	}
+}
