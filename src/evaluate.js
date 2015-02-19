@@ -47,12 +47,7 @@ var boolmethods = {
 			return step.get("command").is(commandname);
 		});
 	},
-	AFFECTED: function(state,id){
-		id = this.evaluateId(state,id);
-		return state.getIn(["steps"]).some(function(step){
-			return step.get("affected").contains(id);
-		});
-	}
+	AFFECTED: function(state,id){ return state.get("affected").contains(this.evaluateId(state,id)); }
 };
 
 Algol.evaluateBoolean = function(state,def){

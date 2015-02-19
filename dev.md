@@ -8,6 +8,7 @@ seed
 state
 	marks
 		name: pos, ...
+	affectedunits: [id,id,...]
 	steps
 		[{
 			state: prevstate

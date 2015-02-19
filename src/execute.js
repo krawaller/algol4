@@ -7,12 +7,25 @@ function augmentWithExecuteFunctions(Algol){
 // €€€€€€€€€€€€€€€€€€€€€€€€€€€ E X E C U T E  F U N C T I O N S €€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€*/
 
 var effectmethods = {
-	KILLUNIT: function(state,id){ return state.setIn(["data","units",this.evaluateId(state,id),"state"],"dead"); },
-	MOVEUNIT: function(state,id,pos){ return state.setIn(["data","units",this.evaluateId(state,pos),"pos"],this.evaluatePosition(state,pos)); },
-	SETUNITDATA: function(state,id,prop,val){ return state.setIn(["data","units",this.evaluateId(state,id),prop],"dead"); },
+	KILLUNIT: function(state,id){
+		id = this.evaluateId(state,id);
+		state = state.set("affected",state.get("affected").push(id));
+		return state.setIn(["data","units",id,"state"],"dead");
+	},
+	MOVEUNIT: function(state,id,pos){
+		id = this.evaluateId(state,pos);
+		state = state.set("affected",state.get("affected").push(id));
+		return state.setIn(["data","units",id,"pos"],this.evaluatePosition(state,pos));
+	},
+	SETUNITDATA: function(state,id,prop,val){
+		id = this.evaluateId(state,pos);
+		state = state.set("affected",state.get("affected").push(id));
+		return state.setIn(["data","units",id,prop],"dead");
+	},
 	SWAPUNITPOSITIONS: function(state,id1,id2){
 		id1 = this.evaluateId(state,id1);
 		id2 = this.evaluateId(state,id2);
+		state = state.set("affected",state.get("affected").push(id1).push(id2));
 		var temp = state.getIn(["data","units",id1,"pos"]);
 		state = setIn(["data","units",id1,"pos"],state.getIn(["data","units",id2,"pos"]));
 		return state.setIn(["data","units",id2,"pos"],temp);

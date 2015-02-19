@@ -38,3 +38,5 @@ var momo = I.fromJS({
 }).set("b",I.fromJS({c:"d"}));
 
 console.log("really?",momo.getIn(["b","c"]));
+
+console.log(I.fromJS({a:[1,2,3]}).get("a").push(3).push(97));
