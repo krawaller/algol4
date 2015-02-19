@@ -9,31 +9,37 @@ state
 	marks
 		name: pos, ...
 	steps
-		[cmnd,{mark:ykx}]
-	affectedunits
-		id: true, ...
+		[{
+			state: prevstate
+			command: commandname,
+			affected: [],
+			marks:
+				markname: pos, ...
+		}, ...]
+	data
+		units:
+			id: {props}, ...
+		terrain
+			id: {props}, ...
 	layers
 		layername
-			bypos
-				ykx: [obj, ... ], ...
+			ykx: [obj, ... ], ...
+	context
+		name: val, ...
 neighbours
 	ykx: {dir: ykx, ...}
-context
-	name: val, ...
 
 ######################## T Y P E S #########################
 
 Positionlist
-	FROMMARK mark
-	FROMMARKINLAST command, mark
 	FROMALLINLAYER layer
 	FROMALLINLAYERS layer, layer, ...
 
 Position
+	MARKINLAST commandname, markname
 	MARKPOS markname
 	ONLYPOSIN layer
 	CONTEXTPOS contextposname
-
 
 Effect
 	FORALLIN layer, effect, effect, ...
@@ -54,15 +60,17 @@ Boolean
 	MORE int, int
 	NOT boolean
 	HASPERFORMEDCOMMAND commandname
-	AFFECTED id
+	PERFORMEDANYCOMMAND
+	ISAFFECTED id
 	EMPTY layer
+	NOTEMPTY layer
 	
 Value
 	LOOKUP layername,position,propname
 	POSITIONSIN layer  (int)
 	IFELSE boolean, value, value
 	CONTEXTVAL contextvalname
-	RAW prim
+	VAL prim
 
 Id
 	IDAT position

@@ -16,7 +16,7 @@
 		]
 	},
 	"endturn": {
-		"condition":["PERFORMEDANY"],
+		"condition":["PERFORMEDANYCOMMAND"],
 		"commandcap": true
 	},
 	"endgame": {
@@ -52,7 +52,7 @@
 		"finddeadkings": {
 			"type": "filter",
 			"layer": "DEADUNITS",
-			"matching": {"type":"crown","plr":["ISNT",["CONTEXTVAL","CURRENTPLAYER"]]},
+			"matching": {"type":["IS",["VAL","crown"]],"plr":["ISNT",["CONTEXTVAL","CURRENTPLAYER"]]},
 			"tolayer": "deadking"
 		},
 		"activeunittype": {
@@ -62,7 +62,7 @@
 				"tolayer": ["IFELSE",
 					["SAME",
 						["LOOKUP","UNITS",["CONTEXTPOS","START"],"type"],
-						["RAW","crown"]
+						["VAL","crown"]
 					],
 					"activecrown","activedagger"
 				]
@@ -97,10 +97,10 @@
 			"dirs": [8,1,2],
 			"drawtarget": {
 				"condition": ["AND",
-					["NONEAT","MYUNITS","TARGET"],
+					["NONEAT","MYUNITS",["CONTEXTPOS","TARGET"]],
 					["NOT",["AND",
-						["SAME",["CONTEXTVAL","DIR"],["RAW",1]],
-						["SAME",["LOOKUP","UNITS","type"],"dagger"]
+						["SAME",["CONTEXTVAL","DIR"],["VAL",1]],
+						["SAME",["LOOKUP","OPPUNITS",["CONTEXTPOS","TARGET"],"type"],"dagger"]
 					]]
 				],
 				"tolayer": ["IFELSE",["ANYAT","UNITS",["CONTEXTPOS","TARGET"]],"killtarget","movetarget"]
@@ -118,8 +118,8 @@
 				"condition": ["AND",
 					["NONEAT","MYUNITS",["CONTEXTPOS","TARGET"]],
 					["NOT",["AND",
-						["SAME",["CONTEXTVAL","DIR"],["RAW",5]],
-						["SAME",["LOOKUP","UNITS","type"],"dagger"]
+						["SAME",["CONTEXTVAL","DIR"],["VAL",5]],
+						["SAME",["LOOKUP","UNITS",["CONTEXTPOS","TARGET"],"type"],"dagger"]
 					]]
 				],
 				"tolayer": ["IFELSE",["ANYAT","UNITS",["CONTEXTPOS","TARGET"]],"killtarget","movetarget"]

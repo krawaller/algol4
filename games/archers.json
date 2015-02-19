@@ -31,14 +31,14 @@
 		"findkilltargets": {
 			"type": "filter",
 			"layer": "bullseye",
-			"matching": {"shooterid":["IDAT",["MARKPOS","selectunit"]]},
+			"matching": {"shooterid":["IS",["IDAT",["MARKPOS","selectunit"]]]},
 			"tolayer": "gonnadie"
 		},
 		"finddeadkings": {
 			"type": "filter",
 			"layer": "DEADUNITS",
 			"matching": {
-				"type": "crown"
+				"type": ["IS",["VAL","crown"]]
 			},
 			"tolayer": "deadking"
 		},

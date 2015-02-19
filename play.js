@@ -14,3 +14,27 @@ console.log(GG.get("a"),GG.get("b"));
 var anothertest = I.fromJS({a:{b:{c:777}}});
 
 console.log("HEREWEARE",anothertest.getIn(["a","b","c"]));
+
+
+
+var toot = I.fromJS({
+	a: 62,
+	b: [4,5,"kurt"]
+});
+
+console.log("SO?", toot.some(function(val){
+	console.log("...checking",val);
+	return val  === "kurt";
+}));
+
+console.log("KEEEEYS",I.Iterable(I.fromJS({a:1,b:2}).keys()).first());
+
+I.fromJS({a:1,b:[1,2,3]}).forEach(function(val,key){
+	console.log("MOOO",val,key);
+});
+
+var momo = I.fromJS({
+	a: 62
+}).set("b",I.fromJS({c:"d"}));
+
+console.log("really?",momo.getIn(["b","c"]));

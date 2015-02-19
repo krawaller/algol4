@@ -31,7 +31,7 @@
 	"commands": {
 		"move": {
 			"effects": [
-				["MOVEUNIT",["READID",["MARKPOS","selectunit"]],["MARKPOS","selectmove"]]
+				["MOVEUNIT",["IDAT",["MARKPOS","selectunit"]],["MARKPOS","selectmove"]]
 			]
 		},
 		"fire": {

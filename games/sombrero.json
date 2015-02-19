@@ -12,10 +12,10 @@
 		]
 	},
 	"endgame": {
-		"kingkill": [["MORE",2,["POSITIONSIN","oppkings"]],["CONTEXTVAL","CURRENTPLAYER"]]
+		"kingkill": [["MORE",["VAL",2],["POSITIONSIN","oppkings"]],["CONTEXTVAL","CURRENTPLAYER"]]
 	},
 	"endturn": {
-		"condition":["SAME",["CONTEXTVAR","PERFORMEDSTEPS"],1],
+		"condition":["SAME",["CONTEXTVAL","PERFORMEDSTEPS"],["VAL",1]],
 		"commandcap": true
 	},
 	"marks": {
@@ -49,28 +49,31 @@
 		"findmykings": {
 			"type": "filter",
 			"layer": "MYUNITS",
-			"matching": {"type":"king"},
+			"matching": {"type":["IS",["VAL","king"]]},
 			"tolayer": "mykings"
 		},
 		"findoppkings": {
 			"type": "filter",
 			"layer": "OPPUNITS",
-			"matching": {"type":"king"},
+			"matching": {"type":["IS",["VAL","king"]]},
 			"tolayer": "oppkings"
 		},
 		"findswaptarget": {
 			"type": "nextto",
 			"dirs": [1,2,3,4,5,6,7,8],
-			"start": ["FROMMARK","selectking"],
+			"start": ["MARKPOS","selectking"],
 			"drawtarget": {
-				"condition": ["AND",["ANYAT","MYUNITS",["CONTEXTPOS","TARGET"]],["NONEAT","mykings",["CONTEXTPOS","TARGET"]]],
+				"condition": ["AND",
+					["ANYAT","MYUNITS",["CONTEXTPOS","TARGET"]],
+					["NONEAT","mykings",["CONTEXTPOS","TARGET"]]
+				],
 				"tolayer": "swaptarget"
 			}
 		},
 		"findmovetarget": {
 			"type": "nextto",
 			"dirs": [1,2,3,4,5,6,7,8],
-			"start": ["FROMMARK","selectking"],
+			"start": ["MARKPOS","selectking"],
 			"drawtarget": {
 				"condition": ["NONEAT","UNITS",["CONTEXTPOS","TARGET"]],
 				"tolayer": "movetarget"
@@ -79,11 +82,14 @@
 		"finddemoters": {
 			"type": "walker",
 			"dirs": [1,2,3,4,5,6,7,8],
-			"start": ["FROMMARK","selectmove"],
+			"start": ["MARKPOS","selectmove"],
 			"steplayer": "OPPUNITS",
 			"stoplayer": "mykings",
 			"drawstep": {
-				"condition": ["AND",["SAME",["CONTEXTVAL","HITSTOP"],["RAW",true]],["ANYAT","oppkings",["CONTEXTPOS","TARGET"]]],
+				"condition": ["AND",
+					["SAME",["CONTEXTVAL","HITSTOP"],["VAL",true]],
+					["ANYAT","oppkings",["CONTEXTPOS","TARGET"]]
+				],
 				"tolayer": "demoted"
 			}
 		}

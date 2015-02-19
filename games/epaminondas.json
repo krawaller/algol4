@@ -60,13 +60,13 @@
 		"finddoomed": {
 			"type": "filter",
 			"layer": "tokill",
-			"matching": {"heading":["LOOKUP","tokill",["MARKPOS","selectkill"],"heading"]},
+			"matching": {"heading":["IS",["LOOKUP","tokill",["MARKPOS","selectkill"],"heading"]]},
 			"tolayer": "doomed"
 		},
 		"movetarget": {
 			"type": "nextto",
 			"dirs": [1,2,3,4,5,6,7,8],
-			"start": ["FROMMARK","selecthead"],
+			"start": ["MARKPOS","selecthead"],
 			"drawtarget": {
 				"condition": ["NONEAT","UNITS",["CONTEXTPOS","TARGET"]],
 				"tolayer": "movetarget"
@@ -75,7 +75,7 @@
 		"potentialphalanx": {
 			"type": "walker",
 			"dirs": [1,2,3,4,5,6,7,8],
-			"start": ["FROMMARK","selecthead"],
+			"start": ["MARKPOS","selecthead"],
 			"steplayer": "MYUNITS",
 			"drawstep": {
 				"tolayer": "potentialtail",
@@ -88,7 +88,7 @@
 			"type":"walker",
 			"dirs": [5],
 			"dirrelativeto": ["LOOKUP","potentialtail",["MARKPOS","selecttail"],"headdirection"],
-			"start": ["FROMMARK","selecttail"],
+			"start": ["MARKPOS","selecttail"],
 			"stoplayer": "selecthead",
 			"drawstart": {
 				"tolayer": "phalanxend",
@@ -110,11 +110,11 @@
 		},
 		"march": {
 			"type": "walker",
-			"start": ["FROMALLINLAYER","phalanxend"],
+			"starts": ["FROMALLINLAYER","phalanxend"],
 			"dirs": [1],
 			"dirrelativeto": ["LOOKUP","phalanxend",["CONTEXTPOS","START"],"facing"],
 			"stoplayer": "UNITS",
-			"max": ["SUM",["RAW",1],["LOOKUP","phalanxend",["CONTEXTPOS","START"],"strength"]],
+			"max": ["SUM",["VAL",1],["LOOKUP","phalanxend",["CONTEXTPOS","START"],"strength"]],
 			"drawstep": {
 				"tolayer": "marchtarget",
 				"include": {
@@ -133,7 +133,7 @@
 		},
 		"opposers": {
 			"type": "walker",
-			"start": ["FROMALLINLAYER","threatened"],
+			"starts": ["FROMALLINLAYER","threatened"],
 			"dirs": [1],
 			"dirrelativeto": ["LOOKUP","threatened",["CONTEXTPOS","START"],"DIR"],
 			"steplayer": "OPPUNITS",
