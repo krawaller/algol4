@@ -24,53 +24,59 @@
 		"findinfiltrators": {
 			"type": "filter",
 			"layer": "MYUNITS",
-			"overlappingwithlayer": "TERRAIN",
-			"matching": {"plr":["ISNT","CURRENTPLAYER"]},
+			"overlapping": "TERRAIN",
+			"matching": {"plr":["ISNT",["CONTEXTVAL","CURRENTPLAYER"]]},
 			"tolayer": "infiltrators"
 		},
 		"findkilltargets": {
 			"type": "filter",
 			"layer": "bullseye",
-			"matching": {"shooterid":["IDAT","selectunit"]},
+			"matching": {"shooterid":["IDAT",["MARKPOS","selectunit"]]},
 			"tolayer": "gonnadie"
 		},
 		"finddeadkings": {
 			"type": "filter",
-			"starts": "DEADUNITS",
+			"layer": "DEADUNITS",
 			"matching": {
 				"type": "crown"
 			},
-			"layer": "deadking"
+			"tolayer": "deadking"
 		},
-		"arrows": {
+		"findarrows": {
 			"type": "walker",
-			"starts": "UNITS",
+			"start": ["FROMALLINLAYER","UNITS"],
 			"dirs": [1],
-			"relativeto": ["DIRAT","START"],
+			"relativeto": ["LOOKUP","UNITS",["CONTEXTPOS","START"],"dir"],
 			"stops": "UNITS",
 			"max": 3,
 			"drawstep": {
-				"tolayer": ["IFELSE",["SAME",["LOOKUP","UNITS","START","plr"],"CURRENTPLAYER"],"myarrows","opparrows"],
+				"tolayer": ["IFELSE",["SAME",["LOOKUP","UNITS",["CONTEXTPOS","START"],"plr"],["CONTEXTVAL","CURRENTPLAYER"]],"myarrows","opparrows"],
 				"include": {
-					"plr": ["LOOKUP","UNITS","START","plr"]
+					"plr": ["LOOKUP","UNITS",["CONTEXTPOS","START"],"plr"]
 				}
 			},
 			"drawstop": {
-				"condition": ["AND",["ANYAT","UNITS","TARGET"],["DIFFERENT",["LOOKUP","UNITS","TARGET","plr"],["LOOKUP","UNITS","START","plr"]]],
+				"condition": ["AND",
+					["ANYAT","UNITS",["CONTEXTPOS","TARGET"]],
+					["DIFFERENT",
+						["LOOKUP","UNITS",["CONTEXTPOS","TARGET"],"plr"],
+						["LOOKUP","UNITS",["CONTEXTPOS","START"],"plr"]
+					]
+				],
 				"tolayer": "bullseye",
 				"include": {
-					"plr": ["LOOKUP","UNITS","START","plr"],
-					"shooterid": ["IDAT","START"]
+					"plr": ["LOOKUP","UNITS",["CONTEXTPOS","START"],"plr"],
+					"shooterid": ["IDAT",["CONTEXTPOS","START"]]
 				}
 			}
 		},
-		"footing": {
+		"findfooting": {
 			"type": "nextto",
 			"start": ["FROMMARK","selectunit"],
 			"dirs": [1,5],
-			"dirrelativeto": ["DIRAT","START"],
+			"dirrelativeto": ["LOOKUP","UNITS",["CONTEXTPOS","START"],"dir"],
 			"drawtarget": {
-				"condition": ["AND",["NONEAT","UNITS","TARGET"],["NONEAT","opparrows","TARGET"]],
+				"condition": ["AND",["NONEAT","UNITS",["CONTEXTPOS","TARGET"]],["NONEAT","opparrows",["CONTEXTPOS","TARGET"]]],
 				"layer": ["IFELSE",["SAME","ORIGINALDIR",1],"forwardfooting","backwardfooting"],
 				"include": {
 					"id": ["IDAT","START"]
@@ -79,24 +85,26 @@
 		}
 	},
 	"marks": {
-		"selectunit": "MYUNITS"
+		"selectunit": {
+			"fromlayer":"MYUNITS"
+		}
 	},
 	"endturn": {
-		"condition":["SAME","PERFORMEDSTEPS",2],
+		"condition":["SAME",["CONTEXTVAL","PERFORMEDSTEPS"],2],
 		"commandcap": true
 	},
 	"endgame": {
-		"infiltration":[["NOTEMPTY","infiltrators"],"CURRENTPLAYER"],
-		"kingkill":[["NOTEMPTY","deadking"],"CURRENTPLAYER"]
+		"infiltration":[["NOTEMPTY","infiltrators"],["CONTEXTVAL","CURRENTPLAYER"]],
+		"kingkill":[["NOTEMPTY","deadking"],["CONTEXTVAL","CURRENTPLAYER"]]
 	},
 	"commands": {
 		"stepforward": {
 			"condition": ["NOTEMPTY","forwardfooting"],
-			"effects": [["MOVEUNIT",["IDAT","selectunit"],["ONLYIN","forwardfooting"]]]
+			"effects": [["MOVEUNIT",["IDAT","selectunit"],["ONLYPOSIN","forwardfooting"]]]
 		},
 		"stepbackward": {
 			"condition": ["NOTEMPTY","backwardfooting"],
-			"effects": [["MOVEUNIT",["IDAT","selectunit"],["ONLYIN","backwardfooting"]]]
+			"effects": [["MOVEUNIT",["IDAT","selectunit"],["ONLYPOSIN","backwardfooting"]]]
 		},
 		"turnleft": {
 			"effects": [["TURNUNIT",["IDAT","selectunit"],-1]]
@@ -106,7 +114,7 @@
 		},
 		"fire": {
 			"condition": ["AND",["NOTEMPTY","gonnadie"],["NOT",["AFFECTED",["IDAT","selectunit"]]]],
-			"effects": [["KILLUNIT",["IDAT",["ONLYIN","gonnadie"]]]]
+			"effects": [["KILLUNIT",["IDAT",["ONLYPOSIN","gonnadie"]]]]
 		}
 	}
 }

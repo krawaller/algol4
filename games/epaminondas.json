@@ -29,23 +29,29 @@
 	"commands": {
 		"move": {
 			"effects": [
-				["MOVEUNIT",["IDAT","selecthead"],"movetarget"]
+				["MOVEUNIT",["IDAT",["MARKPOS","selecthead"]],["MARKPOS","movetarget"]]
 			]
 		},
 		"march": {
 			"effects": [
 				["FORALLIN","phalanxmember",
-					["OFFSETUNIT","ID",["LOOKUP","marchtarget","selectmarch","DIR"],["LOOKUP","marchtarget","selectmarch","LENGTH",0]]
+					["OFFSETUNIT",["LOOPID"],
+						["LOOKUP","marchtarget",["MARKPOS","selectmarch"],"heading"],
+						["LOOKUP","marchtarget",["MARKPOS","selectmarch"],"strength",
+						0]]
 				]
 			]
 		},
 		"charge": {
 			"effects": [
 				["FORALLIN","phalanxmember",
-					["OFFSETUNIT","ID",["LOOKUP","marchtarget","selectkill","DIR"],["LOOKUP","marchtarget","selectkill","LENGTH",0]]
+					["OFFSETUNIT",["LOOPID"],
+						["LOOKUP","marchtarget",["MARKPOS","selectkill"],"heading"],
+						["LOOKUP","marchtarget",["MARKPOS","selectkill"],"strength",
+						0]]
 				],
 				["FORALLIN","doomed",
-					["KILLUNIT","ID"]
+					["KILLUNIT",["LOOPID"]]
 				]
 			]	
 		}
@@ -54,7 +60,7 @@
 		"finddoomed": {
 			"type": "filter",
 			"layer": "tokill",
-			"matching": {"DIR":["LOOKUP","tokill","selectkill","DIR"]},
+			"matching": {"heading":["LOOKUP","tokill",["MARKPOS","selectkill"],"heading"]},
 			"tolayer": "doomed"
 		},
 		"movetarget": {
@@ -62,7 +68,7 @@
 			"dirs": [1,2,3,4,5,6,7,8],
 			"start": ["FROMMARK","selecthead"],
 			"drawtarget": {
-				"condition": ["NONEAT","UNITS","TARGET"],
+				"condition": ["NONEAT","UNITS",["CONTEXTPOS","TARGET"]],
 				"tolayer": "movetarget"
 			}
 		},
@@ -72,25 +78,30 @@
 			"start": ["FROMMARK","selecthead"],
 			"steplayer": "MYUNITS",
 			"drawstep": {
-				"tolayer": "potentialtail"
+				"tolayer": "potentialtail",
+				"include": {
+					"headdirection": ["CONTEXTVAL","DIR"]
+				}
 			}
 		},
 		"paintphalanx": {
 			"type":"walker",
 			"dirs": [5],
-			"dirrelativeto": ["LOOKUP","potentialtail","selecttail","DIR"],
+			"dirrelativeto": ["LOOKUP","potentialtail",["MARKPOS","selecttail"],"headdirection"],
 			"start": ["FROMMARK","selecttail"],
 			"stoplayer": "selecthead",
 			"drawstart": {
 				"tolayer": "phalanxend",
 				"include": {
-					"heading": ["LOOKUP","potentialtail","selecttail","DIR"]
+					"facing": ["LOOKUP","potentialtail",["MARKPOS","selecttail"],"headdirection"],
+					"strength": ["CONTEXTVAL","LENGTH"]
 				}
 			},
 			"drawstop": {
 				"tolayer": "phalanxend",
 				"include": {
-					"heading": "DIR"
+					"facing": ["CONTEXTVAL","DIR"],
+					"strength": ["CONTEXTVAL","LENGTH"]
 				}
 			},
 			"drawall": {
@@ -99,19 +110,24 @@
 		},
 		"march": {
 			"type": "walker",
-			"start": ["FROMMARK","phalanxend"],
+			"start": ["FROMALLINLAYER","phalanxend"],
 			"dirs": [1],
-			"dirrelativeto": ["LOOKUP","phalanxend","START","DIR"],
+			"dirrelativeto": ["LOOKUP","phalanxend",["CONTEXTPOS","START"],"facing"],
 			"stoplayer": "UNITS",
-			"max": ["SUM",1,["LOOKUP","phalanxend","START","LENGTH"]],
+			"max": ["SUM",["RAW",1],["LOOKUP","phalanxend",["CONTEXTPOS","START"],"strength"]],
 			"drawstep": {
-				"tolayer": "marchtarget"
+				"tolayer": "marchtarget",
+				"include": {
+					"strength": ["LOOKUP","phalanxend",["CONTEXTPOS","START"],"strength"],
+					"heading": ["CONTEXTVAL","DIR"]
+				}
 			},
 			"drawstop": {
-				"condition": ["ANYAT","OPPUNITS","TARGET"],
+				"condition": ["ANYAT","OPPUNITS",["CONTEXTPOS","TARGET"]],
 				"tolayer": "threatened",
 				"include": {
-					"strength": ["LOOKUP","phalanxend","START","LENGTH"]
+					"strength": ["LOOKUP","phalanxend",["CONTEXTPOS","START"],"strength"],
+					"heading": ["CONTEXTVAL","DIR"]
 				}
 			}
 		},
@@ -119,14 +135,20 @@
 			"type": "walker",
 			"start": ["FROMALLINLAYER","threatened"],
 			"dirs": [1],
-			"dirrelativeto": ["LOOKUP","threatened","START","DIR"],
+			"dirrelativeto": ["LOOKUP","threatened",["CONTEXTPOS","START"],"DIR"],
 			"steplayer": "OPPUNITS",
 			"drawstart": {
-				"condition": ["MORE",["LOOKUP","threatened","START","strength"],"LENGTH"],
-				"tolayer": "killtarget"
+				"condition": ["MORE",["LOOKUP","threatened",["CONTEXTPOS","START"],"strength"],["CONTEXTVAL","LENGTH"]],
+				"tolayer": "killtarget",
+				"include": {
+					"heading": ["CONTEXTVAL","DIR"]
+				}
 			},
 			"drawall": {
-				"tolayer": "tokill"
+				"tolayer": "tokill",
+				"include": {
+					"heading": ["CONTEXTVAL","DIR"]
+				}
 			}
 		}
 	}

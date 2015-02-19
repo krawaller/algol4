@@ -10,3 +10,7 @@ console.log("So",powmap.get(newmap));
 var GG = origmap.merge({a:7,b:777});
 
 console.log(GG.get("a"),GG.get("b"));
+
+var anothertest = I.fromJS({a:{b:{c:777}}});
+
+console.log("HEREWEARE",anothertest.getIn(["a","b","c"]));

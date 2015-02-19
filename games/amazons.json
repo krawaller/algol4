@@ -11,14 +11,14 @@
 	"marks": {
 		"selectunit": {
 			"condition": ["NOT",["HASPERFORMEDCOMMAND","move"]],
-			"from": "MYUNITS"
+			"fromlayer": "MYUNITS"
 		},
 		"selectmove": {
 			"condition": ["NOT",["HASPERFORMEDCOMMAND","move"]],
-			"from":"movetarget"
+			"fromlayer":"movetarget"
 		},
 		"selectfire": {
-			"from":"firetarget"
+			"fromlayer":"firetarget"
 		}
 	},
 	"endturn": {
@@ -26,17 +26,17 @@
 		"commandcap": true
 	},
 	"endgame": {
-		"blocked":[["EMPTY","enemymove"],"CURRENTPLAYER"]
+		"blocked":[["EMPTY","enemymove"],["CONTEXTVAL","CURRENTPLAYER"]]
 	},
 	"commands": {
 		"move": {
 			"effects": [
-				["MOVEUNIT",["IDAT","selectunit"],"selectmove"]
+				["MOVEUNIT",["READID",["MARKPOS","selectunit"]],["MARKPOS","selectmove"]]
 			]
 		},
 		"fire": {
 			"effects": [
-				["CREATETERRAIN","selectfire",{"type":"fire"}]
+				["CREATETERRAIN",["MARKPOS","selectfire"],{"type":"fire"}]
 			]
 		}
 	},
@@ -45,7 +45,7 @@
 			"type": "spawn",
 			"start": ["FROMALLINLAYERS","UNITS","TERRAIN"],
 			"drawtarget": {
-				"layer": "block"
+				"tolayer": "block"
 			}
 		},
 		"movetargets": {
@@ -54,25 +54,25 @@
 			"dirs": [1,2,3,4,5,6,7,8],
 			"stoplayer": "blocks",
 			"drawstep": {
-				"layer": "movetarget"
+				"tolayer": "movetarget"
 			}
 		},
 		"firetargets": {
 			"type": "walker",
-			"starts": ["MARKINLAST","move","selectunit"],
+			"starts": ["FROMMARKINLAST","move","selectunit"],
 			"dirs": [1,2,3,4,5,6,7,8],
 			"stoplayer": "blocks",
 			"drawstep": {
-				"layer": "firetarget"
+				"tolayer": "firetarget"
 			}
 		},
 		"enemymoves": {
 			"type": "walker",
-			"starts": "OPPUNITS",
+			"start": ["FROMALLINLAYER","OPPUNITS"],
 			"dirs": [1,2,3,4,5,6,7,8],
 			"stoplayer": "blocks",
 			"drawstep": {
-				"layer": "enemymove"
+				"tolayer": "enemymove"
 			}
 		}
 	}

@@ -12,10 +12,10 @@
 		]
 	},
 	"endgame": {
-		"kingkill": [["MORE",2,["SIZE","oppkings"]],"CURRENTPLAYER"]
+		"kingkill": [["MORE",2,["POSITIONSIN","oppkings"]],["CONTEXTVAL","CURRENTPLAYER"]]
 	},
 	"endturn": {
-		"condition":["SAME","PERFORMEDSTEPS",1],
+		"condition":["SAME",["CONTEXTVAR","PERFORMEDSTEPS"],1],
 		"commandcap": true
 	},
 	"marks": {
@@ -33,14 +33,14 @@
 	"commands": {
 		"swap": {
 			"effects": [
-				["SWAP",["IDAT","selectking"],["IDAT","selectswap"]]
+				["SWAPUNITPOSITIONS",["IDAT",["MARKPOS","selectking"]],["IDAT",["MARKPOS","selectswap"]]]
 			]
 		},
 		"move": {
 			"effects": [
-				["MOVETO",["IDAT","selectking"],"selectmove"],
+				["MOVETO",["IDAT",["MARKPOS","selectking"]],"selectmove"],
 				["FORALLIN","demoted",
-					["SETDATA","ID","type","soldier"]
+					["SETUNITDATA",["LOOPID"],"type","soldier"]
 				]
 			]
 		}
@@ -58,30 +58,33 @@
 			"matching": {"type":"king"},
 			"tolayer": "oppkings"
 		},
-		"swaptarget": {
+		"findswaptarget": {
 			"type": "nextto",
 			"dirs": [1,2,3,4,5,6,7,8],
-			"start": ["FROMSINGLEMARK","selectking"],
+			"start": ["FROMMARK","selectking"],
 			"drawtarget": {
-				"tolayer": ["IF",["AND",["ANYAT","MYUNITS","END"],["NONEAT","mykings","END"]],"swaptarget"]
+				"condition": ["AND",["ANYAT","MYUNITS",["CONTEXTPOS","TARGET"]],["NONEAT","mykings",["CONTEXTPOS","TARGET"]]],
+				"tolayer": "swaptarget"
 			}
 		},
-		"movetarget": {
+		"findmovetarget": {
 			"type": "nextto",
 			"dirs": [1,2,3,4,5,6,7,8],
-			"start": ["FROMSINGLEMARK","selectking"],
+			"start": ["FROMMARK","selectking"],
 			"drawtarget": {
-				"tolayer": ["IF",["NONEAT","UNITS","END"],"movetarget"]
+				"condition": ["NONEAT","UNITS",["CONTEXTPOS","TARGET"]],
+				"tolayer": "movetarget"
 			}
 		},
-		"paintdemoters": {
+		"finddemoters": {
 			"type": "walker",
 			"dirs": [1,2,3,4,5,6,7,8],
-			"start": ["FROMSINGLEMARK","selectmove"],
+			"start": ["FROMMARK","selectmove"],
 			"steplayer": "OPPUNITS",
 			"stoplayer": "mykings",
 			"drawstep": {
-				"tolayer": ["IF",["AND","HITSTOP",["ANYAT","oppkings","TARGET"]],"demoted"]
+				"condition": ["AND",["SAME",["CONTEXTVAL","HITSTOP"],["RAW",true]],["ANYAT","oppkings",["CONTEXTPOS","TARGET"]]],
+				"tolayer": "demoted"
 			}
 		}
 	}
