@@ -11,7 +11,7 @@ function augmentWithGenerateFunctions(Algol){
 def has `layer` and `overlapping` and/or `matching`
 returns the new layer
 */
-Algol.generate_filter = function(state,def){
+Algol.generateFilter = function(state,def){
 	var layer = state.getIn(["layers",def.layer]);
 	if (def.overlapping){
 		layer = layer.filter(I.keyInMap(state.getIn(["layers",def.overlapping])));
@@ -19,9 +19,9 @@ Algol.generate_filter = function(state,def){
 	if (def.matching){
 		layer = layer.map(function(list,pos){
 			return list.filter(function(map){
-				return this.evaluateObjectMatch(state,def,map);
+				return this.evaluateObjectMatch(state,def.matching,map);
 			},this);
-		},this).filter(I.notUndefined);
+		},this).filter(I.notEmpty);
 	}
 	return layer;
 };

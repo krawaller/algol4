@@ -11,6 +11,8 @@ I.keyIn = function(/*...keys*/) {
 
 I.notUndefined = function(v){ return v !== undefined; };
 
+I.notEmpty = function(v){ return !v.isEmpty(); };
+
 if (typeof module !== 'undefined' && typeof module.exports !== 'undefined')
     module.exports = I;
 })();

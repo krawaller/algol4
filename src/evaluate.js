@@ -36,7 +36,7 @@ var proptestmethods = {
 
 Algol.evaluateObjectMatch = function(state,def,map){
 	return _.every(def,function(proptestdef,propname){
-		return proptestmethods[def[0]].apply(this,[state].concat(_.tail(def)).concat(map.get(propname)));
+		return proptestmethods[proptestdef[0]].apply(this,[state].concat(_.tail(proptestdef)).concat(map.get(propname)));
 	},this);
 };
 
