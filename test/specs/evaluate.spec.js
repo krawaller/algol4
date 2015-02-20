@@ -1,0 +1,94 @@
+/* jshint jasmine: true */
+
+if (typeof require === 'function' && typeof module === 'object') {
+	var sinon = require('sinon'),
+		jasmineSinon = require('jasmine-sinon'),
+		Algol = require("../../src/"),
+		_ = require("../../src/lodashmixins"),
+		I = require("../../src/immutableextensions");
+} else {
+	var I = window.Immutable, _ = window._;
+}
+
+var tests = {
+	evaluateValue: [{
+		state: {
+			layers: { foolayer: { xyz: [{a:666}] } },
+			marks: { somemark: "xyz" }
+		},
+		command: ["LOOKUP","foolayer",["MARKPOS","somemark"],"a"],
+		expected: 666
+	},{
+		state: {},
+		command: ["VAL",666],
+		expected: 666
+	},{
+		state: {context:{somectxval:777}},
+		command: ["CONTEXTVAL","somectxval"],
+		expected: 777
+	},{
+		state: {layers:{somelayer:{}}},
+		command: ["IFELSE",["EMPTY","somelayer"],["VAL","foo"],["VAL","bar"]],
+		expected: "foo"
+	},{
+		state: {layers:{somelayer:{}}},
+		command: ["IFELSE",["NOTEMPTY","somelayer"],["VAL","foo"],["VAL","bar"]],
+		expected: "bar"
+	},{
+		state: {layers:{nicelayer:{foo:[],bar:[],baz:[]}}},
+		command: ["POSITIONSIN","nicelayer"],
+		expected: 3
+	},{
+		command: ["SUM",["VAL",2],["VAL",3]],
+		expected: 5
+	}],
+	evaluatePosition: [{
+		state: { layers: { barlayer: { blah: [{a:666}] }}},
+		command: ["ONLYPOSIN","barlayer"],
+		expected: "blah"
+	},{
+		state: {context:{somectxpos:777}},
+		command: ["CONTEXTPOS","somectxpos"],
+		expected: 777
+	}],
+	evaluateId: [{
+		state: { layers: {UNITS: {xyz:[{id:678}]}}, marks: {somemark:"xyz"}},
+		command: ["IDAT",["MARKPOS","somemark"]],
+		expected: 678
+	}],
+	evaluateBoolean: [{
+		command: ["AND",["MORE",["VAL",3],["VAL",1]],["MORE",["VAL",3],["VAL",1]]],
+		expected: true
+	},{
+		command: ["AND",["MORE",["VAL",3],["VAL",1]],["MORE",["VAL",3],["VAL",11]]],
+		expected: false
+	},{
+		command: ["OR",["MORE",["VAL",3],["VAL",1111]],["MORE",["VAL",3],["VAL",1]]],
+		expected: true
+	},{
+		command: ["OR",["MORE",["VAL",3],["VAL",1111]],["MORE",["VAL",3],["VAL",11]]],
+		expected: false
+	},{
+		state: { layers: { UNITS: {xyz:[{id:123}]} }, marks: {uglymark:"xyz"}, affected:[3,7,123] },
+		command: ["AFFECTED",["IDAT",["MARKPOS","uglymark"]]],
+		expected: true
+	},{
+		state: { layers: { UNITS: {xyz:[{id:123}]} }, marks: {uglymark:"xyz"}, affected:[3,7,321] },
+		command: ["AFFECTED",["IDAT",["MARKPOS","uglymark"]]],
+		expected: false
+	}]
+};
+
+describe("The evaluate functions",function(){
+	_.each(tests,function(arr,funcname){
+		describe("the "+funcname+" function",function(){
+			_.each(arr,function(test){
+				describe("when called with "+JSON.stringify(test.command)+(test.state ? " and state is "+JSON.stringify(test.state) : ""),function(){
+					it("returns "+test.expected,function(){
+						expect(Algol[funcname](I.fromJS(test.state||{}),test.command)).toEqual(test.expected);
+					});
+				});
+			});
+		});
+	});
+});

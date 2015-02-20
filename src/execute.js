@@ -1,6 +1,6 @@
 (function(){
 var _ = (typeof require !== "undefined" ? require("./lodashmixins") : window._);
-var I = (typeof require !== "undefined" ? require("immutable") : window.Immutable);
+var I = (typeof require !== "undefined" ? require("./immutableextensions.js") : window.Immutable);
 function augmentWithExecuteFunctions(Algol){
 
 

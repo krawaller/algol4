@@ -1,8 +1,8 @@
 
 var Algol = {};
 if (typeof module !== 'undefined' && typeof module.exports !== 'undefined'){
-	// require("./somemodule")(Algol);
+	require("./evaluate")(Algol);
 	module.exports = Algol;
 } else {
-	// window.augmentWithSomeModuleFunctions(Algol);
+	window.augmentWithEvaluateFunctions(Algol);
 }

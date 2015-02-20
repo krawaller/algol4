@@ -1,6 +1,6 @@
 (function(){
 var _ = (typeof require !== "undefined" ? require("./lodashmixins") : window._);
-var I = (typeof require !== "undefined" ? require("immutable") : window.Immutable);
+var I = (typeof require !== "undefined" ? require("./immutableextensions.js") : window.Immutable);
 function augmentWithEvaluateFunctions(Algol){
 
 
@@ -29,9 +29,19 @@ Algol.evaluateId = function(state,def){
 	return idmethods[def[0]].apply(this,[state].concat(_.tail(def)));
 };
 
+var proptestmethods = {
+	IS: function(state,val,rawval){ return this.evaluateValue(state,val) === rawval; },
+	ISNT: function(state,val,rawval){ return this.evaluateValue(state,val) !== rawval; },
+};
+
+Algol.evaluateObjectMatch = function(state,def,map){
+	return _.every(def,function(proptestdef,propname){
+		return proptestmethods[def[0]].apply(this,[state].concat(_.tail(def)).concat(map.get(propname)));
+	},this);
+};
 
 var boolmethods = {
-	ALL: function(){ return _.every(_.tail(arguments),this.evaluateBoolean.bind(this,_.head(arguments))); },
+	AND: function(){ return _.every(_.tail(arguments),this.evaluateBoolean.bind(this,_.head(arguments))); },
 	OR: function(){ return _.some(_.tail(arguments),this.evaluateBoolean.bind(this,_.head(arguments))); },
 	NOT: function(state,bool){ return !this.evaluateBoolean(state,bool); },
 	SAME: function(state,val1,val2){ return this.evaluateValue(state,val1) === this.evaluateValue(state,val2); },
@@ -60,7 +70,11 @@ var valuemethods = {
 	POSITIONSIN: function(state,layername){ return state.getIn(["layers",layername]).size; },
 	IFELSE: function(state,cond,val1,val2){ return this.evaluateValue(state, this.evaluateBoolean(state,cond) ? val1 : val2); },
 	LOOKUP: function(state,layername,position,prop){ return state.getIn(["layers",layername,this.evaluatePosition(state,position),0,prop]); },
-	IDAT: idmethods.IDAT
+	IDAT: idmethods.IDAT,
+	SUM: function(){
+		var state = _.head(arguments);
+		return _.reduce(_.tail(arguments),function(acc,val){ return acc + this.evaluateValue(state,val); },0,this);
+	}
 };
 
 Algol.evaluateValue = function(state,def){

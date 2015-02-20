@@ -26,7 +26,8 @@ state
 		layername
 			ykx: [obj, ... ], ...
 	context
-		name: val, ...
+		CURRENTPLAYER: #,
+		PERFORMEDSTEPS: #
 neighbours
 	ykx: {dir: ykx, ...}
 

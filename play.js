@@ -1,4 +1,4 @@
-var I = require("immutable");
+var I = require("./src/immutableextensions");
 
 var origmap = I.Map({a:1,b:2,c:3});
 var newmap = origmap.set("a",666).set("a",1);
@@ -40,3 +40,7 @@ var momo = I.fromJS({
 console.log("really?",momo.getIn(["b","c"]));
 
 console.log(I.fromJS({a:[1,2,3]}).get("a").push(3).push(97));
+
+var m1 = I.fromJS({a:1,b:2,c:3});
+var m2 = I.fromJS({d:1,b:6,c:9});
+console.log("REALLY?",m1.filter(I.keyInMap(m2)));
