@@ -110,6 +110,22 @@ var tests = {
 	},{
 		command: ["NOT",["MORE",["VAL",7],["VAL",3]]],
 		expected: false
+	},{
+		state: { steps: [{command:"yes"}]},
+		command: ["PERFORMEDANYCOMMAND"],
+		expected: true
+	},{
+		state: { steps: []},
+		command: ["PERFORMEDANYCOMMAND"],
+		expected: false
+	},{
+		state: { steps: [{command:"foo"},{command:"somecommand"}]},
+		command: ["HASPERFORMEDCOMMAND","somecommand"],
+		expected: true
+	},{
+		state: { steps: [{command:"foo"},{command:"bar"}]},
+		command: ["HASPERFORMEDCOMMAND","somecommand"],
+		expected: false
 	}]
 };
 

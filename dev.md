@@ -6,6 +6,10 @@ state
 		name: pos, ...
 	affectedunits: [id,id,...]
 	previousstate: state
+	steps [{
+		command: cmndname,
+		marks: {markname: pos, ...}
+	}]
 	data
 		units:
 			id: {props}, ...

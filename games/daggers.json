@@ -57,7 +57,7 @@
 		},
 		"activeunittype": {
 			"type": "spawn",
-			"starts": ["FROMMARK","selectunit"],
+			"start": ["FROMMARK","selectunit"],
 			"drawstart": {
 				"tolayer": ["IFELSE",
 					["SAME",
@@ -86,7 +86,7 @@
 		},
 		"abovedagger": {
 			"type": "nextto",
-			"start": ["FROMALLINLAYER","activedagger"],
+			"starts": ["FROMALLINLAYER","activedagger"],
 			"dirs": [8,1,2],
 			"drawtarget": {
 				"condition": ["AND",
@@ -101,7 +101,7 @@
 		},
 		"belowdagger": {
 			"type": "walker",
-			"start": ["FROMALLINLAYER","activedagger"],
+			"starts": ["FROMALLINLAYER","activedagger"],
 			"dirs": [4,5,6],
 			"stoplayer": "UNITS",
 			"drawstep": {

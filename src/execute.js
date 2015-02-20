@@ -36,8 +36,7 @@ var effectmethods = {
 		return state.setIn(["data","terrain",pos,I.fromJS(props).set("pos",pos)]);
 	},
 	FORALLIN: function(){
-		var state = arguments[0], layer = state.getIn(["layers",arguments[1]]), effects = _.tail(arguments,2), returnstate = state;
-		console.log("YOWZA!!!",effects);
+		var state = arguments[0], layer = state.getIn(["layers",arguments[1]]), effects = _.slice(arguments,2), returnstate = state;
 		state.getIn(["data","units"]).forEach(function(unit,id){
 			if (layer.has(unit.get("pos"))){
 				returnstate = _.reduce(effects,function(s,e){
@@ -51,9 +50,6 @@ var effectmethods = {
 
 // returns an updated state
 Algol.executeEffect = function(state,def){
-	if (!effectmethods[def[0]]){
-		console.log("WARNING",def)
-	}
 	return effectmethods[def[0]].apply(this,[state].concat(_.tail(def)));
 };
 

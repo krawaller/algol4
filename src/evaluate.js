@@ -53,9 +53,7 @@ var boolmethods = {
 	NOTEMPTY: function(state,layername){ return !state.getIn(["layers",layername]).isEmpty(); },
 	PERFORMEDANYCOMMAND: function(state){ return !state.get("steps").isEmpty(); },
 	HASPERFORMEDCOMMAND: function(state,commandname){
-		return state.get("steps").some(function(step){
-			return step.get("command").is(commandname);
-		});
+		return state.get("steps").some(function(step){ return step.get("command") === commandname; });
 	},
 	AFFECTED: function(state,id){ return state.get("affected").contains(this.evaluateId(state,id)); }
 };
