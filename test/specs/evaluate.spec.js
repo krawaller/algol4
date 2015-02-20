@@ -76,6 +76,40 @@ var tests = {
 		state: { layers: { UNITS: {xyz:[{id:123}]} }, marks: {uglymark:"xyz"}, affected:[3,7,321] },
 		command: ["AFFECTED",["IDAT",["MARKPOS","uglymark"]]],
 		expected: false
+	},{
+		command: ["SAME",["VAL","foo"],["VAL","bar"]],
+		expected: false
+	},{
+		command: ["SAME",["VAL","foo"],["VAL","foo"]],
+		expected: true
+	},{
+		command: ["DIFFERENT",["VAL","foo"],["VAL","bar"]],
+		expected: true
+	},{
+		command: ["DIFFERENT",["VAL","foo"],["VAL","foo"]],
+		expected: false
+	},{
+		state: { layers: {somelayer: {xyz:[{foo:"bar"}]}}, marks: {somemark:"xyz"}},
+		command: ["ANYAT","somelayer",["MARKPOS","somemark"]],
+		expected: true
+	},{
+		state: { layers: {somelayer: {xyz:[{foo:"bar"}]}}, marks: {somemark:"abc"}},
+		command: ["ANYAT","somelayer",["MARKPOS","somemark"]],
+		expected: false
+	},{
+		state: { layers: {somelayer: {xyz:[{foo:"bar"}]}}, marks: {somemark:"xyz"}},
+		command: ["NONEAT","somelayer",["MARKPOS","somemark"]],
+		expected: false
+	},{
+		state: { layers: {somelayer: {xyz:[{foo:"bar"}]}}, marks: {somemark:"abc"}},
+		command: ["NONEAT","somelayer",["MARKPOS","somemark"]],
+		expected: true
+	},{
+		command: ["NOT",["MORE",["VAL",3],["VAL",7]]],
+		expected: true
+	},{
+		command: ["NOT",["MORE",["VAL",7],["VAL",3]]],
+		expected: false
 	}]
 };
 
