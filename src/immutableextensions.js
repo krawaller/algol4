@@ -13,6 +13,8 @@ I.notUndefined = function(v){ return v !== undefined; };
 
 I.notEmpty = function(v){ return !v.isEmpty(); };
 
+I.addIfNew = function(list,val){ return list.contains(val) ? list : list.push(val); };
+
 if (typeof module !== 'undefined' && typeof module.exports !== 'undefined')
     module.exports = I;
 })();

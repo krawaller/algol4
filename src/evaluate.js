@@ -26,7 +26,7 @@ var idmethods = {
 };
 
 Algol.evaluateId = function(state,def){
-	return idmethods[def[0]].apply(this,[state].concat(_.tail(def)));
+	return ""+idmethods[def[0]].apply(this,[state].concat(_.tail(def)));
 };
 
 var proptestmethods = {

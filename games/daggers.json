@@ -69,18 +69,11 @@
 			}
 		},
 		"findinfiltrators": {
-			"type": "spawn",
-			"start": ["FROMALLINLAYER","MYUNITS"],
-			"drawstart": {
-				"condition": ["AND",
-					["ANYAT","TERRAIN","START"],
-					["DIFFERENT",
-						["LOOKUP","TERRAIN",["CONTEXTPOS","START"],"plr"],
-						["CONTEXTVAL","CURRENTPLAYER"]
-					]
-				],
-				"tolayer": "infiltrator"
-			}
+			"type": "filter",
+			"layer": "TERRAIN",
+			"overlapping": "MYUNITS",
+			"matching": { "plr": ["ISNT",["CONTEXTVAL","CURRENTPLAYER"]] },
+			"tolayer": "infiltrator"
 		},
 		"nexttocrown": {
 			"type": "nextto",

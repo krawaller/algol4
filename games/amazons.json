@@ -36,7 +36,7 @@
 		},
 		"fire": {
 			"effects": [
-				["CREATETERRAIN",["MARKPOS","selectfire"],{"type":"fire"}]
+				["CREATETERRAIN",["MARKPOS","selectfire"],{"type":["VAL","fire"]}]
 			]
 		}
 	},

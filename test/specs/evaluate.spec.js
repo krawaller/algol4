@@ -52,9 +52,9 @@ var tests = {
 		expected: 777
 	}],
 	evaluateId: [{
-		state: { layers: {UNITS: {xyz:[{id:678}]}}, marks: {somemark:"xyz"}},
+		state: { layers: {UNITS: {xyz:[{id:"678"}]}}, marks: {somemark:"xyz"}},
 		command: ["IDAT",["MARKPOS","somemark"]],
-		expected: 678
+		expected: "678"
 	}],
 	evaluateBoolean: [{
 		command: ["AND",["MORE",["VAL",3],["VAL",1]],["MORE",["VAL",3],["VAL",1]]],
@@ -69,11 +69,11 @@ var tests = {
 		command: ["OR",["MORE",["VAL",3],["VAL",1111]],["MORE",["VAL",3],["VAL",11]]],
 		expected: false
 	},{
-		state: { layers: { UNITS: {xyz:[{id:123}]} }, marks: {uglymark:"xyz"}, affected:[3,7,123] },
+		state: { layers: { UNITS: {xyz:[{id:"123"}]} }, marks: {uglymark:"xyz"}, affected:["3","7","123"] },
 		command: ["AFFECTED",["IDAT",["MARKPOS","uglymark"]]],
 		expected: true
 	},{
-		state: { layers: { UNITS: {xyz:[{id:123}]} }, marks: {uglymark:"xyz"}, affected:[3,7,321] },
+		state: { layers: { UNITS: {xyz:[{id:"123"}]} }, marks: {uglymark:"xyz"}, affected:["3","7","321"] },
 		command: ["AFFECTED",["IDAT",["MARKPOS","uglymark"]]],
 		expected: false
 	},{

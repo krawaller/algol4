@@ -1,22 +1,11 @@
 
 ######################## D A T A O B J #####################
 
-gamedef
-    (preprocessed gamedef)
-seed
-	(settings, playerids, etc)
 state
 	marks
 		name: pos, ...
 	affectedunits: [id,id,...]
-	steps
-		[{
-			state: prevstate
-			command: commandname,
-			affected: [],
-			marks:
-				markname: pos, ...
-		}, ...]
+	previousstate: state
 	data
 		units:
 			id: {props}, ...
@@ -28,8 +17,8 @@ state
 	context
 		CURRENTPLAYER: #,
 		PERFORMEDSTEPS: #
-neighbours
-	ykx: {dir: ykx, ...}
+	neighbours
+		ykx: {dir: ykx, ...}
 
 ######################## T Y P E S #########################
 

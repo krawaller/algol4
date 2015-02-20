@@ -9,25 +9,26 @@ function augmentWithExecuteFunctions(Algol){
 var effectmethods = {
 	KILLUNIT: function(state,id){
 		id = this.evaluateId(state,id);
-		state = state.set("affected",state.get("affected").push(id));
-		return state.setIn(["data","units",id,"state"],"dead");
+		state = state.set("affected",I.addIfNew(state.get("affected"),id));
+		return state.setIn(["data","units",id,"status"],"dead");
 	},
 	MOVEUNIT: function(state,id,pos){
-		id = this.evaluateId(state,pos);
-		state = state.set("affected",state.get("affected").push(id));
+		id = this.evaluateId(state,id);
+		state = state.set("affected",I.addIfNew(state.get("affected"),id));
 		return state.setIn(["data","units",id,"pos"],this.evaluatePosition(state,pos));
 	},
-	SETUNITDATA: function(state,id,prop,val){
-		id = this.evaluateId(state,pos);
-		state = state.set("affected",state.get("affected").push(id));
-		return state.setIn(["data","units",id,prop],"dead");
+	SETUNITDATA: function(state,id,propname,val){
+		id = this.evaluateId(state,id);
+		state = state.set("affected",I.addIfNew(state.get("affected"),id));
+		return state.setIn(["data","units",id,propname],this.evaluateValue(state,val));
 	},
 	SWAPUNITPOSITIONS: function(state,id1,id2){
 		id1 = this.evaluateId(state,id1);
 		id2 = this.evaluateId(state,id2);
-		state = state.set("affected",state.get("affected").push(id1).push(id2));
+		state = state.set("affected",I.addIfNew(state.get("affected"),id1));
+		state = state.set("affected",I.addIfNew(state.get("affected"),id2));
 		var temp = state.getIn(["data","units",id1,"pos"]);
-		state = setIn(["data","units",id1,"pos"],state.getIn(["data","units",id2,"pos"]));
+		state = state.setIn(["data","units",id1,"pos"],state.getIn(["data","units",id2,"pos"]));
 		return state.setIn(["data","units",id2,"pos"],temp);
 	},
 	CREATETERRAIN: function(state,pos,props){
@@ -36,19 +37,23 @@ var effectmethods = {
 	},
 	FORALLIN: function(){
 		var state = arguments[0], layer = state.getIn(["layers",arguments[1]]), effects = _.tail(arguments,2), returnstate = state;
+		console.log("YOWZA!!!",effects);
 		state.getIn(["data","units"]).forEach(function(unit,id){
 			if (layer.has(unit.get("pos"))){
-				_.each(effects,function(e){
-					returnstate = this.executeEffect(returnstate.setIn(["context","LOOPID",id]),e);
-				},this);
+				returnstate = _.reduce(effects,function(s,e){
+					return this.executeEffect(s.setIn(["context","LOOPID"],id),e);
+				},returnstate,this);
 			}
 		},this);
-		return returnstate;
+		return returnstate.deleteIn(["context","LOOPID"]);
 	}
 };
 
 // returns an updated state
 Algol.executeEffect = function(state,def){
+	if (!effectmethods[def[0]]){
+		console.log("WARNING",def)
+	}
 	return effectmethods[def[0]].apply(this,[state].concat(_.tail(def)));
 };
 
