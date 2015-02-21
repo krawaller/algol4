@@ -44,9 +44,8 @@
 		},
 		"findarrows": {
 			"type": "walker",
-			"start": ["FROMALLINLAYER","UNITS"],
-			"dirs": [1],
-			"relativeto": ["LOOKUP","UNITS",["CONTEXTPOS","START"],"dir"],
+			"starts": ["FROMALLINLAYER","UNITS"],
+			"dir": ["RELATIVEDIR",["VAL",1],["LOOKUP","UNITS",["CONTEXTPOS","START"],"dir"]],
 			"stops": "UNITS",
 			"max": 3,
 			"drawstep": {
@@ -73,11 +72,10 @@
 		"findfooting": {
 			"type": "nextto",
 			"start": ["FROMMARK","selectunit"],
-			"dirs": [1,5],
-			"dirrelativeto": ["LOOKUP","UNITS",["CONTEXTPOS","START"],"dir"],
+			"dirs": ["RELATIVEDIRS",["DIRS",1,5],["LOOKUP","UNITS",["CONTEXTPOS","START"],"dir"]],
 			"drawtarget": {
 				"condition": ["AND",["NONEAT","UNITS",["CONTEXTPOS","TARGET"]],["NONEAT","opparrows",["CONTEXTPOS","TARGET"]]],
-				"layer": ["IFELSE",["SAME","ORIGINALDIR",1],"forwardfooting","backwardfooting"],
+				"layer": ["IFELSE",["SAME",["CONTEXTVAL","DIR"],["LOOKUP","UNITS",["CONTEXTPOS","START"],"dir"]],"forwardfooting","backwardfooting"],
 				"include": {
 					"id": ["IDAT","START"]
 				}

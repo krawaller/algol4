@@ -60,7 +60,7 @@
 		},
 		"findswaptarget": {
 			"type": "nextto",
-			"dirs": [1,2,3,4,5,6,7,8],
+			"dirs": ["DIRS",1,2,3,4,5,6,7,8],
 			"start": ["MARKPOS","selectking"],
 			"drawtarget": {
 				"condition": ["AND",
@@ -72,7 +72,7 @@
 		},
 		"findmovetarget": {
 			"type": "nextto",
-			"dirs": [1,2,3,4,5,6,7,8],
+			"dirs": ["DIRS",1,2,3,4,5,6,7,8],
 			"start": ["MARKPOS","selectking"],
 			"drawtarget": {
 				"condition": ["NONEAT","UNITS",["CONTEXTPOS","TARGET"]],
@@ -81,7 +81,7 @@
 		},
 		"finddemoters": {
 			"type": "walker",
-			"dirs": [1,2,3,4,5,6,7,8],
+			"dirs": ["DIRS",1,2,3,4,5,6,7,8],
 			"start": ["MARKPOS","selectmove"],
 			"steplayer": "OPPUNITS",
 			"stoplayer": "mykings",

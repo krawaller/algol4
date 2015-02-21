@@ -11,15 +11,21 @@ if (typeof require === 'function' && typeof module === 'object') {
 }
 
 var tests = {
+	evaluateDirList: [{
+		command: ["DIRS",1,2,3,4,5],
+		expected: [1,2,3,4,5]
+	},{
+		command: ["RELATIVEDIRS",["DIRS",1,2,3],["VAL",2]],
+		expected: [2,3,4]
+	}],
 	evaluateValue: [{
-		state: {
-			layers: { foolayer: { xyz: [{a:666}] } },
-			marks: { somemark: "xyz" }
-		},
+		command: ["RELATIVEDIR",["VAL",2],["VAL",8]],
+		expected: 1
+	},{
+		state: { layers: { foolayer: { xyz: [{a:666}] } }, marks: { somemark: "xyz" } },
 		command: ["LOOKUP","foolayer",["MARKPOS","somemark"],"a"],
 		expected: 666
 	},{
-		state: {},
 		command: ["VAL",666],
 		expected: 666
 	},{
@@ -54,6 +60,15 @@ var tests = {
 		state: {steps:[{command:"somecmnd",marks:{somemark:"FOO"}},{command:"somecmnd",marks:{somemark:"BAR"}},{command:"othercmnd",marks:{somemark:"blah"}}]},
 		command: ["MARKINLAST","somecmnd","somemark"],
 		expected: "BAR"
+	}],
+	evaluatePositionList: [{
+		state: { layers: {somelayer: {a:"X",b:"X"}} },
+		command: ["FROMALLINLAYER","somelayer"],
+		expected: ["a","b"]
+	},{
+		state: { layers: {somelayer: {a:"X",b:"X"}, someotherlayer: {b:"Y",c:"Y"}} },
+		command: ["FROMALLINLAYERS","somelayer","someotherlayer"],
+		expected: ["a","b","c"]
 	}],
 	evaluateId: [{
 		state: { layers: {UNITS: {xyz:[{id:"678"}]}}, marks: {somemark:"xyz"}},
@@ -139,7 +154,8 @@ describe("The evaluate functions",function(){
 			_.each(arr,function(test){
 				describe("when called with "+JSON.stringify(test.command)+(test.state ? " and state is "+JSON.stringify(test.state) : ""),function(){
 					it("returns "+test.expected,function(){
-						expect(Algol[funcname](I.fromJS(test.state||{}),I.fromJS(test.command))).toEqual(test.expected);
+						var res = Algol[funcname](I.fromJS(test.state||{}),I.fromJS(test.command));
+						expect(res.toJS ? res.toJS() : res).toEqual(test.expected);
 					});
 				});
 			});

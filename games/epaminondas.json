@@ -65,7 +65,7 @@
 		},
 		"movetarget": {
 			"type": "nextto",
-			"dirs": [1,2,3,4,5,6,7,8],
+			"dirs": ["DIRS",1,2,3,4,5,6,7,8],
 			"start": ["MARKPOS","selecthead"],
 			"drawtarget": {
 				"condition": ["NONEAT","UNITS",["CONTEXTPOS","TARGET"]],
@@ -74,7 +74,7 @@
 		},
 		"potentialphalanx": {
 			"type": "walker",
-			"dirs": [1,2,3,4,5,6,7,8],
+			"dirs": ["DIRS",1,2,3,4,5,6,7,8],
 			"start": ["MARKPOS","selecthead"],
 			"steplayer": "MYUNITS",
 			"drawstep": {
@@ -86,8 +86,7 @@
 		},
 		"paintphalanx": {
 			"type":"walker",
-			"dirs": [5],
-			"dirrelativeto": ["LOOKUP","potentialtail",["MARKPOS","selecttail"],"headdirection"],
+			"dir": ["RELATIVEDIR",["VAL",5],["LOOKUP","potentialtail",["MARKPOS","selecttail"],"headdirection"]],
 			"start": ["MARKPOS","selecttail"],
 			"stoplayer": "selecthead",
 			"drawstart": {
@@ -111,8 +110,7 @@
 		"march": {
 			"type": "walker",
 			"starts": ["FROMALLINLAYER","phalanxend"],
-			"dirs": [1],
-			"dirrelativeto": ["LOOKUP","phalanxend",["CONTEXTPOS","START"],"facing"],
+			"dir": ["LOOKUP","phalanxend",["CONTEXTPOS","START"],"facing"],
 			"stoplayer": "UNITS",
 			"max": ["SUM",["VAL",1],["LOOKUP","phalanxend",["CONTEXTPOS","START"],"strength"]],
 			"drawstep": {
@@ -134,8 +132,7 @@
 		"opposers": {
 			"type": "walker",
 			"starts": ["FROMALLINLAYER","threatened"],
-			"dirs": [1],
-			"dirrelativeto": ["LOOKUP","threatened",["CONTEXTPOS","START"],"DIR"],
+			"dir": ["LOOKUP","threatened",["CONTEXTPOS","START"],"heading"],
 			"steplayer": "OPPUNITS",
 			"drawstart": {
 				"condition": ["MORE",["LOOKUP","threatened",["CONTEXTPOS","START"],"strength"],["CONTEXTVAL","LENGTH"]],

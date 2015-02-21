@@ -6,6 +6,10 @@ function augmentWithGenerateFunctions(Algol){
 
 // €€€€€€€€€€€€€€€€€€€€€€€€€€€ G E N E R A T E   F U N C T I O N S €€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€*/
 
+Algol.generateNexttoSeedsFromPos = function(state,def,pos){
+
+};
+
 
 /*
 def has `layer` and `overlapping` and/or `matching`

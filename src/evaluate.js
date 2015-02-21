@@ -6,18 +6,33 @@ function augmentWithEvaluateFunctions(Algol){
 
 // €€€€€€€€€€€€€€€€€€€€€€€€€€€ E V A L U A T E   F U N C T I O N S €€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€*/
 
+var dirlistmethods = {
+	DIRS: function(){
+		return I.List(_.tail(arguments));
+	},
+	RELATIVEDIRS: function(state,dirs,reldir){
+		reldir = this.evaluateValue(state,reldir);
+		dirs = this.evaluateDirList(state,dirs);
+		return dirs.map(function(d){ return [1,2,3,4,5,6,7,8,1,2,3,4,5,6,7,8][reldir-2+d]; });
+	}
+};
+
+Algol.evaluateDirList = function(state,def){
+	return dirlistmethods[def.first()].apply(this,[state].concat(def.rest().toArray()));
+};
+
 var positionlistmethods = {
-	FROMALLINLAYER: function(state,layername){ return Object.keys(state.getIn(["layers",layername]).toObject()); },
+	FROMALLINLAYER: function(state,layername){ return state.getIn(["layers",layername]).keySeq(); },
 	FROMALLINLAYERS: function(){
-		var state = _.first(arguments), names = _.tail(arguments);
-		return _.unique(_.reduce(names,function(arr,name){
-			return arr.concat(Object.keys(state.getIn(["layers",name]).toObject()));
-		},[]));
+		var state = arguments[0];
+		return _.reduce( _.slice(arguments,2), function(mem,name){
+			return mem.merge( state.getIn(["layers",name]) );
+		},state.getIn(["layers",arguments[1]]),this).keySeq();
 	}
 };
 
 Algol.evaluatePositionList = function(state,def){
-	return idmethods[def.first()].apply(this,[state].concat(def.rest().toArray()));
+	return positionlistmethods[def.first()].apply(this,[state].concat(def.rest().toArray()));
 };
 
 var idmethods = {
@@ -74,6 +89,9 @@ var valuemethods = {
 	SUM: function(){
 		var state = _.first(arguments);
 		return _.reduce(_.tail(arguments),function(acc,val){ return acc + this.evaluateValue(state,val); },0,this);
+	},
+	RELATIVEDIR: function(state,dir,reldir){
+		return [1,2,3,4,5,6,7,8,1,2,3,4,5,6,7,8][this.evaluateValue(state,reldir)-2+this.evaluateValue(state,dir)];
 	}
 };
 
@@ -94,6 +112,9 @@ var positionmethods = {
 Algol.evaluatePosition = function(state,def){
 	return positionmethods[def.first()].apply(this,[state].concat(def.rest().toArray()));	
 };
+
+
+
 
 // €€€€€€€€€€€€€€€€€€€€€€€€€ E X P O R T €€€€€€€€€€€€€€€€€€€€€€€€€
 

@@ -24,12 +24,20 @@ var filtertests = [{
 	expected: {aaa:[{foo:"bar"}]}
 }];
 
-describe("the generateFilter function",function(){
-	_.each(filtertests,function(test){
-		describe("when called with "+JSON.stringify(test.filter)+" and state is "+JSON.stringify(test.state),function(){
-			it("returns "+JSON.stringify(test.expected),function(){
-				var result = Algol.generateFilter(I.fromJS(test.state||{}),I.fromJS(test.filter));
-				expect(result.toJS()).toEqual(test.expected);
+var nexttotests = [{
+	nextto: {},
+	state: {},
+	expected: {}
+}];
+
+describe("the generate functions",function(){
+	describe("the generateFilter function",function(){
+		_.each(filtertests,function(test){
+			describe("when called with "+JSON.stringify(test.filter)+" and state is "+JSON.stringify(test.state),function(){
+				it("returns "+JSON.stringify(test.expected),function(){
+					var result = Algol.generateFilter(I.fromJS(test.state||{}),I.fromJS(test.filter));
+					expect(result.toJS()).toEqual(test.expected);
+				});
 			});
 		});
 	});
