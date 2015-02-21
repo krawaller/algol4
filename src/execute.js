@@ -50,7 +50,7 @@ var effectmethods = {
 
 // returns an updated state
 Algol.executeEffect = function(state,def){
-	return effectmethods[def[0]].apply(this,[state].concat(_.tail(def)));
+	return effectmethods[def.first()].apply(this,[state].concat(def.rest().toArray()));
 };
 
 // returns an updated state
@@ -59,6 +59,12 @@ Algol.executeEffects = function(state,arr){
 		state = this.executeEffect(state,e);
 	},this);
 	return state;
+};
+
+Algol.canExecuteCommand = function(state,def){
+	if (def.has("condition") && !this.evaluateBoolean(state,def.get("condition"))){
+		return false;
+	}
 };
 
 // €€€€€€€€€€€€€€€€€€€€€€€€€ E X P O R T €€€€€€€€€€€€€€€€€€€€€€€€€

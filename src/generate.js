@@ -12,14 +12,14 @@ def has `layer` and `overlapping` and/or `matching`
 returns the new layer
 */
 Algol.generateFilter = function(state,def){
-	var layer = state.getIn(["layers",def.layer]);
-	if (def.overlapping){
-		layer = layer.filter(I.keyInMap(state.getIn(["layers",def.overlapping])));
+	var layer = state.getIn(["layers",def.get("layer")]);
+	if (def.get("overlapping")){
+		layer = layer.filter(I.keyInMap(state.getIn(["layers",def.get("overlapping")])));
 	}
-	if (def.matching){
+	if (def.get("matching")){
 		layer = layer.map(function(list,pos){
 			return list.filter(function(map){
-				return this.evaluateObjectMatch(state,def.matching,map);
+				return this.evaluateObjectMatch(state,def.get("matching"),map);
 			},this);
 		},this).filter(I.notEmpty);
 	}

@@ -50,6 +50,10 @@ var tests = {
 		state: {context:{somectxpos:777}},
 		command: ["CONTEXTPOS","somectxpos"],
 		expected: 777
+	},{
+		state: {steps:[{command:"somecmnd",marks:{somemark:"FOO"}},{command:"somecmnd",marks:{somemark:"BAR"}},{command:"othercmnd",marks:{somemark:"blah"}}]},
+		command: ["MARKINLAST","somecmnd","somemark"],
+		expected: "BAR"
 	}],
 	evaluateId: [{
 		state: { layers: {UNITS: {xyz:[{id:"678"}]}}, marks: {somemark:"xyz"}},
@@ -135,7 +139,7 @@ describe("The evaluate functions",function(){
 			_.each(arr,function(test){
 				describe("when called with "+JSON.stringify(test.command)+(test.state ? " and state is "+JSON.stringify(test.state) : ""),function(){
 					it("returns "+test.expected,function(){
-						expect(Algol[funcname](I.fromJS(test.state||{}),test.command)).toEqual(test.expected);
+						expect(Algol[funcname](I.fromJS(test.state||{}),I.fromJS(test.command))).toEqual(test.expected);
 					});
 				});
 			});

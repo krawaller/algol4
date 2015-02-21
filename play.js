@@ -44,3 +44,5 @@ console.log(I.fromJS({a:[1,2,3]}).get("a").push(3).push(97));
 var m1 = I.fromJS({a:1,b:2,c:3});
 var m2 = I.fromJS({d:1,b:6,c:9});
 console.log("REALLY?",m1.filter(I.keyInMap(m2)));
+
+console.log("testing",I.fromJS([1,[2,3],4]).toJS());

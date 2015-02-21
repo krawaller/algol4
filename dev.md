@@ -2,10 +2,12 @@
 ######################## D A T A O B J #####################
 
 state
+	gamedef: preprocessedgame
 	marks
 		name: pos, ...
 	affectedunits: [id,id,...]
-	previousstate: state
+	previousstep: state
+	previousturn: state
 	steps [{
 		command: cmndname,
 		marks: {markname: pos, ...}
@@ -23,6 +25,10 @@ state
 		PERFORMEDSTEPS: #
 	neighbours
 		ykx: {dir: ykx, ...}
+	analysis
+		commands
+			commandname
+				neededmarks: [markname,markname, ....]
 
 ######################## T Y P E S #########################
 

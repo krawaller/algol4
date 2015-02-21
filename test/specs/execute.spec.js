@@ -32,13 +32,29 @@ var executetests = [{
 	expected: {layers:{somelayer:{a:"X"},UNITS:{a:[{id:"A"}],b:[{id:"B"}]}},data:{units:{A:{pos:"a",doomed:"yes",status:"dead"},B:{pos:"b"}}},context:{foo:"bar"},affected:["B","A"]}
 }];
 
+var availabilitytests = [{
+	command: {condition:["FALSE"],analysis:{commands:{}}},
+	state: {},
+	available: false
+}];
+
 describe("the execute functions",function(){
 	describe("the executeEffect function",function(){
 		_.each(executetests,function(test){
 			describe("when called with "+JSON.stringify(test.command)+" and state is "+JSON.stringify(test.state),function(){
 				it("returns "+JSON.stringify(test.expected),function(){
-					var result = Algol.executeEffect(I.fromJS(test.state),test.command);
+					var result = Algol.executeEffect(I.fromJS(test.state),I.fromJS(test.command));
 					expect(result.toJS()).toEqual(test.expected);
+				});
+			});
+		});
+	});
+	describe("the canExecuteCommand function",function(){
+		_.each(availabilitytests,function(test){
+			describe("the '"+test.command+"' command when state is "+JSON.stringify(test.state),function(){
+				it((test.available ? "is" : "isnt")+" available",function(){
+					var result = Algol.canExecuteCommand(I.fromJS(test.state),I.fromJS(test.command));
+					expect(result).toEqual(test.available);
 				});
 			});
 		});
