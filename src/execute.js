@@ -62,9 +62,10 @@ Algol.executeEffects = function(state,arr){
 };
 
 Algol.canExecuteCommand = function(state,def){
-	if (def.has("condition") && !this.evaluateBoolean(state,def.get("condition"))){
-		return false;
-	}
+	return !(
+		(def.has("condition") && !this.evaluateBoolean(state,def.get("condition"))) || 
+		def.get("neededmarks").some(function(markname){ return !state.get("marks").has(markname); })
+	);
 };
 
 // €€€€€€€€€€€€€€€€€€€€€€€€€ E X P O R T €€€€€€€€€€€€€€€€€€€€€€€€€

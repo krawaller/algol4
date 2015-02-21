@@ -1,4 +1,12 @@
 
+######################## A U G M E N T #####################
+
+gamedef
+	commands
+		[cmndname]
+			+neededmarks: [markname,...]
+
+
 ######################## D A T A O B J #####################
 
 state
@@ -25,10 +33,6 @@ state
 		PERFORMEDSTEPS: #
 	neighbours
 		ykx: {dir: ykx, ...}
-	analysis
-		commands
-			commandname
-				neededmarks: [markname,markname, ....]
 
 ######################## T Y P E S #########################
 

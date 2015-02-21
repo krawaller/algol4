@@ -33,8 +33,18 @@ var executetests = [{
 }];
 
 var availabilitytests = [{
-	command: {condition:["FALSE"],analysis:{commands:{}}},
-	state: {},
+	command: {condition:["TRUE"],neededmarks:[]},
+	available: true
+},{
+	command: {condition:["FALSE"],neededmarks:[]},
+	available: false
+},{
+	command: {condition:["TRUE"],neededmarks:["somemark"]},
+	state: {marks:{somemark:"xyz"}},
+	available: true
+},{
+	command: {condition:["TRUE"],neededmarks:["somemark"]},
+	state: {marks:{someothermark:"xyz"}},
 	available: false
 }];
 
@@ -51,9 +61,9 @@ describe("the execute functions",function(){
 	});
 	describe("the canExecuteCommand function",function(){
 		_.each(availabilitytests,function(test){
-			describe("the '"+test.command+"' command when state is "+JSON.stringify(test.state),function(){
+			describe("the command "+JSON.stringify(test.command)+(test.state?"when state is "+JSON.stringify(test.state):""),function(){
 				it((test.available ? "is" : "isnt")+" available",function(){
-					var result = Algol.canExecuteCommand(I.fromJS(test.state),I.fromJS(test.command));
+					var result = Algol.canExecuteCommand(I.fromJS(test.state||{}),I.fromJS(test.command));
 					expect(result).toEqual(test.available);
 				});
 			});
