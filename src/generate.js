@@ -54,23 +54,23 @@ Algol.generateWalkerSeeds = function(state,def){
 	},I.fromJS({start:{},step:{},block:{}}),this);
 };
 
-/*
-def has `layer` and `overlapping` and/or `matching`
-returns the new layer
-*/
-Algol.generateFilter = function(state,def){
-	var layer = state.getIn(["layers",def.get("layer")]);
-	if (def.get("overlapping")){
-		layer = layer.filter(I.keyInMap(state.getIn(["layers",def.get("overlapping")])));
+Algol.generateFilterSeeds = function(state,def){
+	var seeds = state.getIn(["layers",def.get("layer")]),
+		overlapping = def.get("overlapping"),
+		matching = def.get("matching");
+	if (overlapping){
+		var legal = this.evaluatePositionList(state,overlapping);
+		seeds = seeds.filter(function(val,pos){ return legal.contains(pos); });
 	}
-	if (def.get("matching")){
-		layer = layer.map(function(list,pos){
-			return list.filter(function(map){
-				return this.evaluateObjectMatch(state,def.get("matching"),map);
+	if (matching){
+		seeds = seeds.filter(function(arr,pos){
+			return arr.some(function(o){
+				return this.evaluateObjectMatch(state,matching,o);
 			},this);
-		},this).filter(I.notEmpty);
+		},this);
 	}
-	return layer;
+	context = I.Map({TOTAL:seeds.size});
+	return I.Map({start: seeds.map(function(val,p){ return I.List([context.set("START",p)]); }) });
 };
 
 // €€€€€€€€€€€€€€€€€€€€€€€€€ E X P O R T €€€€€€€€€€€€€€€€€€€€€€€€€

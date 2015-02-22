@@ -11,18 +11,18 @@ if (typeof require === 'function' && typeof module === 'object') {
 }
 
 var tests = {
-	generateFilter: [{
+	generateFilterSeeds: [{
 		definition: {layer: "somelayer", matching: {foo:["IS",["VAL","bar"]]}},
 		state: {layers: {somelayer: {a:[{foo:"muu"}],b:[{foo:"bar",bin:"baj"}]}}},
-		expected: {b:[{foo:"bar",bin:"baj"}]}
+		expected: {start: {b: [{START:"b",TOTAL:1 }]}}
 	},{
-		definition: {layer: "somelayer", overlapping: "someotherlayer"},
+		definition: {layer: "somelayer", overlapping: ["FROMALLINLAYER","someotherlayer"]},
 		state: {layers: {somelayer: {a:[{foo:"bar"}],b:[{baz:"bin"}]}, someotherlayer:{q:[{what:"ev"}],b:[{wuu:"meee"}]}}},
-		expected: {b:[{baz:"bin"}]}
+		expected: {start: {b: [{START:"b",TOTAL:1}]}}
 	},{
-		definition: {layer: "somelayer", overlapping: "someotherlayer", matching: {foo:["IS",["VAL","bar"]]}},
+		definition: {layer: "somelayer", overlapping: ["FROMALLINLAYER","someotherlayer"], matching: {foo:["IS",["VAL","bar"]]}},
 		state: {layers: {somelayer: {aaa:[{foo:"blaj"},{foo:"bar"}],b:[{baz:"bin"}],c:[{foo:"bar"}]}, someotherlayer:{aaa:[{what:"ev"}],b:[{wuu:"meee"}]}}},
-		expected: {aaa:[{foo:"bar"}]}
+		expected: {start:{aaa:[{START:"aaa",TOTAL:1}]}}
 	}],
 	generateNexttoSeeds: [{
 		definition: {starts: ["FROMSINGLEPOS",["MARKPOS","somemark"]], dirs: ["DIRS",4,5,6]},
@@ -53,11 +53,7 @@ var tests = {
 		definition: {starts: ["FROMSINGLEPOS",["MARKPOS","somemark"]], dirs: ["DIRS",7], blocklayer: "blocks"},
 		state: {marks: {somemark:"S"}, neighbours:{S:{7:"step1"},step1:{7:"step2"}}, layers: {blocks: {step2:"X"}}},
 		expected: {start: {S: [{START:"S",DIR:7,STEPS:1,STOPREASON:"HITBLOCK"}] }, step: {step1:[{START:"S",TARGET:"step1",DIR:7,STEPS:1,STEP:1,STOPREASON:"HITBLOCK"}]}, block: {step2:[{START:"S",TARGET:"step2",DIR:7,STEPS:1,STOPREASON:"HITBLOCK"}]} }
-	}/*,{
-		definition: {starts: ["FROMSINGLEPOS",["MARKPOS","somemark"]], dirs: ["RELATIVEDIRS",["DIRS",1,2,3,4],["VAL",4]], max: 2, steplayer: "steps", blocklayer: "blocks" },
-		state: {layers: {blocklayer: {block:"X"}, steplayer: {step:"X",step1:"X",step2:"X",stepA:"X"}}, marks: {somemark:"S"}, neighbours:{S:{5:"step",6:"step1",7:"stepA"},step:{5:"block"},step1:{6:"step2"},step2:{},stepA:{7:"stepB"}}},
-		expected: {start: {S: [{START:"S",DIR:4,STEPS:0,STOPREASON:"OUTOFBOUNDS"},{START:"S",DIR:5,STEPS:1,STOPREASON:"HITBLOCK"},{START:"S",DIR:6,STEPS:2,STOPREASON:"REACHEDMAX"},{START:"S",DIR:7,STEPS:1,STOPREASON:"NOMORESTEPS"}] }, step: {step:[{START:"S",STEPS:1,STEP:1,STOPREASON:"HITBLOCK"}]} }
-	}*/]
+	}]
 };
 
 
