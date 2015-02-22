@@ -20,6 +20,30 @@ Algol.generateNexttoSeeds = function(state,def){
 	},I.fromJS({start:{},target:{}}),this);
 };
 
+function stopreason(state,def,dir,pos,length){
+	if (!(state.getIn(["neighbours",pos,dir])||state.getIn(["neighbours",pos,dir+""]))){
+		return "OUTOFBOUNDS";
+	} else if (def.get("max") && length === def.get("max")) {
+		return "REACHEDMAX";
+	}
+}
+
+Algol.generateWalkerSeeds = function(state,def){
+	return this.evaluatePositionList(state,def.get("starts")).reduce(function(recorder,startpos){
+		return this.evaluateDirList(state.setIn(["context","START"],startpos),def.get("dirs")).reduce(function(recorder,dir){
+			var max = def.get("max")||666, length=0, pos=startpos, steps = [], reason;
+			while(!(reason=stopreason(state,def,dir,pos,steps.length))){
+				steps.push(pos = state.getIn(["neighbours",pos,dir])||state.getIn(["neighbours",pos,dir+""]));
+			}
+			var context = I.Map({START:startpos,DIR:dir,STEPS:steps.length,STOPREASON:reason});
+			recorder = recorder.set("start", I.addToList(recorder.get("start"),startpos,context ) );
+			_.each(steps,function(step,n){
+				recorder = recorder.set("step", I.addToList(recorder.get("step"),step,context.set("TARGET",step).set("STEP",n+1) ) );
+			});
+			return recorder;
+		},recorder,this);
+	},I.fromJS({start:{},step:{},block:{}}),this);
+};
 
 /*
 def has `layer` and `overlapping` and/or `matching`

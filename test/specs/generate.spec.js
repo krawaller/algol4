@@ -32,7 +32,20 @@ var tests = {
 		definition: {starts: ["FROMSINGLEPOS",["MARKPOS","somemark"]], dirs: ["RELATIVEDIRS",["DIRS",1,2,3],["LOOKUP","UNITS",["CONTEXTPOS","START"],"dir"]]},
 		state: {layers:{UNITS:{foo:[{dir:4}]}},marks:{somemark:"foo"},neighbours:{foo:{4:"baz",6:"bin"}}},
 		expected: {start: {foo: [{START:"foo",TARGET:"baz",DIR:4},{START:"foo",TARGET:"bin",DIR:6}]},target:{baz:[{START:"foo",TARGET:"baz",DIR:4}],bin:[{START:"foo",TARGET:"bin",DIR:6}]}}
-	}]
+	},{
+		definition: {starts: ["FROMALLINLAYER","somelayer"], dirs: ["DIRS",4,5,6]},
+		state: {layers:{somelayer:{foo:"X",foo2:"Y"},UNITS:{foo:[{dir:4}]}},neighbours:{foo:{4:"baz",6:"bin"},foo2:{5:"bin",6:"buh"}}},
+		expected: {start: {foo: [{START:"foo",TARGET:"baz",DIR:4},{START:"foo",TARGET:"bin",DIR:6}],foo2:[{START:"foo2",TARGET:"bin",DIR:5},{START:"foo2",TARGET:"buh",DIR:6}]},target:{baz:[{START:"foo",TARGET:"baz",DIR:4}],bin:[{START:"foo",TARGET:"bin",DIR:6},{START:"foo2",TARGET:"bin",DIR:5}],buh:[{START:"foo2",TARGET:"buh",DIR:6}]}}
+	}],
+	generateWalkerSeeds: [{
+		definition: {starts: ["FROMSINGLEPOS",["MARKPOS","somemark"]], dirs: ["RELATIVEDIRS",["DIRS",1],["VAL",4]], max: 5},
+		state: {marks: {somemark:"S"}, neighbours:{S:{4:"lonestep"},lonestep:{}}},
+		expected: {start: {S: [{START:"S",DIR:4,STEPS:1,STOPREASON:"OUTOFBOUNDS"}] }, step: {lonestep:[{START:"S",TARGET:"lonestep",DIR:4,STEPS:1,STEP:1,STOPREASON:"OUTOFBOUNDS"}]}, block: {} }
+	}/*,{
+		definition: {starts: ["FROMSINGLEPOS",["MARKPOS","somemark"]], dirs: ["RELATIVEDIRS",["DIRS",1,2,3,4],["VAL",4]], max: 2, steplayer: "steps", blocklayer: "blocks" },
+		state: {layers: {blocklayer: {block:"X"}, steplayer: {step:"X",step1:"X",step2:"X",stepA:"X"}}, marks: {somemark:"S"}, neighbours:{S:{5:"step",6:"step1",7:"stepA"},step:{5:"block"},step1:{6:"step2"},step2:{},stepA:{7:"stepB"}}},
+		expected: {start: {S: [{START:"S",DIR:4,STEPS:0,STOPREASON:"OUTOFBOUNDS"},{START:"S",DIR:5,STEPS:1,STOPREASON:"HITBLOCK"},{START:"S",DIR:6,STEPS:2,STOPREASON:"REACHEDMAX"},{START:"S",DIR:7,STEPS:1,STOPREASON:"NOMORESTEPS"}] }, step: {step:[{START:"S",STEPS:1,STEP:1,STOPREASON:"HITBLOCK"}]} }
+	}*/]
 };
 
 
