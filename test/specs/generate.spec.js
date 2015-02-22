@@ -25,8 +25,12 @@ var tests = {
 		expected: {aaa:[{foo:"bar"}]}
 	}],
 	generateNexttoSeeds: [{
-		definition: {starts: ["FROMSINGLEPOS",["MARKPOS","somemark"]], dirs: ["RELATIVEDIRS",["DIRS",1,2,3],["VAL",4]]},
+		definition: {starts: ["FROMSINGLEPOS",["MARKPOS","somemark"]], dirs: ["DIRS",4,5,6]},
 		state: {marks:{somemark:"foo"},neighbours:{foo:{4:"baz",6:"bin"}}},
+		expected: {start: {foo: [{START:"foo",TARGET:"baz",DIR:4},{START:"foo",TARGET:"bin",DIR:6}]},target:{baz:[{START:"foo",TARGET:"baz",DIR:4}],bin:[{START:"foo",TARGET:"bin",DIR:6}]}}
+	},{
+		definition: {starts: ["FROMSINGLEPOS",["MARKPOS","somemark"]], dirs: ["RELATIVEDIRS",["DIRS",1,2,3],["LOOKUP","UNITS",["CONTEXTPOS","START"],"dir"]]},
+		state: {layers:{UNITS:{foo:[{dir:4}]}},marks:{somemark:"foo"},neighbours:{foo:{4:"baz",6:"bin"}}},
 		expected: {start: {foo: [{START:"foo",TARGET:"baz",DIR:4},{START:"foo",TARGET:"bin",DIR:6}]},target:{baz:[{START:"foo",TARGET:"baz",DIR:4}],bin:[{START:"foo",TARGET:"bin",DIR:6}]}}
 	}]
 };
