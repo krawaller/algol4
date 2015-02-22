@@ -21,10 +21,13 @@ Algol.generateNexttoSeeds = function(state,def){
 };
 
 function stopreason(state,def,dir,pos,length){
-	if (!(state.getIn(["neighbours",pos,dir])||state.getIn(["neighbours",pos,dir+""]))){
+	var nextpos = (state.getIn(["neighbours",pos,dir])||state.getIn(["neighbours",pos,dir+""]));
+	if (!nextpos){
 		return "OUTOFBOUNDS";
 	} else if (def.get("max") && length === def.get("max")) {
 		return "REACHEDMAX";
+	} else if (def.has("steplayer") && !state.getIn(["layers",def.get("steplayer"),nextpos]) ){
+		return "NOMORESTEPS";
 	}
 }
 
