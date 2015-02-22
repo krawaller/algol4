@@ -6,8 +6,18 @@ function augmentWithGenerateFunctions(Algol){
 
 // €€€€€€€€€€€€€€€€€€€€€€€€€€€ G E N E R A T E   F U N C T I O N S €€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€*/
 
-Algol.generateNexttoSeedsFromPos = function(state,def,pos){
-
+Algol.generateNexttoSeeds = function(state,def){
+	return this.evaluatePositionList(state,def.get("starts")).reduce(function(recorder,startpos){
+		return this.evaluateDirList(state.setIn(["context","START"],startpos),def.get("dirs")).reduce(function(recorder,dir){
+			var targetpos = state.getIn(["neighbours",startpos,dir])||state.getIn(["neighbours",startpos,dir+""]), context;
+			if (targetpos){
+				context = I.Map({START:startpos,TARGET:targetpos,DIR:dir});
+				recorder = recorder.set("start", I.addToList(recorder.get("start"),startpos,context) );
+				recorder = recorder.set("target", I.addToList(recorder.get("target"),targetpos,context) );
+			}
+			return recorder;
+		},recorder,this);
+	},I.fromJS({start:{},target:{}}),this);
 };
 
 

@@ -28,6 +28,9 @@ var positionlistmethods = {
 		return _.reduce( _.slice(arguments,2), function(mem,name){
 			return mem.merge( state.getIn(["layers",name]) );
 		},state.getIn(["layers",arguments[1]]),this).keySeq();
+	},
+	FROMSINGLEPOS: function(state,pos){
+		return I.List([this.evaluatePosition(state,pos)]);
 	}
 };
 

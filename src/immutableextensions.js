@@ -15,6 +15,10 @@ I.notEmpty = function(v){ return !v.isEmpty(); };
 
 I.addIfNew = function(list,val){ return list.contains(val) ? list : list.push(val); };
 
+I.addToList = function(map,listname,val){
+	return map.set( listname, I.addIfNew( (map.has(listname) ? map : map.set(listname,I.List([]))).get(listname), val ) );
+};
+
 if (typeof module !== 'undefined' && typeof module.exports !== 'undefined')
     module.exports = I;
 })();

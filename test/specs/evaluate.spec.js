@@ -69,6 +69,10 @@ var tests = {
 		state: { layers: {somelayer: {a:"X",b:"X"}, someotherlayer: {b:"Y",c:"Y"}} },
 		command: ["FROMALLINLAYERS","somelayer","someotherlayer"],
 		expected: ["a","b","c"]
+	},{
+		state: { marks: {somemark: "foo"} },
+		command: ["FROMSINGLEPOS",["MARKPOS","somemark"]],
+		expected: ["foo"]
 	}],
 	evaluateId: [{
 		state: { layers: {UNITS: {xyz:[{id:"678"}]}}, marks: {somemark:"xyz"}},
