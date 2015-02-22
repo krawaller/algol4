@@ -28,6 +28,8 @@ function stopreason(state,def,dir,pos,length){
 		return "REACHEDMAX";
 	} else if (def.has("steplayer") && !state.getIn(["layers",def.get("steplayer"),nextpos]) ){
 		return "NOMORESTEPS";
+	} else if (def.has("blocklayer") && state.getIn(["layers",def.get("blocklayer"),nextpos]) ){
+		return "HITBLOCK";
 	}
 }
 
@@ -40,6 +42,10 @@ Algol.generateWalkerSeeds = function(state,def){
 			}
 			var context = I.Map({START:startpos,DIR:dir,STEPS:steps.length,STOPREASON:reason});
 			recorder = recorder.set("start", I.addToList(recorder.get("start"),startpos,context ) );
+			if (reason==="HITBLOCK"){
+				blockpos = state.getIn(["neighbours",pos,dir])||state.getIn(["neighbours",pos,dir+""]);
+				recorder = recorder.set("block", I.addToList(recorder.get("block"),blockpos,context.set("TARGET",blockpos) ) );
+			}
 			_.each(steps,function(step,n){
 				recorder = recorder.set("step", I.addToList(recorder.get("step"),step,context.set("TARGET",step).set("STEP",n+1) ) );
 			});

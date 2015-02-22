@@ -49,6 +49,10 @@ var tests = {
 		definition: {starts: ["FROMSINGLEPOS",["MARKPOS","somemark"]], dirs: ["DIRS",6], steplayer: "pads"},
 		state: {marks: {somemark:"S"}, neighbours:{S:{6:"step1"},step1:{6:"step2"}}, layers: {pads: {step1:"X"}}},
 		expected: {start: {S: [{START:"S",DIR:6,STEPS:1,STOPREASON:"NOMORESTEPS"}] }, step: {step1:[{START:"S",TARGET:"step1",DIR:6,STEPS:1,STEP:1,STOPREASON:"NOMORESTEPS"}]}, block: {} }
+	},{
+		definition: {starts: ["FROMSINGLEPOS",["MARKPOS","somemark"]], dirs: ["DIRS",7], blocklayer: "blocks"},
+		state: {marks: {somemark:"S"}, neighbours:{S:{7:"step1"},step1:{7:"step2"}}, layers: {blocks: {step2:"X"}}},
+		expected: {start: {S: [{START:"S",DIR:7,STEPS:1,STOPREASON:"HITBLOCK"}] }, step: {step1:[{START:"S",TARGET:"step1",DIR:7,STEPS:1,STEP:1,STOPREASON:"HITBLOCK"}]}, block: {step2:[{START:"S",TARGET:"step2",DIR:7,STEPS:1,STOPREASON:"HITBLOCK"}]} }
 	}/*,{
 		definition: {starts: ["FROMSINGLEPOS",["MARKPOS","somemark"]], dirs: ["RELATIVEDIRS",["DIRS",1,2,3,4],["VAL",4]], max: 2, steplayer: "steps", blocklayer: "blocks" },
 		state: {layers: {blocklayer: {block:"X"}, steplayer: {step:"X",step1:"X",step2:"X",stepA:"X"}}, marks: {somemark:"S"}, neighbours:{S:{5:"step",6:"step1",7:"stepA"},step:{5:"block"},step1:{6:"step2"},step2:{},stepA:{7:"stepB"}}},
