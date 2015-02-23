@@ -53,6 +53,12 @@ var tests = {
 		definition: {starts: ["FROMSINGLEPOS",["MARKPOS","somemark"]], dirs: ["DIRS",7], blocklayer: "blocks"},
 		state: {marks: {somemark:"S"}, neighbours:{S:{7:"step1"},step1:{7:"step2"}}, layers: {blocks: {step2:"X"}}},
 		expected: {start: {S: [{START:"S",DIR:7,STEPS:1,STOPREASON:"HITBLOCK"}] }, step: {step1:[{START:"S",TARGET:"step1",DIR:7,STEPS:1,STEP:1,STOPREASON:"HITBLOCK"}]}, block: {step2:[{START:"S",TARGET:"step2",DIR:7,STEPS:1,STOPREASON:"HITBLOCK"}]} }
+	}],
+	paintSeedPod: [{
+		definition: {condition:["ANYAT","somelayer",["CONTEXTPOS","TARGET"]], tolayer: ["VAL","newlayer"], include: {myfoo:["CONTEXTVAL","FOO"]}},
+		secondarg: {abc: [{FOO:"BAR",TARGET:"abc"}], xyz: [{FOO:"BAZ",TARGET:"xyz"},{FOO:"BIN",TARGET:"xyz"}]},
+		state: {layers: {somelayer: {xyz:"X"}, newlayer: {toot:"X"}},context:{poo:"foo"}},
+		expected: {layers: {somelayer: {xyz:"X"}, newlayer: {toot:"X",xyz:[{myfoo:"BAZ"},{myfoo:"BIN"}]}},context:{poo:"foo"}}
 	}]
 };
 
@@ -63,7 +69,7 @@ describe("The generate functions",function(){
 			_.each(arr,function(test){
 				describe("when called with "+JSON.stringify(test.definition)+" and state is "+JSON.stringify(test.state),function(){
 					it("returns "+JSON.stringify(test.expected),function(){
-						var result = Algol[funcname](I.fromJS(test.state||{}),I.fromJS(test.definition));
+						var result = Algol[funcname](I.fromJS(test.state||{}),I.fromJS(test.definition),test.secondarg && I.fromJS(test.secondarg));
 						expect(result.toJS()).toEqual(test.expected);
 					});
 				});
