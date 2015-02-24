@@ -67,7 +67,7 @@ describe("The execute functions",function(){
 		describe("the "+funcname+" function",function(){
 			_.each(arr,function(test){
 				describe("when called with "+JSON.stringify(test.command)+(test.state ? " and state is "+JSON.stringify(test.state) : ""),function(){
-					it("returns "+test.expected,function(){
+					it("returns "+JSON.stringify(test.expected),function(){
 						var res = Algol[funcname](I.fromJS(test.state||{}),I.fromJS(test.command));
 						expect(res.toJS ? res.toJS() : res).toEqual(test.expected);
 					});
