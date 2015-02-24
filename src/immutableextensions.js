@@ -24,6 +24,8 @@ I.pushIn = function(map,path,obj){
 	return map.setIn(path,map.getIn(path).push(obj));
 };
 
+I.concat = function(oldlist,newlist){return oldlist.concat(newlist);};
+
 if (typeof module !== 'undefined' && typeof module.exports !== 'undefined')
     module.exports = I;
 })();

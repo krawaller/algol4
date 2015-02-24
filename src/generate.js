@@ -6,17 +6,15 @@ function augmentWithGenerateFunctions(Algol){
 
 // €€€€€€€€€€€€€€€€€€€€€€€€€€€ G E N E R A T E   F U N C T I O N S €€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€*/
 
-Algol.generateNexttoSeeds = function(state,def){
+Algol.generateNeighbourSeeds = function(state,def){
 	return this.evaluatePositionList(state,def.get("starts")).reduce(function(recorder,startpos){
-		return this.evaluateDirList(state.setIn(["context","START"],startpos),def.get("dirs")).reduce(function(recorder,dir){
-			var targetpos = state.getIn(["neighbours",startpos,dir])||state.getIn(["neighbours",startpos,dir+""]), context;
-			if (targetpos){
-				context = I.Map({START:startpos,TARGET:targetpos,DIR:dir});
-				recorder = recorder.set("start", I.addToList(recorder.get("start"),startpos,context) );
-				recorder = recorder.set("target", I.addToList(recorder.get("target"),targetpos,context) );
-			}
-			return recorder;
-		},recorder,this);
+		var neighbours = this.evaluateDirList(state.setIn(["context","START"],startpos),def.get("dirs")).reduce(function(map,dir){
+			var targetpos = state.getIn(["neighbours",startpos,dir])||state.getIn(["neighbours",startpos,dir+""]);
+			return targetpos ? map.set(dir,targetpos) : map;
+		},I.Map(),this);
+		return neighbours.reduce(function(recorder,pos,dir){
+			return I.pushIn(recorder,["target",pos],I.Map({START:startpos,DIR:dir,TARGET:pos,NEIGHBOURS:neighbours.size}));
+		},I.pushIn(recorder,["start",startpos],I.Map({START:startpos,NEIGHBOURS:neighbours.size})),this);
 	},I.fromJS({start:{},target:{}}),this);
 };
 
@@ -34,24 +32,25 @@ function stopreason(state,def,dir,pos,length){
 }
 
 Algol.generateWalkerSeeds = function(state,def){
-	return this.evaluatePositionList(state,def.get("starts")).reduce(function(recorder,startpos){
+	var pods = this.evaluatePositionList(state,def.get("starts")).reduce(function(recorder,startpos){
 		return this.evaluateDirList(state.setIn(["context","START"],startpos),def.get("dirs")).reduce(function(recorder,dir){
-			var max = def.get("max")||666, length=0, pos=startpos, steps = [], reason;
+			var pos=startpos, steps = [], reason;
 			while(!(reason=stopreason(state,def,dir,pos,steps.length))){
 				steps.push(pos = state.getIn(["neighbours",pos,dir])||state.getIn(["neighbours",pos,dir+""]));
 			}
 			var context = I.Map({START:startpos,DIR:dir,STEPS:steps.length,STOPREASON:reason});
-			recorder = recorder.set("start", I.addToList(recorder.get("start"),startpos,context ) );
+			recorder = I.pushIn(recorder,["start",startpos],context);
 			if (reason==="HITBLOCK"){
 				blockpos = state.getIn(["neighbours",pos,dir])||state.getIn(["neighbours",pos,dir+""]);
-				recorder = recorder.set("block", I.addToList(recorder.get("block"),blockpos,context.set("TARGET",blockpos) ) );
+				recorder = I.pushIn(recorder,["block",blockpos],context.set("TARGET",blockpos));
 			}
 			_.each(steps,function(step,n){
-				recorder = recorder.set("step", I.addToList(recorder.get("step"),step,context.set("TARGET",step).set("STEP",n+1) ) );
+				recorder = I.pushIn(recorder,["step",step],context.set("TARGET",step).set("STEP",n+1));
 			});
 			return recorder;
 		},recorder,this);
 	},I.fromJS({start:{},step:{},block:{}}),this);
+	return pods.set("all",pods.reduce(function(mem,pod){ return mem.mergeWith(I.concat,pod); }),I.Map(),this);
 };
 
 Algol.generateFilterSeeds = function(state,def){

@@ -68,6 +68,15 @@ Algol.canExecuteCommand = function(state,def){
 	);
 };
 
+Algol.testPostCommandState = function(state,newstate){
+	var dive=0, newdata = newstate.get("data");
+	while(++dive && state.get("steps").size){
+		state = state.get("previousstep");
+		if (I.is(state.get("data"),newdata)){ return ["BACK",dive]; }
+	}
+	return ["NEWSTATE"];
+};
+
 // €€€€€€€€€€€€€€€€€€€€€€€€€ E X P O R T €€€€€€€€€€€€€€€€€€€€€€€€€
 
 } // end augmentWithExecuteFunctions

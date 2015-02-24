@@ -46,6 +46,19 @@ var tests = {
 		command: {condition:["TRUE"],neededmarks:["somemark"]},
 		state: {marks:{someothermark:"xyz"}},
 		expected: false
+	}],
+	testPostCommandState: [{
+		state: {steps:[1,2],data:{a:1},previousstep:{steps:[1],data:{b:2},previousstep:{steps:[],data:{c:3}}}},
+		command: {data:{c:3}},
+		expected: ["BACK",2]
+	},{
+		state: {steps:[1,2],data:{a:1},previousstep:{steps:[1],data:{b:2},previousstep:{steps:[],data:{c:3}}}},
+		command: {data:{b:2}},
+		expected: ["BACK",1]
+	},{
+		state: {steps:[1,2],data:{a:1},previousstep:{steps:[1],data:{b:2},previousstep:{steps:[],data:{c:3}}}},
+		command: {data:{c:666}},
+		expected: ["NEWSTATE"]
 	}]
 };
 
