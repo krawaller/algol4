@@ -74,21 +74,17 @@ Algol.generateFilterSeeds = function(state,def){
 };
 
 Algol.paintSeedPod = function(state,painter,pod){
-	var oldcontext = state.get("context");
 	return pod.reduce(function(state,seeds,pos){
 		return seeds.reduce(function(state,seed){
 			state = state.mergeIn(["context"],seed);
 			if (!painter.has("condition")||this.evaluateBoolean(state,painter.get("condition"))){
-				var tolayer = this.evaluateValue(state,painter.get("tolayer"));
-				var obj = (painter.get("include")||I.Map()).map(function(def){
+				state = I.pushIn(state,["layers",this.evaluateValue(state,painter.get("tolayer")),pos],(painter.get("include")||I.Map()).map(function(def){
 					return this.evaluateValue(state,def);
-				},this);
-				if (!state.hasIn(["layers",tolayer,pos])){ state = state.setIn(["layers",tolayer,pos],I.List()); }
-				state = state.setIn(["layers",tolayer,pos],state.getIn(["layers",tolayer,pos]).push(obj));
+				},this));
 			}
 			return state;
 		},state,this);
-	},state,this).set("context",oldcontext);
+	},state,this).set("context",state.get("context"));
 };
 
 // €€€€€€€€€€€€€€€€€€€€€€€€€ E X P O R T €€€€€€€€€€€€€€€€€€€€€€€€€

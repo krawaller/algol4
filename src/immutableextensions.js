@@ -19,6 +19,11 @@ I.addToList = function(map,listname,val){
 	return map.set( listname, I.addIfNew( (map.has(listname) ? map : map.set(listname,I.List([]))).get(listname), val ) );
 };
 
+I.pushIn = function(map,path,obj){
+	if (!map.hasIn(path)){ map = map.setIn(path,I.List()); }
+	return map.setIn(path,map.getIn(path).push(obj));
+};
+
 if (typeof module !== 'undefined' && typeof module.exports !== 'undefined')
     module.exports = I;
 })();

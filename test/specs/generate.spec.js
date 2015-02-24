@@ -59,6 +59,11 @@ var tests = {
 		secondarg: {abc: [{FOO:"BAR",TARGET:"abc"}], xyz: [{FOO:"BAZ",TARGET:"xyz"},{FOO:"BIN",TARGET:"xyz"}]},
 		state: {layers: {somelayer: {xyz:"X"}, newlayer: {toot:"X"}},context:{poo:"foo"}},
 		expected: {layers: {somelayer: {xyz:"X"}, newlayer: {toot:"X",xyz:[{myfoo:"BAZ"},{myfoo:"BIN"}]}},context:{poo:"foo"}}
+	},{
+		definition: {tolayer: ["VAL","newlayer"]},
+		secondarg: {abc: [{FOO:"BAR",TARGET:"abc"}]},
+		state: {layers: {newlayer: {toot:"X"}},context:{}},
+		expected: {layers: {newlayer: {toot:"X",abc:[{}]}},context:{}},
 	}]
 };
 
