@@ -64,12 +64,14 @@
 			"tolayer": "doomed"
 		},
 		"movetarget": {
-			"type": "nextto",
+			"type": "neighbour",
 			"dirs": ["DIRS",1,2,3,4,5,6,7,8],
 			"start": ["MARKPOS","selecthead"],
-			"drawtarget": {
-				"condition": ["NONEAT","UNITS",["CONTEXTPOS","TARGET"]],
-				"tolayer": "movetarget"
+			"draw": {
+				"target": {
+					"condition": ["NONEAT","UNITS",["CONTEXTPOS","TARGET"]],
+					"tolayer": "movetarget"
+				}
 			}
 		},
 		"potentialphalanx": {
@@ -77,10 +79,12 @@
 			"dirs": ["DIRS",1,2,3,4,5,6,7,8],
 			"start": ["MARKPOS","selecthead"],
 			"steplayer": "MYUNITS",
-			"drawstep": {
-				"tolayer": "potentialtail",
-				"include": {
-					"headdirection": ["CONTEXTVAL","DIR"]
+			"draw": {
+				"step": {
+					"tolayer": "potentialtail",
+					"include": {
+						"headdirection": ["CONTEXTVAL","DIR"]
+					}
 				}
 			}
 		},
@@ -89,22 +93,24 @@
 			"dir": ["RELATIVEDIR",["VAL",5],["LOOKUP","potentialtail",["MARKPOS","selecttail"],"headdirection"]],
 			"start": ["MARKPOS","selecttail"],
 			"stoplayer": "selecthead",
-			"drawstart": {
-				"tolayer": "phalanxend",
-				"include": {
-					"facing": ["LOOKUP","potentialtail",["MARKPOS","selecttail"],"headdirection"],
-					"strength": ["CONTEXTVAL","LENGTH"]
+			"draw": {
+				"start": {
+					"tolayer": "phalanxend",
+					"include": {
+						"facing": ["LOOKUP","potentialtail",["MARKPOS","selecttail"],"headdirection"],
+						"strength": ["CONTEXTVAL","LENGTH"]
+					}
+				},
+				"stop": {
+					"tolayer": "phalanxend",
+					"include": {
+						"facing": ["CONTEXTVAL","DIR"],
+						"strength": ["CONTEXTVAL","LENGTH"]
+					}
+				},
+				"all": {
+					"tolayer": "phalanxmember"
 				}
-			},
-			"drawstop": {
-				"tolayer": "phalanxend",
-				"include": {
-					"facing": ["CONTEXTVAL","DIR"],
-					"strength": ["CONTEXTVAL","LENGTH"]
-				}
-			},
-			"drawall": {
-				"tolayer": "phalanxmember"
 			}
 		},
 		"march": {
@@ -113,19 +119,21 @@
 			"dir": ["LOOKUP","phalanxend",["CONTEXTPOS","START"],"facing"],
 			"stoplayer": "UNITS",
 			"max": ["SUM",["VAL",1],["LOOKUP","phalanxend",["CONTEXTPOS","START"],"strength"]],
-			"drawstep": {
-				"tolayer": "marchtarget",
-				"include": {
-					"strength": ["LOOKUP","phalanxend",["CONTEXTPOS","START"],"strength"],
-					"heading": ["CONTEXTVAL","DIR"]
-				}
-			},
-			"drawstop": {
-				"condition": ["ANYAT","OPPUNITS",["CONTEXTPOS","TARGET"]],
-				"tolayer": "threatened",
-				"include": {
-					"strength": ["LOOKUP","phalanxend",["CONTEXTPOS","START"],"strength"],
-					"heading": ["CONTEXTVAL","DIR"]
+			"draw": {
+				"step": {
+					"tolayer": "marchtarget",
+					"include": {
+						"strength": ["LOOKUP","phalanxend",["CONTEXTPOS","START"],"strength"],
+						"heading": ["CONTEXTVAL","DIR"]
+					}
+				},
+				"stop": {
+					"condition": ["ANYAT","OPPUNITS",["CONTEXTPOS","TARGET"]],
+					"tolayer": "threatened",
+					"include": {
+						"strength": ["LOOKUP","phalanxend",["CONTEXTPOS","START"],"strength"],
+						"heading": ["CONTEXTVAL","DIR"]
+					}
 				}
 			}
 		},
@@ -134,17 +142,19 @@
 			"starts": ["FROMALLINLAYER","threatened"],
 			"dir": ["LOOKUP","threatened",["CONTEXTPOS","START"],"heading"],
 			"steplayer": "OPPUNITS",
-			"drawstart": {
-				"condition": ["MORE",["LOOKUP","threatened",["CONTEXTPOS","START"],"strength"],["CONTEXTVAL","LENGTH"]],
-				"tolayer": "killtarget",
-				"include": {
-					"heading": ["CONTEXTVAL","DIR"]
-				}
-			},
-			"drawall": {
-				"tolayer": "tokill",
-				"include": {
-					"heading": ["CONTEXTVAL","DIR"]
+			"draw": {
+				"start": {
+					"condition": ["MORE",["LOOKUP","threatened",["CONTEXTPOS","START"],"strength"],["CONTEXTVAL","LENGTH"]],
+					"tolayer": "killtarget",
+					"include": {
+						"heading": ["CONTEXTVAL","DIR"]
+					}
+				},
+				"all": {
+					"tolayer": "tokill",
+					"include": {
+						"heading": ["CONTEXTVAL","DIR"]
+					}
 				}
 			}
 		}
