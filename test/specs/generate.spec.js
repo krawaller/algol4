@@ -60,10 +60,10 @@ var tests = {
 		state: {layers: {somelayer: {xyz:"X"}, newlayer: {toot:"X"}},context:{poo:"foo"}},
 		expected: {layers: {somelayer: {xyz:"X"}, newlayer: {toot:"X",xyz:[{myfoo:"BAZ"},{myfoo:"BIN"}]}},context:{poo:"foo"}}
 	},{
-		definition: {tolayer: ["VAL","newlayer"]},
-		secondarg: {abc: [{FOO:"BAR",TARGET:"abc"}]},
+		definition: {tolayer: ["IFELSE",["SAME",["CONTEXTVAL","FOO"],["VAL","x1"]],["VAL","newlayer"],["VAL","otherlayer"]]},
+		secondarg: {abc: [{FOO:"x1"},{FOO:"x2"}]},
 		state: {layers: {newlayer: {toot:"X"}},context:{}},
-		expected: {layers: {newlayer: {toot:"X",abc:[{}]}},context:{}},
+		expected: {layers: {newlayer: {toot:"X",abc:[{}]}, otherlayer: {abc:[{}]}},context:{}},
 	}]
 };
 
