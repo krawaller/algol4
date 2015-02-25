@@ -80,16 +80,16 @@ var tests = {
 		expected: "678"
 	}],
 	evaluateBoolean: [{
-		firstarg: ["AND",["MORE",["VAL",3],["VAL",1]],["MORE",["VAL",3],["VAL",1]]],
+		firstarg: ["AND",[["MORE",["VAL",3],["VAL",1]],["MORE",["VAL",3],["VAL",1]]]],
 		expected: true
 	},{
-		firstarg: ["AND",["MORE",["VAL",3],["VAL",1]],["MORE",["VAL",3],["VAL",11]]],
+		firstarg: ["AND",[["MORE",["VAL",3],["VAL",1]],["MORE",["VAL",3],["VAL",11]]]],
 		expected: false
 	},{
-		firstarg: ["OR",["MORE",["VAL",3],["VAL",1111]],["MORE",["VAL",3],["VAL",1]]],
+		firstarg: ["OR",[["MORE",["VAL",3],["VAL",1111]],["MORE",["VAL",3],["VAL",1]]]],
 		expected: true
 	},{
-		firstarg: ["OR",["MORE",["VAL",3],["VAL",1111]],["MORE",["VAL",3],["VAL",11]]],
+		firstarg: ["OR",[["MORE",["VAL",3],["VAL",1111]],["MORE",["VAL",3],["VAL",11]]]],
 		expected: false
 	},{
 		state: { layers: { UNITS: {xyz:[{id:"123"}]} }, marks: {uglymark:"xyz"}, affected:["3","7","123"] },

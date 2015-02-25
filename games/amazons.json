@@ -47,8 +47,10 @@
 		"findblocks": {
 			"type": "spawn",
 			"starts": ["FROMALLINLAYERS","UNITS","TERRAIN"],
-			"drawtarget": {
-				"tolayer": "block"
+			"draw": {
+				"target": {
+					"tolayer": "block"
+				}
 			}
 		},
 		"movetargets": {
@@ -56,8 +58,10 @@
 			"start": ["FROMMARK","selectunit"],
 			"dirs": ["DIRS",1,2,3,4,5,6,7,8],
 			"stoplayer": "blocks",
-			"drawstep": {
-				"tolayer": "movetarget"
+			"draw": {
+				"step": {
+					"tolayer": "movetarget"
+				}
 			}
 		},
 		"firetargets": {
@@ -65,8 +69,10 @@
 			"start": ["FROMMARKINLAST","move","selectunit"],
 			"dirs": ["DIRS",1,2,3,4,5,6,7,8],
 			"stoplayer": "blocks",
-			"drawstep": {
-				"tolayer": "firetarget"
+			"draw": {
+				"step": {
+					"tolayer": "firetarget"
+				}
 			}
 		},
 		"enemymoves": {
@@ -74,8 +80,10 @@
 			"starts": ["FROMALLINLAYER","OPPUNITS"],
 			"dirs": ["DIRS",1,2,3,4,5,6,7,8],
 			"stoplayer": "blocks",
-			"drawstep": {
-				"tolayer": "enemymove"
+			"draw": {
+				"step": {
+					"tolayer": "enemymove"
+				}
 			}
 		}
 	}

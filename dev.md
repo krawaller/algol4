@@ -47,7 +47,8 @@ Position
 	CONTEXTPOS contextposname
 
 Effect
-	FORALLIN layer, effect, effect, ...
+	MULTIEFFECT [effect,effect,...]
+	FORALLIN layer, effect
 	OFFSET id, dir, forward, right
 	KILLUNIT id
 	MOVEUNIT id, position

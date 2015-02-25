@@ -24,6 +24,10 @@ I.pushIn = function(map,path,obj){
 	return map.setIn(path,map.getIn(path).push(obj));
 };
 
+I.pushInIfNew = function(map,path,obj){
+	return map.hasIn(path) ? map.getIn(path).contains(obj) ? map : map.setIn(path,map.getIn(path).push(obj)) : map.setIn(path,I.List().push(obj));
+};
+
 I.concat = function(oldlist,newlist){return oldlist.concat(newlist);};
 
 I.setIf = function(map,name,val){

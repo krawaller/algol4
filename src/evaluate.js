@@ -58,8 +58,8 @@ Algol.evaluateObjectMatch = function(state,def,map){
 };
 
 var boolmethods = {
-	AND: function(){ return _.every(_.tail(arguments),this.evaluateBoolean.bind(this,_.first(arguments))); },
-	OR: function(){ return _.some(_.tail(arguments),this.evaluateBoolean.bind(this,_.first(arguments))); },
+	AND: function(state,list){ return list.every(this.evaluateBoolean.bind(this,state)); },
+	OR: function(state,list){ return list.some(this.evaluateBoolean.bind(this,state)); },
 	NOT: function(state,bool){ return !this.evaluateBoolean(state,bool); },
 	SAME: function(state,val1,val2){ return this.evaluateValue(state,val1) === this.evaluateValue(state,val2); },
 	DIFFERENT: function(state,val1,val2){ return this.evaluateValue(state,val1) !== this.evaluateValue(state,val2); },
