@@ -9,7 +9,7 @@ function augmentWithExecuteFunctions(Algol){
 var effectmethods = {
 	KILLUNIT: function(state,id){
 		id = this.evaluateId(state,id);
-		return I.pushInIfNew(state,["affected"],id).mergeIn(["data","units",id],{STATUS:"dead",AFFECTEDTURN:state.get("turn")});
+		return I.pushInIfNew(state,["affected"],id).mergeIn(["data","units",id],{STATUS:"DEAD",AFFECTEDTURN:state.get("turn")});
 	},
 	MOVEUNIT: function(state,id,pos){
 		id = this.evaluateId(state,id);
@@ -59,18 +59,20 @@ Algol.canExecuteCommand = function(state,def){
 	);
 };
 
-Algol.testPostCommandState = function(state,newstate,commanddef){
+Algol.calculateCommandResult = function(state,newstate,commanddef){
 	var newdata = newstate.get("data"), comparetostate = state;
 	while(comparetostate.get("steps").size){
 		comparetostate = comparetostate.get("previousstep");
 		if (I.is(comparetostate.get("data"),newdata)){ return I.List(["BACK",comparetostate]); }
 	}
-	return I.List(["NEWSTATE",I.pushIn(newstate,["steps"],I.fromJS({
+	return I.List(["NEWSTEP",I.pushIn(newstate,["steps"],I.fromJS({
 		command: commanddef.get("name"),
 		marks: commanddef.get("neededmarks").reduce(function(mem,mname){
 			return mem.set(mname,state.getIn(["marks",mname]));
 		},I.Map(),this)
-	})).set("previousstep",state)]);
+	})).set("previousstep",state).set("marks",(commanddef.get("setmarks")||I.Map()).reduce(function(ret,pos,markname){
+		return ret.set(markname,this.evaluateValue(state,pos));
+	},I.Map(),this))]);
 };
 
 Algol.endTurnCheck = function(state,gamedef){
@@ -81,13 +83,14 @@ Algol.endTurnCheck = function(state,gamedef){
 
 Algol.listCommandOptions = function(state,gamedef){
 	return I.setIf(I.setIf(gamedef.get("commands").reduce(function(ret,comdef,comname){
-		return this.canExecuteCommand(state,comdef) ? ret.set(comname,this.testPostCommandState(state,this.applyEffect(state,comdef.get("effect")),comdef)) : ret;
+		return this.canExecuteCommand(state,comdef) ? ret.set(comname,this.calculateCommandResult(state,this.applyEffect(state,comdef.get("effect")),comdef)) : ret;
 	},I.Map(),this),"ENDTURN",this.endTurnCheck(state,gamedef)),"UNDO",state.has("previousstep") ? ["BACK",state.get("previousstep")] : false) ;
 };
 
 
 var optionmethods = {
 	BACK: function(state,oldstate){ return oldstate; },
+	NEWSTEP: function(state,oldstate){ return oldstate; },
 	PASSTO: function(state,player){
 		return state.merge(I.fromJS({
 			steps: [],

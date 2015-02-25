@@ -96,6 +96,20 @@ Algol.paintSeedPods = function(state,draw,pods){
 	},state,this);
 };
 
+Algol.generateUnitLayers = function(state){
+	return state.mergeIn(["layers"],state.getIn(["data","units"]).reduce(function(map,unit,id){
+		var pos = unit.get("POS");
+		return unit.get("STATUS") === "DEAD" ? I.pushIn(map,["DEADUNITS",pos],unit) : 
+			I.pushIn(I.pushIn(map,[(unit.get("PLR") === state.get("player")?"MYUNITS":"OPPUNITS"),pos],unit),["UNITS",pos],unit);
+	},I.fromJS({UNITS:{},DEADUNITS:{},MYUNITS:{},OPPUNITS:{}}),this));
+};
+
+Algol.generateInitialData = function(state,gamedef){
+	return I.Map().set("units",gamedef.get("setup").reduce(function(map,unit,n){
+		return map.set("unit"+(n+1),unit.set("id","unit"+(n+1)));
+	},I.Map(),this));
+};
+
 // €€€€€€€€€€€€€€€€€€€€€€€€€ E X P O R T €€€€€€€€€€€€€€€€€€€€€€€€€
 
 } // end augmentWithGenerateFunctions

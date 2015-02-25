@@ -70,6 +70,15 @@ var tests = {
 		firstarg: {FLUM: {tolayer: ["VAL","newlayer"], include: {myfoo:["CONTEXTVAL","FOO"]}},HUM: {tolayer: ["VAL","newlayer"], include: {mybar:["CONTEXTVAL","BAR"]}}},
 		secondarg: {FLUM: {abc: [{FOO:"BAR",TARGET:"abc"}], xyz: [{FOO:"BAZ",TARGET:"xyz"},{FOO:"BIN",TARGET:"xyz"}]}, HUM: {xyz:[{BAR:"BOO",TARGET:"def"}]}, KKK: {moo:[{FOO:"HOOOO",TARGET:"moo"}]}},
 		expected: {layers: {newlayer: {abc: [{myfoo:"BAR"}], xyz:[{myfoo:"BAZ"},{myfoo:"BIN"},{mybar:"BOO"}]}},context:{poo:"foo"}}
+	}],
+	generateUnitLayers: [{
+		state: {player: 1, layers: {UNITS:"foo"}, data: {units: {id1: {POS:"pos1",PLR:1}, id2: {POS:"pos2",PLR:2}, id3: {POS:"pos2",STATUS:"DEAD",PLR:1}}}},
+		expected: {player: 1, layers: {DEADUNITS:{pos2:[{POS:"pos2",STATUS:"DEAD",PLR:1}]},UNITS:{pos1:[{POS:"pos1",PLR:1}],pos2:[{POS:"pos2",PLR:2}]},MYUNITS:{pos1:[{POS:"pos1",PLR:1}]},OPPUNITS:{pos2:[{POS:"pos2",PLR:2}]}}, data: {units: {id1: {POS:"pos1",PLR:1}, id2: {POS:"pos2",PLR:2}, id3: {POS:"pos2",STATUS:"DEAD",PLR:1}}}}
+	}],
+	generateInitialData: [{
+		state: {},
+		firstarg: {setup: [{foo:"bar"},{baz:"bin"}]},
+		expected: {units: {unit1: {foo:"bar",id:"unit1"}, unit2: {baz:"bin",id:"unit2"}}}
 	}]
 };
 

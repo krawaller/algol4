@@ -4,28 +4,28 @@
 		"height": 9,
 		"width": 9,
 		"terrain": [
-			{"pos":2002,"type":"base","plr":1},{"pos":2003,"type":"base","plr":1},{"pos":2004,"type":"base","plr":1},
-			{"pos":3002,"type":"base","plr":1},{"pos":3003,"type":"base","plr":1},{"pos":3004,"type":"base","plr":1},
-			{"pos":4002,"type":"base","plr":1},{"pos":4003,"type":"base","plr":1},{"pos":4004,"type":"base","plr":1},
-			{"pos":6006,"type":"base","plr":2},{"pos":6007,"type":"base","plr":2},{"pos":6008,"type":"base","plr":2},
-			{"pos":7006,"type":"base","plr":2},{"pos":7007,"type":"base","plr":2},{"pos":7008,"type":"base","plr":2},
-			{"pos":8006,"type":"base","plr":2},{"pos":8007,"type":"base","plr":2},{"pos":8008,"type":"base","plr":2}
+			{"pos":2002,"type":"base","PLR":1},{"pos":2003,"type":"base","PLR":1},{"pos":2004,"type":"base","PLR":1},
+			{"pos":3002,"type":"base","PLR":1},{"pos":3003,"type":"base","PLR":1},{"pos":3004,"type":"base","PLR":1},
+			{"pos":4002,"type":"base","PLR":1},{"pos":4003,"type":"base","PLR":1},{"pos":4004,"type":"base","PLR":1},
+			{"pos":6006,"type":"base","PLR":2},{"pos":6007,"type":"base","PLR":2},{"pos":6008,"type":"base","PLR":2},
+			{"pos":7006,"type":"base","PLR":2},{"pos":7007,"type":"base","PLR":2},{"pos":7008,"type":"base","PLR":2},
+			{"pos":8006,"type":"base","PLR":2},{"pos":8007,"type":"base","PLR":2},{"pos":8008,"type":"base","PLR":2}
 		],
 		"setup": [
-			{"pos":2002,"type":"archer","plr":1},{"pos":2003,"type":"archer","plr":1},{"pos":2004,"type":"archer","plr":1},
-			{"pos":3002,"type":"archer","plr":1},{"pos":3003,"type":"king","plr":1},{"pos":3004,"type":"archer","plr":1},
-			{"pos":4002,"type":"archer","plr":1},{"pos":4003,"type":"archer","plr":1},{"pos":4004,"type":"archer","plr":1},
-			{"pos":6006,"type":"archer","plr":2},{"pos":6007,"type":"archer","plr":2},{"pos":6008,"type":"archer","plr":2},
-			{"pos":7006,"type":"archer","plr":2},{"pos":7007,"type":"king","plr":2},{"pos":7008,"type":"archer","plr":2},
-			{"pos":8006,"type":"archer","plr":2},{"pos":8007,"type":"archer","plr":2},{"pos":8008,"type":"archer","plr":2}
+			{"pos":2002,"type":"archer","DIR":5,"PLR":1},{"pos":2003,"type":"archer","DIR":5,"PLR":1},{"pos":2004,"type":"archer","DIR":5,"PLR":1},
+			{"pos":3002,"type":"archer","DIR":5,"PLR":1},{"pos":3003,"type":"king","DIR":5,"PLR":1},{"pos":3004,"type":"archer","DIR":5,"PLR":1},
+			{"pos":4002,"type":"archer","DIR":5,"PLR":1},{"pos":4003,"type":"archer","DIR":5,"PLR":1},{"pos":4004,"type":"archer","DIR":5,"PLR":1},
+			{"pos":6006,"type":"archer","DIR":1,"PLR":2},{"pos":6007,"type":"archer","DIR":1,"PLR":2},{"pos":6008,"type":"archer","DIR":1,"PLR":2},
+			{"pos":7006,"type":"archer","DIR":1,"PLR":2},{"pos":7007,"type":"king","DIR":1,"PLR":2},{"pos":7008,"type":"archer","DIR":1,"PLR":2},
+			{"pos":8006,"type":"archer","DIR":1,"PLR":2},{"pos":8007,"type":"archer","DIR":1,"PLR":2},{"pos":8008,"type":"archer","DIR":1,"PLR":2}
 		]
 	},
 	"generators": {
 		"findinfiltrators": {
 			"type": "filter",
-			"layer": "MYUNITS",
-			"overlapping": "TERRAIN",
-			"matching": {"plr":["ISNT",["CONTEXTVAL","CURRENTPLAYER"]]},
+			"layer": "TERRAIN",
+			"overlapping": "MYUNITS",
+			"matching": {"PLR":["ISNT",["CONTEXTVAL","CURRENTPLAYER"]]},
 			"tolayer": "infiltrators"
 		},
 		"findkilltargets": {
@@ -45,37 +45,35 @@
 		"findarrows": {
 			"type": "walker",
 			"starts": ["FROMALLINLAYER","UNITS"],
-			"dir": ["RELATIVEDIR",["VAL",1],["LOOKUP","UNITS",["CONTEXTPOS","START"],"dir"]],
+			"dir": ["RELATIVEDIR",["VAL",1],["LOOKUP","UNITS",["CONTEXTPOS","START"],"DIR"]],
 			"stops": "UNITS",
 			"max": 3,
-			"drawstep": {
-				"tolayer": ["IFELSE",["SAME",["LOOKUP","UNITS",["CONTEXTPOS","START"],"plr"],["CONTEXTVAL","CURRENTPLAYER"]],"myarrows","opparrows"],
-				"include": {
-					"plr": ["LOOKUP","UNITS",["CONTEXTPOS","START"],"plr"]
-				}
-			},
-			"drawstop": {
-				"condition": ["AND",
-					["ANYAT","UNITS",["CONTEXTPOS","TARGET"]],
-					["DIFFERENT",
-						["LOOKUP","UNITS",["CONTEXTPOS","TARGET"],"plr"],
-						["LOOKUP","UNITS",["CONTEXTPOS","START"],"plr"]
-					]
-				],
-				"tolayer": "bullseye",
-				"include": {
-					"plr": ["LOOKUP","UNITS",["CONTEXTPOS","START"],"plr"],
-					"shooterid": ["IDAT",["CONTEXTPOS","START"]]
+			"draw": {
+				"step": {
+					"tolayer": ["IFELSE",["SAME",["LOOKUP","UNITS",["CONTEXTPOS","START"],"PLR"],["CONTEXTVAL","CURRENTPLAYER"]],"myarrows","opparrows"]
+				},
+				"stop": {
+					"condition": ["AND",
+						["ANYAT","UNITS",["CONTEXTPOS","TARGET"]],
+						["DIFFERENT",
+							["LOOKUP","UNITS",["CONTEXTPOS","TARGET"],"PLR"],
+							["LOOKUP","UNITS",["CONTEXTPOS","START"],"PLR"]
+						]
+					],
+					"tolayer": "bullseye",
+					"include": {
+						"shooterid": ["IDAT",["CONTEXTPOS","START"]]
+					}
 				}
 			}
 		},
 		"findfooting": {
 			"type": "nextto",
 			"start": ["FROMMARK","selectunit"],
-			"dirs": ["RELATIVEDIRS",["DIRS",1,5],["LOOKUP","UNITS",["CONTEXTPOS","START"],"dir"]],
+			"dirs": ["RELATIVEDIRS",["DIRS",1,5],["LOOKUP","UNITS",["CONTEXTPOS","START"],"DIR"]],
 			"drawtarget": {
 				"condition": ["AND",["NONEAT","UNITS",["CONTEXTPOS","TARGET"]],["NONEAT","opparrows",["CONTEXTPOS","TARGET"]]],
-				"layer": ["IFELSE",["SAME",["CONTEXTVAL","DIR"],["LOOKUP","UNITS",["CONTEXTPOS","START"],"dir"]],"forwardfooting","backwardfooting"],
+				"layer": ["IFELSE",["SAME",["CONTEXTVAL","DIR"],["LOOKUP","UNITS",["CONTEXTPOS","START"],"DIR"]],"forwardfooting","backwardfooting"],
 				"include": {
 					"id": ["IDAT","START"]
 				}
@@ -84,7 +82,7 @@
 	},
 	"marks": {
 		"selectunit": {
-			"fromlayer":"MYUNITS"
+			"from":["FROMALLINLAYER","MYUNITS"]
 		}
 	},
 	"endturn": {
@@ -98,21 +96,27 @@
 	"commands": {
 		"stepforward": {
 			"condition": ["NOTEMPTY","forwardfooting"],
-			"effects": [["MOVEUNIT",["IDAT","selectunit"],["ONLYPOSIN","forwardfooting"]]]
+			"effect": ["MOVEUNIT",["IDAT","selectunit"],["ONLYPOSIN","forwardfooting"]],
+			"setmarks": {
+				"selectunit": ["ONLYPOSIN","forwardfooting"]
+			}
 		},
 		"stepbackward": {
 			"condition": ["NOTEMPTY","backwardfooting"],
-			"effects": [["MOVEUNIT",["IDAT","selectunit"],["ONLYPOSIN","backwardfooting"]]]
+			"effect": ["MOVEUNIT",["IDAT","selectunit"],["ONLYPOSIN","backwardfooting"]],
+			"setmarks": {
+				"selectunit": ["ONLYPOSIN","forwardfooting"]
+			}
 		},
 		"turnleft": {
-			"effects": [["TURNUNIT",["IDAT","selectunit"],-1]]
+			"effect": ["TURNUNIT",["IDAT","selectunit"],-1]
 		},
 		"turnright": {
-			"effects":[["TURNUNIT",["IDAT","selectunit"],1]]
+			"effect": ["TURNUNIT",["IDAT","selectunit"],1]
 		},
 		"fire": {
 			"condition": ["AND",["NOTEMPTY","gonnadie"],["NOT",["AFFECTED",["IDAT","selectunit"]]]],
-			"effects": [["KILLUNIT",["IDAT",["ONLYPOSIN","gonnadie"]]]]
+			"effect": ["KILLUNIT",["IDAT",["ONLYPOSIN","gonnadie"]]]
 		}
 	}
 }
