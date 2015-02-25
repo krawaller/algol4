@@ -11,25 +11,25 @@ if (typeof require === 'function' && typeof module === 'object') {
 }
 
 var tests = {
-	executeEffect: [{
-		firstarg: ["KILLUNIT",["IDAT",["MARKPOS","somemark"]]],
+	performCommandEffect: [{
 		state: {affected: [], data: {units: {"someid":{foo:"muu"}}}, marks: {somemark:"xyz"}, layers: {"UNITS": {"xyz": [{id:"someid"}]}} },
+		firstarg: ["KILLUNIT",["IDAT",["MARKPOS","somemark"]]],
 		expected: {affected: ["someid"], data: {units: {"someid":{foo:"muu",status:"dead"}}}, marks: {somemark:"xyz"}, layers: {"UNITS": {"xyz": [{id:"someid"}]}} },
 	},{
-		firstarg: ["MOVEUNIT",["IDAT",["MARKPOS","somemark"]],["MARKPOS","othermark"]],
 		state: {affected: [], data: {units: {"someid":{foo:"muu"}}}, marks: {somemark:"xyz",othermark:"abc"}, layers: {"UNITS": {"xyz": [{id:"someid"}]}} },
+		firstarg: ["MOVEUNIT",["IDAT",["MARKPOS","somemark"]],["MARKPOS","othermark"]],
 		expected: {affected: ["someid"], data: {units: {"someid":{foo:"muu",pos:"abc"}}}, marks: {somemark:"xyz",othermark:"abc"}, layers: {"UNITS": {"xyz": [{id:"someid"}]}} },
 	},{
-		firstarg: ["SWAPUNITPOSITIONS",["IDAT",["MARKPOS","somemark"]],["IDAT",["MARKPOS","othermark"]]],
 		state: {affected: ["blah"], data: {units: {"someid":{foo:"bar",pos:"xyz"},"otherid":{foo:"baz",pos:"abc"}}}, marks: {somemark:"xyz",othermark:"abc"}, layers: {"UNITS": {"xyz": [{id:"someid"}], "abc":[{id:"otherid"}]}} },
+		firstarg: ["SWAPUNITPOSITIONS",["IDAT",["MARKPOS","somemark"]],["IDAT",["MARKPOS","othermark"]]],
 		expected: {affected: ["blah","someid","otherid"], data: {units: {"someid":{foo:"bar",pos:"abc"},otherid:{foo:"baz",pos:"xyz"}}}, marks: {somemark:"xyz",othermark:"abc"}, layers: {"UNITS": {"xyz": [{id:"someid"}], "abc":[{id:"otherid"}]}} }
 	},{
-		firstarg: ["SETUNITDATA",["IDAT",["MARKPOS","somemark"]],"blah",["VAL","moo"]],
 		state: {affected: [], data: {units: {"someid":{blah:"notmoo"}}}, marks: {somemark:"xyz"}, layers: {"UNITS": {"xyz": [{id:"someid"}]}} },
+		firstarg: ["SETUNITDATA",["IDAT",["MARKPOS","somemark"]],"blah",["VAL","moo"]],
 		expected: {affected: ["someid"], data: {units: {"someid":{blah:"moo"}}}, marks: {somemark:"xyz"}, layers: {"UNITS": {"xyz": [{id:"someid"}]}} },
 	},{
-		firstarg: ["FORALLIN","somelayer",["SETUNITDATA",["LOOPID"],"doomed",["VAL","yes"]],["KILLUNIT",["LOOPID"]]],
 		state: {layers:{somelayer:{a:"X"},UNITS:{a:[{id:"A"}],b:[{id:"B"}]}},data:{units:{A:{pos:"a"},B:{pos:"b"}}},context:{foo:"bar"},affected:["B"]},
+		firstarg: ["FORALLIN","somelayer",["SETUNITDATA",["LOOPID"],"doomed",["VAL","yes"]],["KILLUNIT",["LOOPID"]]],
 		expected: {layers:{somelayer:{a:"X"},UNITS:{a:[{id:"A"}],b:[{id:"B"}]}},data:{units:{A:{pos:"a",doomed:"yes",status:"dead"},B:{pos:"b"}}},context:{foo:"bar"},affected:["B","A"]}
 	}],
 	canExecuteCommand: [{
@@ -39,26 +39,39 @@ var tests = {
 		firstarg: {condition:["FALSE"],neededmarks:[]},
 		expected: false
 	},{
-		firstarg: {condition:["TRUE"],neededmarks:["somemark"]},
 		state: {marks:{somemark:"xyz"}},
+		firstarg: {condition:["TRUE"],neededmarks:["somemark"]},
 		expected: true
 	},{
-		firstarg: {condition:["TRUE"],neededmarks:["somemark"]},
 		state: {marks:{someothermark:"xyz"}},
+		firstarg: {condition:["TRUE"],neededmarks:["somemark"]},
 		expected: false
 	}],
 	testPostCommandState: [{
 		state: {steps:[1,2],data:{a:1},previousstep:{steps:[1],data:{b:2},previousstep:{steps:[],data:{c:3}}}},
 		firstarg: {data:{c:3}},
-		expected: ["BACK",2]
+		expected: ["BACK",{data:{c:3}}]
 	},{
 		state: {steps:[1,2],data:{a:1},previousstep:{steps:[1],data:{b:2},previousstep:{steps:[],data:{c:3}}}},
 		firstarg: {data:{b:2}},
-		expected: ["BACK",1]
+		expected: ["BACK",{data:{b:2}}]
 	},{
 		state: {steps:[1,2],data:{a:1},previousstep:{steps:[1],data:{b:2},previousstep:{steps:[],data:{c:3}}}},
 		firstarg: {data:{c:666}},
-		expected: ["NEWSTATE"]
+		expected: ["NEWSTATE",{data:{c:666}}]
+	}],
+	endTurnCheck: [{
+		state: {context:{FOO:"bar"}},
+		firstarg: {endturn:{condition:["SAME",["CONTEXTVAL","FOO"],["VAL","notbar"]]}},
+		expected: ["CANNOTEND"]
+	},{
+		state: {context:{FOO:"bar",CURRENTPLAYER:1}},
+		firstarg: {endturn:{condition:["SAME",["CONTEXTVAL","FOO"],["VAL","bar"]]},endgame:{bywuu:{condition:["TRUE"],winner:["CONTEXTVAL","CURRENTPLAYER"]}}},
+		expected: ["ENDGAME","bywuu",1]
+	},{
+		state: {context:{FOO:"bar",CURRENTPLAYER:1}},
+		firstarg: {endturn:{condition:["SAME",["CONTEXTVAL","FOO"],["VAL","bar"]],passto:["IFELSE",["SAME",["CONTEXTVAL","CURRENTPLAYER"],["VAL",1]],["VAL",2],["VAL",1]]},endgame:{bywuu:{condition:["DIFFERENT",["CONTEXTVAL","FOO"],["VAL","bar"]],winner:["CONTEXTVAL","CURRENTPLAYER"]}}},
+		expected: ["PASSTO",2]
 	}]
 };
 

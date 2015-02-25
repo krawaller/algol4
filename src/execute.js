@@ -36,29 +36,20 @@ var effectmethods = {
 		return state.setIn(["data","terrain",pos,I.fromJS(props).set("pos",pos)]);
 	},
 	FORALLIN: function(){
-		var state = arguments[0], layer = state.getIn(["layers",arguments[1]]), effects = _.slice(arguments,2), returnstate = state;
-		state.getIn(["data","units"]).forEach(function(unit,id){
-			if (layer.has(unit.get("pos"))){
-				returnstate = _.reduce(effects,function(s,e){
-					return this.executeEffect(s.setIn(["context","LOOPID"],id),e);
-				},returnstate,this);
-			}
-		},this);
-		return returnstate.deleteIn(["context","LOOPID"]);
+		var state = arguments[0], layer = state.getIn(["layers",arguments[1]]), effects = _.slice(arguments,2);
+		return state.getIn(["data","units"]).reduce(function(state,unit,id){
+			return layer.has(unit.get("pos")) ? this.performCommandEffects(state.setIn(["context","LOOPID"],id),effects) : state;
+		},state,this)[state.hasIn(["context","LOOPID"])?"setIn":"deleteIn"](["context","LOOPID"],state.getIn(["context","LOOPID"]));
 	}
 };
 
 // returns an updated state
-Algol.executeEffect = function(state,def){
+Algol.performCommandEffect = function(state,def){
 	return effectmethods[def.first()].apply(this,[state].concat(def.rest().toArray()));
 };
 
-// returns an updated state
-Algol.executeEffects = function(state,arr){
-	_.each(arr,function(e){
-		state = this.executeEffect(state,e);
-	},this);
-	return state;
+Algol.performCommandEffects = function(state,arr){
+	return _.reduce(arr,function(state,e){ return this.performCommandEffect(state,e); },state,this);
 };
 
 Algol.canExecuteCommand = function(state,def){
@@ -69,12 +60,22 @@ Algol.canExecuteCommand = function(state,def){
 };
 
 Algol.testPostCommandState = function(state,newstate){
-	var dive=0, newdata = newstate.get("data");
-	while(++dive && state.get("steps").size){
+	var newdata = newstate.get("data");
+	while(state.get("steps").size){
 		state = state.get("previousstep");
-		if (I.is(state.get("data"),newdata)){ return ["BACK",dive]; }
+		if (I.is(state.get("data"),newdata)){ return I.List(["BACK",newstate]); }
 	}
-	return ["NEWSTATE"];
+	return I.List(["NEWSTATE",newstate]);
+};
+
+Algol.endTurnCheck = function(state,gamedef){
+	return !this.evaluateBoolean(state,gamedef.getIn(["endturn","condition"])) ? ["CANNOTEND"] : gamedef.get("endgame").reduce(function(mem,end,name){
+		return mem || this.evaluateBoolean(state,end.get("condition")) && ["ENDGAME",name,this.evaluateValue(state,end.get("winner"))];
+	},undefined,this) || ["PASSTO",this.evaluateValue(state,gamedef.getIn(["endturn","passto"]))];
+};
+
+Algol.listCommandOptions = function(state,gamedef){
+
 };
 
 // €€€€€€€€€€€€€€€€€€€€€€€€€ E X P O R T €€€€€€€€€€€€€€€€€€€€€€€€€

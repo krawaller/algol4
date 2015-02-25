@@ -26,7 +26,10 @@
 		"commandcap": true
 	},
 	"endgame": {
-		"blocked":[["EMPTY","enemymove"],["CONTEXTVAL","CURRENTPLAYER"]]
+		"blocked":{
+			"condition": ["EMPTY","enemymove"],
+			"winner": ["CONTEXTVAL","CURRENTPLAYER"]
+		}
 	},
 	"commands": {
 		"move": {
