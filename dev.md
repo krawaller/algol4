@@ -4,6 +4,7 @@
 gamedef
 	commands
 		[cmndname]
+			+name: [cmndname]
 			+neededmarks: [markname,...]
 
 
@@ -16,6 +17,9 @@ state
 	affectedunits: [id,id,...]
 	previousstep: state
 	previousturn: state
+	turn: #
+	status: ongoing
+	player: #
 	steps [{
 		command: cmndname,
 		marks: {markname: pos, ...}

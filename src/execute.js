@@ -35,21 +35,21 @@ var effectmethods = {
 	FORALLIN: function(state,layername,effect){
 		var layer = state.getIn(["layers",layername]);
 		return state.getIn(["data","units"]).reduce(function(state,unit,id){
-			return layer.has(unit.get("POS")) ? this.performCommandEffect(state.setIn(["context","LOOPID"],id),effect) : state;
+			return layer.has(unit.get("POS")) ? this.applyEffect(state.setIn(["context","LOOPID"],id),effect) : state;
 		},state,this)[state.hasIn(["context","LOOPID"])?"setIn":"deleteIn"](["context","LOOPID"],state.getIn(["context","LOOPID"]));
 	},
 	MULTIEFFECT: function(state,list){
-		return list.reduce(this.performCommandEffect.bind(this),state,this);
+		return list.reduce(this.applyEffect.bind(this),state,this);
 	}
 };
 
 // returns an updated state
-Algol.performCommandEffect = function(state,def){
+Algol.applyEffect = function(state,def){
 	return effectmethods[def.first()].apply(this,[state].concat(def.rest().toArray()));
 };
 
-Algol.performCommandEffects = function(state,arr){
-	return _.reduce(arr,function(state,e){ return this.performCommandEffect(state,e); },state,this);
+Algol.performCommand = function(state,def){
+
 };
 
 Algol.canExecuteCommand = function(state,def){
@@ -59,13 +59,18 @@ Algol.canExecuteCommand = function(state,def){
 	);
 };
 
-Algol.testPostCommandState = function(state,newstate){
-	var newdata = newstate.get("data");
-	while(state.get("steps").size){
-		state = state.get("previousstep");
-		if (I.is(state.get("data"),newdata)){ return I.List(["BACK",newstate]); }
+Algol.testPostCommandState = function(state,newstate,commanddef){
+	var newdata = newstate.get("data"), comparetostate = state;
+	while(comparetostate.get("steps").size){
+		comparetostate = comparetostate.get("previousstep");
+		if (I.is(comparetostate.get("data"),newdata)){ return I.List(["BACK",comparetostate]); }
 	}
-	return I.List(["NEWSTATE",newstate]);
+	return I.List(["NEWSTATE",I.pushIn(newstate,["steps"],I.fromJS({
+		command: commanddef.get("name"),
+		marks: commanddef.get("neededmarks").reduce(function(mem,mname){
+			return mem.set(mname,state.getIn(["marks",mname]));
+		},I.Map(),this)
+	})).set("previousstep",state)]);
 };
 
 Algol.endTurnCheck = function(state,gamedef){
@@ -76,13 +81,27 @@ Algol.endTurnCheck = function(state,gamedef){
 
 Algol.listCommandOptions = function(state,gamedef){
 	return I.setIf(I.setIf(gamedef.get("commands").reduce(function(ret,comdef,comname){
-		return this.canExecuteCommand(state,comdef) ? ret.set(comname,this.testPostCommandState(state,this.performCommandEffect(state,comdef.get("effect")))) : ret;
+		return this.canExecuteCommand(state,comdef) ? ret.set(comname,this.testPostCommandState(state,this.applyEffect(state,comdef.get("effect")),comdef)) : ret;
 	},I.Map(),this),"ENDTURN",this.endTurnCheck(state,gamedef)),"UNDO",state.has("previousstep") ? ["BACK",state.get("previousstep")] : false) ;
 };
 
 
 var optionmethods = {
-	BACK: function(state,oldstate){ return oldstate; }
+	BACK: function(state,oldstate){ return oldstate; },
+	PASSTO: function(state,player){
+		return state.merge(I.fromJS({
+			steps: [],
+			affected: [],
+			marks: {},
+			previousstep: state,
+			previousturn: state,
+			status: "ONGOING",
+			player: player,
+			turn: state.get("turn")+1,
+			context: {CURRENTPLAYER:player}
+		}));
+	},
+	ENDGAME: function(state,cond,player){ return state.merge({player:player,status:cond}); }
 };
 
 Algol.performOption = function(state,def){
