@@ -55,7 +55,7 @@ Algol.performCommandEffects = function(state,arr){
 Algol.canExecuteCommand = function(state,def){
 	return !(
 		(def.has("condition") && !this.evaluateBoolean(state,def.get("condition"))) || 
-		def.get("neededmarks").some(function(markname){ return !state.get("marks").has(markname); })
+		def.has("neededmarks") && def.get("neededmarks").some(function(markname){ return !state.get("marks").has(markname); })
 	);
 };
 
@@ -69,13 +69,15 @@ Algol.testPostCommandState = function(state,newstate){
 };
 
 Algol.endTurnCheck = function(state,gamedef){
-	return !this.evaluateBoolean(state,gamedef.getIn(["endturn","condition"])) ? ["CANNOTEND"] : gamedef.get("endgame").reduce(function(mem,end,name){
+	return !this.evaluateBoolean(state,gamedef.getIn(["endturn","condition"])) ? false : gamedef.get("endgame").reduce(function(mem,end,name){
 		return mem || this.evaluateBoolean(state,end.get("condition")) && ["ENDGAME",name,this.evaluateValue(state,end.get("winner"))];
 	},undefined,this) || ["PASSTO",this.evaluateValue(state,gamedef.getIn(["endturn","passto"]))];
 };
 
 Algol.listCommandOptions = function(state,gamedef){
-
+	return I.setIf(I.setIf(gamedef.get("commands").reduce(function(ret,comdef,comname){
+		return this.canExecuteCommand(state,comdef) ? ret.set(comname,this.testPostCommandState(state,this.performCommandEffect(state,comdef.get("effect")))) : ret;
+	},I.Map(),this),"ENDTURN",this.endTurnCheck(state,gamedef)),"UNDO",state.has("previousstep") ? ["BACK",state.get("previousstep")] : false) ;
 };
 
 // €€€€€€€€€€€€€€€€€€€€€€€€€ E X P O R T €€€€€€€€€€€€€€€€€€€€€€€€€

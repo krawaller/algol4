@@ -26,6 +26,11 @@ I.pushIn = function(map,path,obj){
 
 I.concat = function(oldlist,newlist){return oldlist.concat(newlist);};
 
+I.setIf = function(map,name,val){
+	return val ? map.set(name,val) : map;
+};
+
+
 if (typeof module !== 'undefined' && typeof module.exports !== 'undefined')
     module.exports = I;
 })();

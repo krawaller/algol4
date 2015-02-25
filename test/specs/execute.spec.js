@@ -63,7 +63,7 @@ var tests = {
 	endTurnCheck: [{
 		state: {context:{FOO:"bar"}},
 		firstarg: {endturn:{condition:["SAME",["CONTEXTVAL","FOO"],["VAL","notbar"]]}},
-		expected: ["CANNOTEND"]
+		expected: false
 	},{
 		state: {context:{FOO:"bar",CURRENTPLAYER:1}},
 		firstarg: {endturn:{condition:["SAME",["CONTEXTVAL","FOO"],["VAL","bar"]]},endgame:{bywuu:{condition:["TRUE"],winner:["CONTEXTVAL","CURRENTPLAYER"]}}},
@@ -72,6 +72,19 @@ var tests = {
 		state: {context:{FOO:"bar",CURRENTPLAYER:1}},
 		firstarg: {endturn:{condition:["SAME",["CONTEXTVAL","FOO"],["VAL","bar"]],passto:["IFELSE",["SAME",["CONTEXTVAL","CURRENTPLAYER"],["VAL",1]],["VAL",2],["VAL",1]]},endgame:{bywuu:{condition:["DIFFERENT",["CONTEXTVAL","FOO"],["VAL","bar"]],winner:["CONTEXTVAL","CURRENTPLAYER"]}}},
 		expected: ["PASSTO",2]
+	}],
+	listCommandOptions: [{
+		state: {},
+		firstarg: {endturn:{condition:["TRUE"]},endgame:{bypoo:{condition:["TRUE"],winner:["VAL",1]}},commands:{}},
+		expected: {ENDTURN:["ENDGAME","bypoo",1]}
+	},{
+		state: {previousstep:"BLAH"},
+		firstarg: {endturn:{condition:["FALSE"]},commands:{}},
+		expected: {UNDO:["BACK","BLAH"]}
+	},{
+		state: {steps:[],marks:{somemark:"foo"},layers:{UNITS:{foo:[{id:"someid"}]}},data:{units:{someid:{pos:"foo"}}},affected:[]},
+		firstarg: {endturn:{condition:["FALSE"]},commands:{mope:{condition:["TRUE"],effect:["KILLUNIT",["IDAT",["MARKPOS","somemark"]]]}}},
+		expected: {mope:["NEWSTATE",{steps:[],marks:{somemark:"foo"},layers:{UNITS:{foo:[{id:"someid"}]}},data:{units:{someid:{pos:"foo",status:"dead"}}},affected:["someid"]}]}
 	}]
 };
 
@@ -89,3 +102,5 @@ describe("The execute functions",function(){
 		});
 	});
 });
+
+
