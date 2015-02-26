@@ -75,10 +75,15 @@ var tests = {
 		state: {player: 1, layers: {UNITS:"foo"}, data: {units: {id1: {POS:"pos1",PLR:1}, id2: {POS:"pos2",PLR:2}, id3: {POS:"pos2",STATUS:"DEAD",PLR:1}}}},
 		expected: {player: 1, layers: {DEADUNITS:{pos2:[{POS:"pos2",STATUS:"DEAD",PLR:1}]},UNITS:{pos1:[{POS:"pos1",PLR:1}],pos2:[{POS:"pos2",PLR:2}]},MYUNITS:{pos1:[{POS:"pos1",PLR:1}]},OPPUNITS:{pos2:[{POS:"pos2",PLR:2}]}}, data: {units: {id1: {POS:"pos1",PLR:1}, id2: {POS:"pos2",PLR:2}, id3: {POS:"pos2",STATUS:"DEAD",PLR:1}}}}
 	}],
-	generateInitialData: [{
+	generateInitialUnitData: [{
 		state: {},
 		firstarg: {setup: [{foo:"bar"},{baz:"bin"}]},
 		expected: {units: {unit1: {foo:"bar",id:"unit1"}, unit2: {baz:"bin",id:"unit2"}}}
+	}],
+	generateNeighbours: [{
+		state: {},
+		firstarg: {height: 2, width: 3},
+		expected: {1001: {3: 1002, 4: 2002, 5: 2001}, 1002: {3: 1003, 4: 2003, 5: 2002, 6: 2001, 7: 1001}, 1003: {5: 2003, 6: 2002, 7: 1002}, 2001: {1: 1001, 2: 1002, 3: 2002}, 2002: {1: 1002, 2: 1003, 3: 2003, 7: 2001, 8: 1001}, 2003: {1: 1003, 7: 2002, 8: 1002}}
 	}]
 };
 

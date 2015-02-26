@@ -104,10 +104,22 @@ Algol.generateUnitLayers = function(state){
 	},I.fromJS({UNITS:{},DEADUNITS:{},MYUNITS:{},OPPUNITS:{}}),this));
 };
 
-Algol.generateInitialData = function(state,gamedef){
+Algol.generateInitialUnitData = function(state,gamedef){
 	return I.Map().set("units",gamedef.get("setup").reduce(function(map,unit,n){
 		return map.set("unit"+(n+1),unit.set("id","unit"+(n+1)));
 	},I.Map(),this));
+};
+
+Algol.generateNeighbours = function(state,boarddef){
+	var height = boarddef.get("height"), width = boarddef.get("width");
+	return I.Range(1,width+1).reduce(function(mem,x){
+		return I.Range(1,height+1).reduce(function(mem,y){
+			return mem.set(y*1000+x,_.reduce([[0,-1],[1,-1],[1,0],[1,1],[0,1],[-1,1],[-1,0],[-1,-1]],function(map,mods,n){
+				var newx = x+mods[0], newy = y+mods[1];
+				return newx>0 && newx<=width && newy>0 && newy<=height ? map.set(n+1,newy*1000+newx) : map;
+			},I.Map()));
+		},mem);
+	},I.Map());
 };
 
 // €€€€€€€€€€€€€€€€€€€€€€€€€ E X P O R T €€€€€€€€€€€€€€€€€€€€€€€€€
