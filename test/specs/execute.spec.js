@@ -118,14 +118,19 @@ tester("execute",{
 		firstarg: ["BACK",{foo:"baz"}],
 		expected: {foo:"baz"}
 	},{
-		state: {turn: 6, foo: "bar"},
+		state: {turn: 6, foo: "bar", save: [["BLAH"]], steps: ["1st","2nd"]},
 		firstarg: ["PASSTO",3],
-		beforehydration: {marks: {}, affected: [], previousstep: {turn: 6, foo: "bar"}, previousturn: {turn: 6, foo: "bar"}, steps: [], turn: 7, player: 3, status: "ONGOING", foo: "bar", context: {CURRENTPLAYER: 3,PERFORMEDSTEPS:0}},
+		beforesteps: {marks: {}, affected: [], save: [["BLAH"],[3]], previousstep: {turn: 6, foo: "bar", save: [["BLAH"]], steps : [ '1st', '2nd' ]}, previousturn: {turn: 6, foo: "bar", save: [["BLAH"]], steps : [ '1st', '2nd' ]}, steps: [], turn: 7, player: 3, status: "ONGOING", foo: "bar", context: {CURRENTPLAYER: 3,PERFORMEDSTEPS:0}},
+		aftersteps: {marks: {}, affected: [], save: [["BLAH","ENTRY","ENTRY"],[3]], previousstep: {turn: 6, foo: "bar", save: [["BLAH"]], steps : [ '1st', '2nd' ]}, previousturn: {turn: 6, foo: "bar", save: [["BLAH"]], steps : [ '1st', '2nd' ]}, steps: [], turn: 7, player: 3, status: "ONGOING", foo: "bar", context: {CURRENTPLAYER: 3,PERFORMEDSTEPS:0}},
 		expected: "FOO",
 		context: {
 			hydrateState: {
 				method: function(s){ return "FOO"; },
-				expectedargs: [ ["beforehydration"] ]
+				expectedargs: [ ["aftersteps"] ]
+			},
+			buildSaveEntryFromStep: {
+				method: function(s,entry){ return "ENTRY"; },
+				expectedargs: [ ["state","1st"], ["state","2nd"] ]
 			}
 		}
 	},{
@@ -135,8 +140,19 @@ tester("execute",{
 	},{
 		state: {foo:"bar"},
 		firstarg: ["NEWSTEP",{some:"other"}],
-		expected: {some:"other"}
-	}]
+		expected: "hydratedstate",
+		context: {
+			hydrateState: {
+				method: function(s){ return "hydratedstate"; },
+				expectedargs: [ [{some:"other"}] ]
+			}
+		}
+	}],
+	buildSaveEntryFromStep: [{
+		state: {gamedef:{commands:{somecommand:{neededmarks:["foo","bar"],id:"MYID"}}}},
+		firstarg: {command:"somecommand",marks:{foo:1,bar:2}},
+		expected: "MYID_1_2"
+	}],
 });
 
 

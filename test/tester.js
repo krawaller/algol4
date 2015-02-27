@@ -25,24 +25,26 @@ describe("The "+name+" functions",function(){
 						expect(result.toJS ? result.toJS() : result).toEqual(test.expected);
 					});
 					_.each(test.context||{},function(stubdef,stubname){
-						describe("the usage of "+stubname,function(){
-							it("called "+stubname+" correct number of times",function(){
-								expect(Algol[stubname].callCount).toEqual(stubdef.expectedargs.length);
-							});
-							_.each(stubdef.expectedargs,function(args,n){
-								describe("call number "+n,function(){
-									it("used the correct number of arguments",function(){
-										expect(Algol[stubname].getCall(n).args.length).toEqual(args.length);
-									});
-									_.each(args,function(arg,a){
-										it("used correct parameter "+a,function(){
-											var usedargs = I.List(Algol[stubname].getCall(n).args).toJS();
-											expect(usedargs[a]).toEqual(test[arg]||arg);
+						if (stubdef.expectedargs){
+							describe("the usage of "+stubname,function(){
+								it("called "+stubname+" correct number of times",function(){
+									expect(Algol[stubname].callCount).toEqual(stubdef.expectedargs.length);
+								});
+								_.each(stubdef.expectedargs,function(args,n){
+									describe("call number "+n,function(){
+										it("used the correct number of arguments",function(){
+											expect((Algol[stubname].getCall(n)||{args:[]}).args.length).toEqual(args.length);
+										});
+										_.each(args,function(arg,a){
+											it("used correct parameter "+a,function(){
+												var usedargs = I.List((Algol[stubname].getCall(n)||{args:[]}).args).toJS();
+												expect(usedargs[a]).toEqual(test[arg]||arg);
+											});
 										});
 									});
 								});
 							});
-						});
+						}
 					});
 					afterEach(function(){
 						_.each(test.context||{},function(stubdef,stubname){

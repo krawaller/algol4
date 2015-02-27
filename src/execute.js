@@ -60,6 +60,13 @@ Algol.canExecuteCommand = function(state,def){
 	);
 };
 
+Algol.buildSaveEntryFromStep = function(state,stepentry){
+	var commanddef = state.getIn(["gamedef","commands",stepentry.get("command")]);
+	return commanddef.get("neededmarks").reduce(function(ret,markname){
+		return ret+"_"+stepentry.getIn(["marks",markname]);
+	},commanddef.get("id"));
+};
+
 Algol.calculateCommandResult = function(state,newstate,commanddef){
 	var newdata = newstate.get("data"), comparetostate = state;
 	while(comparetostate.get("steps").size){
@@ -99,6 +106,9 @@ var optionmethods = {
 		return this.hydrateState(state.merge(I.fromJS({
 			steps: [],
 			affected: [],
+			save: state.get("steps").reduce(function(save,step){
+				return save.set(save.size-1,save.last().push(this.buildSaveEntryFromStep(state,step)));
+			},state.get("save"),this).push([player]),
 			marks: {},
 			previousstep: state,
 			previousturn: state,

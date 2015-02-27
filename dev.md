@@ -5,6 +5,7 @@ gamedef
 	commands
 		[cmndname]
 			+name: [cmndname]
+			+id: #
 			+neededmarks: [markname,...]
 	generators
 		[generatorname]
@@ -24,6 +25,7 @@ state
 	previousturn: state
 	turn: #
 	status: ongoing
+	save: SAVEDATA
 	player: #
 	steps [{
 		command: cmndname,
