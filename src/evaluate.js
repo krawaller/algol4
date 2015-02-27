@@ -74,7 +74,10 @@ var boolmethods = {
 	},
 	AFFECTED: function(state,id){ return state.get("affected").contains(this.evaluateId(state,id)); },
 	TRUE: function(){ return true; },
-	FALSE: function(){ return false; }
+	FALSE: function(){ return false; },
+	POSITIONINLIST: function(state,pos,poslist){
+		return this.evaluatePositionList(state,poslist).contains(this.evaluatePosition(state,pos));
+	}
 };
 
 Algol.evaluateBoolean = function(state,def){

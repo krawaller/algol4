@@ -15,6 +15,11 @@ var effectmethods = {
 		id = this.evaluateId(state,id);
 		return I.pushInIfNew(state,["affected"],id).mergeIn(["data","units",id],{POS:this.evaluatePosition(state,pos),AFFECTEDTURN:state.get("turn")});
 	},
+	TURNUNIT: function(state,id,mod){
+		id = this.evaluateId(state,id);
+		var newdir = state.getIn(["data","units",id,"DIR"])+this.evaluateValue(state,mod);
+		return I.pushInIfNew(state,["affected"],id).mergeIn(["data","units",id],{DIR:(newdir>8?newdir-8:0>newdir?newdir+8:newdir),AFFECTEDTURN:state.get("turn")});
+	},
 	SETUNITDATA: function(state,id,propname,val){
 		id = this.evaluateId(state,id);
 		return I.pushInIfNew(state,["affected"],id).mergeIn(["data","units",id],_.object([propname,"AFFECTEDTURN"],[this.evaluateValue(state,val),state.get("turn")]));
@@ -72,7 +77,7 @@ Algol.calculateCommandResult = function(state,newstate,commanddef){
 		},I.Map(),this)
 	})).set("previousstep",state).set("marks",(commanddef.get("setmarks")||I.Map()).reduce(function(ret,pos,markname){
 		return ret.set(markname,this.evaluateValue(state,pos));
-	},I.Map(),this))]);
+	},I.Map(),this)).setIn(["context","PERFORMEDSTEPS"],state.getIn(["context","PERFORMEDSTEPS"])+1)]);
 };
 
 Algol.endTurnCheck = function(state,gamedef){
@@ -101,7 +106,7 @@ var optionmethods = {
 			status: "ONGOING",
 			player: player,
 			turn: state.get("turn")+1,
-			context: {CURRENTPLAYER:player}
+			context: {CURRENTPLAYER:player,PERFORMEDSTEPS:0}
 		}));
 	},
 	ENDGAME: function(state,cond,player){ return state.merge({player:player,status:cond}); }

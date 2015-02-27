@@ -56,8 +56,21 @@ Algol.generateWalkerPods = function(state,def){
 	return pods.set("all",pods.reduce(function(mem,pod){ return mem.mergeWith(I.concat,pod); }),I.Map(),this);
 };
 
+Algol.applyFilter = function(state,def){
+	var matching = def.get("matching"), tolayer = def.get("tolayer"), condition = def.get("condition");
+	return state.getIn(["layers",def.get("layer")]).reduce(function(state,list,pos){
+		return list.reduce(function(state,obj){
+			return (!matching || this.evaluateObjectMatch(state,matching,obj)) && (!condition || this.evaluateBoolean(state,condition)) ? I.pushIn(state,["layers",this.evaluateValue(state,tolayer),pos],obj) : state;
+		},state.setIn(["context","START"],pos),this);
+	},state,this).set("context",state.get("context"));
+};
+
 Algol.generateFilterPods = function(state,def){
-	var seeds = state.getIn(["layers",def.get("layer")]),
+	/*var overlapping = def.get("overlapping"),
+		matching = def.get("matching");
+	return I.Map({start: state.getIn(["layers",def.get("layer")]) })*/
+	
+	/*var seeds = state.getIn(["layers",def.get("layer")]),
 		overlapping = def.get("overlapping"),
 		matching = def.get("matching");
 	if (overlapping){
@@ -72,7 +85,7 @@ Algol.generateFilterPods = function(state,def){
 		},this);
 	}
 	context = I.Map({TOTAL:seeds.size});
-	return I.Map({start: seeds.map(function(val,p){ return I.List([context.set("START",p)]); }) });
+	return I.Map({start: seeds.map(function(val,p){ return I.List([context.set("START",p)]); }) }); */
 };
 
 // Painter has tolayer and can have condition, include

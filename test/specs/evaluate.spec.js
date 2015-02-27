@@ -149,6 +149,14 @@ var tests = {
 		state: { steps: [{command:"foo"},{command:"bar"}]},
 		firstarg: ["HASPERFORMEDCOMMAND","somecommand"],
 		expected: false
+	},{
+		state: {layers: {foolayer: {a:["X"]}}, marks: {somemark: "a"}},
+		firstarg: ["POSITIONINLIST",["MARKPOS","somemark"],["FROMALLINLAYER","foolayer"]],
+		expected: true
+	},{
+		state: {layers: {foolayer: {a:["X"]}}, marks: {somemark: "b"}},
+		firstarg: ["POSITIONINLIST",["MARKPOS","somemark"],["FROMALLINLAYER","foolayer"]],
+		expected: false
 	}]
 };
 

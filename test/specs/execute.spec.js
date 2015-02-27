@@ -20,6 +20,18 @@ var tests = {
 		firstarg: ["MOVEUNIT",["IDAT",["MARKPOS","somemark"]],["MARKPOS","othermark"]],
 		expected: {affected: ["someid"], turn: 5, data: {units: {"someid":{foo:"muu",POS:"abc",AFFECTEDTURN:5}}}, marks: {somemark:"xyz",othermark:"abc"}, layers: {"UNITS": {"xyz": [{id:"someid"}]}} },
 	},{
+		state: {affected: [], turn: 5, data: {units: {"someid":{foo:"muu",DIR:3}}}, marks: {somemark:"xyz",othermark:"abc"}, layers: {"UNITS": {"xyz": [{id:"someid"}]}} },
+		firstarg: ["TURNUNIT",["IDAT",["MARKPOS","somemark"]],["VAL",2]],
+		expected: {affected: ["someid"], turn: 5, data: {units: {"someid":{foo:"muu",DIR:5,AFFECTEDTURN:5}}}, marks: {somemark:"xyz",othermark:"abc"}, layers: {"UNITS": {"xyz": [{id:"someid"}]}} },
+	},{
+		state: {affected: [], turn: 5, data: {units: {"someid":{foo:"muu",DIR:1}}}, marks: {somemark:"xyz",othermark:"abc"}, layers: {"UNITS": {"xyz": [{id:"someid"}]}} },
+		firstarg: ["TURNUNIT",["IDAT",["MARKPOS","somemark"]],["VAL",-3]],
+		expected: {affected: ["someid"], turn: 5, data: {units: {"someid":{foo:"muu",DIR:6,AFFECTEDTURN:5}}}, marks: {somemark:"xyz",othermark:"abc"}, layers: {"UNITS": {"xyz": [{id:"someid"}]}} },
+	},{
+		state: {affected: [], turn: 5, data: {units: {"someid":{foo:"muu",DIR:7}}}, marks: {somemark:"xyz",othermark:"abc"}, layers: {"UNITS": {"xyz": [{id:"someid"}]}} },
+		firstarg: ["TURNUNIT",["IDAT",["MARKPOS","somemark"]],["VAL",4]],
+		expected: {affected: ["someid"], turn: 5, data: {units: {"someid":{foo:"muu",DIR:3,AFFECTEDTURN:5}}}, marks: {somemark:"xyz",othermark:"abc"}, layers: {"UNITS": {"xyz": [{id:"someid"}]}} },
+	},{
 		state: {affected: ["blah"], turn: 6, data: {units: {"someid":{foo:"bar",POS:"xyz"},"otherid":{foo:"baz",POS:"abc"}}}, marks: {somemark:"xyz",othermark:"abc"}, layers: {"UNITS": {"xyz": [{id:"someid"}], "abc":[{id:"otherid"}]}} },
 		firstarg: ["SWAPUNITPOSITIONS",["IDAT",["MARKPOS","somemark"]],["IDAT",["MARKPOS","othermark"]]],
 		expected: {affected: ["blah","someid","otherid"], turn: 6, data: {units: {"someid":{foo:"bar",POS:"abc",AFFECTEDTURN:6},otherid:{foo:"baz",POS:"xyz",AFFECTEDTURN:6}}}, marks: {somemark:"xyz",othermark:"abc"}, layers: {"UNITS": {"xyz": [{id:"someid"}], "abc":[{id:"otherid"}]}} }
@@ -60,15 +72,15 @@ var tests = {
 		firstarg: {data:{b:2}},
 		expected: ["BACK",{steps:[1],data:{b:2},previousstep:{steps:[],data:{c:3}}}]
 	},{
-		state: {marks:{mark1:"foo",mark2:"bar"},steps:[1,2],data:{a:1},previousstep:{steps:[1],data:{b:2},previousstep:{steps:[],data:{c:3}}}},
+		state: {marks:{mark1:"foo",mark2:"bar"},steps:[1,2],data:{a:1},previousstep:{steps:[1],data:{b:2},previousstep:{steps:[],data:{c:3}}},context:{PERFORMEDSTEPS:4}},
 		firstarg: {data:{c:666},steps:["foo"]},
 		secondarg: {name:"somecommand",neededmarks:["mark1"]},
-		expected: ["NEWSTEP",{marks:{},data:{c:666},steps:["foo",{command:"somecommand",marks:{mark1:"foo"}}],previousstep: {marks:{mark1:"foo",mark2:"bar"},steps:[1,2],data:{a:1},previousstep:{steps:[1],data:{b:2},previousstep:{steps:[],data:{c:3}}}} }]
+		expected: ["NEWSTEP",{marks:{},data:{c:666},steps:["foo",{command:"somecommand",marks:{mark1:"foo"}}],previousstep: {marks:{mark1:"foo",mark2:"bar"},steps:[1,2],data:{a:1},previousstep:{steps:[1],data:{b:2},previousstep:{steps:[],data:{c:3}}},context:{PERFORMEDSTEPS:4}},context:{PERFORMEDSTEPS:5} }]
 	},{
-		state: {marks:{mark1:"foo",mark2:"bar"},steps:[1,2],data:{a:1},previousstep:{steps:[1],data:{b:2},previousstep:{steps:[],data:{c:3}}}},
+		state: {marks:{mark1:"foo",mark2:"bar"},steps:[1,2],data:{a:1},previousstep:{steps:[1],data:{b:2},previousstep:{steps:[],data:{c:3}}},context:{PERFORMEDSTEPS:4}},
 		firstarg: {data:{c:666},steps:["foo"]},
 		secondarg: {name:"somecommand",neededmarks:["mark1"],setmarks:{mark1:["VAL","somepos"]}},
-		expected: ["NEWSTEP",{marks:{mark1:"somepos"},data:{c:666},steps:["foo",{command:"somecommand",marks:{mark1:"foo"}}],previousstep: {marks:{mark1:"foo",mark2:"bar"},steps:[1,2],data:{a:1},previousstep:{steps:[1],data:{b:2},previousstep:{steps:[],data:{c:3}}}} }]
+		expected: ["NEWSTEP",{marks:{mark1:"somepos"},data:{c:666},steps:["foo",{command:"somecommand",marks:{mark1:"foo"}}],previousstep: {marks:{mark1:"foo",mark2:"bar"},steps:[1,2],data:{a:1},previousstep:{steps:[1],data:{b:2},previousstep:{steps:[],data:{c:3}}},context:{PERFORMEDSTEPS:4}},context:{PERFORMEDSTEPS:5} }]
 	}],
 	endTurnCheck: [{
 		state: {context:{FOO:"bar"}},
@@ -92,9 +104,9 @@ var tests = {
 		firstarg: {endturn:{condition:["FALSE"]},commands:{}},
 		expected: {UNDO:["BACK","BLAH"]}
 	},{
-		state: {turn: 5, steps:[],marks:{somemark:"foo"},layers:{UNITS:{foo:[{id:"someid"}]}},data:{units:{someid:{pos:"foo"}}},affected:[]},
+		state: {turn: 5, steps:[],marks:{somemark:"foo"},layers:{UNITS:{foo:[{id:"someid"}]}},data:{units:{someid:{pos:"foo"}}},affected:[],context:{PERFORMEDSTEPS:5}},
 		firstarg: {endturn:{condition:["FALSE"]},commands:{mope:{condition:["TRUE"],neededmarks:[],name:"mope",effect:["KILLUNIT",["IDAT",["MARKPOS","somemark"]]]}}},
-		expected: {mope:["NEWSTEP",{turn: 5,steps:[{command:"mope",marks:{}}],marks:{},layers:{UNITS:{foo:[{id:"someid"}]}},data:{units:{someid:{pos:"foo",STATUS:"DEAD",AFFECTEDTURN:5}}},affected:["someid"],previousstep:{turn: 5, steps:[],marks:{somemark:"foo"},layers:{UNITS:{foo:[{id:"someid"}]}},data:{units:{someid:{pos:"foo"}}},affected:[]}}]}
+		expected: {mope:["NEWSTEP",{turn: 5,steps:[{command:"mope",marks:{}}],marks:{},layers:{UNITS:{foo:[{id:"someid"}]}},data:{units:{someid:{pos:"foo",STATUS:"DEAD",AFFECTEDTURN:5}}},affected:["someid"],previousstep:{turn: 5, steps:[],marks:{somemark:"foo"},layers:{UNITS:{foo:[{id:"someid"}]}},data:{units:{someid:{pos:"foo"}}},affected:[],context:{PERFORMEDSTEPS:5}},context:{PERFORMEDSTEPS:6}}]}
 	}],
 	performOption: [{
 		state: {foo:"bar"},
@@ -103,7 +115,7 @@ var tests = {
 	},{
 		state: {turn: 6, foo: "bar"},
 		firstarg: ["PASSTO",3],
-		expected: {marks: {}, affected: [], previousstep: {turn: 6, foo: "bar"}, previousturn: {turn: 6, foo: "bar"}, steps: [], turn: 7, player: 3, status: "ONGOING", foo: "bar", context: {CURRENTPLAYER: 3}}
+		expected: {marks: {}, affected: [], previousstep: {turn: 6, foo: "bar"}, previousturn: {turn: 6, foo: "bar"}, steps: [], turn: 7, player: 3, status: "ONGOING", foo: "bar", context: {CURRENTPLAYER: 3,PERFORMEDSTEPS:0}}
 	},{
 		state: {foo:"bar"},
 		firstarg: ["ENDGAME","somecond",2],

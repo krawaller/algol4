@@ -48,3 +48,10 @@ console.log("REALLY?",m1.filter(I.keyInMap(m2)));
 console.log("testing",I.fromJS([1,[2,3],4]).toJS());
 
 console.log("merging",I.List([1,2,3]).concat(I.List([4,5,6])));
+
+var list = I.List([1,2,3]);
+
+list.reduce(function(mem,item,n,all){
+	console.log("reducing",item,n,all);
+	return mem.push(item);
+},I.List());
