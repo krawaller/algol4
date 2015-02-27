@@ -12,10 +12,10 @@ if (typeof require === 'function' && typeof module === 'object') {
 
 var tests = {
 	evaluateDirList: [{
-		firstarg: ["DIRS",1,2,3,4,5],
+		firstarg: ["DIRS",[1,2,3,4,5]],
 		expected: [1,2,3,4,5]
 	},{
-		firstarg: ["RELATIVEDIRS",["DIRS",1,2,3],["VAL",2]],
+		firstarg: ["RELATIVEDIRS",["DIRS",[1,2,3]],["VAL",2]],
 		expected: [2,3,4]
 	}],
 	evaluateValue: [{

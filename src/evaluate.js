@@ -7,8 +7,8 @@ function augmentWithEvaluateFunctions(Algol){
 // €€€€€€€€€€€€€€€€€€€€€€€€€€€ E V A L U A T E   F U N C T I O N S €€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€*/
 
 var dirlistmethods = {
-	DIRS: function(){
-		return I.List(_.tail(arguments));
+	DIRS: function(state,dirs){
+		return dirs;
 	},
 	RELATIVEDIRS: function(state,dirs,reldir){
 		rd = this.evaluateValue(state,reldir);
