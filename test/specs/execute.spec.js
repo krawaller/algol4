@@ -1,17 +1,21 @@
 /* jshint jasmine: true */
 
+var sinon,jasmineSinon,Algol,_,I,tester;
 if (typeof require === 'function' && typeof module === 'object') {
-	var sinon = require('sinon'),
-		jasmineSinon = require('jasmine-sinon'),
-		Algol = require("../../src/"),
-		_ = require("../../src/lodashmixins"),
-		I = require("../../src/immutableextensions");
+	sinon = require('sinon');
+	jasmineSinon = require('jasmine-sinon');
+	Algol = require("../../src/");
+	_ = require("../../src/lodashmixins");
+	I = require("../../src/immutableextensions");
+	tester = require("../tester");
 } else {
-	var I = window.Immutable, _ = window._;
-	var sinon = window.sinon;
+	I = window.Immutable;
+	_ = window._;
+	sinon = window.sinon;
+	tester = window.tester;
 }
 
-var tests = {
+tester("execute",{
 	applyEffect: [{
 		state: {affected: [], turn: 4, data: {units: {"someid":{foo:"muu"}}}, marks: {somemark:"xyz"}, layers: {"UNITS": {"xyz": [{id:"someid"}]}} },
 		firstarg: ["KILLUNIT",["IDAT",["MARKPOS","somemark"]]],
@@ -133,52 +137,6 @@ var tests = {
 		firstarg: ["NEWSTEP",{some:"other"}],
 		expected: {some:"other"}
 	}]
-};
-
-
-describe("The execute functions",function(){
-	_.each(tests,function(arr,funcname){
-		describe("the "+funcname+" function",function(){
-			_.each(arr,function(test){
-				describe("when called with "+JSON.stringify(test.firstarg)+(test.state ? " and state is "+JSON.stringify(test.state) : ""),function(){
-					var result;
-					beforeEach(function(){
-						_.each(test.context||{},function(stubdef,stubname){
-							sinon.stub(Algol,stubname,stubdef.method);
-						});
-						result = Algol[funcname](I.fromJS(test.state||{}),I.fromJS(test.firstarg),test.secondarg && I.fromJS(test.secondarg));
-					});
-					it("returns "+JSON.stringify(test.expected),function(){
-						expect(result.toJS ? result.toJS() : result).toEqual(test.expected);
-					});
-					if (test.context){
-						describe("the dependency usage",function(){
-							_.each(test.context||{},function(stubdef,stubname){
-								it("called "+stubname+" correctly",function(){
-									expect(Algol[stubname].callCount).toEqual(stubdef.expectedargs.length);
-									_.each(stubdef.expectedargs,function(args,n){
-										console.log("what is callcount",Algol[stubname].callCount);
-										if (Algol[stubname].callCount>n) {
-											var usedargs = I.List(Algol[stubname].getCall(n).args).toJS();
-											expect(usedargs.length).toEqual(args.length);
-											_.each(usedargs,function(usedarg,u){
-												expect(usedarg).toEqual(test[args[u]]||args[u]);
-											});
-										}
-									});
-								});
-							});
-						});
-					}
-					afterEach(function(){
-						_.each(test.context||{},function(stubdef,stubname){
-							Algol[stubname].restore();
-						});
-					});
-				});
-			});
-		});
-	});
 });
 
 

@@ -1,16 +1,21 @@
 /* jshint jasmine: true */
 
+var sinon,jasmineSinon,Algol,_,I,tester;
 if (typeof require === 'function' && typeof module === 'object') {
-	var sinon = require('sinon'),
-		jasmineSinon = require('jasmine-sinon'),
-		Algol = require("../../src/"),
-		_ = require("../../src/lodashmixins"),
-		I = require("../../src/immutableextensions");
+	sinon = require('sinon');
+	jasmineSinon = require('jasmine-sinon');
+	Algol = require("../../src/");
+	_ = require("../../src/lodashmixins");
+	I = require("../../src/immutableextensions");
+	tester = require("../tester");
 } else {
-	var I = window.Immutable, _ = window._;
+	I = window.Immutable;
+	_ = window._;
+	sinon = window.sinon;
+	tester = window.tester;
 }
 
-var tests = {
+tester("generate",{
 	applyFilter: [{
 		state: {layers: {badorks: {xxx:"X",b:["MOO"]}, muppets:{a:[{foo:"bar"}],b:[{foo:"baz"},{foo:"bin"}]}},context:{forbidden:"baz"}},
 		firstarg: {layer: "muppets", matching: {foo:["ISNT",["CONTEXTVAL","forbidden"]]},tolayer:["IFELSE",["SAME",["LOOKUP","muppets",["CONTEXTPOS","START"],"foo"],["VAL","bar"]],["VAL","knorks"],["VAL","badorks"]]},
@@ -124,20 +129,4 @@ var tests = {
 		firstarg: ["somegen"],
 		expected: {marks:{foo:"bar"},board:{bar:{nextto:{1:"bar2"}}},layers:{newlayer:{bar2:[{prop:"snopp"}]}},context:{blaj:"paj"},gamedef:{generators:{somegen:{neededmarks:["foo"],type:"nextto",starts:["FROMSINGLEPOS",["MARKPOS","foo"]],dirs:["DIRS",[1]],draw:{target:{tolayer:["VAL","newlayer"],include:{prop:["VAL","snopp"]}}}}}}}
 	}]
-};
-
-
-describe("The generate functions",function(){
-	_.each(tests,function(arr,funcname){
-		describe("the "+funcname+" function",function(){
-			_.each(arr,function(test){
-				describe("when called with "+JSON.stringify(test.firstarg)+" and state is "+JSON.stringify(test.state),function(){
-					it("returns "+JSON.stringify(test.expected),function(){
-						var result = Algol[funcname](I.fromJS(test.state||{}),I.fromJS(test.firstarg),test.secondarg && I.fromJS(test.secondarg));
-						expect(result.toJS()).toEqual(test.expected);
-					});
-				});
-			});
-		});
-	});
 });

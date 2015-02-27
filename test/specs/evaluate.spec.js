@@ -1,16 +1,21 @@
 /* jshint jasmine: true */
 
+var sinon,jasmineSinon,Algol,_,I,tester;
 if (typeof require === 'function' && typeof module === 'object') {
-	var sinon = require('sinon'),
-		jasmineSinon = require('jasmine-sinon'),
-		Algol = require("../../src/"),
-		_ = require("../../src/lodashmixins"),
-		I = require("../../src/immutableextensions");
+	sinon = require('sinon');
+	jasmineSinon = require('jasmine-sinon');
+	Algol = require("../../src/");
+	_ = require("../../src/lodashmixins");
+	I = require("../../src/immutableextensions");
+	tester = require("../tester");
 } else {
-	var I = window.Immutable, _ = window._;
+	I = window.Immutable;
+	_ = window._;
+	sinon = window.sinon;
+	tester = window.tester;
 }
 
-var tests = {
+tester("evaluate",{
 	evaluateDirList: [{
 		firstarg: ["DIRS",[1,2,3,4,5]],
 		expected: [1,2,3,4,5]
@@ -158,19 +163,4 @@ var tests = {
 		firstarg: ["POSITIONINLIST",["MARKPOS","somemark"],["FROMALLINLAYER","foolayer"]],
 		expected: false
 	}]
-};
-
-describe("The evaluate functions",function(){
-	_.each(tests,function(arr,funcname){
-		describe("the "+funcname+" function",function(){
-			_.each(arr,function(test){
-				describe("when called with "+JSON.stringify(test.firstarg)+(test.state ? " and state is "+JSON.stringify(test.state) : ""),function(){
-					it("returns "+test.expected,function(){
-						var res = Algol[funcname](I.fromJS(test.state||{}),I.fromJS(test.firstarg));
-						expect(res.toJS ? res.toJS() : res).toEqual(test.expected);
-					});
-				});
-			});
-		});
-	});
 });
