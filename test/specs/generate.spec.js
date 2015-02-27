@@ -119,7 +119,7 @@ var tests = {
 		firstarg: {neededmarks:["foo"],type:"nextto",starts:["FROMSINGLEPOS",["MARKPOS","foo"]],dirs:["DIRS",[1]],draw:{target:{tolayer:["VAL","newlayer"],include:{prop:["VAL","snopp"]}}}},
 		expected: {marks:{foo:"bar"},board:{bar:{nextto:{1:"bar2"}}},layers:{newlayer:{bar2:[{prop:"snopp"}]}},context:{blaj:"paj"}}
 	}],
-	applyHydration: [{
+	applyGeneratorList: [{
 		state: {marks:{foo:"bar"},board:{bar:{nextto:{1:"bar2"}}},context:{blaj:"paj"},gamedef:{generators:{somegen:{neededmarks:["foo"],type:"nextto",starts:["FROMSINGLEPOS",["MARKPOS","foo"]],dirs:["DIRS",[1]],draw:{target:{tolayer:["VAL","newlayer"],include:{prop:["VAL","snopp"]}}}}}}},
 		firstarg: ["somegen"],
 		expected: {marks:{foo:"bar"},board:{bar:{nextto:{1:"bar2"}}},layers:{newlayer:{bar2:[{prop:"snopp"}]}},context:{blaj:"paj"},gamedef:{generators:{somegen:{neededmarks:["foo"],type:"nextto",starts:["FROMSINGLEPOS",["MARKPOS","foo"]],dirs:["DIRS",[1]],draw:{target:{tolayer:["VAL","newlayer"],include:{prop:["VAL","snopp"]}}}}}}}

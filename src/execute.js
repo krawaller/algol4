@@ -53,10 +53,6 @@ Algol.applyEffect = function(state,def){
 	return effectmethods[def.first()].apply(this,[state].concat(def.rest().toArray()));
 };
 
-Algol.performCommand = function(state,def){
-
-};
-
 Algol.canExecuteCommand = function(state,def){
 	return !(
 		(def.has("condition") && !this.evaluateBoolean(state,def.get("condition"))) || 
@@ -92,12 +88,15 @@ Algol.listCommandOptions = function(state,gamedef){
 	},I.Map(),this),"ENDTURN",this.endTurnCheck(state,gamedef)),"UNDO",state.has("previousstep") ? ["BACK",state.get("previousstep")] : false) ;
 };
 
+Algol.hydrateState = function(state){
+	return state;
+};
 
 var optionmethods = {
 	BACK: function(state,oldstate){ return oldstate; },
-	NEWSTEP: function(state,oldstate){ return oldstate; },
+	NEWSTEP: function(state,oldstate){ return this.hydrateState(oldstate); },
 	PASSTO: function(state,player){
-		return state.merge(I.fromJS({
+		return this.hydrateState(state.merge(I.fromJS({
 			steps: [],
 			affected: [],
 			marks: {},
@@ -107,7 +106,7 @@ var optionmethods = {
 			player: player,
 			turn: state.get("turn")+1,
 			context: {CURRENTPLAYER:player,PERFORMEDSTEPS:0}
-		}));
+		})));
 	},
 	ENDGAME: function(state,cond,player){ return state.merge({player:player,status:cond}); }
 };

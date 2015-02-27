@@ -79,7 +79,7 @@ Algol.applyGenerator = function(state,def){
 	}
 };
 
-Algol.applyHydration = function(state,list){
+Algol.applyGeneratorList = function(state,list){
 	return list.reduce(function(state,generatorname){
 		return this.applyGenerator(state,state.getIn(["gamedef","generators",generatorname]));
 	},state,this);
