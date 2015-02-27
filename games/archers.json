@@ -4,12 +4,12 @@
 		"height": 9,
 		"width": 9,
 		"terrain": [
-			{"pos":2002,"type":"base","PLR":1},{"pos":2003,"type":"base","PLR":1},{"pos":2004,"type":"base","PLR":1},
-			{"pos":3002,"type":"base","PLR":1},{"pos":3003,"type":"base","PLR":1},{"pos":3004,"type":"base","PLR":1},
-			{"pos":4002,"type":"base","PLR":1},{"pos":4003,"type":"base","PLR":1},{"pos":4004,"type":"base","PLR":1},
-			{"pos":6006,"type":"base","PLR":2},{"pos":6007,"type":"base","PLR":2},{"pos":6008,"type":"base","PLR":2},
-			{"pos":7006,"type":"base","PLR":2},{"pos":7007,"type":"base","PLR":2},{"pos":7008,"type":"base","PLR":2},
-			{"pos":8006,"type":"base","PLR":2},{"pos":8007,"type":"base","PLR":2},{"pos":8008,"type":"base","PLR":2}
+			{"pos":2002,"type":"base","owner":1},{"pos":2003,"type":"base","owner":1},{"pos":2004,"type":"base","owner":1},
+			{"pos":3002,"type":"base","owner":1},{"pos":3003,"type":"base","owner":1},{"pos":3004,"type":"base","owner":1},
+			{"pos":4002,"type":"base","owner":1},{"pos":4003,"type":"base","owner":1},{"pos":4004,"type":"base","owner":1},
+			{"pos":6006,"type":"base","owner":2},{"pos":6007,"type":"base","owner":2},{"pos":6008,"type":"base","owner":2},
+			{"pos":7006,"type":"base","owner":2},{"pos":7007,"type":"base","owner":2},{"pos":7008,"type":"base","owner":2},
+			{"pos":8006,"type":"base","owner":2},{"pos":8007,"type":"base","owner":2},{"pos":8008,"type":"base","owner":2}
 		],
 		"setup": [
 			{"POS":2002,"type":"archer","DIR":5,"PLR":1},{"POS":2003,"type":"archer","DIR":5,"PLR":1},{"POS":2004,"type":"archer","DIR":5,"PLR":1},
@@ -25,7 +25,7 @@
 			"type": "filter",
 			"layer": "TERRAIN",
 			"overlapping": "MYUNITS",
-			"matching": {"PLR":["ISNT",["CONTEXTVAL","CURRENTPLAYER"]]},
+			"matching": {"owner":["ISNT",["CONTEXTVAL","CURRENTPLAYER"]]},
 			"tolayer": "infiltrators"
 		},
 		"findkilltargets": {
@@ -44,7 +44,7 @@
 		},
 		"findarrows": {
 			"type": "walker",
-			"starts": ["FROMALLINLAYER","UNITS"],
+			"start": ["FROMALLINLAYER","UNITS"],
 			"dir": ["RELATIVEDIR",["VAL",1],["LOOKUP","UNITS",["CONTEXTPOS","START"],"DIR"]],
 			"stops": "UNITS",
 			"max": 3,

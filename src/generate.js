@@ -18,33 +18,36 @@ Algol.generateNeighbourPods = function(state,def){
 	},I.fromJS({start:{},target:{}}),this);
 };
 
-function stopreason(state,def,dir,pos,length){
+function stopreason(state,def,dir,pos,length,blocks,steps){
 	var nextpos = (state.getIn(["board",pos,"nextto",dir])||state.getIn(["board",pos,"nextto",dir+""]));
 	if (!nextpos){
 		return "OUTOFBOUNDS";
 	} else if (def.get("max") && length === def.get("max")) {
 		return "REACHEDMAX";
-	} else if (def.has("steplayer") && !state.getIn(["layers",def.get("steplayer"),nextpos]) ){
+	} else if (steps && !steps.contains(nextpos)){
 		return "NOMORESTEPS";
-	} else if (def.has("blocklayer") && state.getIn(["layers",def.get("blocklayer"),nextpos]) ){
+	} else if (blocks && blocks.contains(nextpos)){
 		return "HITBLOCK";
 	}
 }
 
 Algol.generateWalkerPods = function(state,def){
 	var pods = this.evaluatePositionList(state,def.get("starts")).reduce(function(recorder,startpos){
-		return this.evaluateDirList(state.setIn(["context","START"],startpos),def.get("dirs")).reduce(function(recorder,dir){
-			var pos=startpos, steps = [], reason;
-			while(!(reason=stopreason(state,def,dir,pos,steps.length))){
-				steps.push(pos = state.getIn(["board",pos,"nextto",dir])||state.getIn(["board",pos,"nextto",dir+""]));
+		var startstate = state.setIn(["context","START"],startpos);
+		return this.evaluateDirList(startstate,def.get("dirs")).reduce(function(recorder,dir){
+			var pos=startpos, walk = [], reason,
+				blocks = def.has("blocks") && this.evaluatePositionList(startstate,def.get("blocks")),
+				steps = def.has("steps") && this.evaluatePositionList(startstate,def.get("steps"));
+			while(!(reason=stopreason(startstate,def,dir,pos,walk.length,blocks,steps))){
+				walk.push(pos = startstate.getIn(["board",pos,"nextto",dir])||startstate.getIn(["board",pos,"nextto",dir+""]));
 			}
-			var context = I.Map({START:startpos,DIR:dir,STEPS:steps.length,STOPREASON:reason});
+			var context = I.Map({START:startpos,DIR:dir,STEPS:walk.length,STOPREASON:reason});
 			recorder = I.pushIn(recorder,["start",startpos],context);
 			if (reason==="HITBLOCK"){
-				blockpos = state.getIn(["board",pos,"nextto",dir])||state.getIn(["board",pos,"nextto",dir+""]);
+				blockpos = startstate.getIn(["board",pos,"nextto",dir])||startstate.getIn(["board",pos,"nextto",dir+""]);
 				recorder = I.pushIn(recorder,["block",blockpos],context.set("TARGET",blockpos));
 			}
-			_.each(steps,function(step,n){
+			_.each(walk,function(step,n){
 				recorder = I.pushIn(recorder,["step",step],context.set("TARGET",step).set("STEP",n+1));
 			});
 			return recorder;
