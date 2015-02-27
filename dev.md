@@ -6,6 +6,11 @@ gamedef
 		[cmndname]
 			+name: [cmndname]
 			+neededmarks: [markname,...]
+	generators
+		[generatorname]
+			+neededmarks: []
+	+hydration: [generatorname,...]
+	+hydrationturnend: [generatorname,...]
 
 
 ######################## D A T A O B J #####################

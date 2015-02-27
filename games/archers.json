@@ -3,14 +3,14 @@
 	"board": {
 		"height": 9,
 		"width": 9,
-		"terrain": [
-			{"pos":2002,"type":"base","owner":1},{"pos":2003,"type":"base","owner":1},{"pos":2004,"type":"base","owner":1},
-			{"pos":3002,"type":"base","owner":1},{"pos":3003,"type":"base","owner":1},{"pos":3004,"type":"base","owner":1},
-			{"pos":4002,"type":"base","owner":1},{"pos":4003,"type":"base","owner":1},{"pos":4004,"type":"base","owner":1},
-			{"pos":6006,"type":"base","owner":2},{"pos":6007,"type":"base","owner":2},{"pos":6008,"type":"base","owner":2},
-			{"pos":7006,"type":"base","owner":2},{"pos":7007,"type":"base","owner":2},{"pos":7008,"type":"base","owner":2},
-			{"pos":8006,"type":"base","owner":2},{"pos":8007,"type":"base","owner":2},{"pos":8008,"type":"base","owner":2}
-		],
+		"terrain": {
+			"2002": {"type":"base","owner":1}, "2003": {"type":"base","owner":1}, "2004": {"type":"base","owner":1},
+			"3002": {"type":"base","owner":1}, "3003": {"type":"base","owner":1}, "3004": {"type":"base","owner":1},
+			"4002": {"type":"base","owner":1}, "4003": {"type":"base","owner":1}, "4004": {"type":"base","owner":1},
+			"6006": {"type":"base","owner":2}, "6007": {"type":"base","owner":2}, "6008": {"type":"base","owner":2},
+			"7006": {"type":"base","owner":2}, "7007": {"type":"base","owner":2}, "7008": {"type":"base","owner":2},
+			"8006": {"type":"base","owner":2}, "8007": {"type":"base","owner":2}, "8008": {"type":"base","owner":2}
+		},
 		"setup": [
 			{"POS":2002,"type":"archer","DIR":5,"PLR":1},{"POS":2003,"type":"archer","DIR":5,"PLR":1},{"POS":2004,"type":"archer","DIR":5,"PLR":1},
 			{"POS":3002,"type":"archer","DIR":5,"PLR":1},{"POS":3003,"type":"king","DIR":5,"PLR":1},{"POS":3004,"type":"archer","DIR":5,"PLR":1},
@@ -20,6 +20,8 @@
 			{"POS":8006,"type":"archer","DIR":1,"PLR":2},{"POS":8007,"type":"archer","DIR":1,"PLR":2},{"POS":8008,"type":"archer","DIR":1,"PLR":2}
 		]
 	},
+	"hydration": ["findarrows","findfooting","findkilltargets"],
+	"hydrationturnend": ["findinfiltrators","finddeadkings"],
 	"generators": {
 		"findinfiltrators": {
 			"type": "filter",
@@ -29,6 +31,7 @@
 			"tolayer": ["VAL","infiltrators"]
 		},
 		"findkilltargets": {
+			"neededmarks": ["selectunit"],
 			"type": "filter",
 			"layer": "bullseye",
 			"matching": {"shooterid":["IS",["IDAT",["MARKPOS","selectunit"]]]},
@@ -61,6 +64,7 @@
 		},
 		"findfooting": {
 			"type": "nextto",
+			"neededmarks": ["selectunit"],
 			"starts": ["FROMSINGLEPOS",["MARKPOS","selectunit"]],
 			"dirs": ["RELATIVEDIRS",["DIRS",1,5],["LOOKUP","UNITS",["CONTEXTPOS","START"],"DIR"]],
 			"draw": {

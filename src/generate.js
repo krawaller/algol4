@@ -65,6 +65,26 @@ Algol.applyFilter = function(state,def){
 	},state,this).set("context",state.get("context"));
 };
 
+Algol.applyGenerator = function(state,def){
+	var type = def.get("type"), marklist = def.get("neededmarks"), marks = state.get("marks"), pods;
+	if (!marklist || marklist.every(function(mark){return marks.has(mark);})){
+		if (type==="filter") {
+			return this.applyFilter(state,def);
+		} else {
+			pods = this[{walker:"generateWalkerPods",nextto:"generateNeighbourPods"}[type]](state,def);
+			return this.paintSeedPods(state,def.get("draw"),pods);
+		}
+	} else {
+		return state;
+	}
+};
+
+Algol.applyHydration = function(state,list){
+	return list.reduce(function(state,generatorname){
+		return this.applyGenerator(state,state.getIn(["gamedef","generators",generatorname]));
+	},state,this);
+};
+
 Algol.generateFilterPods = function(state,def){
 	/*var overlapping = def.get("overlapping"),
 		matching = def.get("matching");
@@ -112,7 +132,7 @@ Algol.paintSeedPods = function(state,draw,pods){
 	},state,this);
 };
 
-Algol.generateUnitLayers = function(state){
+Algol.generateUnitLayersFromState = function(state){
 	return state.mergeIn(["layers"],state.getIn(["data","units"]).reduce(function(map,unit,id){
 		var pos = unit.get("POS");
 		return unit.get("STATUS") === "DEAD" ? I.pushIn(map,["DEADUNITS",pos],unit) : 
@@ -120,13 +140,19 @@ Algol.generateUnitLayers = function(state){
 	},I.fromJS({UNITS:{},DEADUNITS:{},MYUNITS:{},OPPUNITS:{}}),this));
 };
 
-Algol.generateInitialUnitData = function(state,gamedef){
+Algol.generateInitialDataFromGameDef = function(state,gamedef){
 	return I.Map().set("units",gamedef.get("setup").reduce(function(map,unit,n){
 		return map.set("unit"+(n+1),unit.set("id","unit"+(n+1)));
 	},I.Map(),this));
 };
 
-Algol.generateBoardInfo = function(state,boarddef){
+Algol.generateTerrainFromTerrainDef = function(state,terraindef){
+	return terraindef.reduce(function(ret,def,key){
+		return ret.set(parseInt(key),def.set("POS",parseInt(key)));
+	},I.Map());
+};
+
+Algol.generateBoardInfoFromGameDef = function(state,boarddef){
 	var height = boarddef.get("height"), width = boarddef.get("width");
 	return I.Range(1,width+1).reduce(function(mem,x){
 		return I.Range(1,height+1).reduce(function(mem,y){

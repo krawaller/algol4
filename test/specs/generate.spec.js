@@ -84,16 +84,16 @@ var tests = {
 		secondarg: {FLUM: {abc: [{FOO:"BAR",TARGET:"abc"}], xyz: [{FOO:"BAZ",TARGET:"xyz"},{FOO:"BIN",TARGET:"xyz"}]}, HUM: {xyz:[{BAR:"BOO",TARGET:"def"}]}, KKK: {moo:[{FOO:"HOOOO",TARGET:"moo"}]}},
 		expected: {layers: {newlayer: {abc: [{myfoo:"BAR"}], xyz:[{myfoo:"BAZ"},{myfoo:"BIN"},{mybar:"BOO"}]}},context:{poo:"foo"}}
 	}],
-	generateUnitLayers: [{
+	generateUnitLayersFromState: [{
 		state: {player: 1, layers: {UNITS:"foo"}, data: {units: {id1: {POS:"pos1",PLR:1}, id2: {POS:"pos2",PLR:2}, id3: {POS:"pos2",STATUS:"DEAD",PLR:1}}}},
 		expected: {player: 1, layers: {DEADUNITS:{pos2:[{POS:"pos2",STATUS:"DEAD",PLR:1}]},UNITS:{pos1:[{POS:"pos1",PLR:1}],pos2:[{POS:"pos2",PLR:2}]},MYUNITS:{pos1:[{POS:"pos1",PLR:1}]},OPPUNITS:{pos2:[{POS:"pos2",PLR:2}]}}, data: {units: {id1: {POS:"pos1",PLR:1}, id2: {POS:"pos2",PLR:2}, id3: {POS:"pos2",STATUS:"DEAD",PLR:1}}}}
 	}],
-	generateInitialUnitData: [{
+	generateInitialDataFromGameDef: [{
 		state: {},
 		firstarg: {setup: [{foo:"bar"},{baz:"bin"}]},
 		expected: {units: {unit1: {foo:"bar",id:"unit1"}, unit2: {baz:"bin",id:"unit2"}}}
 	}],
-	generateBoardInfo: [{
+	generateBoardInfoFromGameDef: [{
 		state: {},
 		firstarg: {height: 2, width: 3},
 		expected: {
@@ -104,6 +104,25 @@ var tests = {
 			2002: {x:2,y:2,nextto:{1: 1002, 2: 1003, 3: 2003, 7: 2001, 8: 1001}},
 			2003: {x:3,y:2,nextto:{1: 1003, 7: 2002, 8: 1002}}
 		}
+	}],
+	generateTerrainFromTerrainDef: [{
+		state: {},
+		firstarg: {"3005":{foo:"bar"}},
+		expected: {3005:{POS:3005,foo:"bar"}}
+	}],
+	applyGenerator: [{
+		state: {marks:{}},
+		firstarg: {neededmarks:["foo"]},
+		expected: {marks:{}}
+	},{
+		state: {marks:{foo:"bar"},board:{bar:{nextto:{1:"bar2"}}},context:{blaj:"paj"}},
+		firstarg: {neededmarks:["foo"],type:"nextto",starts:["FROMSINGLEPOS",["MARKPOS","foo"]],dirs:["DIRS",1],draw:{target:{tolayer:["VAL","newlayer"],include:{prop:["VAL","snopp"]}}}},
+		expected: {marks:{foo:"bar"},board:{bar:{nextto:{1:"bar2"}}},layers:{newlayer:{bar2:[{prop:"snopp"}]}},context:{blaj:"paj"}}
+	}],
+	applyHydration: [{
+		state: {marks:{foo:"bar"},board:{bar:{nextto:{1:"bar2"}}},context:{blaj:"paj"},gamedef:{generators:{somegen:{neededmarks:["foo"],type:"nextto",starts:["FROMSINGLEPOS",["MARKPOS","foo"]],dirs:["DIRS",1],draw:{target:{tolayer:["VAL","newlayer"],include:{prop:["VAL","snopp"]}}}}}}},
+		firstarg: ["somegen"],
+		expected: {marks:{foo:"bar"},board:{bar:{nextto:{1:"bar2"}}},layers:{newlayer:{bar2:[{prop:"snopp"}]}},context:{blaj:"paj"},gamedef:{generators:{somegen:{neededmarks:["foo"],type:"nextto",starts:["FROMSINGLEPOS",["MARKPOS","foo"]],dirs:["DIRS",1],draw:{target:{tolayer:["VAL","newlayer"],include:{prop:["VAL","snopp"]}}}}}}}
 	}]
 };
 
