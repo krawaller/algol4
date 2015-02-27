@@ -9,7 +9,7 @@ function augmentWithGenerateFunctions(Algol){
 Algol.generateNeighbourPods = function(state,def){
 	return this.evaluatePositionList(state,def.get("starts")).reduce(function(recorder,startpos){
 		var neighbours = this.evaluateDirList(state.setIn(["context","START"],startpos),def.get("dirs")).reduce(function(map,dir){
-			var targetpos = state.getIn(["neighbours",startpos,dir])||state.getIn(["neighbours",startpos,dir+""]);
+			var targetpos = state.getIn(["board",startpos,"nextto",dir])||state.getIn(["board",startpos,"nextto",dir+""]);
 			return targetpos ? map.set(dir,targetpos) : map;
 		},I.Map(),this);
 		return neighbours.reduce(function(recorder,pos,dir){
@@ -19,7 +19,7 @@ Algol.generateNeighbourPods = function(state,def){
 };
 
 function stopreason(state,def,dir,pos,length){
-	var nextpos = (state.getIn(["neighbours",pos,dir])||state.getIn(["neighbours",pos,dir+""]));
+	var nextpos = (state.getIn(["board",pos,"nextto",dir])||state.getIn(["board",pos,"nextto",dir+""]));
 	if (!nextpos){
 		return "OUTOFBOUNDS";
 	} else if (def.get("max") && length === def.get("max")) {
@@ -36,12 +36,12 @@ Algol.generateWalkerPods = function(state,def){
 		return this.evaluateDirList(state.setIn(["context","START"],startpos),def.get("dirs")).reduce(function(recorder,dir){
 			var pos=startpos, steps = [], reason;
 			while(!(reason=stopreason(state,def,dir,pos,steps.length))){
-				steps.push(pos = state.getIn(["neighbours",pos,dir])||state.getIn(["neighbours",pos,dir+""]));
+				steps.push(pos = state.getIn(["board",pos,"nextto",dir])||state.getIn(["board",pos,"nextto",dir+""]));
 			}
 			var context = I.Map({START:startpos,DIR:dir,STEPS:steps.length,STOPREASON:reason});
 			recorder = I.pushIn(recorder,["start",startpos],context);
 			if (reason==="HITBLOCK"){
-				blockpos = state.getIn(["neighbours",pos,dir])||state.getIn(["neighbours",pos,dir+""]);
+				blockpos = state.getIn(["board",pos,"nextto",dir])||state.getIn(["board",pos,"nextto",dir+""]);
 				recorder = I.pushIn(recorder,["block",blockpos],context.set("TARGET",blockpos));
 			}
 			_.each(steps,function(step,n){
@@ -110,14 +110,14 @@ Algol.generateInitialUnitData = function(state,gamedef){
 	},I.Map(),this));
 };
 
-Algol.generateNeighbours = function(state,boarddef){
+Algol.generateBoardInfo = function(state,boarddef){
 	var height = boarddef.get("height"), width = boarddef.get("width");
 	return I.Range(1,width+1).reduce(function(mem,x){
 		return I.Range(1,height+1).reduce(function(mem,y){
-			return mem.set(y*1000+x,_.reduce([[0,-1],[1,-1],[1,0],[1,1],[0,1],[-1,1],[-1,0],[-1,-1]],function(map,mods,n){
+			return mem.set(y*1000+x,I.Map({x:x,y:y,nextto:_.reduce([[0,-1],[1,-1],[1,0],[1,1],[0,1],[-1,1],[-1,0],[-1,-1]],function(map,mods,n){
 				var newx = x+mods[0], newy = y+mods[1];
 				return newx>0 && newx<=width && newy>0 && newy<=height ? map.set(n+1,newy*1000+newx) : map;
-			},I.Map()));
+			},I.Map())}));
 		},mem);
 	},I.Map());
 };

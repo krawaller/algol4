@@ -25,32 +25,32 @@ var tests = {
 		expected: {start:{aaa:[{START:"aaa",TOTAL:1}]}}
 	}],
 	generateNeighbourPods: [{
-		state: {marks:{somemark:"foo"},neighbours:{foo:{4:"baz",6:"bin"}}},
+		state: {marks:{somemark:"foo"},board:{foo:{nextto:{4:"baz",6:"bin"}}}},
 		firstarg: {starts: ["FROMSINGLEPOS",["MARKPOS","somemark"]], dirs: ["DIRS",4,5,6]},
 		expected: {start: {foo: [{START:"foo",NEIGHBOURS:2}]},target:{baz:[{START:"foo",TARGET:"baz",DIR:4,NEIGHBOURS:2}],bin:[{START:"foo",TARGET:"bin",DIR:6,NEIGHBOURS:2}]}}
 	},{
-		state: {layers:{UNITS:{foo:[{dir:4}]}},marks:{somemark:"foo"},neighbours:{foo:{4:"baz",6:"bin"}}},
+		state: {layers:{UNITS:{foo:[{dir:4}]}},marks:{somemark:"foo"},board:{foo:{nextto:{4:"baz",6:"bin"}}}},
 		firstarg: {starts: ["FROMSINGLEPOS",["MARKPOS","somemark"]], dirs: ["RELATIVEDIRS",["DIRS",1,2,3],["LOOKUP","UNITS",["CONTEXTPOS","START"],"dir"]]},
 		expected: {start: {foo: [{START:"foo",NEIGHBOURS:2}]},target:{baz:[{START:"foo",TARGET:"baz",DIR:4,NEIGHBOURS:2}],bin:[{START:"foo",TARGET:"bin",DIR:6,NEIGHBOURS:2}]}}
 	},{
-		state: {layers:{somelayer:{foo:"X",foo2:"Y"},UNITS:{foo:[{dir:4}]}},neighbours:{foo:{4:"baz",6:"bin"},foo2:{5:"bin",6:"buh"}}},
+		state: {layers:{somelayer:{foo:"X",foo2:"Y"},UNITS:{foo:[{dir:4}]}},board:{foo:{nextto:{4:"baz",6:"bin"}},foo2:{nextto:{5:"bin",6:"buh"}}}},
 		firstarg: {starts: ["FROMALLINLAYER","somelayer"], dirs: ["DIRS",4,5,6]},
 		expected: {start: {foo: [{START:"foo",NEIGHBOURS:2}],foo2:[{START:"foo2",NEIGHBOURS:2}]},target:{baz:[{START:"foo",TARGET:"baz",DIR:4,NEIGHBOURS:2}],bin:[{START:"foo",TARGET:"bin",DIR:6,NEIGHBOURS:2},{START:"foo2",TARGET:"bin",DIR:5,NEIGHBOURS:2}],buh:[{START:"foo2",TARGET:"buh",DIR:6,NEIGHBOURS:2}]}}
 	}],
 	generateWalkerPods: [{
-		state: {marks: {somemark:"S"}, neighbours:{S:{4:"lonestep"},lonestep:{}}},
+		state: {marks: {somemark:"S"}, board:{S:{nextto:{4:"lonestep"}},lonestep:{nextto:{}}}},
 		firstarg: {starts: ["FROMSINGLEPOS",["MARKPOS","somemark"]], dirs: ["RELATIVEDIRS",["DIRS",1],["VAL",4]]},
 		expected: {start: {S: [{START:"S",DIR:4,STEPS:1,STOPREASON:"OUTOFBOUNDS"}] }, step: {lonestep:[{START:"S",TARGET:"lonestep",DIR:4,STEPS:1,STEP:1,STOPREASON:"OUTOFBOUNDS"}]}, block: {}, all: {S: [{START:"S",DIR:4,STEPS:1,STOPREASON:"OUTOFBOUNDS"}], lonestep:[{START:"S",TARGET:"lonestep",DIR:4,STEPS:1,STEP:1,STOPREASON:"OUTOFBOUNDS"}]} }
 	},{
-		state: {marks: {somemark:"S"}, neighbours:{S:{5:"step1"},step1:{5:"step2"}}},
+		state: {marks: {somemark:"S"}, board:{S:{nextto:{5:"step1"}},step1:{nextto:{5:"step2"}}}},
 		firstarg: {starts: ["FROMSINGLEPOS",["MARKPOS","somemark"]], dirs: ["DIRS",5], max: 1},
 		expected: {start: {S: [{START:"S",DIR:5,STEPS:1,STOPREASON:"REACHEDMAX"}] }, step: {step1:[{START:"S",TARGET:"step1",DIR:5,STEPS:1,STEP:1,STOPREASON:"REACHEDMAX"}]}, block: {}, all: {S: [{START:"S",DIR:5,STEPS:1,STOPREASON:"REACHEDMAX"}],step1:[{START:"S",TARGET:"step1",DIR:5,STEPS:1,STEP:1,STOPREASON:"REACHEDMAX"}]} }
 	},{
-		state: {marks: {somemark:"S"}, neighbours:{S:{6:"step1"},step1:{6:"step2"}}, layers: {pads: {step1:"X"}}},
+		state: {marks: {somemark:"S"}, board:{S:{nextto:{6:"step1"}},step1:{nextto:{6:"step2"}}}, layers: {pads: {step1:"X"}}},
 		firstarg: {starts: ["FROMSINGLEPOS",["MARKPOS","somemark"]], dirs: ["DIRS",6], steplayer: "pads"},
 		expected: {start: {S: [{START:"S",DIR:6,STEPS:1,STOPREASON:"NOMORESTEPS"}] }, step: {step1:[{START:"S",TARGET:"step1",DIR:6,STEPS:1,STEP:1,STOPREASON:"NOMORESTEPS"}]}, block: {}, all: {S: [{START:"S",DIR:6,STEPS:1,STOPREASON:"NOMORESTEPS"}],step1:[{START:"S",TARGET:"step1",DIR:6,STEPS:1,STEP:1,STOPREASON:"NOMORESTEPS"}] } }
 	},{
-		state: {marks: {somemark:"S"}, neighbours:{S:{7:"step1"},step1:{7:"step2"}}, layers: {blocks: {step2:"X"}}},
+		state: {marks: {somemark:"S"}, board:{S:{nextto:{7:"step1"}},step1:{nextto:{7:"step2"}}}, layers: {blocks: {step2:"X"}}},
 		firstarg: {starts: ["FROMSINGLEPOS",["MARKPOS","somemark"]], dirs: ["DIRS",7], blocklayer: "blocks"},
 		expected: {start: {S: [{START:"S",DIR:7,STEPS:1,STOPREASON:"HITBLOCK"}] }, step: {step1:[{START:"S",TARGET:"step1",DIR:7,STEPS:1,STEP:1,STOPREASON:"HITBLOCK"}]}, block: {step2:[{START:"S",TARGET:"step2",DIR:7,STEPS:1,STOPREASON:"HITBLOCK"}]}, all: {S: [{START:"S",DIR:7,STEPS:1,STOPREASON:"HITBLOCK"}],step1:[{START:"S",TARGET:"step1",DIR:7,STEPS:1,STEP:1,STOPREASON:"HITBLOCK"}],step2:[{START:"S",TARGET:"step2",DIR:7,STEPS:1,STOPREASON:"HITBLOCK"}] } }
 	}],
@@ -80,10 +80,17 @@ var tests = {
 		firstarg: {setup: [{foo:"bar"},{baz:"bin"}]},
 		expected: {units: {unit1: {foo:"bar",id:"unit1"}, unit2: {baz:"bin",id:"unit2"}}}
 	}],
-	generateNeighbours: [{
+	generateBoardInfo: [{
 		state: {},
 		firstarg: {height: 2, width: 3},
-		expected: {1001: {3: 1002, 4: 2002, 5: 2001}, 1002: {3: 1003, 4: 2003, 5: 2002, 6: 2001, 7: 1001}, 1003: {5: 2003, 6: 2002, 7: 1002}, 2001: {1: 1001, 2: 1002, 3: 2002}, 2002: {1: 1002, 2: 1003, 3: 2003, 7: 2001, 8: 1001}, 2003: {1: 1003, 7: 2002, 8: 1002}}
+		expected: {
+			1001: {x:1,y:1,nextto:{3: 1002, 4: 2002, 5: 2001}},
+			1002: {x:2,y:1,nextto:{3: 1003, 4: 2003, 5: 2002, 6: 2001, 7: 1001}},
+			1003: {x:3,y:1,nextto:{5: 2003, 6: 2002, 7: 1002}},
+			2001: {x:1,y:2,nextto:{1: 1001, 2: 1002, 3: 2002}},
+			2002: {x:2,y:2,nextto:{1: 1002, 2: 1003, 3: 2003, 7: 2001, 8: 1001}},
+			2003: {x:3,y:2,nextto:{1: 1003, 7: 2002, 8: 1002}}
+		}
 	}]
 };
 
