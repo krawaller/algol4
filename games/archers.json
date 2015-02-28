@@ -72,7 +72,7 @@
 					"condition": ["AND",["NONEAT","UNITS",["CONTEXTPOS","TARGET"]],["NONEAT","opparrows",["CONTEXTPOS","TARGET"]]],
 					"tolayer": ["IFELSE",["SAME",["CONTEXTVAL","DIR"],["LOOKUP","UNITS",["CONTEXTPOS","START"],"DIR"]],"forwardfooting","backwardfooting"],
 					"include": {
-						"id": ["IDAT","START"]
+						"id": ["IDAT",["CONTEXTPOS","START"]]
 					}
 				}
 			}
@@ -94,26 +94,26 @@
 	"commands": {
 		"stepforward": {
 			"condition": ["NOTEMPTY","forwardfooting"],
-			"effect": ["MOVEUNIT",["IDAT","selectunit"],["ONLYPOSIN","forwardfooting"]],
+			"effect": ["MOVEUNIT",["IDAT",["MARKPOS","selectunit"]],["ONLYPOSIN","forwardfooting"]],
 			"setmarks": {
 				"selectunit": ["ONLYPOSIN","forwardfooting"]
 			}
 		},
 		"stepbackward": {
 			"condition": ["NOTEMPTY","backwardfooting"],
-			"effect": ["MOVEUNIT",["IDAT","selectunit"],["ONLYPOSIN","backwardfooting"]],
+			"effect": ["MOVEUNIT",["IDAT",["MARKPOS","selectunit"]],["ONLYPOSIN","backwardfooting"]],
 			"setmarks": {
 				"selectunit": ["ONLYPOSIN","forwardfooting"]
 			}
 		},
 		"turnleft": {
-			"effect": ["TURNUNIT",["IDAT","selectunit"],["VAL",-2]]
+			"effect": ["TURNUNIT",["IDAT",["MARKPOS","selectunit"]],["VAL",-2]]
 		},
 		"turnright": {
-			"effect": ["TURNUNIT",["IDAT","selectunit"],["VAL",2]]
+			"effect": ["TURNUNIT",["IDAT",["MARKPOS","selectunit"]],["VAL",2]]
 		},
 		"fire": {
-			"condition": ["AND",["NOTEMPTY","gonnadie"],["NOT",["AFFECTED",["IDAT","selectunit"]]]],
+			"condition": ["AND",["NOTEMPTY","gonnadie"],["NOT",["AFFECTED",["IDAT",["MARKPOS","selectunit"]]]]],
 			"effect": ["KILLUNIT",["IDAT",["ONLYPOSIN","gonnadie"]]]
 		}
 	}
