@@ -1,4 +1,17 @@
 
+######################## R E M A I N I N G #################
+
+ [ ] Battle player
+ [ ] Draw mechanics
+ [ ] save inflation
+ [ ] Click reception
+ [ ] Mark options
+ [ ] Game rules access, on object? localstorage?
+ [ ] Game initialization
+ [ ] Hydration - add options obj
+ [ ] Hydration at turn end
+
+
 ######################## A U G M E N T #####################
 
 gamedef
