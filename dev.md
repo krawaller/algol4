@@ -10,6 +10,7 @@
  [ ] Game initialization
  [ ] Hydration - add options obj
  [ ] Hydration at turn end
+ [ ] Analysis augmentation
 
 
 ######################## A U G M E N T #####################

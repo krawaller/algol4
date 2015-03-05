@@ -87,22 +87,19 @@ tester("execute",{
 		secondarg: {name:"somecommand",neededmarks:["mark1"],setmarks:{mark1:["VAL","somepos"]}},
 		expected: ["NEWSTEP",{marks:{mark1:"somepos"},data:{c:666},steps:["foo",{command:"somecommand",marks:{mark1:"foo"}}],previousstep: {marks:{mark1:"foo",mark2:"bar"},steps:[1,2],data:{a:1},previousstep:{steps:[1],data:{b:2},previousstep:{steps:[],data:{c:3}}},context:{PERFORMEDSTEPS:4}},context:{PERFORMEDSTEPS:5} }]
 	}],
-	endTurnCheck: [{
-		state: {context:{FOO:"bar"}},
-		firstarg: {endturn:{condition:["SAME",["CONTEXTVAL","FOO"],["VAL","notbar"]]}},
-		expected: false
-	},{
+	endTurnOption: [{
 		state: {context:{FOO:"bar",CURRENTPLAYER:1}},
-		firstarg: {endturn:{condition:["SAME",["CONTEXTVAL","FOO"],["VAL","bar"]]},endgame:{bywuu:{condition:["TRUE"],winner:["CONTEXTVAL","CURRENTPLAYER"]}}},
+		firstarg: {endturn:{},endgame:{bywuu:{condition:["TRUE"],winner:["CONTEXTVAL","CURRENTPLAYER"]}}},
 		expected: ["ENDGAME","bywuu",1]
 	},{
 		state: {context:{FOO:"bar",CURRENTPLAYER:1}},
-		firstarg: {endturn:{condition:["SAME",["CONTEXTVAL","FOO"],["VAL","bar"]],passto:["IFELSE",["SAME",["CONTEXTVAL","CURRENTPLAYER"],["VAL",1]],["VAL",2],["VAL",1]]},endgame:{bywuu:{condition:["DIFFERENT",["CONTEXTVAL","FOO"],["VAL","bar"]],winner:["CONTEXTVAL","CURRENTPLAYER"]}}},
+		firstarg: {endturn:{passto:["IFELSE",["SAME",["CONTEXTVAL","CURRENTPLAYER"],["VAL",1]],["VAL",2],["VAL",1]]},endgame:{bywuu:{condition:["DIFFERENT",["CONTEXTVAL","FOO"],["VAL","bar"]],winner:["CONTEXTVAL","CURRENTPLAYER"]}}},
 		expected: ["PASSTO",2]
 	}],
 	listCommandOptions: [{
 		state: {},
-		firstarg: {endturn:{condition:["TRUE"]},endgame:{bypoo:{condition:["TRUE"],winner:["VAL",1]}},commands:{}},
+		firstarg: {endgame:{bypoo:{condition:["TRUE"],winner:["VAL",1]}},commands:{}},
+		secondarg: true,
 		expected: {ENDTURN:["ENDGAME","bypoo",1]}
 	},{
 		state: {previousstep:"BLAH"},
@@ -149,10 +146,33 @@ tester("execute",{
 		}
 	}],
 	buildSaveEntryFromStep: [{
-		state: {gamedef:{commands:{somecommand:{neededmarks:["foo","bar"],id:"MYID"}}}},
+		state: {gamedef:{commands:{somecommand:{neededmarks:["bar","foo"],id:"MYID"}}}},
 		firstarg: {command:"somecommand",marks:{foo:1,bar:2}},
-		expected: "MYID_1_2"
+		expected: "MYID_2_1"
 	}],
+	hydrateState: [{
+		state: {hydration: "LIST",gamedef: {baz:"bin",endturn:{condition:["FALSE"]}}, foo:"bar"},
+		expected: {ranlist: "LIST", hydration:"LIST",gamedef:{baz:"bin",endturn:{condition:["FALSE"]}}, commands: "barLISTbinfalse", foo:"bar"},
+		context: {
+			applyGeneratorList: {
+				method: function(s,list){ return s.set("ranlist",list); }
+			},
+			listCommandOptions: {
+				method: function(s,gamedef,t){ return s.get("foo")+s.get("ranlist")+gamedef.get("baz")+t; }
+			}
+		}
+	},{
+		state: {hydration: "LIST", hydrationturnend: "LIST2", gamedef: {baz:"bin",endturn:{condition:["TRUE"]}}, foo:"bar"},
+		expected: {ranlist: "LISTLIST2", hydration:"LIST", hydrationturnend: "LIST2", gamedef:{baz:"bin",endturn:{condition:["TRUE"]}}, commands: "barLISTLIST2bintrue", foo:"bar"},
+		context: {
+			applyGeneratorList: {
+				method: function(s,list){ return s.set("ranlist",(s.get("ranlist")||"")+list); }
+			},
+			listCommandOptions: {
+				method: function(s,gamedef,t){ return s.get("foo")+s.get("ranlist")+gamedef.get("baz")+t; }
+			}
+		}
+	}]
 });
 
 

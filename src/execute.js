@@ -83,20 +83,26 @@ Algol.calculateCommandResult = function(state,newstate,commanddef){
 	},I.Map(),this)).setIn(["context","PERFORMEDSTEPS"],state.getIn(["context","PERFORMEDSTEPS"])+1)]);
 };
 
-Algol.endTurnCheck = function(state,gamedef){
-	return !this.evaluateBoolean(state,gamedef.getIn(["endturn","condition"])) ? false : gamedef.get("endgame").reduce(function(mem,end,name){
+Algol.endTurnOption = function(state,gamedef){
+	return gamedef.get("endgame").reduce(function(mem,end,name){
 		return mem || this.evaluateBoolean(state,end.get("condition")) && ["ENDGAME",name,this.evaluateValue(state,end.get("winner"))];
 	},undefined,this) || ["PASSTO",this.evaluateValue(state,gamedef.getIn(["endturn","passto"]))];
 };
 
-Algol.listCommandOptions = function(state,gamedef){
+Algol.listCommandOptions = function(state,gamedef,includeendturn){
 	return I.setIf(I.setIf(gamedef.get("commands").reduce(function(ret,comdef,comname){
 		return this.canExecuteCommand(state,comdef) ? ret.set(comname,this.calculateCommandResult(state,this.applyEffect(state,comdef.get("effect")),comdef)) : ret;
-	},I.Map(),this),"ENDTURN",this.endTurnCheck(state,gamedef)),"UNDO",state.has("previousstep") ? ["BACK",state.get("previousstep")] : false) ;
+	},I.Map(),this),"ENDTURN",includeendturn && this.endTurnOption(state,gamedef)),"UNDO",state.has("previousstep") ? ["BACK",state.get("previousstep")] : false) ;
 };
 
 Algol.hydrateState = function(state){
-	return state;
+	var cond = false;
+	state = this.applyGeneratorList(state,state.get("hydration"));
+	if (this.evaluateBoolean(state,state.getIn(["gamedef","endturn","condition"]))){
+		state = this.applyGeneratorList(state,state.get("hydrationturnend"));
+		cond = true;
+	}
+	return state.set("commands",this.listCommandOptions(state,state.get("gamedef"),cond));
 };
 
 var optionmethods = {
