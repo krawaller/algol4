@@ -72,7 +72,7 @@ var Tester = React.createClass({
   	var query = this.getQuery();
     return (
       <div>
-          <div>
+          <form onSubmit={this.reDraw}>
           	<p>{
           	  _.map(options,function(def,name){
           	  	return (
@@ -83,8 +83,8 @@ var Tester = React.createClass({
 				  );
           	  })
           	}</p>
-          	<button onClick={this.reDraw}>redraw</button>
-          </div>
+          	<button type='submit'>redraw</button>
+          </form>
 	      <div className='board'>
 	        {imgs.map(function(i,n){
 	          i.img = query[i.what] || options[i.what];
