@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="1093px" height="1318px" viewBox="0 0 1093 1318" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.2.2 (9983) - http://www.bohemiancoding.com/sketch -->
+    <title>Träd 1 - platt</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <radialGradient cx="50%" cy="0%" fx="50%" fy="0%" r="100%" id="radialGradient-1">
+            <stop stop-color="#429321" offset="0%"></stop>
+            <stop stop-color="#429321" offset="100%"></stop>
+        </radialGradient>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="Träd-1---platt" sketch:type="MSLayerGroup">
+            <rect id="Rectangle-82" stroke="#979797" fill="#8B572A" sketch:type="MSShapeGroup" x="455" y="922" width="185" height="396"></rect>
+            <path d="M487.154535,401 L1093,1010 L0,1010 L487.154535,401 Z" id="Rectangle-83" fill="url(#radialGradient-1)" sketch:type="MSShapeGroup"></path>
+            <path d="M493.550119,171 L1029,780 L63,780 L493.550119,171 Z" id="Rectangle-83" fill="url(#radialGradient-1)" sketch:type="MSShapeGroup"></path>
+            <path d="M500.5,85 L965,552 L127,552 L500.5,85 Z" id="Rectangle-83" fill="url(#radialGradient-1)" sketch:type="MSShapeGroup"></path>
+            <path d="M513.531026,0 L845,333 L247,333 L513.531026,0 Z" id="Rectangle-83" fill="url(#radialGradient-1)" sketch:type="MSShapeGroup"></path>
+        </g>
+    </g>
+</svg>

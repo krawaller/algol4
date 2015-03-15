@@ -8,10 +8,12 @@
 			{"x":4,"y":10,"plr":1},{"x":7,"y":10,"plr":1},{"x":1,"y":7,"plr":1},{"x":10,"y":7,"plr":1}
 		]
 	},
+	"hydration": ["findblocks","firetargets"],
 	"marks": {
 		"selectunit": {
 			"condition": ["NOT",["HASPERFORMEDCOMMAND","move"]],
-			"fromlayer": "MYUNITS"
+			"fromlayer": "MYUNITS",
+			"hydration": ["movetargets"]
 		},
 		"selectmove": {
 			"condition": ["NOT",["HASPERFORMEDCOMMAND","move"]],
@@ -23,12 +25,13 @@
 	},
 	"endturn": {
 		"condition":["HASPERFORMEDCOMMAND","fire"],
-		"commandcap": true
-	},
-	"endgame": {
-		"blocked":{
-			"condition": ["EMPTY","enemymove"],
-			"winner": ["CONTEXTVAL","CURRENTPLAYER"]
+		"commandcap": true,
+		"hydration": ["enemymoves"],
+		"endgame": {
+			"blocked":{
+				"condition": ["EMPTY","enemymove"],
+				"winner": ["CONTEXTVAL","CURRENTPLAYER"]
+			}
 		}
 	},
 	"commands": {

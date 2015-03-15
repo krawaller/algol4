@@ -20,8 +20,7 @@
 			{"POS":8006,"type":"archer","DIR":1,"PLR":2},{"POS":8007,"type":"archer","DIR":1,"PLR":2},{"POS":8008,"type":"archer","DIR":1,"PLR":2}
 		]
 	},
-	"hydration": ["findarrows","findfooting","findkilltargets"],
-	"hydrationturnend": ["findinfiltrators","finddeadkings"],
+	"hydration": ["findarrows"],
 	"generators": {
 		"findinfiltrators": {
 			"type": "filter",
@@ -80,12 +79,14 @@
 	},
 	"marks": {
 		"selectunit": {
-			"from":["FROMALLINLAYER","MYUNITS"]
+			"from":["FROMALLINLAYER","MYUNITS"],
+			"hydration": ["findfooting","findkilltargets"]
 		}
 	},
 	"endturn": {
 		"condition":["SAME",["CONTEXTVAL","PERFORMEDSTEPS"],2],
-		"commandcap": true
+		"commandcap": true,
+		"hydration": ["findinfiltrators","finddeadkings"]
 	},
 	"endgame": {
 		"infiltration":[["NOTEMPTY","infiltrators"],["CONTEXTVAL","CURRENTPLAYER"]],
