@@ -11,7 +11,7 @@ var dirlistmethods = {
 		return dirs;
 	},
 	RELATIVEDIRS: function(state,dirs,reldir){
-		rd = this.evaluateValue(state,reldir);
+		var rd = this.evaluateValue(state,reldir);
 		return this.evaluateDirList(state,dirs).map(function(d){ return [1,2,3,4,5,6,7,8,1,2,3,4,5,6,7,8][rd-2+d]; });
 	}
 };

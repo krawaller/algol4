@@ -35,7 +35,7 @@ Algol.generateWalkerPods = function(state,def){
 	var pods = this.evaluatePositionList(state,def.get("starts")).reduce(function(recorder,startpos){
 		var startstate = state.setIn(["context","START"],startpos);
 		return this.evaluateDirList(startstate,def.get("dirs")).reduce(function(recorder,dir){
-			var pos=startpos, walk = [], reason,
+			var pos=startpos, walk = [], reason, blockpos,
 				blocks = def.has("blocks") && this.evaluatePositionList(startstate,def.get("blocks")),
 				steps = def.has("steps") && this.evaluatePositionList(startstate,def.get("steps"));
 			while(!(reason=stopreason(startstate,def,dir,pos,walk.length,blocks,steps))){

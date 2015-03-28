@@ -80,17 +80,18 @@
 	"marks": {
 		"selectunit": {
 			"from":["FROMALLINLAYER","MYUNITS"],
-			"hydration": ["findfooting","findkilltargets"]
+			"hydration": ["findfooting","findkilltargets"],
+			"dehydration": ["forwardfooting","backwardfooting","gonnadie"]
 		}
 	},
 	"endturn": {
 		"condition":["SAME",["CONTEXTVAL","PERFORMEDSTEPS"],2],
 		"commandcap": true,
-		"hydration": ["findinfiltrators","finddeadkings"]
-	},
-	"endgame": {
-		"infiltration":[["NOTEMPTY","infiltrators"],["CONTEXTVAL","CURRENTPLAYER"]],
-		"kingkill":[["NOTEMPTY","deadking"],["CONTEXTVAL","CURRENTPLAYER"]]
+		"hydration": ["findinfiltrators","finddeadkings"],
+		"endgame": {
+			"infiltration":[["NOTEMPTY","infiltrators"],["CONTEXTVAL","CURRENTPLAYER"]],
+			"kingkill":[["NOTEMPTY","deadking"],["CONTEXTVAL","CURRENTPLAYER"]]
+		}
 	},
 	"commands": {
 		"stepforward": {

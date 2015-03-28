@@ -13,6 +13,11 @@
  [ ] Analysis augmentation
 
 
+######################## M A R K S #########################
+
+[]
+
+
 ######################## A U G M E N T #####################
 
 gamedef
@@ -58,6 +63,10 @@ state
 		PERFORMEDSTEPS: #
 	neighbours
 		ykx: {dir: ykx, ...}
+	commands
+		cmndname: ["ENDGAME",<reason>,<winner>]
+		cmndname: ["UNDO",<newstate>]
+		cmndname: ["NEWSTEP",<newstate>]
 
 ######################## T Y P E S #########################
 

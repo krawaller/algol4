@@ -68,6 +68,11 @@ tester("execute",{
 		firstarg: {condition:["TRUE"],neededmarks:["somemark"]},
 		expected: false
 	}],
+	calculateStepData: [{
+		state: {marks: {mark1:"foo",mark2:"bar"}},
+		firstarg: {name:"somecommand",neededmarks:["mark1"]},
+		expected: {command:"somecommand",marks:{mark1:"foo"}}
+	}],
 	calculateCommandResult: [{
 		state: {steps:[1,2],data:{a:1},previousstep:{steps:[1],data:{b:2},previousstep:{steps:[],data:{c:3}}}},
 		firstarg: {data:{c:3}},
@@ -80,12 +85,17 @@ tester("execute",{
 		state: {marks:{mark1:"foo",mark2:"bar"},steps:[1,2],data:{a:1},previousstep:{steps:[1],data:{b:2},previousstep:{steps:[],data:{c:3}}},context:{PERFORMEDSTEPS:4}},
 		firstarg: {data:{c:666},steps:["foo"]},
 		secondarg: {name:"somecommand",neededmarks:["mark1"]},
-		expected: ["NEWSTEP",{marks:{},data:{c:666},steps:["foo",{command:"somecommand",marks:{mark1:"foo"}}],previousstep: {marks:{mark1:"foo",mark2:"bar"},steps:[1,2],data:{a:1},previousstep:{steps:[1],data:{b:2},previousstep:{steps:[],data:{c:3}}},context:{PERFORMEDSTEPS:4}},context:{PERFORMEDSTEPS:5} }]
-	},{
-		state: {marks:{mark1:"foo",mark2:"bar"},steps:[1,2],data:{a:1},previousstep:{steps:[1],data:{b:2},previousstep:{steps:[],data:{c:3}}},context:{PERFORMEDSTEPS:4}},
-		firstarg: {data:{c:666},steps:["foo"]},
-		secondarg: {name:"somecommand",neededmarks:["mark1"],setmarks:{mark1:["VAL","somepos"]}},
-		expected: ["NEWSTEP",{marks:{mark1:"somepos"},data:{c:666},steps:["foo",{command:"somecommand",marks:{mark1:"foo"}}],previousstep: {marks:{mark1:"foo",mark2:"bar"},steps:[1,2],data:{a:1},previousstep:{steps:[1],data:{b:2},previousstep:{steps:[],data:{c:3}}},context:{PERFORMEDSTEPS:4}},context:{PERFORMEDSTEPS:5} }]
+		expected: ["NEWSTEP",{marks:"NEWMARKDATA",data:{c:666},steps:["foo","STEPDATA"],previousstep: {marks:{mark1:"foo",mark2:"bar"},steps:[1,2],data:{a:1},previousstep:{steps:[1],data:{b:2},previousstep:{steps:[],data:{c:3}}},context:{PERFORMEDSTEPS:4}},context:{PERFORMEDSTEPS:5} }],
+		context: {
+			updateMarksFromCommand: {
+				method: function(){ return "NEWMARKDATA"; },
+				expectedargs: [["state","secondarg"]]
+			},
+			calculateStepData: {
+				method: function(){ return "STEPDATA"; },
+				expectedargs: [["state","secondarg"]]
+			}
+		}
 	}],
 	endTurnOption: [{
 		state: {context:{FOO:"bar",CURRENTPLAYER:1}},
@@ -122,11 +132,11 @@ tester("execute",{
 		expected: "FOO",
 		context: {
 			hydrateState: {
-				method: function(s){ return "FOO"; },
+				method: function(){ return "FOO"; },
 				expectedargs: [ ["aftersteps"] ]
 			},
 			buildSaveEntryFromStep: {
-				method: function(s,entry){ return "ENTRY"; },
+				method: function(){ return "ENTRY"; },
 				expectedargs: [ ["state","1st"], ["state","2nd"] ]
 			}
 		}
@@ -140,16 +150,16 @@ tester("execute",{
 		expected: "hydratedstate",
 		context: {
 			hydrateState: {
-				method: function(s){ return "hydratedstate"; },
+				method: function(){ return "hydratedstate"; },
 				expectedargs: [ [{some:"other"}] ]
 			}
 		}
 	}],
-	buildSaveEntryFromStep: [{
+	/*buildSaveEntryFromStep: [{
 		state: {gamedef:{commands:{somecommand:{neededmarks:["bar","foo"],id:"MYID"}}}},
 		firstarg: {command:"somecommand",marks:{foo:1,bar:2}},
 		expected: "MYID_2_1"
-	}],
+	}],*/
 	hydrateState: [{
 		state: {hydration: "LIST",gamedef: {baz:"bin",endturn:{condition:["FALSE"]}}, foo:"bar"},
 		expected: {ranlist: "LIST", hydration:"LIST",gamedef:{baz:"bin",endturn:{condition:["FALSE"]}}, commands: "barLISTbinfalse", foo:"bar"},
@@ -158,7 +168,7 @@ tester("execute",{
 				method: function(s,list){ return s.set("ranlist",list); }
 			},
 			listCommandOptions: {
-				method: function(s,gamedef,t){ return s.get("foo")+s.get("ranlist")+gamedef.get("baz")+t; }
+				method: function(s,gamedef,t){ return s.get("foo")+s.get("ranlist")+gamedef.get("baz")+t; }
 			}
 		}
 	},{
@@ -169,10 +179,11 @@ tester("execute",{
 				method: function(s,list){ return s.set("ranlist",(s.get("ranlist")||"")+list); }
 			},
 			listCommandOptions: {
-				method: function(s,gamedef,t){ return s.get("foo")+s.get("ranlist")+gamedef.get("baz")+t; }
+				method: function(s,gamedef,t){ return s.get("foo")+s.get("ranlist")+gamedef.get("baz")+t; }
 			}
 		}
-	}]
+	}],
+	updateMarksFromCommand: []
 });
 
 
