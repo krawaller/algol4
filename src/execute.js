@@ -114,22 +114,21 @@ Algol.endTurnOption = function(state,gamedef){
 
 // Returns an array of available commands
 // Used in Algol.hydrateState  -- TODO really the right place?
-Algol.listCommandOptions = function(state,gamedef,includeendturn){
+Algol.listCommandOptions = function(state,gamedef){
 	return I.setIf(I.setIf(gamedef.get("commands").reduce(function(ret,comdef,comname){
 		return this.canExecuteCommand(state,comdef) ? ret.set(comname,this.calculateCommandResult(state,this.applyEffect(state,comdef.get("effect")),comdef)) : ret;
-	},I.Map(),this),"ENDTURN",includeendturn && this.endTurnOption(state,gamedef)),"UNDO",state.has("previousstep") ? ["BACK",state.get("previousstep")] : false) ;
+	},I.Map(),this),"ENDTURN",state.get("canendturn") && this.endTurnOption(state,gamedef)),"UNDO",state.has("previousstep") ? ["BACK",state.get("previousstep")] : false) ;
 };
 
 
 // Called from Algol.performOption (various)
 Algol.hydrateState = function(state){
-	var cond = false;
 	state = this.applyGeneratorList(state,state.get("hydration"));
-	if (this.evaluateBoolean(state,state.getIn(["gamedef","endturn","condition"]))){
+	state = state.set("canendturn",this.evaluateBoolean(state,state.getIn(["gamedef","endturn","condition"])));
+	if (state.get("canendturn")){
 		state = this.applyGeneratorList(state,state.get("hydrationturnend"));
-		cond = true;
 	}
-	return state.set("commands",this.listCommandOptions(state,state.get("gamedef"),cond));
+	return state.set("commands",this.listCommandOptions(state,state.get("gamedef")));
 };
 
 Algol.newTurnState = function(state,player){

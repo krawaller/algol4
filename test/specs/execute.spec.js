@@ -107,18 +107,31 @@ tester("execute",{
 		expected: ["PASSTO",2]
 	}],
 	listCommandOptions: [{
-		state: {},
+		state: {canendturn:true},
 		firstarg: {endgame:{bypoo:{condition:["TRUE"],winner:["VAL",1]}},commands:{}},
-		secondarg: true,
 		expected: {ENDTURN:["ENDGAME","bypoo",1]}
 	},{
 		state: {previousstep:"BLAH"},
-		firstarg: {endturn:{condition:["FALSE"]},commands:{}},
+		firstarg: {commands:{}},
 		expected: {UNDO:["BACK","BLAH"]}
 	},{
-		state: {turn: 5, steps:[],marks:{somemark:"foo"},layers:{UNITS:{foo:[{id:"someid"}]}},data:{units:{someid:{pos:"foo"}}},affected:[],context:{PERFORMEDSTEPS:5}},
-		firstarg: {endturn:{condition:["FALSE"]},commands:{mope:{condition:["TRUE"],neededmarks:[],name:"mope",effect:["KILLUNIT",["IDAT",["MARKPOS","somemark"]]]}}},
-		expected: {mope:["NEWSTEP",{turn: 5,steps:[{command:"mope",marks:{}}],marks:{},layers:{UNITS:{foo:[{id:"someid"}]}},data:{units:{someid:{pos:"foo",STATUS:"DEAD",AFFECTEDTURN:5}}},affected:["someid"],previousstep:{turn: 5, steps:[],marks:{somemark:"foo"},layers:{UNITS:{foo:[{id:"someid"}]}},data:{units:{someid:{pos:"foo"}}},affected:[],context:{PERFORMEDSTEPS:5}},context:{PERFORMEDSTEPS:6}}]}
+		state: {steps: []},
+		firstarg: {commands:{mope:{name:"mope",effect:"mopify"},dope:{name:"dope",effect:"dopify"}}},
+		expected: {mope:"RESULT"},
+		context: {
+			canExecuteCommand: {
+				method: function(s,c){ return c.get("name") === "mope"; },
+				expectedargs: [ ["state",{name:"mope",effect:"mopify"}], ["state",{name:"dope",effect:"dopify"}] ]
+			},
+			applyEffect: {
+				method: function(){ return "EFFECT"; },
+				expectedargs: [ ["state","mopify"] ]
+			},
+			calculateCommandResult: {
+				method: function(){ return "RESULT"; },
+				expectedargs: [ ["state","EFFECT",{name:"mope",effect:"mopify"}] ]
+			}
+		}
 	}],
 	performOption: [{
 		state: {foo:"bar"},
@@ -153,31 +166,40 @@ tester("execute",{
 			}
 		}
 	}],
-	/*buildSaveEntryFromStep: [{
-		state: {gamedef:{commands:{somecommand:{neededmarks:["bar","foo"],id:"MYID"}}}},
-		firstarg: {command:"somecommand",marks:{foo:1,bar:2}},
-		expected: "MYID_2_1"
-	}],*/
 	hydrateState: [{
-		state: {hydration: "LIST",gamedef: {baz:"bin",endturn:{condition:["FALSE"]}}, foo:"bar"},
-		expected: {ranlist: "LIST", hydration:"LIST",gamedef:{baz:"bin",endturn:{condition:["FALSE"]}}, commands: "barLISTbinfalse", foo:"bar"},
+		state: {hydration:"LIIIST",gamedef:{endturn:{condition:"COND"}}},
+		aftereval: {hydration:"LIIIST",gamedef:{endturn:{condition:"COND"}},canendturn:false},
+		expected: {hydration:"LIIIST",gamedef:{endturn:{condition:"COND"}},commands:"COMOPTS",canendturn:false},
 		context: {
+			evaluateBoolean: {
+				method: function(){ return false; },
+				expectedargs: [ ["state","COND"] ]
+			},
 			applyGeneratorList: {
-				method: function(s,list){ return s.set("ranlist",list); }
+				method: function(s){ return s; },
+				expectedargs: [ ["state","LIIIST"] ]
 			},
 			listCommandOptions: {
-				method: function(s,gamedef,t){ return s.get("foo")+s.get("ranlist")+gamedef.get("baz")+t; }
+				method: function(){ return "COMOPTS"; },
+				expectedargs: [ ["aftereval",{endturn:{condition:"COND"}}] ]
 			}
 		}
 	},{
-		state: {hydration: "LIST", hydrationturnend: "LIST2", gamedef: {baz:"bin",endturn:{condition:["TRUE"]}}, foo:"bar"},
-		expected: {ranlist: "LISTLIST2", hydration:"LIST", hydrationturnend: "LIST2", gamedef:{baz:"bin",endturn:{condition:["TRUE"]}}, commands: "barLISTLIST2bintrue", foo:"bar"},
+		state: {hydration:"LIST",hydrationturnend:"LIST2",gamedef:{endturn:{condition:"COND"}}},
+		aftereval: {hydration:"LIST",hydrationturnend:"LIST2",gamedef:{endturn:{condition:"COND"}},canendturn:true},
+		expected: {hydration:"LIST",hydrationturnend:"LIST2",gamedef:{endturn:{condition:"COND"}},commands:"COMOPTS",canendturn:true},
 		context: {
+			evaluateBoolean: {
+				method: function(){ return true; },
+				expectedargs: [ ["state","COND"] ]
+			},
 			applyGeneratorList: {
-				method: function(s,list){ return s.set("ranlist",(s.get("ranlist")||"")+list); }
+				method: function(s){ return s; },
+				expectedargs: [ ["state","LIST"],["aftereval","LIST2"] ]
 			},
 			listCommandOptions: {
-				method: function(s,gamedef,t){ return s.get("foo")+s.get("ranlist")+gamedef.get("baz")+t; }
+				method: function(){ return "COMOPTS"; },
+				expectedargs: [ ["aftereval",{endturn:{condition:"COND"}}] ]
 			}
 		}
 	}],
