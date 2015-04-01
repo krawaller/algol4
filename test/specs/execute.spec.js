@@ -127,17 +127,15 @@ tester("execute",{
 	},{
 		state: {turn: 6, foo: "bar", save: [["BLAH"]], steps: ["1st","2nd"]},
 		firstarg: ["PASSTO",3],
-		beforesteps: {marks: {}, affected: [], save: [["BLAH"],[3]], previousstep: {turn: 6, foo: "bar", save: [["BLAH"]], steps : [ '1st', '2nd' ]}, previousturn: {turn: 6, foo: "bar", save: [["BLAH"]], steps : [ '1st', '2nd' ]}, steps: [], turn: 7, player: 3, status: "ONGOING", foo: "bar", context: {CURRENTPLAYER: 3,PERFORMEDSTEPS:0}},
-		aftersteps: {marks: {}, affected: [], save: [["BLAH","ENTRY","ENTRY"],[3]], previousstep: {turn: 6, foo: "bar", save: [["BLAH"]], steps : [ '1st', '2nd' ]}, previousturn: {turn: 6, foo: "bar", save: [["BLAH"]], steps : [ '1st', '2nd' ]}, steps: [], turn: 7, player: 3, status: "ONGOING", foo: "bar", context: {CURRENTPLAYER: 3,PERFORMEDSTEPS:0}},
-		expected: "FOO",
+		expected: "HYDRATED",
 		context: {
 			hydrateState: {
-				method: function(){ return "FOO"; },
-				expectedargs: [ ["aftersteps"] ]
+				method: function(){ return "HYDRATED"; },
+				expectedargs: [ ["NEWTURN"] ]
 			},
-			buildSaveEntryFromStep: {
-				method: function(){ return "ENTRY"; },
-				expectedargs: [ ["state","1st"], ["state","2nd"] ]
+			newTurnState: {
+				method: function(){ return "NEWTURN"; },
+				expectedargs: [ ["state",3] ]
 			}
 		}
 	},{
@@ -183,7 +181,30 @@ tester("execute",{
 			}
 		}
 	}],
-	updateMarksFromCommand: []
+	updateMarksFromCommand: [],
+	newTurnState: [{
+		state: {
+			steps: ["foo","bar"],
+			save: ["FOO"],
+			marks: "FOO",
+			turn: 666,
+			context: "FOO",
+			player: 333
+		},
+		firstarg: 777,
+		expected: {
+			steps: [],
+			save: ["FOO",[333,"foo","bar"]],
+			previousstep: { player: 333, steps: ["foo","bar"],save: ["FOO"],marks: "FOO",turn: 666,context: "FOO"},
+			previousturn: { player: 333, steps: ["foo","bar"],save: ["FOO"],marks: "FOO",turn: 666,context: "FOO"},
+			marks: {},
+			turn: 667,
+			player: 777,
+			context: {CURRENTPLAYER:777,PERFORMEDSTEPS:0},
+			affected: [],
+			status: "ONGOING"
+		}
+	}]
 });
 
 

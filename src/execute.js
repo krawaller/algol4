@@ -136,9 +136,7 @@ Algol.newTurnState = function(state,player){
 	return state.merge(I.fromJS({
 		steps: [],
 		affected: [],
-		save: state.get("steps").reduce(function(save,step){
-			return save.set(save.size-1,save.last().push(this.buildSaveEntryFromStep(state,step)));
-		},state.get("save"),this).push([player]),
+		save: state.get("save").push(I.List([state.get("player")]).concat(state.get("steps"))),
 		marks: {},
 		previousstep: state,
 		previousturn: state,
