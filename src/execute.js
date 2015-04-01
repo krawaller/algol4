@@ -123,10 +123,10 @@ Algol.listCommandOptions = function(state,gamedef){
 
 // Called from Algol.performOption (various)
 Algol.hydrateState = function(state){
-	state = this.applyGeneratorList(state,state.get("hydration"));
+	state = this.applyGeneratorList(state,state.getIn(["gamedef","hydration"]));
 	state = state.set("canendturn",this.evaluateBoolean(state,state.getIn(["gamedef","endturn","condition"])));
 	if (state.get("canendturn")){
-		state = this.applyGeneratorList(state,state.get("hydrationturnend"));
+		state = this.applyGeneratorList(state,state.getIn(["gamedef","endturn","hydration"]));
 	}
 	return state.set("commands",this.listCommandOptions(state,state.get("gamedef")));
 };
@@ -148,7 +148,7 @@ Algol.newTurnState = function(state,player){
 
 var optionmethods = {
 	BACK: function(state,oldstate){ return oldstate; },
-	NEWSTEP: function(state,oldstate){ return this.hydrateState(oldstate); },
+	NEWSTEP: function(state,newstate){ return this.hydrateState(newstate); },
 	PASSTO: function(state,player){
 		return this.hydrateState(this.newTurnState(state,player));
 	},

@@ -167,9 +167,9 @@ tester("execute",{
 		}
 	}],
 	hydrateState: [{
-		state: {hydration:"LIIIST",gamedef:{endturn:{condition:"COND"}}},
-		aftereval: {hydration:"LIIIST",gamedef:{endturn:{condition:"COND"}},canendturn:false},
-		expected: {hydration:"LIIIST",gamedef:{endturn:{condition:"COND"}},commands:"COMOPTS",canendturn:false},
+		state: {gamedef:{hydration:"LIIIST",endturn:{condition:"COND"}}},
+		aftereval: {gamedef:{hydration:"LIIIST",endturn:{condition:"COND"}},canendturn:false},
+		expected: {gamedef:{hydration:"LIIIST",endturn:{condition:"COND"}},canendturn:false,commands:"COMOPTS"},
 		context: {
 			evaluateBoolean: {
 				method: function(){ return false; },
@@ -181,13 +181,13 @@ tester("execute",{
 			},
 			listCommandOptions: {
 				method: function(){ return "COMOPTS"; },
-				expectedargs: [ ["aftereval",{endturn:{condition:"COND"}}] ]
+				expectedargs: [ ["aftereval",{hydration:"LIIIST",endturn:{condition:"COND"}}] ]
 			}
 		}
 	},{
-		state: {hydration:"LIST",hydrationturnend:"LIST2",gamedef:{endturn:{condition:"COND"}}},
-		aftereval: {hydration:"LIST",hydrationturnend:"LIST2",gamedef:{endturn:{condition:"COND"}},canendturn:true},
-		expected: {hydration:"LIST",hydrationturnend:"LIST2",gamedef:{endturn:{condition:"COND"}},commands:"COMOPTS",canendturn:true},
+		state: {gamedef:{hydration:"LIST",endturn:{condition:"COND",hydration:"LIST2"}}},
+		aftereval: {gamedef:{hydration:"LIST",endturn:{condition:"COND",hydration:"LIST2"}},canendturn:true},
+		expected: {gamedef:{hydration:"LIST",endturn:{condition:"COND",hydration:"LIST2"}},canendturn:true,commands:"COMOPTS"},
 		context: {
 			evaluateBoolean: {
 				method: function(){ return true; },
@@ -199,7 +199,7 @@ tester("execute",{
 			},
 			listCommandOptions: {
 				method: function(){ return "COMOPTS"; },
-				expectedargs: [ ["aftereval",{endturn:{condition:"COND"}}] ]
+				expectedargs: [ ["aftereval",{hydration:"LIST",endturn:{condition:"COND",hydration:"LIST2"}}] ]
 			}
 		}
 	}],
