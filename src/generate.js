@@ -152,7 +152,7 @@ Algol.generateTerrainFromTerrainDef = function(state,terraindef){
 	},I.Map());
 };
 
-Algol.generateBoardInfoFromGameDef = function(state,boarddef){
+Algol.generateBoardInfoFromBoardDef = function(state,boarddef){
 	var height = boarddef.get("height"), width = boarddef.get("width");
 	return I.Range(1,width+1).reduce(function(mem,x){
 		return I.Range(1,height+1).reduce(function(mem,y){
