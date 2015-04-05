@@ -38,7 +38,7 @@
 		},
 		"move": {
 			"effects": [
-				["MOVETO",["IDAT",["MARKPOS","selectking"]],"selectmove"],
+				["MOVETO",["IDAT",["MARKPOS","selectking"]],["MARKPOS","selectmove"]],
 				["FORALLIN","demoted",
 					["SETUNITDATA",["LOOPID"],"type","soldier"]
 				]

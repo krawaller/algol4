@@ -14,7 +14,7 @@ if (typeof require === 'function' && typeof module === 'object') {
 	sinon = window.sinon;
 	tester = window.tester;
 }
-
+/*
 tester("evaluate",{
 	evaluateDirList: [{
 		firstarg: ["DIRS",[1,2,3,4,5]],
@@ -164,3 +164,4 @@ tester("evaluate",{
 		expected: false
 	}]
 });
+*/

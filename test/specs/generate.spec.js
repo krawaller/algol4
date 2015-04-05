@@ -15,6 +15,7 @@ if (typeof require === 'function' && typeof module === 'object') {
 	tester = window.tester;
 }
 
+/*
 tester("generate",{
 	applyFilter: [{
 		state: {layers: {badorks: {xxx:"X",b:["MOO"]}, muppets:{a:[{foo:"bar"}],b:[{foo:"baz"},{foo:"bin"}]}},context:{forbidden:"baz"}},
@@ -25,23 +26,6 @@ tester("generate",{
 		firstarg: {layer: "muppets", matching: {foo:["IS",["CONTEXTVAL","shouldbe"]]},tolayer:["VAL","knorks"],condition:["ANYAT","foos",["CONTEXTPOS","START"]]},
 		expected: {layers: {foos:{b:"X"},knorks: {b: [{foo:"bar"}]},muppets:{a:[{foo:"bar"}],b:[{foo:"bar"},{foo:"notbar"}]}},context:{shouldbe:"bar"}}
 	}],
-	/*generateFilterPods: [{
-		state: {layers: {somelayer: {a:[{foo:"muu"}],b:[{foo:"bar",bin:"baj"}]}}},
-		firstarg: {layer: "somelayer", matching: {foo:["IS",["VAL","bar"]]}},
-		expected: {start: {b: [{START:"b",TOTAL:1 }]}}
-	},{
-		state: {layers: {somelayer: {a:[{foo:"muu"}],b:[{foo:"bar",bin:"baj"}]}}},
-		firstarg: {layer: "somelayer", matching: {foo:["IS",["LOOKUP","somelayer",["CONTEXTPOS","START"],"foo"]]}},
-		expected: {start: {a: [{START:"a",TOTAL:2}], b: [{START:"b",TOTAL:2 }]}}
-	},{
-		state: {layers: {somelayer: {a:[{foo:"bar"}],b:[{baz:"bin"}]}, someotherlayer:{q:[{what:"ev"}],b:[{wuu:"meee"}]}}},
-		firstarg: {layer: "somelayer", overlapping: ["FROMALLINLAYER","someotherlayer"]},
-		expected: {start: {b: [{START:"b",TOTAL:1}]}}
-	},{
-		state: {layers: {somelayer: {aaa:[{foo:"blaj"},{foo:"bar"}],b:[{baz:"bin"}],c:[{foo:"bar"}]}, someotherlayer:{aaa:[{what:"ev"}],b:[{wuu:"meee"}]}}},
-		firstarg: {layer: "somelayer", overlapping: ["FROMALLINLAYER","someotherlayer"], matching: {foo:["IS",["VAL","bar"]]}},
-		expected: {start:{aaa:[{START:"aaa",TOTAL:1}]}}
-	}],*/
 	generateNeighbourPods: [{
 		state: {marks:{somemark:"foo"},board:{foo:{nextto:{4:"baz",6:"bin"}}}},
 		firstarg: {starts: ["FROMSINGLEPOS",["MARKPOS","somemark"]], dirs: ["DIRS",[4,5,6]]},
@@ -130,3 +114,4 @@ tester("generate",{
 		expected: {marks:{foo:"bar"},board:{bar:{nextto:{1:"bar2"}}},layers:{newlayer:{bar2:[{prop:"snopp"}]}},context:{blaj:"paj"},gamedef:{generators:{somegen:{neededmarks:["foo"],type:"nextto",starts:["FROMSINGLEPOS",["MARKPOS","foo"]],dirs:["DIRS",[1]],draw:{target:{tolayer:["VAL","newlayer"],include:{prop:["VAL","snopp"]}}}}}}}
 	}]
 });
+*/
