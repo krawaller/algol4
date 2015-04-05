@@ -80,14 +80,15 @@
 	"marks": {
 		"selectunit": {
 			"from":["FROMALLINLAYER","MYUNITS"],
-			"hydration": ["findfooting","findkilltargets"],
-			"dehydration": ["forwardfooting","backwardfooting","gonnadie"]
+			"cleanse": ["forwardfooting","backwardfooting","gonnadie"],
+			"hydration": ["findfooting","findkilltargets"]
 		}
 	},
 	"endturn": {
-		"condition":["SAME",["CONTEXTVAL","PERFORMEDSTEPS"],2],
+		"condition":["SAME",["CONTEXTVAL","PERFORMEDSTEPS"],["VAL",2]],
 		"commandcap": true,
 		"hydration": ["findinfiltrators","finddeadkings"],
+		"passto": ["IFELSE",["SAME",["CONTEXTVAL","CURRENTPLAYER"],["VAL",2]],["VAL",1],["VAL",2]],
 		"endgame": {
 			"infiltration":[["NOTEMPTY","infiltrators"],["CONTEXTVAL","CURRENTPLAYER"]],
 			"kingkill":[["NOTEMPTY","deadking"],["CONTEXTVAL","CURRENTPLAYER"]]
@@ -105,7 +106,7 @@
 			"condition": ["NOTEMPTY","backwardfooting"],
 			"effect": ["MOVEUNIT",["IDAT",["MARKPOS","selectunit"]],["ONLYPOSIN","backwardfooting"]],
 			"setmarks": {
-				"selectunit": ["ONLYPOSIN","forwardfooting"]
+				"selectunit": ["ONLYPOSIN","backwardfooting"]
 			}
 		},
 		"turnleft": {

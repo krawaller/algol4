@@ -106,23 +106,23 @@ Algol.calculateCommandResult = function(state,newstate,commanddef){
 
 // returns an endturn option. this will either be an endgame or passing to another player
 // Used in Algol.listCommandOptions
-Algol.endTurnOption = function(state,gamedef){
-	return gamedef.get("endgame").reduce(function(mem,end,name){
+Algol.endTurnOption = function(state,endturndef){
+	return endturndef.get("endgame").reduce(function(mem,end,name){
 		return mem || this.evaluateBoolean(state,end.get("condition")) && ["ENDGAME",name,this.evaluateValue(state,end.get("winner"))];
-	},undefined,this) || ["PASSTO",this.evaluateValue(state,gamedef.getIn(["endturn","passto"]))];
+	},undefined,this) || ["PASSTO",this.evaluateValue(state,endturndef.get("passto"))];
 };
 
 // Returns an array of available commands
 // Used in Algol.hydrateState  -- TODO really the right place?
 Algol.listCommandOptions = function(state,gamedef){
-	return I.setIf(I.setIf(gamedef.get("commands").reduce(function(ret,comdef,comname){
+	return I.setIf(I.setIf((state.get("canendturn") && gamedef.getIn(["endturn","commandcap"]) ? I.Map() : gamedef.get("commands")).reduce(function(ret,comdef,comname){
 		return this.canExecuteCommand(state,comdef) ? ret.set(comname,this.calculateCommandResult(state,this.applyEffect(state,comdef.get("effect")),comdef)) : ret;
-	},I.Map(),this),"ENDTURN",state.get("canendturn") && this.endTurnOption(state,gamedef)),"UNDO",state.has("previousstep") ? ["BACK",state.get("previousstep")] : false) ;
+	},I.Map(),this),"ENDTURN",state.get("canendturn") && this.endTurnOption(state,gamedef.get("endturn"))),"UNDO",state.has("previousstep") ? ["BACK",state.get("previousstep")] : false) ;
 };
 
 
 // Called from Algol.performOption (various)
-Algol.hydrateState = function(state){
+Algol.hydrateStateAfterCommand = function(state){
 	state = this.applyGeneratorList(state,state.getIn(["gamedef","hydration"]));
 	state = state.set("canendturn",this.evaluateBoolean(state,state.getIn(["gamedef","endturn","condition"])));
 	if (state.get("canendturn")){
@@ -131,11 +131,12 @@ Algol.hydrateState = function(state){
 	return state.set("commands",this.listCommandOptions(state,state.get("gamedef")));
 };
 
+// Called form Algol.performOption --- PASSTO
 Algol.newTurnState = function(state,player){
 	return state.merge(I.fromJS({
 		steps: [],
 		affected: [],
-		save: state.get("save").push(I.List([state.get("player")]).concat(state.get("steps"))),
+		save: state.has("save") ? state.get("save").push(I.List([state.get("player")]).concat(state.get("steps"))) : [],
 		marks: {},
 		previousstep: state,
 		previousturn: state,
@@ -146,11 +147,18 @@ Algol.newTurnState = function(state,player){
 	}));
 };
 
+Algol.hydrateStateAfterMarkChange = function(state,markdef){
+	state = (markdef.get("cleanse")||I.List()).reduce(function(mem,layername){
+		return mem.deleteIn(["layers",layername]);
+	},state);
+	return markdef.get("hydration") ? this.applyGeneratorList(state,state.get("hydration")) : state;
+};
+
 var optionmethods = {
 	BACK: function(state,oldstate){ return oldstate; },
-	NEWSTEP: function(state,newstate){ return this.hydrateState(newstate); },
+	NEWSTEP: function(state,newstate){ return this.hydrateStateAfterCommand(newstate); },
 	PASSTO: function(state,player){
-		return this.hydrateState(this.newTurnState(state,player));
+		return this.hydrateStateAfterCommand(this.newTurnState(state,player));
 	},
 	ENDGAME: function(state,cond,player){ return state.merge({player:player,status:cond}); }
 };
@@ -164,8 +172,8 @@ Algol.performOption = function(state,def){
 
 } // end augmentWithExecuteFunctions
 
-if (typeof module !== 'undefined' && typeof module.exports !== 'undefined')
+if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
     module.exports = augmentWithExecuteFunctions;
-else
+} else {
     window.augmentWithExecuteFunctions = augmentWithExecuteFunctions;
-})();
+}})();

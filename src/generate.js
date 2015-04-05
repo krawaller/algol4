@@ -168,9 +168,8 @@ Algol.generateBoardInfoFromGameDef = function(state,boarddef){
 
 } // end augmentWithGenerateFunctions
 
-if (typeof module !== 'undefined' && typeof module.exports !== 'undefined')
+if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
     module.exports = augmentWithGenerateFunctions;
-else
+} else {
     window.augmentWithGenerateFunctions = augmentWithGenerateFunctions;
-
-})();
+}})();

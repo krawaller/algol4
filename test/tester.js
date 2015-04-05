@@ -1,3 +1,5 @@
+/* jshint jasmine: true */
+
 (function(){
 
 var _ = (typeof require !== "undefined" ? require("../src/lodashmixins") : window._);
@@ -17,7 +19,7 @@ describe("The "+name+" functions",function(){
 					var result;
 					beforeEach(function(){
 						_.each(test.context||{},function(stubdef,stubname){
-							sinon.stub(Algol,stubname,stubdef.method);
+							sinon.stub(Algol,stubname,stubdef.method || function(){return test[stubdef.returns]||stubdef.returns;});
 						});
 						result = Algol[funcname](I.fromJS(test.state||{}),I.fromJS(test.firstarg),test.secondarg && I.fromJS(test.secondarg));
 					});

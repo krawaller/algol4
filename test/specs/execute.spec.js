@@ -88,34 +88,84 @@ tester("execute",{
 		expected: ["NEWSTEP",{marks:"NEWMARKDATA",data:{c:666},steps:["foo","STEPDATA"],previousstep: {marks:{mark1:"foo",mark2:"bar"},steps:[1,2],data:{a:1},previousstep:{steps:[1],data:{b:2},previousstep:{steps:[],data:{c:3}}},context:{PERFORMEDSTEPS:4}},context:{PERFORMEDSTEPS:5} }],
 		context: {
 			updateMarksFromCommand: {
-				method: function(){ return "NEWMARKDATA"; },
+				returns: "NEWMARKDATA",
 				expectedargs: [["state","secondarg"]]
 			},
 			calculateStepData: {
-				method: function(){ return "STEPDATA"; },
+				returns: "STEPDATA",
 				expectedargs: [["state","secondarg"]]
 			}
 		}
 	}],
 	endTurnOption: [{
-		state: {context:{FOO:"bar",CURRENTPLAYER:1}},
-		firstarg: {endturn:{},endgame:{bywuu:{condition:["TRUE"],winner:["CONTEXTVAL","CURRENTPLAYER"]}}},
-		expected: ["ENDGAME","bywuu",1]
+		state: "STATE",
+		firstarg: {endgame:{byfoo:{condition:"FOOCOND",winner:"FOOWINNER"},bybar:{condition:"BARCOND",winner:"BARWINNER"}}},
+		expected: ["ENDGAME","bybar","WINNER"],
+		context: {
+			evaluateBoolean: {
+				method: function(s,c){ return c==="BARCOND"; },
+				expectedargs: [ ["state","FOOCOND"], ["state","BARCOND"] ]
+			},
+			evaluateValue: {
+				returns: "WINNER",
+				expectedargs: [ ["state","BARWINNER"] ]
+			}
+		}
 	},{
-		state: {context:{FOO:"bar",CURRENTPLAYER:1}},
-		firstarg: {endturn:{passto:["IFELSE",["SAME",["CONTEXTVAL","CURRENTPLAYER"],["VAL",1]],["VAL",2],["VAL",1]]},endgame:{bywuu:{condition:["DIFFERENT",["CONTEXTVAL","FOO"],["VAL","bar"]],winner:["CONTEXTVAL","CURRENTPLAYER"]}}},
-		expected: ["PASSTO",2]
+		state: "STATE",
+		firstarg: {endgame:{byfoo:{condition:"FOOCOND",winner:"FOOWINNER"},bybar:{condition:"BARCOND",winner:"BARWINNER"}}},
+		expected: ["ENDGAME","byfoo","WINNER"],
+		context: {
+			evaluateBoolean: {
+				returns: true,
+				expectedargs: [ ["state","FOOCOND"] ]
+			},
+			evaluateValue: {
+				returns: "WINNER",
+				expectedargs: [ ["state","FOOWINNER"] ]
+			}
+		}
+	},{
+		state: "STATE",
+		firstarg: {passto:"NEXTPLR",endgame:{byfoo:{condition:"FOOCOND",winner:"FOOWINNER"},bybar:{condition:"BARCOND",winner:"BARWINNER"}}},
+		expected: ["PASSTO","NEXT"],
+		context: {
+			evaluateBoolean: {
+				returns: false,
+				expectedargs: [ ["state","FOOCOND"], ["state","BARCOND"] ]
+			},
+			evaluateValue: {
+				returns: "NEXT",
+				expectedargs: [ ["state","NEXTPLR"] ]
+			}
+		}
 	}],
 	listCommandOptions: [{
 		state: {canendturn:true},
-		firstarg: {endgame:{bypoo:{condition:["TRUE"],winner:["VAL",1]}},commands:{}},
-		expected: {ENDTURN:["ENDGAME","bypoo",1]}
+		firstarg: {commands:{},endturn:"ENDTURN"},
+		expected: {ENDTURN:"ENDTURNOPTION"},
+		context: {
+			endTurnOption: {
+				returns: "ENDTURNOPTION",
+				expectedargs: [ ["state","ENDTURN"] ]
+			}
+		}
+	},{
+		state: {canendturn:true},
+		firstarg: {commands:{mope:{name:"mope",effect:"mopify"}},endturn:{commandcap:true}},
+		expected: {ENDTURN:"ENDTURNOPTION"},
+		context: {
+			endTurnOption: {
+				returns: "ENDTURNOPTION",
+				expectedargs: [ ["state",{commandcap:true}] ]
+			}
+		}
 	},{
 		state: {previousstep:"BLAH"},
 		firstarg: {commands:{}},
 		expected: {UNDO:["BACK","BLAH"]}
 	},{
-		state: {steps: []},
+		state: {},
 		firstarg: {commands:{mope:{name:"mope",effect:"mopify"},dope:{name:"dope",effect:"dopify"}}},
 		expected: {mope:"RESULT"},
 		context: {
@@ -124,14 +174,24 @@ tester("execute",{
 				expectedargs: [ ["state",{name:"mope",effect:"mopify"}], ["state",{name:"dope",effect:"dopify"}] ]
 			},
 			applyEffect: {
-				method: function(){ return "EFFECT"; },
+				returns: "EFFECT",
 				expectedargs: [ ["state","mopify"] ]
 			},
 			calculateCommandResult: {
-				method: function(){ return "RESULT"; },
+				returns: "RESULT",
 				expectedargs: [ ["state","EFFECT",{name:"mope",effect:"mopify"}] ]
 			}
 		}
+	},{
+		state: {previousstep:"PREV",canendturn:true},
+		firstarg: {commands:{mope:{name:"mope",effect:"mopify"},dope:{name:"dope",effect:"dopify"}},endturn:{}},
+		context: {
+			canExecuteCommand: { returns: true },
+			applyEffect: { returns: "EFFECT" },
+			calculateCommandResult: { returns: "RESULT" },
+			endTurnOption: { returns: "ENDTURNOPT" }
+		},
+		expected: {mope:"RESULT",dope:"RESULT",UNDO:["BACK","PREV"],ENDTURN:"ENDTURNOPT"}
 	}],
 	performOption: [{
 		state: {foo:"bar"},
@@ -142,12 +202,12 @@ tester("execute",{
 		firstarg: ["PASSTO",3],
 		expected: "HYDRATED",
 		context: {
-			hydrateState: {
-				method: function(){ return "HYDRATED"; },
+			hydrateStateAfterCommand: {
+				returns: "HYDRATED",
 				expectedargs: [ ["NEWTURN"] ]
 			},
 			newTurnState: {
-				method: function(){ return "NEWTURN"; },
+				returns: "NEWTURN",
 				expectedargs: [ ["state",3] ]
 			}
 		}
@@ -158,21 +218,21 @@ tester("execute",{
 	},{
 		state: {foo:"bar"},
 		firstarg: ["NEWSTEP",{some:"other"}],
-		expected: "hydratedstate",
+		expected: "HYDRATEDSTATE",
 		context: {
-			hydrateState: {
-				method: function(){ return "hydratedstate"; },
+			hydrateStateAfterCommand: {
+				returns: "HYDRATEDSTATE",
 				expectedargs: [ [{some:"other"}] ]
 			}
 		}
 	}],
-	hydrateState: [{
+	hydrateStateAfterCommand: [{
 		state: {gamedef:{hydration:"LIIIST",endturn:{condition:"COND"}}},
 		aftereval: {gamedef:{hydration:"LIIIST",endturn:{condition:"COND"}},canendturn:false},
 		expected: {gamedef:{hydration:"LIIIST",endturn:{condition:"COND"}},canendturn:false,commands:"COMOPTS"},
 		context: {
 			evaluateBoolean: {
-				method: function(){ return false; },
+				returns: false,
 				expectedargs: [ ["state","COND"] ]
 			},
 			applyGeneratorList: {
@@ -180,7 +240,7 @@ tester("execute",{
 				expectedargs: [ ["state","LIIIST"] ]
 			},
 			listCommandOptions: {
-				method: function(){ return "COMOPTS"; },
+				returns: "COMOPTS",
 				expectedargs: [ ["aftereval",{hydration:"LIIIST",endturn:{condition:"COND"}}] ]
 			}
 		}
@@ -190,7 +250,7 @@ tester("execute",{
 		expected: {gamedef:{hydration:"LIST",endturn:{condition:"COND",hydration:"LIST2"}},canendturn:true,commands:"COMOPTS"},
 		context: {
 			evaluateBoolean: {
-				method: function(){ return true; },
+				returns: true,
 				expectedargs: [ ["state","COND"] ]
 			},
 			applyGeneratorList: {
@@ -198,7 +258,7 @@ tester("execute",{
 				expectedargs: [ ["state","LIST"],["aftereval","LIST2"] ]
 			},
 			listCommandOptions: {
-				method: function(){ return "COMOPTS"; },
+				returns: "COMOPTS",
 				expectedargs: [ ["aftereval",{hydration:"LIST",endturn:{condition:"COND",hydration:"LIST2"}}] ]
 			}
 		}
@@ -219,6 +279,27 @@ tester("execute",{
 			save: ["FOO",[333,"foo","bar"]],
 			previousstep: { player: 333, steps: ["foo","bar"],save: ["FOO"],marks: "FOO",turn: 666,context: "FOO"},
 			previousturn: { player: 333, steps: ["foo","bar"],save: ["FOO"],marks: "FOO",turn: 666,context: "FOO"},
+			marks: {},
+			turn: 667,
+			player: 777,
+			context: {CURRENTPLAYER:777,PERFORMEDSTEPS:0},
+			affected: [],
+			status: "ONGOING"
+		}
+	},{
+		state: {
+			steps: ["foo","bar"],
+			marks: "FOO",
+			turn: 666,
+			context: "FOO",
+			player: 333
+		},
+		firstarg: 777,
+		expected: {
+			steps: [],
+			save: [],
+			previousstep: { player: 333, steps: ["foo","bar"],marks: "FOO",turn: 666,context: "FOO"},
+			previousturn: { player: 333, steps: ["foo","bar"],marks: "FOO",turn: 666,context: "FOO"},
 			marks: {},
 			turn: 667,
 			player: 777,

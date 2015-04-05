@@ -125,9 +125,8 @@ Algol.evaluatePosition = function(state,def){
 
 } // end augmentWithEvaluateFunctions
 
-if (typeof module !== 'undefined' && typeof module.exports !== 'undefined')
+if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
     module.exports = augmentWithEvaluateFunctions;
-else
+} else {
     window.augmentWithEvaluateFunctions = augmentWithEvaluateFunctions;
-
-})();
+}})();
