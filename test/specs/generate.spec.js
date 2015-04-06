@@ -29,20 +29,36 @@ tester("the generate methods",Algol,{
 		}
 	},
 	"generateNeighbourPods(state,nexttodef)": {
-		"for straight dir list with 2 neighbours": {
-			state: {marks:{somemark:"foo"},board:{foo:{nextto:{4:"baz",6:"bin"}}}},
-			nexttodef: {starts: ["FROMSINGLEPOS",["MARKPOS","somemark"]], dirs: ["DIRS",[4,5,6]]},
-			expected: {start: {foo: [{START:"foo",NEIGHBOURS:2}]},target:{baz:[{START:"foo",TARGET:"baz",DIR:4,NEIGHBOURS:2}],bin:[{START:"foo",TARGET:"bin",DIR:6,NEIGHBOURS:2}]}}
-		},
-		"for relativelist": {
-			state: {layers:{UNITS:{foo:[{dir:4}]}},marks:{somemark:"foo"},board:{foo:{nextto:{4:"baz",6:"bin"}}}},
-			nexttodef: {starts: ["FROMSINGLEPOS",["MARKPOS","somemark"]], dirs: ["RELATIVEDIRS",["DIRS",[1,2,3]],["LOOKUP","UNITS",["CONTEXTPOS","START"],"dir"]]},
-			expected: {start: {foo: [{START:"foo",NEIGHBOURS:2}]},target:{baz:[{START:"foo",TARGET:"baz",DIR:4,NEIGHBOURS:2}],bin:[{START:"foo",TARGET:"bin",DIR:6,NEIGHBOURS:2}]}}
-		},
-		"for straight dir list and lots of starts": {
-			state: {layers:{somelayer:{foo:"X",foo2:"Y"},UNITS:{foo:[{dir:4}]}},board:{foo:{nextto:{4:"baz",6:"bin"}},foo2:{nextto:{5:"bin",6:"buh"}}}},
-			nexttodef: {starts: ["FROMALLINLAYER","somelayer"], dirs: ["DIRS",[4,5,6]]},
-			expected: {start: {foo: [{START:"foo",NEIGHBOURS:2}],foo2:[{START:"foo2",NEIGHBOURS:2}]},target:{baz:[{START:"foo",TARGET:"baz",DIR:4,NEIGHBOURS:2}],bin:[{START:"foo",TARGET:"bin",DIR:6,NEIGHBOURS:2},{START:"foo2",TARGET:"bin",DIR:5,NEIGHBOURS:2}],buh:[{START:"foo2",TARGET:"buh",DIR:6,NEIGHBOURS:2}]}}
+		"for many starts": {
+			state: {
+				context:{something:"other"},
+				board:{foo:{nextto:{4:"baz",6:"bin"}},foo2:{nextto:{5:"bin",6:"buh"}}}
+			},
+			nexttodef: {starts:"STARTSDEF",dirs:"DIRSDEF"},
+			expected: {
+				start: {
+					foo: [{START:"foo",NEIGHBOURS:2}],
+					foo2:[{START:"foo2",NEIGHBOURS:2}]
+				},
+				target: {
+					baz:[{START:"foo",TARGET:"baz",DIR:4,NEIGHBOURS:2}],
+					bin:[{START:"foo",TARGET:"bin",DIR:6,NEIGHBOURS:2},{START:"foo2",TARGET:"bin",DIR:5,NEIGHBOURS:2}],
+					buh:[{START:"foo2",TARGET:"buh",DIR:6,NEIGHBOURS:2}]
+				}
+			},
+			context: {
+				evaluatePositionList: {
+					returns: ["foo","foo2"],
+					expectedargs: [["state","STARTSDEF"]]
+				},
+				evaluateDirList: {
+					returns: [4,5,6],
+					expectedargs: [
+						[{context:{START:"foo",something:"other"},board:{foo:{nextto:{4:"baz",6:"bin"}},foo2:{nextto:{5:"bin",6:"buh"}}}},"DIRSDEF"],
+						[{context:{START:"foo2",something:"other"},board:{foo:{nextto:{4:"baz",6:"bin"}},foo2:{nextto:{5:"bin",6:"buh"}}}},"DIRSDEF"]
+					]
+				}
+			}
 		}
 	},
 	"generateWalkerPods(state,walkerdef)": {

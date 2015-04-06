@@ -20,7 +20,7 @@ describe(description,function(){
 					var result;
 					beforeEach(function(){
 						_.each(test.context||{},function(stubdef,stubname){
-							sinon.stub(lib,stubname,stubdef.method || function(){return test[stubdef.returns]||stubdef.returns;});
+							sinon.stub(lib,stubname,stubdef.method || function(){return I.fromJS(test[stubdef.returns]||stubdef.returns);});
 						});
 						result = lib[methodname].apply(lib,arglist.map(function(param){return I.fromJS(test[param]);}));    //(I.fromJS(test.state||{}),I.fromJS(test.firstarg),test.secondarg && I.fromJS(test.secondarg));
 					});
