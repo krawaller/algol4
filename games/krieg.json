@@ -32,7 +32,7 @@
 		"hydration": ["findmymovers","findmovetargets"]
 	},
 	"endturn": {
-		"condition":["SAME",["CONTEXTVAL","PERFORMEDSTEPS"],["VAL",1]],
+		"condition": ["SAME",["CONTEXTVAL","PERFORMEDSTEPS"],["VAL",1]],
 		"commandcap": true,
 		"endgame": {
 			"infiltration": {
@@ -44,7 +44,7 @@
 				"condition": ["NOTEMPTY","occupiers"]
 			},
 			"oppcantmove": {
-				"hydration": ["findhismovers","findmovetargets"],
+				"hydration": ["findoppmovers","findmovetargets"],
 				"condition": ["NOTEMPTY","movers"]
 			}
 		}
@@ -53,8 +53,7 @@
 		"move": {
 			"neededmarks": ["selectunit","selectmove"],
 			"condition": ["NOTEMPTY","forwardfooting"],
-			"effect": ["MOVEUNIT",["IDAT",["MARKPOS","selectunit"]],["MARKPOS","selectmove"]],
-			"cleanse": ["freetomove"]
+			"effect": ["MOVEUNIT",["IDAT",["MARKPOS","selectunit"]],["MARKPOS","selectmove"]]
 		}
 	},
 	"generators": {
@@ -86,7 +85,7 @@
 			],
 			"tolayer": "freetomove"
 		},
-		"findhismovers": {
+		"findoppmovers": {
 			"type": "filter",
 			"layer": "OPPUNITS",
 			"condition": ["DIFFERENT",

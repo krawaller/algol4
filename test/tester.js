@@ -3,11 +3,10 @@
 (function(){
 
 var _ = (typeof require !== "undefined" ? require("../src/lodashmixins") : window._);
-var I = (typeof require !== "undefined" ? require("../src/immutableextensions.js") : window.Immutable);
 var sinon = (typeof require !== "undefined" ? require("sinon") : window.sinon);
 
 
-function tester(description,lib,methodtests){
+function tester(description,lib,methodtests,I){
 
 
 describe(description,function(){
@@ -20,9 +19,14 @@ describe(description,function(){
 					var result;
 					beforeEach(function(){
 						_.each(test.context||{},function(stubdef,stubname){
-							sinon.stub(lib,stubname,stubdef.method || function(){return I.fromJS(test[stubdef.returns]||stubdef.returns);});
+							sinon.stub(lib,stubname,stubdef.method || function(){
+								var ret = test[stubdef.returns]||stubdef.returns;
+								return I && I.fromJS(ret) || ret;
+							});
 						});
-						result = lib[methodname].apply(lib,arglist.map(function(param){return I.fromJS(test[param]);}));    //(I.fromJS(test.state||{}),I.fromJS(test.firstarg),test.secondarg && I.fromJS(test.secondarg));
+						result = lib[methodname].apply(lib,arglist.map(function(param){
+							return I && I.fromJS(test[param]) || test[param];
+						}));
 					});
 					it("returns "+JSON.stringify(test.expected),function(){
 						expect(result.toJS ? result.toJS() : result).toEqual(test.expected);
@@ -40,8 +44,8 @@ describe(description,function(){
 										});
 										_.each(args,function(arg,a){
 											it("used correct parameter "+a,function(){
-												var usedargs = I.List((lib[stubname].getCall(n)||{args:[]}).args).toJS();
-												expect(usedargs[a]).toEqual(test[arg]||arg);
+												var usedargs = (lib[stubname].getCall(n)||{args:[]}).args;
+												expect((I?I.List(usedargs).toJS():usedargs)[a]).toEqual(test[arg]||arg);
 											});
 										});
 									});

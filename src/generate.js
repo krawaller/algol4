@@ -6,6 +6,8 @@ function augmentWithGenerateFunctions(Algol){
 
 // €€€€€€€€€€€€€€€€€€€€€€€€€€€ G E N E R A T E   F U N C T I O N S €€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€*/
 
+
+// Called in Algol.applyGenerator
 Algol.generateNeighbourPods = function(state,def){
 	return this.evaluatePositionList(state,def.get("starts")).reduce(function(recorder,startpos){
 		var neighbours = this.evaluateDirList(state.setIn(["context","START"],startpos),def.get("dirs")).reduce(function(map,dir){
@@ -133,7 +135,7 @@ Algol.paintSeedPods = function(state,draw,pods){
 };
 
 Algol.generateUnitLayersFromState = function(state){
-	return state.mergeIn(["layers"],state.getIn(["data","units"]).reduce(function(map,unit,id){
+	return state.mergeIn(["layers"],state.getIn(["data","units"]).reduce(function(map,unit){
 		var pos = unit.get("POS");
 		return unit.get("STATUS") === "DEAD" ? I.pushIn(map,["DEADUNITS",pos],unit) : 
 			I.pushIn(I.pushIn(map,[(unit.get("PLR") === state.get("player")?"MYUNITS":"OPPUNITS"),pos],unit),["UNITS",pos],unit);

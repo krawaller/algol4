@@ -4,12 +4,14 @@
 		"height": 9,
 		"width": 9,
 		"terrain": {
-			"2002": {"type":"base","owner":1}, "2003": {"type":"base","owner":1}, "2004": {"type":"base","owner":1},
-			"3002": {"type":"base","owner":1}, "3003": {"type":"base","owner":1}, "3004": {"type":"base","owner":1},
-			"4002": {"type":"base","owner":1}, "4003": {"type":"base","owner":1}, "4004": {"type":"base","owner":1},
-			"6006": {"type":"base","owner":2}, "6007": {"type":"base","owner":2}, "6008": {"type":"base","owner":2},
-			"7006": {"type":"base","owner":2}, "7007": {"type":"base","owner":2}, "7008": {"type":"base","owner":2},
-			"8006": {"type":"base","owner":2}, "8007": {"type":"base","owner":2}, "8008": {"type":"base","owner":2}
+			"bases": {
+				"2002": {"owner":1}, "2003": {"owner":1}, "2004": {"owner":1},
+				"3002": {"owner":1}, "3003": {"owner":1}, "3004": {"owner":1},
+				"4002": {"owner":1}, "4003": {"owner":1}, "4004": {"owner":1},
+				"6006": {"owner":2}, "6007": {"owner":2}, "6008": {"owner":2},
+				"7006": {"owner":2}, "7007": {"owner":2}, "7008": {"owner":2},
+				"8006": {"owner":2}, "8007": {"owner":2}, "8008": {"owner":2}
+			}
 		},
 		"setup": [
 			{"POS":2002,"type":"archer","DIR":5,"PLR":1},{"POS":2003,"type":"archer","DIR":5,"PLR":1},{"POS":2004,"type":"archer","DIR":5,"PLR":1},
@@ -20,27 +22,30 @@
 			{"POS":8006,"type":"archer","DIR":1,"PLR":2},{"POS":8007,"type":"archer","DIR":1,"PLR":2},{"POS":8008,"type":"archer","DIR":1,"PLR":2}
 		]
 	},
-	"hydration": ["findarrows"],
+	"startstep": {
+		"cleanse": ["myarrows","opparrows","bullseye"],
+		"hydration": ["findarrows"]
+	},
 	"generators": {
 		"findinfiltrators": {
 			"type": "filter",
 			"layer": "TERRAIN",
 			"matching": {"owner":["ISNT",["CONTEXTVAL","CURRENTPLAYER"]]},
 			"condition": ["ANYAT","MYUNITS",["CONTEXTPOS","START"]],
-			"tolayer": ["VAL","infiltrators"]
+			"tolayer": ["LAYERNAME","infiltrators"]
 		},
 		"findkilltargets": {
 			"neededmarks": ["selectunit"],
 			"type": "filter",
 			"layer": "bullseye",
 			"matching": {"shooterid":["IS",["IDAT",["MARKPOS","selectunit"]]]},
-			"tolayer": ["VAL","gonnadie"]
+			"tolayer": ["LAYERNAME","gonnadie"]
 		},
 		"finddeadkings": {
 			"type": "filter",
 			"layer": "DEADUNITS",
 			"matching": { "type": ["IS",["VAL","crown"]] },
-			"tolayer": ["VAL","deadking"]
+			"tolayer": ["LAYERNAME","deadking"]
 		},
 		"findarrows": {
 			"type": "walker",
@@ -50,11 +55,15 @@
 			"max": 3,
 			"draw": {
 				"step": {
-					"tolayer": ["IFELSE",["SAME",["LOOKUP","UNITS",["CONTEXTPOS","START"],"PLR"],["CONTEXTVAL","CURRENTPLAYER"]],"myarrows","opparrows"]
+					"tolayer": ["IFELSE",
+						["SAME",["LOOKUP","UNITS",["CONTEXTPOS","START"],"PLR"],["CONTEXTVAL","CURRENTPLAYER"]],
+						["LAYERNAME","myarrows"],
+						["LAYERNAME","opparrows"]
+					]
 				},
 				"block": {
 					"condition": ["DIFFERENT",["LOOKUP","UNITS",["CONTEXTPOS","TARGET"],"PLR"],["LOOKUP","UNITS",["CONTEXTPOS","START"],"PLR"]],
-					"tolayer": ["VAL","bullseye"],
+					"tolayer": ["LAYERNAME","bullseye"],
 					"include": {
 						"shooterid": ["IDAT",["CONTEXTPOS","START"]]
 					}
@@ -69,7 +78,7 @@
 			"draw": {
 				"target": {
 					"condition": ["AND",["NONEAT","UNITS",["CONTEXTPOS","TARGET"]],["NONEAT","opparrows",["CONTEXTPOS","TARGET"]]],
-					"tolayer": ["IFELSE",["SAME",["CONTEXTVAL","DIR"],["LOOKUP","UNITS",["CONTEXTPOS","START"],"DIR"]],"forwardfooting","backwardfooting"],
+					"tolayer": ["IFELSE",["SAME",["CONTEXTVAL","DIR"],["LOOKUP","UNITS",["CONTEXTPOS","START"],"DIR"]],["LAYERNAME","forwardfooting"],["LAYERNAME","backwardfooting"]],
 					"include": {
 						"id": ["IDAT",["CONTEXTPOS","START"]]
 					}
@@ -87,11 +96,16 @@
 	"endturn": {
 		"condition":["SAME",["CONTEXTVAL","PERFORMEDSTEPS"],["VAL",2]],
 		"commandcap": true,
-		"hydration": ["findinfiltrators","finddeadkings"],
 		"passto": ["IFELSE",["SAME",["CONTEXTVAL","CURRENTPLAYER"],["VAL",2]],["VAL",1],["VAL",2]],
 		"endgame": {
-			"infiltration":[["NOTEMPTY","infiltrators"],["CONTEXTVAL","CURRENTPLAYER"]],
-			"kingkill":[["NOTEMPTY","deadking"],["CONTEXTVAL","CURRENTPLAYER"]]
+			"infiltration": {
+				"hydration": ["findinfiltrators"],
+				"condition": [["NOTEMPTY","infiltrators"],["CONTEXTVAL","CURRENTPLAYER"]]
+			},
+			"kingkill": {
+				"hydration": ["finddeadkings"],
+				"condition": [["NOTEMPTY","deadking"],["CONTEXTVAL","CURRENTPLAYER"]]
+			}
 		}
 	},
 	"commands": {
@@ -116,7 +130,10 @@
 			"effect": ["TURNUNIT",["IDAT",["MARKPOS","selectunit"]],["VAL",2]]
 		},
 		"fire": {
-			"condition": ["AND",["NOTEMPTY","gonnadie"],["NOT",["AFFECTED",["IDAT",["MARKPOS","selectunit"]]]]],
+			"condition": ["AND",
+				["NOTEMPTY","gonnadie"],
+				["NOT",["AFFECTED",["IDAT",["MARKPOS","selectunit"]]]]
+			],
 			"effect": ["KILLUNIT",["IDAT",["ONLYPOSIN","gonnadie"]]]
 		}
 	}

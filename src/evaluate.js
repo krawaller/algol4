@@ -86,6 +86,7 @@ Algol.evaluateBoolean = function(state,def){
 
 var valuemethods = {
 	VAL: function(state,raw){ return raw; },
+	LAYERNAME: function(state,raw){ return raw; },
 	CONTEXTVAL: function(state,ctxvalname){ return state.getIn(["context",ctxvalname]); },
 	POSITIONSIN: function(state,layername){ return state.getIn(["layers",layername]).size; },
 	IFELSE: function(state,cond,val1,val2){ return this.evaluateValue(state, this.evaluateBoolean(state,cond) ? val1 : val2); },
@@ -97,11 +98,16 @@ var valuemethods = {
 	},
 	RELATIVEDIR: function(state,dir,reldir){
 		return [1,2,3,4,5,6,7,8,1,2,3,4,5,6,7,8][this.evaluateValue(state,reldir)-2+this.evaluateValue(state,dir)];
+	},
+	COUNT: function(state,layername){
+		return (state.getIn(["layers",this.evaluateValue(state,layername)])||I.Map()).reduce(function(count,list){
+			return count + list.size;
+		},0);
 	}
 };
 
 Algol.evaluateValue = function(state,def){
-	return valuemethods[def.first()].apply(this,[state].concat(def.rest().toArray()));
+	return I.List.isList(def) ? valuemethods[def.first()].apply(this,[state].concat(def.rest().toArray())) : def;
 };
 
 var positionmethods = {

@@ -3,10 +3,12 @@
 	"board": {
 		"height": 8,
 		"width": 8,
-		"terrain": [
-			{"x":1,"y":1,"type":"base","plr":1},{"x":2,"y":1,"type":"base","plr":1},{"x":3,"y":1,"type":"base","plr":1},{"x":4,"y":1,"type":"base","plr":1},{"x":5,"y":1,"type":"base","plr":1},{"x":6,"y":1,"type":"base","plr":1},{"x":7,"y":1,"type":"base","plr":1},{"x":8,"y":1,"type":"base","plr":1},
-			{"x":1,"y":8,"type":"base","plr":2},{"x":2,"y":8,"type":"base","plr":2},{"x":3,"y":8,"type":"base","plr":2},{"x":4,"y":8,"type":"base","plr":2},{"x":5,"y":8,"type":"base","plr":2},{"x":6,"y":8,"type":"base","plr":2},{"x":7,"y":8,"type":"base","plr":2},{"x":8,"y":8,"type":"base","plr":2}
-		],
+		"terrain": {
+			"bases": {
+				"1001": {"owner":1}, "1002": {"owner":1}, "1003": {"owner":1}, "1004": {"owner":1}, "1005": {"owner":1}, "1006": {"owner":1}, "1007": {"owner":1}, "1008": {"owner":1},
+				"8001": {"owner":2}, "8002": {"owner":2}, "8003": {"owner":2}, "8004": {"owner":2}, "8005": {"owner":2}, "8006": {"owner":2}, "8007": {"owner":2}, "8008": {"owner":2}
+			}
+		},
 		"setup": [
 			{"pos":1004,"plr":1,"type":"crown"},{"pos":1005,"plr":1,"type":"crown"},
 			{"pos":2003,"plr":1,"type":"dagger"},{"pos":2004,"plr":1,"type":"dagger"},{"pos":2005,"plr":1,"type":"dagger"},{"pos":2006,"plr":1,"type":"dagger"},
@@ -17,11 +19,17 @@
 	},
 	"endturn": {
 		"condition":["PERFORMEDANYCOMMAND"],
-		"commandcap": true
-	},
-	"endgame": {
-		"infiltration":[["NOTEMPTY","infiltrator"],["CONTEXTVAL","CURRENTPLAYER"]],
-		"kingkill":[["NOTEMPTY","deadking"],["CONTEXTVAL","CURRENTPLAYER"]]
+		"commandcap": true,
+		"endgame": {
+			"infiltration":{
+				"hydration": ["findinfiltrators"],
+				"condition": [["NOTEMPTY","infiltrator"],["CONTEXTVAL","CURRENTPLAYER"]]
+			},
+			"kingkill": {
+				"hydration": ["finddeadkings"],
+				"condition": [["NOTEMPTY","deadking"],["CONTEXTVAL","CURRENTPLAYER"]]
+			}
+		}
 	},
 	"marks": {
 		"selectunit": {
@@ -112,10 +120,14 @@
 					["NONEAT","MYUNITS",["CONTEXTPOS","TARGET"]],
 					["NOT",["AND",
 						["SAME",["CONTEXTVAL","DIR"],["VAL",5]],
-						["SAME",["LOOKUP","UNITS",["CONTEXTPOS","TARGET"],"type"],"dagger"]
+						["SAME",["LOOKUP","UNITS",["CONTEXTPOS","TARGET"],"type"],["VAL","dagger"]]
 					]]
 				],
-				"tolayer": ["IFELSE",["ANYAT","UNITS",["CONTEXTPOS","TARGET"]],"killtarget","movetarget"]
+				"tolayer": ["IFELSE",
+					["ANYAT","UNITS",["CONTEXTPOS","TARGET"]],
+					["LAYERNAME","killtarget"],
+					["LAYERNAME","movetarget"]
+				]
 			}
 		}
 	}

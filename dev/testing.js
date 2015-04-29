@@ -1,4 +1,4 @@
-var I = require("./src/immutableextensions");
+var I = require("../src/immutableextensions");
 
 var origmap = I.Map({a:1,b:2,c:3});
 var newmap = origmap.set("a",666).set("a",1);
@@ -55,3 +55,8 @@ list.reduce(function(mem,item,n,all){
 	console.log("reducing",item,n,all);
 	return mem.push(item);
 },I.List());
+
+var m = I.fromJS({a:1,b:2,c:3});
+console.log("mapping",m.map(function(val,name){ return name+": "+val; }));
+
+console.log(I.isMap(I.Map()));

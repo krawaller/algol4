@@ -38,7 +38,7 @@ var effectmethods = {
 		return state.setIn(["data","terrain",pos,I.fromJS(props).set("POS",pos)]);
 	},
 	FORALLIN: function(state,layername,effect){
-		var layer = state.getIn(["layers",layername]);
+		var layer = state.getIn(["layers",this.evaluateValue(state,layername)]);
 		return state.getIn(["data","units"]).reduce(function(state,unit,id){
 			return layer.has(unit.get("POS")) ? this.applyEffect(state.setIn(["context","LOOPID"],id),effect) : state;
 		},state,this)[state.hasIn(["context","LOOPID"])?"setIn":"deleteIn"](["context","LOOPID"],state.getIn(["context","LOOPID"]));

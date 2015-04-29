@@ -1,0 +1,88 @@
+{
+	"source": "http://www.di.fc.ul.pt/~jpn/gv/conquest.htm",
+	"board": {
+		"height": 9,
+		"width": 9,
+		"terrain": {
+			"center": {"5005":{}},
+			"plus": {
+				"4005": {}, "5004": {}, "5006": {}, "6005": {}
+			},
+			"x": {
+				"4004": {}, "4006": {}, "6004": {}, "6006": {}
+			}
+		}
+	},
+	"marks": {
+		"selectmove": {
+			"fromlayer": "freetomove",
+			"condition": ["NOT",["HASPERFORMEDCOMMAND","move"]]
+		}
+	},
+	"commands": {
+		"move": {
+			"neededmarks": ["selectmove"],
+			"condition": ["NOT",["HASPERFORMEDCOMMAND","move"]]
+		},
+		"exile": {
+			"condition": ["AND",
+				["HASPERFORMEDCOMMAND","move"]
+			]
+		}
+	},
+	"endturn": {
+		"condition": ["HASPERFORMEDCOMMAND","move"],
+		"endgame": {
+			"madepattern": {
+				"hydration": ["findcenterking","findplussers","findexers"],
+				"condition": ["AND",
+					["NOTEMPY",["LAYERNAME","centerking"]],
+					["OR",
+						["SAME",["COUNT",["LAYERNAME","plussers"]],["VAL",4]],
+						["SAME",["COUNT",["LAYERNAME","exers"]],["VAL",4]]
+					]
+				]
+			}
+		}
+	},
+	"generators": {
+		"findmovetargets": {
+			"type": "nextto",
+			"dirs": ["DIRS",[2,4,6,8]],
+			"from": ["ALLINLAYER","MYUNITS"],
+			"draw": {
+				"start": {
+					"condition": ["DIFFERENT",["CONTEXTVAL","NEIGHBOURS"],["VAL",0]],
+					"tolayer": ["freetomove"]
+				},
+				"target": {
+					"condition": ["NONEAT",["LAYERNAME","UNITS"],["CONTEXTPOS","START"]],
+					"tolayer": ["LAYERNAME","MOVETARGETS"],
+					"include": {
+						"moverid": ["IDAT",["CONTEXTPOS","START"]]
+					}
+				}
+			}
+		},
+		"findcenterking": {
+			"type": "filter",
+			"layer": "MYUNITS",
+			"matching": {"type":"king"},
+			"condition": ["ANYAT",["LAYERNAME","center"],["CONTEXTPOS","START"]],
+			"tolayer": ["LAYERNAME","centerking"]
+		},
+		"findplussers": {
+			"type": "filter",
+			"layer": "MYUNITS",
+			"condition": ["ANYAT",["LAYERNAME","plus"],["CONTEXTPOS","START"]],
+			"tolayer": ["LAYERNAME","plussers"]
+		},
+		"findexers": {
+			"type": "filter",
+			"layer": "MYUNITS",
+			"condition": ["ANYAT",["LAYERNAME","x"],["CONTEXTPOS","START"]],
+			"tolayer": ["LAYERNAME","exers"]
+		}
+
+	}
+}

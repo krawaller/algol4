@@ -54,8 +54,14 @@ tester("the generate methods",Algol,{
 				evaluateDirList: {
 					returns: [4,5,6],
 					expectedargs: [
-						[{context:{START:"foo",something:"other"},board:{foo:{nextto:{4:"baz",6:"bin"}},foo2:{nextto:{5:"bin",6:"buh"}}}},"DIRSDEF"],
-						[{context:{START:"foo2",something:"other"},board:{foo:{nextto:{4:"baz",6:"bin"}},foo2:{nextto:{5:"bin",6:"buh"}}}},"DIRSDEF"]
+						[{
+							context:{START:"foo",something:"other"},
+							board:{foo:{nextto:{4:"baz",6:"bin"}},foo2:{nextto:{5:"bin",6:"buh"}}}
+						},"DIRSDEF"],
+						[{
+							context:{START:"foo2",something:"other"},
+							board:{foo:{nextto:{4:"baz",6:"bin"}},foo2:{nextto:{5:"bin",6:"buh"}}}
+						},"DIRSDEF"]
 					]
 				}
 			}
@@ -158,4 +164,4 @@ tester("the generate methods",Algol,{
 			expected: {marks:{foo:"bar"},board:{bar:{nextto:{1:"bar2"}}},layers:{newlayer:{bar2:[{prop:"snopp"}]}},context:{blaj:"paj"},gamedef:{generators:{somegen:{neededmarks:["foo"],type:"nextto",starts:["FROMSINGLEPOS",["MARKPOS","foo"]],dirs:["DIRS",[1]],draw:{target:{tolayer:["VAL","newlayer"],include:{prop:["VAL","snopp"]}}}}}}}
 		}
 	}
-});
+},I);

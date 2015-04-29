@@ -63,6 +63,20 @@ tester("the evaluate methods",Algol,{
 		"for SUM": {
 			valuedef: ["SUM",["VAL",2],["VAL",3]],
 			expected: 5
+		},
+		"for COUNT when nothing": {
+			state: { },
+			valuedef: ["COUNT",["LAYERNAME","somelayer"]],
+			expected: 0
+		},
+		"for COUNT when something": {
+			state: { layers: { somelayer: {x:[1,1],y:[3]} } },
+			valuedef: ["COUNT",["LAYERNAME","somelayer"]],
+			expected: 3
+		},
+		"for primitive": {
+			valuedef: 666,
+			expected: 666
 		}
 	},
 	"evaluatePosition(state,posdef)": {
@@ -208,4 +222,4 @@ tester("the evaluate methods",Algol,{
 			expected: false
 		}
 	}
-});
+},I);

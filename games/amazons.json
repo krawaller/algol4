@@ -17,19 +17,19 @@
 		},
 		"selectmove": {
 			"condition": ["NOT",["HASPERFORMEDCOMMAND","move"]],
-			"fromlayer":"movetarget"
+			"fromlayer": "movetarget"
 		},
 		"selectfire": {
-			"condition":["HASPERFORMEDCOMMAND","move"],
-			"fromlayer":"firetarget"
+			"condition": ["HASPERFORMEDCOMMAND","move"],
+			"fromlayer": "firetarget"
 		}
 	},
 	"endturn": {
 		"condition":["HASPERFORMEDCOMMAND","fire"],
 		"commandcap": true,
-		"hydration": ["findenemymoves"],
 		"endgame": {
 			"blocked":{
+				"hydration": ["findenemymoves"],
 				"condition": ["EMPTY","enemymove"],
 				"winner": ["CONTEXTVAL","CURRENTPLAYER"]
 			}

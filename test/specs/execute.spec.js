@@ -340,7 +340,7 @@ tester("The execute methods",Algol,{
 		},
 		"when using FORALLIN": {
 			state: {turn: 8, layers:{somelayer:{a:"X"},UNITS:{a:[{id:"A"}],b:[{id:"B"}]}},data:{units:{A:{POS:"a"},B:{POS:"b"}}},context:{foo:"bar"},affected:["B"]},
-			effect: ["FORALLIN","somelayer",["SETUNITDATA",["LOOPID"],"doomed",["VAL","yes"]]],
+			effect: ["FORALLIN",["LAYERNAME","somelayer"],["SETUNITDATA",["LOOPID"],"doomed",["VAL","yes"]]],
 			expected: {turn: 8, layers:{somelayer:{a:"X"},UNITS:{a:[{id:"A"}],b:[{id:"B"}]}},data:{units:{A:{POS:"a",doomed:"yes",AFFECTEDTURN:8},B:{POS:"b"}}},context:{foo:"bar"},affected:["B","A"]}
 		},
 		"when using MULTIEFFECT": {
@@ -350,7 +350,7 @@ tester("The execute methods",Algol,{
 		}
 	},
 	"updateMarksFromCommand(state,commanddef)": {}
-});
+},I);
 
 
 

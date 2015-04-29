@@ -31,6 +31,6 @@ _.mixin({
 });
 
 
-if (typeof module !== 'undefined' && typeof module.exports !== 'undefined')
-    module.exports = _;
+if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') { module.exports = _; }
+
 })();
