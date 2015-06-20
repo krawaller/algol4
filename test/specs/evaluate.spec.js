@@ -97,19 +97,19 @@ tester("the evaluate methods",Algol,{
 		}
 	},
 	"evaluatePositionList(state,poslistdef)": {
-		"for FROMALLINLAYER": {
+		"for ALLPOSINLAYER": {
 			state: { layers: {somelayer: {a:"X",b:"X"}} },
-			poslistdef: ["FROMALLINLAYER","somelayer"],
+			poslistdef: ["ALLPOSINLAYER","somelayer"],
 			expected: ["a","b"]
 		},
-		"for FROMALLINLAYERS": {
+		"for ALLPOSINLAYERS": {
 			state: { layers: {somelayer: {a:"X",b:"X"}, someotherlayer: {b:"Y",c:"Y"}} },
-			poslistdef: ["FROMALLINLAYERS","somelayer","someotherlayer"],
+			poslistdef: ["ALLPOSINLAYERS","somelayer","someotherlayer"],
 			expected: ["a","b","c"]
 		},
-		"for FROMSINGLEPOS": {
+		"for using singlepos": {
 			state: { marks: {somemark: "foo"} },
-			poslistdef: ["FROMSINGLEPOS",["MARKPOS","somemark"]],
+			poslistdef: ["MARKPOS","somemark"],
 			expected: ["foo"]
 		}
 	},
@@ -213,12 +213,12 @@ tester("the evaluate methods",Algol,{
 		},
 		"for POSITIONINLIST when correct": {
 			state: {layers: {foolayer: {a:["X"]}}, marks: {somemark: "a"}},
-			booldef: ["POSITIONINLIST",["MARKPOS","somemark"],["FROMALLINLAYER","foolayer"]],
+			booldef: ["POSITIONINLIST",["MARKPOS","somemark"],["ALLPOSINLAYER","foolayer"]],
 			expected: true
 		},
 		"for POSITIONINLIST when not correct": {
 			state: {layers: {foolayer: {a:["X"]}}, marks: {somemark: "b"}},
-			booldef: ["POSITIONINLIST",["MARKPOS","somemark"],["FROMALLINLAYER","foolayer"]],
+			booldef: ["POSITIONINLIST",["MARKPOS","somemark"],["ALLPOSINLAYER","foolayer"]],
 			expected: false
 		}
 	}

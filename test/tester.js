@@ -12,8 +12,8 @@ function tester(description,lib,methodtests,I){
 describe(description,function(){
 	_.each(methodtests,function(tests,signature){
 		describe("the "+signature+" method",function(){
-			var methodname = signature.split("(")[0];
-			var arglist = signature.split("(")[1].replace(/\)$/,"").split(",");
+			var methodname = signature.split("(")[0],
+				arglist = signature.split("(")[1].replace(/\)$/,"").split(",");
 			_.each(tests,function(test,testdesc){
 				describe(testdesc,function(){
 					var result;
@@ -21,14 +21,14 @@ describe(description,function(){
 						_.each(test.context||{},function(stubdef,stubname){
 							sinon.stub(lib,stubname,stubdef.method || function(){
 								var ret = test[stubdef.returns]||stubdef.returns;
-								return I && I.fromJS(ret) || ret;
+								return I ? I.fromJS(ret) : ret;
 							});
 						});
 						result = lib[methodname].apply(lib,arglist.map(function(param){
-							return I && I.fromJS(test[param]) || test[param];
+							return I ? I.fromJS(test[param]) : test[param];
 						}));
 					});
-					it("returns "+JSON.stringify(test.expected),function(){
+					it("returns the expected value",function(){
 						expect(result.toJS ? result.toJS() : result).toEqual(test.expected);
 					});
 					_.each(test.context||{},function(stubdef,stubname){

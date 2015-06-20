@@ -5,7 +5,7 @@ var I = (typeof require !== "undefined" ? require("immutable") : window.Immutabl
 I.keyInMap = function(othermap) { return function (v, k) { return othermap.has(k); }; };
 
 I.keyIn = function(/*...keys*/) {
-  var keySet = Immutable.Set(arguments); 
+  var keySet = I.Set(arguments); 
   return function (v, k) { return keySet.has(k); };
 };
 
@@ -35,6 +35,6 @@ I.setIf = function(map,name,val){
 };
 
 
-if (typeof module !== 'undefined' && typeof module.exports !== 'undefined')
-    module.exports = I;
+if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') { module.exports = I; }
+
 })();

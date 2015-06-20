@@ -35,17 +35,17 @@
 		"condition": ["SAME",["CONTEXTVAL","PERFORMEDSTEPS"],["VAL",1]],
 		"commandcap": true,
 		"endgame": {
-			"infiltration": {
+			"cornerinfiltration": {
 				"hydration": ["findinfiltrators"],
 				"condition": ["NOTEMPTY","infiltrators"]
 			},
 			"occupation": {
 				"hydration": ["findoccupiers"],
-				"condition": ["NOTEMPTY","occupiers"]
+				"condition": ["MORETHAN",1,["COUNT","infiltrators"]]
 			},
 			"oppcantmove": {
 				"hydration": ["findoppmovers","findmovetargets"],
-				"condition": ["NOTEMPTY","movers"]
+				"condition": ["EMPTY","movers"]
 			}
 		}
 	},

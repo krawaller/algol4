@@ -21,20 +21,20 @@ Algol.evaluateDirList = function(state,def){
 };
 
 var positionlistmethods = {
-	FROMALLINLAYER: function(state,layername){ return state.getIn(["layers",layername]).keySeq(); },
-	FROMALLINLAYERS: function(){
+	ALLPOSINLAYER: function(state,layername){ return state.getIn(["layers",layername]).keySeq(); },
+	ALLPOSINLAYERS: function(){
 		var state = arguments[0];
 		return _.reduce( _.slice(arguments,2), function(mem,name){
 			return mem.merge( state.getIn(["layers",name]) );
 		},state.getIn(["layers",arguments[1]]),this).keySeq();
-	},
-	FROMSINGLEPOS: function(state,pos){
-		return I.List([this.evaluatePosition(state,pos)]);
 	}
 };
 
 Algol.evaluatePositionList = function(state,def){
-	return positionlistmethods[def.first()].apply(this,[state].concat(def.rest().toArray()));
+	var name = def.first(), rest = def.rest().toArray();
+	return positionlistmethods[name] ?
+		positionlistmethods[name].apply(this,[state].concat(rest))
+		: I.List([positionmethods[name].apply(this,[state].concat(rest))]);
 };
 
 var idmethods = {

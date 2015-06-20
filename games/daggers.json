@@ -86,7 +86,7 @@
 		"nexttocrown": {
 			"type": "nextto",
 			"starts": ["FROMALLINLAYER","activecrown"],
-			"dirs": ["DIRS",1,2,3,4,5,6,7,8],
+			"dirs": ["DIRS",[1,2,3,4,5,6,7,8]],
 			"drawtarget": {
 				"condition": ["NONEAT","MYUNITS","TARGET"],
 				"tolayer": ["IFELSE",["ANYAT","OPPUNITS","TARGET"],"killtarget","movetarget"]
@@ -95,7 +95,7 @@
 		"abovedagger": {
 			"type": "nextto",
 			"starts": ["FROMALLINLAYER","activedagger"],
-			"dirs": ["DIRS",8,1,2],
+			"dirs": ["DIRS",[8,1,2]],
 			"drawtarget": {
 				"condition": ["AND",
 					["NONEAT","MYUNITS",["CONTEXTPOS","TARGET"]],
@@ -110,7 +110,7 @@
 		"belowdagger": {
 			"type": "walker",
 			"starts": ["FROMALLINLAYER","activedagger"],
-			"dirs": ["DIRS",4,5,6],
+			"dirs": ["DIRS",[4,5,6]],
 			"stoplayer": "UNITS",
 			"drawstep": {
 				"tolayer": "movetarget"

@@ -7,32 +7,118 @@
 		"setup": [
 		]
 	},
+	"layers": {
+		"movetarget": {
+			"paintedby": ["findimmediatetargets"],
+			"marks": ["selecthead"]
+		},
+		"potentialdueltarget": {
+			"paintedby": ["findimmediatetargets"],
+			"startfor": ["finddueltargets"]
+		},
+		"dueltarget": {
+			"paintedby": ["finddueltargets"],
+			"marks": ["selectduel"]
+		},
+		"potentialtail": {
+			"paintedby": ["findpotentialtails"],
+			"marks": ["selecttail"]
+		},
+		"phalanxmember": {
+			"paintedby": ["findphalanxmembers"]
+		},
+		"phalanxend": {
+			"paintedby": ["findphalanxmembers"]
+		},
+		"marchtarget": {
+			"paintedby": ["findmarchandchargetargets"],
+			"marks": ["selectmarch"]
+		},
+		"threatened": {
+			"paintedby": ["findmarchandchargetargets"]
+		},
+		"chargetarget": {
+			"paintedby": ["findopposingphalanx"],
+			"marks": ["selectcharge"]
+		},
+		"opposingphalanx": {
+			"paintedby": ["findopposingphalanx"]
+		},
+		"chargevictims": {
+			"paintedby": ["findchargevictims"]
+		}
+	},
+	"flow": {
+		"MARK:selecthead": {
+			"GENERATOR:findimmediatetargets": ["potentialdueltarget","movetarget"],
+			"GENERATOR:finddueltargets": ["dueltarget"],
+			"GENERATOR:findpotentialtails": ["potentialtail"],
+			"MARK:selectmove": {
+				"COMMANDS":["move"]
+			},
+			"MARK:selectduel": {
+				"COMMANDS":["duel"]
+			},
+			"MARK:selecttail": {
+				"GENERATOR:findphalanxmembers": ["phalanxmember","phalanxend"],
+				"GENERATOR:findmarchandchargetargets": ["marchtarget","threatened"],
+				"GENERATOR:findopposingphalanx": ["chargetarget","opposingphalanx"],
+				"MARK:selectcharge": {
+					"GENERATOR:findchargevictims": ["chargevictims"],
+					"COMMANDS": ["charge"]
+				},
+				"MARK:selectmarch": {
+					"COMMANDS": ["march"]
+				}
+			}
+		}
+	},
 	"marks": {
 		"selecthead": {
-			"from": "MYUNITS"
+			"from": "MYUNITS",
+			"hydration": ["findimmediatetargets","finddueltargets","findpotentialtails"],
+			"cleanse": ["movetarget","dueltarget","potentialtail"]
 		},
 		"selecttail": {
-			"from": "potentialtail"
+			"from": "potentialtail",
+			"hydration": ["findphalanxmembers","findmarchandchargetargets","findopposingphalanx"],
+			"cleanse": ["phalanxmember","phalanxend","chargetarget","opposingphalanx"]
 		},
 		"selectmove": {
 			"from": "movetarget",
-			"notwith": "selecttail"
+			"notwith": ["selecttail","selectcharge","selectmarch","selectduel"]
 		},
-		"selectkill": {
-			"from": "killtarget",
-			"notwith": "selectmarch"
+		"selectduel": {
+			"from": "dueltarget",
+			"notwith": ["selecttail","selectcharge","selectmarch","selectmove"]
+		},
+		"selectcharge": {
+			"from": "chargetarget",
+			"notwith": ["selectmarch","selectmove","selectduel"],
+			"hydration": ["findchargevictims"],
+			"cleanse": ["chargevictims"]
 		},
 		"selectmarch": {
-			"from": "marchtarget"
+			"from": "marchtarget",
+			"notwith": ["selectcharge","selectmove","selectduel"]
 		}
 	},
 	"commands": {
 		"move": {
+			"neededmarks": ["selecthead","selectmove"],
 			"effects": [
-				["MOVEUNIT",["IDAT",["MARKPOS","selecthead"]],["MARKPOS","movetarget"]]
+				["MOVEUNIT",["IDAT",["MARKPOS","selecthead"]],["MARKPOS","selectmove"]]
+			]
+		},
+		"duel": {
+			"neededmarks": ["selecthead","selectduel"],
+			"effects": [
+				["KILLUNIT",["IDAT",["MARKPOS","selectduel"]]],
+				["MOVEUNIT",["IDAT",["MARKPOS","selecthead"]],["MARKPOS","selectduel"]]
 			]
 		},
 		"march": {
+			"neededmarks": ["selecthead","selecttail","selectmarch"],
 			"effects": [
 				["FORALLIN","phalanxmember",
 					["OFFSETUNIT",["LOOPID"],
@@ -43,40 +129,62 @@
 			]
 		},
 		"charge": {
+			"neededmarks": ["selecthead","selecttail","selectcharge"],
 			"effects": [
 				["FORALLIN","phalanxmember",
 					["OFFSETUNIT",["LOOPID"],
-						["LOOKUP","marchtarget",["MARKPOS","selectkill"],"heading"],
-						["LOOKUP","marchtarget",["MARKPOS","selectkill"],"strength",
+						["LOOKUP","marchtarget",["MARKPOS","selectcharge"],"heading"],
+						["LOOKUP","marchtarget",["MARKPOS","selectcharge"],"strength",
 						0]]
 				],
-				["FORALLIN","doomed",
+				["FORALLIN","chargevictims",
 					["KILLUNIT",["LOOPID"]]
 				]
 			]	
 		}
 	},
+	"startturn": {
+		"hydration": []
+	},
 	"generators": {
-		"finddoomed": {
+		"findchargevictims": {
 			"type": "filter",
-			"layer": "tokill",
-			"matching": {"heading":["IS",["LOOKUP","tokill",["MARKPOS","selectkill"],"heading"]]},
-			"tolayer": "doomed"
+			"layer": "opposingphalanx",
+			"matching": {"heading":["IS",["LOOKUP","opposingphalanx",["MARKPOS","selectcharge"],"heading"]]},
+			"tolayer": "chargevictims"
 		},
-		"movetarget": {
+		"findimmediatetargets": {
 			"type": "neighbour",
-			"dirs": ["DIRS",1,2,3,4,5,6,7,8],
+			"dirs": ["DIRS",[1,2,3,4,5,6,7,8]],
 			"start": ["MARKPOS","selecthead"],
 			"draw": {
 				"target": {
-					"condition": ["NONEAT","UNITS",["CONTEXTPOS","TARGET"]],
-					"tolayer": "movetarget"
+					"condition": ["NONEAT","MYUNITS",["CONTEXTPOS","TARGET"]],
+					"tolayer": ["IFELSE",
+						["ANYAT","OPPUNITS",["CONTEXTPOS","TARGET"]],
+						"potentialdueltarget",
+						"movetarget"
+					],
+					"include": {
+						"singledir": ["CONTEXTVAL","DIR"]
+					}
 				}
 			}
 		},
-		"potentialphalanx": {
+		"finddueltargets": {
+			"type": "neighbour",
+			"start": ["ALLPOSINLAYER","potentialdueltarget"],
+			"dirs": ["RELATIVEDIRS",[1],["LOOKUP",["CONTEXTPOS","START"],"singledir"]],
+			"draw": {
+				"start": {
+					"condition": ["NONEAT","OPPUNITS",["CONTEXTPOS","TARGET"]],
+					"tolayer": "dueltarget"
+				}
+			}
+		},
+		"findpotentialtails": {
 			"type": "walker",
-			"dirs": ["DIRS",1,2,3,4,5,6,7,8],
+			"dirs": ["DIRS",[1,2,3,4,5,6,7,8]],
 			"start": ["MARKPOS","selecthead"],
 			"steplayer": "MYUNITS",
 			"draw": {
@@ -88,7 +196,7 @@
 				}
 			}
 		},
-		"paintphalanx": {
+		"findphalanxmembers": {
 			"type":"walker",
 			"dir": ["RELATIVEDIR",["VAL",5],["LOOKUP","potentialtail",["MARKPOS","selecttail"],"headdirection"]],
 			"start": ["MARKPOS","selecttail"],
@@ -113,7 +221,7 @@
 				}
 			}
 		},
-		"march": {
+		"findmarchandchargetargets": {
 			"type": "walker",
 			"starts": ["FROMALLINLAYER","phalanxend"],
 			"dir": ["LOOKUP","phalanxend",["CONTEXTPOS","START"],"facing"],
@@ -137,7 +245,7 @@
 				}
 			}
 		},
-		"opposers": {
+		"findopposingphalanx": {
 			"type": "walker",
 			"starts": ["FROMALLINLAYER","threatened"],
 			"dir": ["LOOKUP","threatened",["CONTEXTPOS","START"],"heading"],
@@ -145,13 +253,13 @@
 			"draw": {
 				"start": {
 					"condition": ["MORE",["LOOKUP","threatened",["CONTEXTPOS","START"],"strength"],["CONTEXTVAL","LENGTH"]],
-					"tolayer": "killtarget",
+					"tolayer": "chargetarget",
 					"include": {
 						"heading": ["CONTEXTVAL","DIR"]
 					}
 				},
 				"all": {
-					"tolayer": "tokill",
+					"tolayer": "opposingphalanx",
 					"include": {
 						"heading": ["CONTEXTVAL","DIR"]
 					}
