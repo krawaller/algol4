@@ -157,7 +157,8 @@ tester("the evaluate methods",Algol,{
 		"for AFFECTED when id in list": {
 			state: {
 				layers: { UNITS: {xyz:[{id:"123"}]} },
-				marks: {uglymark:"xyz"}, affected:["3","7","123"]
+				marks: {uglymark:"xyz"},
+				affected:["3","7","123"]
 			},
 			booldef: ["AFFECTED",["IDAT",["MARKPOS","uglymark"]]],
 			expected: true

@@ -1,8 +1,5 @@
 {
-	"TODO": [
-		"need to add exile target, which needs finalising of light/dark squares",
-		"exile target cannot have been affected this turn! (?)"
-	],
+	"TODO": ["who won?"],
 	"source": "http://www.di.fc.ul.pt/~jpn/gv/conquest.htm",
 	"board": {
 		"height": 9,
@@ -15,21 +12,37 @@
 			"x": {
 				"4004": {}, "4006": {}, "6004": {}, "6006": {}
 			}
-		}
+		},
+		"setup": [
+			{"POS":1001,"type":"soldier","DIR":5,"PLR":1},{"POS":1002,"type":"soldier","DIR":5,"PLR":1},{"POS":1003,"type":"soldier","DIR":5,"PLR":1},
+			{"POS":2001,"type":"soldier","DIR":5,"PLR":1},{"POS":2002,"type":"king","DIR":5,"PLR":1},{"POS":2003,"type":"soldier","DIR":5,"PLR":1},
+			{"POS":3001,"type":"soldier","DIR":5,"PLR":1},{"POS":3002,"type":"soldier","DIR":5,"PLR":1},{"POS":3003,"type":"soldier","DIR":5,"PLR":1},
+			{"POS":7007,"type":"soldier","DIR":1,"PLR":2},{"POS":7008,"type":"soldier","DIR":1,"PLR":2},{"POS":7009,"type":"soldier","DIR":1,"PLR":2},
+			{"POS":8007,"type":"soldier","DIR":1,"PLR":2},{"POS":8008,"type":"king","DIR":1,"PLR":2},{"POS":8009,"type":"soldier","DIR":1,"PLR":2},
+			{"POS":9007,"type":"soldier","DIR":1,"PLR":2},{"POS":9008,"type":"soldier","DIR":1,"PLR":2},{"POS":9006,"type":"soldier","DIR":1,"PLR":2}
+		]
 	},
 	"marks": {
-		"selectmove": {
+		"selectunit": {
 			"fromlayer": "freetomove",
+			"condition": ["NOT",["HASPERFORMEDCOMMAND","move"]],
+			"hydration": ["findmovetargets"],
+			"cleanse": ["movetargets"]
+		},
+		"selectmove": {
+			"fromlayer": "movetargets",
 			"condition": ["NOT",["HASPERFORMEDCOMMAND","move"]]
 		},
 		"selectexilee": {
 			"condition": ["HASPERFORMEDCOMMAND","move"],
-			"fromlayer": "exilee"
+			"fromlayer": "exiletargets",
+			"hydration": ["findexiledestinations"],
+			"cleanse": ["exiledestinations"]
 		}
 	},
 	"commands": {
 		"move": {
-			"neededmarks": ["selectmove"],
+			"neededmarks": ["selectunit","selectmove"],
 			"condition": ["NOT",["HASPERFORMEDCOMMAND","move"]]
 		},
 		"exile": {
@@ -40,7 +53,10 @@
 		}
 	},
 	"startstep": {
-		"hydration": ["findexiletargets","findexiledestinations"]
+		"hydration": ["findexiletargets"]
+	},
+	"startturn": {
+		"hydration": ["findmovers"]
 	},
 	"endturn": {
 		"condition": ["HASPERFORMEDCOMMAND","move"],
@@ -61,25 +77,49 @@
 		"findexiletargets": {
 			"type": "walker",
 			"dirs": ["DIRS",[2,4,6,8]],
-			"max": 2
+			"max": 2,
+			"starts": ["MARKINLAST","move","selectunit"],
+			"steps": "OPPUNITS",
+			"blocks": "MYUNITS",
+			"draw": {
+				"step": {
+					"condition": ["AND",
+						["SAME",["CONTEXTVAL","STOPREASON"],"HITBLOCK"],
+						["NOT",["AFFECTED",["IDAT",["CONTEXTPOS","TARGET"]]]]
+					],
+					"tolayer": "exiletargets"
+				}
+			}
 		},
-		"findmovetargets": {
+		"findmovers": {
 			"type": "nextto",
 			"dirs": ["DIRS",[2,4,6,8]],
-			"from": ["ALLINLAYER","MYUNITS"],
+			"from": ["ALLPOSIN","MYUNITS"],
 			"draw": {
 				"start": {
-					"condition": ["DIFFERENT",["CONTEXTVAL","NEIGHBOURS"],["VAL",0]],
-					"tolayer": ["freetomove"]
+					"condition": ["DIFFERENT",["CONTEXTVAL","NEIGHBOURS"],0],
+					"tolayer": "freetomove"
 				},
 				"target": {
-					"condition": ["NONEAT",["LAYERNAME","UNITS"],["CONTEXTPOS","START"]],
-					"tolayer": ["LAYERNAME","MOVETARGETS"],
+					"condition": ["NONEAT","UNITS",["CONTEXTPOS","TARGET"]],
+					"tolayer": "potmovetargets",
 					"include": {
 						"moverid": ["IDAT",["CONTEXTPOS","START"]]
 					}
 				}
 			}
+		},
+		"findmovetargets": {
+			"type": "filter",
+			"layer": "potmovetargets",
+			"matching": {"moverid":["IDAT",["MARKPOS","selectunit"]]},
+			"tolayer": "movetargets"
+		},
+		"findexiledestinations": {
+			"type": "filter",
+			"layer": ["IFELSE", ["SAME",["LOOKUP","BOARD",["MARKPOS","selectexiletarget"],"color"],"light"],"light","dark"],
+			"condition": ["NONEAT", ["UNITS"],["CONTEXTPOS","START"]],
+			"tolayer": ["exiledestinations"]
 		},
 		"findcenterking": {
 			"type": "filter",

@@ -262,7 +262,11 @@ tester("the generate methods",Algol,{
 				context:{}
 			},
 			painter: {
-				tolayer: ["IFELSE",["SAME",["CONTEXTVAL","FOO"],["VAL","x1"]],["VAL","newlayer"],["VAL","otherlayer"]]
+				tolayer: ["IFELSE",
+					["SAME",["CONTEXTVAL","FOO"],["VAL","x1"]],
+					["VAL","newlayer"],
+					["VAL","otherlayer"]
+				]
 			},
 			pod: {abc: [{FOO:"x1"},{FOO:"x2"}]},
 			expected: {
