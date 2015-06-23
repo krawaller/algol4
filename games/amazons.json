@@ -8,7 +8,9 @@
 			{"x":4,"y":10,"plr":1},{"x":7,"y":10,"plr":1},{"x":1,"y":7,"plr":1},{"x":10,"y":7,"plr":1}
 		]
 	},
-	"hydration": ["findblocks","findfiretargets"],
+	"startturn": {
+		"hydration": ["findblocks","findfiretargets"]
+	},
 	"marks": {
 		"selectunit": {
 			"condition": ["NOT",["HASPERFORMEDCOMMAND","move"]],
@@ -50,7 +52,7 @@
 	"generators": {
 		"findblocks": {
 			"type": "spawn",
-			"starts": ["FROMALLINLAYERS","UNITS","TERRAIN"],
+			"starts": ["ALLPOSINLAYER","UNITS","TERRAIN"],
 			"draw": {
 				"target": {
 					"tolayer": "block"
@@ -59,8 +61,8 @@
 		},
 		"findmovetargets": {
 			"type": "walker",
-			"start": ["FROMMARK","selectunit"],
-			"dirs": ["DIRS",1,2,3,4,5,6,7,8],
+			"start": ["MARKPOS","selectunit"],
+			"dirs": ["DIRS",[1,2,3,4,5,6,7,8]],
 			"stoplayer": "blocks",
 			"draw": {
 				"step": {
@@ -70,8 +72,8 @@
 		},
 		"findfiretargets": {
 			"type": "walker",
-			"start": ["FROMMARKINLAST","move","selectunit"],
-			"dirs": ["DIRS",1,2,3,4,5,6,7,8],
+			"start": ["MARKINLAST","move","selectunit"],
+			"dirs": ["DIRS",[1,2,3,4,5,6,7,8]],
 			"stoplayer": "blocks",
 			"draw": {
 				"step": {
@@ -81,8 +83,8 @@
 		},
 		"findenemymoves": {
 			"type": "walker",
-			"starts": ["FROMALLINLAYER","OPPUNITS"],
-			"dirs": ["DIRS",1,2,3,4,5,6,7,8],
+			"starts": ["ALLPOSINLAYER","OPPUNITS"],
+			"dirs": ["DIRS",[1,2,3,4,5,6,7,8]],
 			"stoplayer": "blocks",
 			"draw": {
 				"step": {

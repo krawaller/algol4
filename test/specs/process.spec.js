@@ -16,10 +16,10 @@ if (typeof require === 'function' && typeof module === 'object') {
 }
 
 tester("the process methods",Algol,{
-	"populateGameWithSettings(state,def)": {
+	"populateGameWithSettings(state,gamedef)": {
 		"for simple test": {
 			state: {settings:{foo:"bar"}},
-			def: {so:["why",["am","i",["SETTINGS","foo"]]]},
+			gamedef: {so:["why",["am","i",["SETTINGS","foo"]]]},
 			expected: {so:["why",["am","i","bar"]]},
 		}
 	},

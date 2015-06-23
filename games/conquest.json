@@ -1,4 +1,8 @@
 {
+	"TODO": [
+		"need to add exile target, which needs finalising of light/dark squares",
+		"exile target cannot have been affected this turn! (?)"
+	],
 	"source": "http://www.di.fc.ul.pt/~jpn/gv/conquest.htm",
 	"board": {
 		"height": 9,
@@ -17,6 +21,10 @@
 		"selectmove": {
 			"fromlayer": "freetomove",
 			"condition": ["NOT",["HASPERFORMEDCOMMAND","move"]]
+		},
+		"selectexilee": {
+			"condition": ["HASPERFORMEDCOMMAND","move"],
+			"fromlayer": "exilee"
 		}
 	},
 	"commands": {
@@ -25,10 +33,14 @@
 			"condition": ["NOT",["HASPERFORMEDCOMMAND","move"]]
 		},
 		"exile": {
+			"neededmarks": ["selectexiletarget","selectexiledestination"],
 			"condition": ["AND",
 				["HASPERFORMEDCOMMAND","move"]
 			]
 		}
+	},
+	"startstep": {
+		"hydration": ["findexiletargets","findexiledestinations"]
 	},
 	"endturn": {
 		"condition": ["HASPERFORMEDCOMMAND","move"],
@@ -46,6 +58,11 @@
 		}
 	},
 	"generators": {
+		"findexiletargets": {
+			"type": "walker",
+			"dirs": ["DIRS",[2,4,6,8]],
+			"max": 2
+		},
 		"findmovetargets": {
 			"type": "nextto",
 			"dirs": ["DIRS",[2,4,6,8]],

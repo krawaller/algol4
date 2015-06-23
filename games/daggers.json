@@ -37,10 +37,11 @@
 		},
 		"selectmovetarget": {
 			"fromlayer": "movetarget",
-			"notwith": "selectkilltarget"
+			"notwith": ["selectkilltarget"]
 		},
 		"selectkilltarget": {
-			"fromlayer": "killtarget"
+			"fromlayer": "killtarget",
+			"notith": ["selectmovetarget"]
 		}
 	},
 	"commands": {

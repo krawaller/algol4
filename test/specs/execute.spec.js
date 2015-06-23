@@ -25,20 +25,84 @@ tester("The execute methods",Algol,{
 	},
 	"calculateCommandResult(state,newstate,commanddef)": {
 		"when data matches two steps back": {
-			state: {steps:[1,2],data:{a:1},previousstep:{steps:[1],data:{b:2},previousstep:{steps:[],data:{c:3}}}},
+			state: {
+				steps:[1,2],
+				data:{a:1},
+				previousstep:{
+					steps:[1],
+					data:{b:2},
+					previousstep:{
+						steps:[],
+						data:{c:3}
+					}
+				}
+			},
 			newstate: {data:{c:3}},
-			expected: ["BACK",{steps:[],data:{c:3}}]
+			expected: ["BACK",{
+				steps:[],
+				data:{c:3}
+			}]
 		},
 		"when newstate matches one step back": {
-			state: {steps:[1,2],data:{a:1},previousstep:{steps:[1],data:{b:2},previousstep:{steps:[],data:{c:3}}}},
+			state: {
+				steps:[1,2],
+				data:{a:1},
+				previousstep:{
+					steps:[1],
+					data:{b:2},
+					previousstep:{
+						steps:[],
+						data:{c:3}
+					}
+				}
+			},
 			newstate: {data:{b:2}},
-			expected: ["BACK",{steps:[1],data:{b:2},previousstep:{steps:[],data:{c:3}}}]
+			expected: ["BACK",{
+				steps:[1],
+				data:{b:2},
+				previousstep:{
+					steps:[],
+					data:{c:3}
+				}
+			}]
 		},
 		"when newstate means new step": {
-			state: {marks:{mark1:"foo",mark2:"bar"},steps:[1,2],data:{a:1},previousstep:{steps:[1],data:{b:2},previousstep:{steps:[],data:{c:3}}},context:{PERFORMEDSTEPS:4}},
+			state: {
+				marks:{mark1:"foo",mark2:"bar"},
+				steps:[1,2],
+				data:{a:1},
+				previousstep:{
+					steps:[1],
+					data:{b:2},
+					previousstep:{
+						steps:[],
+						data:{c:3}
+					}
+				},
+				context:{PERFORMEDSTEPS:4}
+			},
 			newstate: {data:{c:666},steps:["foo"]},
 			commanddef: {name:"somecommand",neededmarks:["mark1"]},
-			expected: ["NEWSTEP",{marks:"NEWMARKDATA",data:{c:666},steps:["foo","STEPDATA"],previousstep: {marks:{mark1:"foo",mark2:"bar"},steps:[1,2],data:{a:1},previousstep:{steps:[1],data:{b:2},previousstep:{steps:[],data:{c:3}}},context:{PERFORMEDSTEPS:4}},context:{PERFORMEDSTEPS:5} }],
+			expected: ["NEWSTEP",{
+				marks:"NEWMARKDATA",
+				data:{c:666},
+				steps:["foo","STEPDATA"],
+				previousstep: {
+					marks:{mark1:"foo",mark2:"bar"},
+					steps:[1,2],
+					data:{a:1},
+					previousstep:{
+						steps:[1],
+						data:{b:2},
+						previousstep:{
+							steps:[],
+							data:{c:3}
+						}
+					},
+					context:{PERFORMEDSTEPS:4}
+				},
+				context:{PERFORMEDSTEPS:5}
+			}],
 			context: {
 				updateMarksFromCommand: {
 					returns: "NEWMARKDATA",
@@ -85,8 +149,22 @@ tester("The execute methods",Algol,{
 			expected: {
 				steps: [],
 				save: ["FOO",[333,"foo","bar"]],
-				previousstep: { player: 333, steps: ["foo","bar"],save: ["FOO"],marks: "FOO",turn: 666,context: "FOO"},
-				previousturn: { player: 333, steps: ["foo","bar"],save: ["FOO"],marks: "FOO",turn: 666,context: "FOO"},
+				previousstep: {
+					player: 333,
+					steps: ["foo","bar"],
+					save: ["FOO"],
+					marks: "FOO",
+					turn: 666,
+					context: "FOO"
+				},
+				previousturn: {
+					player: 333,
+					steps: ["foo","bar"],
+					save: ["FOO"],
+					marks: "FOO",
+					turn: 666,
+					context: "FOO"
+				},
 				marks: {},
 				turn: 667,
 				player: 777,
@@ -107,8 +185,20 @@ tester("The execute methods",Algol,{
 			expected: {
 				steps: [],
 				save: [],
-				previousstep: { player: 333, steps: ["foo","bar"],marks: "FOO",turn: 666,context: "FOO"},
-				previousturn: { player: 333, steps: ["foo","bar"],marks: "FOO",turn: 666,context: "FOO"},
+				previousstep: {
+					player: 333,
+					steps: ["foo","bar"],
+					marks: "FOO",
+					turn: 666,
+					context: "FOO"
+				},
+				previousturn: {
+					player: 333,
+					steps: ["foo","bar"],
+					marks: "FOO",
+					turn: 666,
+					context: "FOO"
+				},
 				marks: {},
 				turn: 667,
 				player: 777,
@@ -121,7 +211,12 @@ tester("The execute methods",Algol,{
 	"endTurnOption(state,endturndef)": {
 		"when second wincondition is met": {
 			state: "STATE",
-			endturndef: {endgame:{byfoo:{condition:"FOOCOND",winner:"FOOWINNER"},bybar:{condition:"BARCOND",winner:"BARWINNER"}}},
+			endturndef: {
+				endgame:{
+					byfoo:{condition:"FOOCOND",winner:"FOOWINNER"},
+					bybar:{condition:"BARCOND",winner:"BARWINNER"}
+				}
+			},
 			expected: ["ENDGAME","bybar","WINNER"],
 			context: {
 				evaluateBoolean: {
@@ -136,7 +231,12 @@ tester("The execute methods",Algol,{
 		},
 		"when first wincondition is met": {
 			state: "STATE",
-			endturndef: {endgame:{byfoo:{condition:"FOOCOND",winner:"FOOWINNER"},bybar:{condition:"BARCOND",winner:"BARWINNER"}}},
+			endturndef: {
+				endgame:{
+					byfoo:{condition:"FOOCOND",winner:"FOOWINNER"},
+					bybar:{condition:"BARCOND",winner:"BARWINNER"}
+				}
+			},
 			expected: ["ENDGAME","byfoo","WINNER"],
 			context: {
 				evaluateBoolean: {
@@ -151,7 +251,13 @@ tester("The execute methods",Algol,{
 		},
 		"when no wincondition is met": {
 			state: "STATE",
-			endturndef: {passto:"NEXTPLR",endgame:{byfoo:{condition:"FOOCOND",winner:"FOOWINNER"},bybar:{condition:"BARCOND",winner:"BARWINNER"}}},
+			endturndef: {
+				passto:"NEXTPLR",
+				endgame:{
+					byfoo:{condition:"FOOCOND",winner:"FOOWINNER"},
+					bybar:{condition:"BARCOND",winner:"BARWINNER"}
+				}
+			},
 			expected: ["PASSTO","NEXT"],
 			context: {
 				evaluateBoolean: {
@@ -167,9 +273,27 @@ tester("The execute methods",Algol,{
 	},
 	"hydrateStateAfterCommand(state)": {
 		"when cannot end turn": {
-			state: {gamedef:{hydration:"LIIIST",endturn:{condition:"COND"}}},
-			aftereval: {gamedef:{hydration:"LIIIST",endturn:{condition:"COND"}},canendturn:false},
-			expected: {gamedef:{hydration:"LIIIST",endturn:{condition:"COND"}},canendturn:false,commands:"COMOPTS"},
+			state: {
+				gamedef:{
+					hydration:"LIIIST",
+					endturn:{condition:"COND"}
+				}
+			},
+			aftereval: {
+				gamedef:{
+					hydration:"LIIIST",
+					endturn:{condition:"COND"}
+				},
+				canendturn:false
+			},
+			expected: {
+				gamedef:{
+					hydration:"LIIIST",
+					endturn:{condition:"COND"}
+				},
+				canendturn:false,
+				commands:"COMOPTS"
+			},
 			context: {
 				evaluateBoolean: {
 					returns: false,
@@ -186,9 +310,27 @@ tester("The execute methods",Algol,{
 			}
 		},
 		"when can end turn": {
-			state: {gamedef:{hydration:"LIST",endturn:{condition:"COND",hydration:"LIST2"}}},
-			aftereval: {gamedef:{hydration:"LIST",endturn:{condition:"COND",hydration:"LIST2"}},canendturn:true},
-			expected: {gamedef:{hydration:"LIST",endturn:{condition:"COND",hydration:"LIST2"}},canendturn:true,commands:"COMOPTS"},
+			state: {
+				gamedef:{
+					hydration: "LIST",
+					endturn: {condition:"COND",hydration:"LIST2"}
+				}
+			},
+			aftereval: {
+				gamedef:{
+					hydration: "LIST",
+					endturn: {condition:"COND",hydration:"LIST2"}
+				},
+				canendturn:true
+			},
+			expected: {
+				gamedef:{
+					hydration:"LIST",
+					endturn:{condition:"COND",hydration:"LIST2"}
+				},
+				canendturn:true,
+				commands:"COMOPTS"
+			},
 			context: {
 				evaluateBoolean: {
 					returns: true,
@@ -212,7 +354,12 @@ tester("The execute methods",Algol,{
 			expected: {foo:"baz"}
 		},
 		"when option is PASSTO": {
-			state: {turn: 6, foo: "bar", save: [["BLAH"]], steps: ["1st","2nd"]},
+			state: {
+				turn: 6,
+				foo: "bar",
+				save: [["BLAH"]],
+				steps: ["1st","2nd"]
+			},
 			optiondef: ["PASSTO",3],
 			expected: "HYDRATED",
 			context: {
@@ -257,7 +404,12 @@ tester("The execute methods",Algol,{
 		},
 		"when commands but commandcap and can end turn": {
 			state: {canendturn:true},
-			gamedef: {commands:{mope:{name:"mope",effect:"mopify"}},endturn:{commandcap:true}},
+			gamedef: {
+				commands:{
+					mope:{name:"mope",effect:"mopify"}
+				},
+				endturn:{commandcap:true}
+			},
 			expected: {ENDTURN:"ENDTURNOPTION"},
 			context: {
 				endTurnOption: {
@@ -273,7 +425,12 @@ tester("The execute methods",Algol,{
 		},
 		"when an available command and nothing else": {
 			state: {},
-			gamedef: {commands:{mope:{name:"mope",effect:"mopify"},dope:{name:"dope",effect:"dopify"}}},
+			gamedef: {
+				commands:{
+					mope:{name:"mope",effect:"mopify"},
+					dope:{name:"dope",effect:"dopify"}
+				}
+			},
 			expected: {mope:"RESULT"},
 			context: {
 				canExecuteCommand: {
@@ -292,7 +449,13 @@ tester("The execute methods",Algol,{
 		},
 		"when everything available": {
 			state: {previousstep:"PREV",canendturn:true},
-			gamedef: {commands:{mope:{name:"mope",effect:"mopify"},dope:{name:"dope",effect:"dopify"}},endturn:{}},
+			gamedef: {
+				commands:{
+					mope:{name:"mope",effect:"mopify"},
+					dope:{name:"dope",effect:"dopify"}
+				},
+				endturn:{}
+			},
 			context: {
 				canExecuteCommand: { returns: true },
 				applyEffect: { returns: "EFFECT" },
@@ -304,49 +467,188 @@ tester("The execute methods",Algol,{
 	},
 	"applyEffect(state,effect)": {
 		"when using KILL": {
-			state: {affected: [], turn: 4, data: {units: {"someid":{foo:"muu"}}}, marks: {somemark:"xyz"}, layers: {"UNITS": {"xyz": [{id:"someid"}]}} },
+			state: {
+				affected: [],
+				turn: 4,
+				data: {units: {"someid":{foo:"muu"}}},
+				marks: {somemark:"xyz"},
+				layers: {"UNITS": {"xyz": [{id:"someid"}]}}
+			},
 			effect: ["KILLUNIT",["IDAT",["MARKPOS","somemark"]]],
-			expected: {affected: ["someid"], turn: 4, data: {units: {"someid":{foo:"muu",STATUS:"DEAD",AFFECTEDTURN:4}}}, marks: {somemark:"xyz"}, layers: {"UNITS": {"xyz": [{id:"someid"}]}} }
+			expected: {
+				affected: ["someid"],
+				turn: 4,
+				data: {units: {"someid":{foo:"muu",STATUS:"DEAD",AFFECTEDTURN:4}}},
+				marks: {somemark:"xyz"},
+				layers: {"UNITS": {"xyz": [{id:"someid"}]}}
+			}
 		},
 		"when using MOVEUNIT": {
-			state: {affected: [], turn: 5, data: {units: {"someid":{foo:"muu"}}}, marks: {somemark:"xyz",othermark:"abc"}, layers: {"UNITS": {"xyz": [{id:"someid"}]}} },
+			state: {
+				affected: [],
+				turn: 5,
+				data: {units: {"someid":{foo:"muu"}}},
+				marks: {somemark:"xyz",othermark:"abc"},
+				layers: {"UNITS": {"xyz": [{id:"someid"}]}}
+			},
 			effect: ["MOVEUNIT",["IDAT",["MARKPOS","somemark"]],["MARKPOS","othermark"]],
-			expected: {affected: ["someid"], turn: 5, data: {units: {"someid":{foo:"muu",POS:"abc",AFFECTEDTURN:5}}}, marks: {somemark:"xyz",othermark:"abc"}, layers: {"UNITS": {"xyz": [{id:"someid"}]}} },
+			expected: {
+				affected: ["someid"],
+				turn: 5,
+				data: {units: {"someid":{foo:"muu",POS:"abc",AFFECTEDTURN:5}}},
+				marks: {somemark:"xyz",othermark:"abc"},
+				layers: {"UNITS": {"xyz": [{id:"someid"}]}}
+			},
 		},
 		"when using TURNUNIT clockwise": {
-			state: {affected: [], turn: 5, data: {units: {"someid":{foo:"muu",DIR:3}}}, marks: {somemark:"xyz",othermark:"abc"}, layers: {"UNITS": {"xyz": [{id:"someid"}]}} },
+			state: {
+				affected: [],
+				turn: 5,
+				data: {units: {"someid":{foo:"muu",DIR:3}}},
+				marks: {somemark:"xyz",othermark:"abc"},
+				layers: {"UNITS": {"xyz": [{id:"someid"}]}}
+			},
 			effect: ["TURNUNIT",["IDAT",["MARKPOS","somemark"]],["VAL",2]],
-			expected: {affected: ["someid"], turn: 5, data: {units: {"someid":{foo:"muu",DIR:5,AFFECTEDTURN:5}}}, marks: {somemark:"xyz",othermark:"abc"}, layers: {"UNITS": {"xyz": [{id:"someid"}]}} },
+			expected: {
+				affected: ["someid"],
+				turn: 5,
+				data: {units: {"someid":{foo:"muu",DIR:5,AFFECTEDTURN:5}}},
+				marks: {somemark:"xyz",othermark:"abc"},
+				layers: {"UNITS": {"xyz": [{id:"someid"}]}}
+			},
 		},
 		"when using TURNUNIT anticlockwise": {
-			state: {affected: [], turn: 5, data: {units: {"someid":{foo:"muu",DIR:1}}}, marks: {somemark:"xyz",othermark:"abc"}, layers: {"UNITS": {"xyz": [{id:"someid"}]}} },
+			state: {
+				affected: [],
+				turn: 5,
+				data: {units: {"someid":{foo:"muu",DIR:1}}},
+				marks: {somemark:"xyz",othermark:"abc"},
+				layers: {"UNITS": {"xyz": [{id:"someid"}]}}
+			},
 			effect: ["TURNUNIT",["IDAT",["MARKPOS","somemark"]],["VAL",-3]],
-			expected: {affected: ["someid"], turn: 5, data: {units: {"someid":{foo:"muu",DIR:6,AFFECTEDTURN:5}}}, marks: {somemark:"xyz",othermark:"abc"}, layers: {"UNITS": {"xyz": [{id:"someid"}]}} },
+			expected: {
+				affected: ["someid"],
+				turn: 5,
+				data: {units: {"someid":{foo:"muu",DIR:6,AFFECTEDTURN:5}}},
+				marks: {somemark:"xyz",othermark:"abc"},
+				layers: {"UNITS": {"xyz": [{id:"someid"}]}}
+			},
 		},
 		"when using TURNUNIT clockwise with wrap": {
-			state: {affected: [], turn: 5, data: {units: {"someid":{foo:"muu",DIR:7}}}, marks: {somemark:"xyz",othermark:"abc"}, layers: {"UNITS": {"xyz": [{id:"someid"}]}} },
+			state: {
+				affected: [],
+				turn: 5,
+				data: {units: {"someid":{foo:"muu",DIR:7}}},
+				marks: {somemark:"xyz",othermark:"abc"},
+				layers: {"UNITS": {"xyz": [{id:"someid"}]}}
+			},
 			effect: ["TURNUNIT",["IDAT",["MARKPOS","somemark"]],["VAL",4]],
-			expected: {affected: ["someid"], turn: 5, data: {units: {"someid":{foo:"muu",DIR:3,AFFECTEDTURN:5}}}, marks: {somemark:"xyz",othermark:"abc"}, layers: {"UNITS": {"xyz": [{id:"someid"}]}} },
+			expected: {
+				affected: ["someid"],
+				turn: 5,
+				data: {units: {"someid":{foo:"muu",DIR:3,AFFECTEDTURN:5}}},
+				marks: {somemark:"xyz",othermark:"abc"},
+				layers: {"UNITS": {"xyz": [{id:"someid"}]}}
+			},
 		},
 		"when using SWAPUNITPOSITIONS": {
-			state: {affected: ["blah"], turn: 6, data: {units: {"someid":{foo:"bar",POS:"xyz"},"otherid":{foo:"baz",POS:"abc"}}}, marks: {somemark:"xyz",othermark:"abc"}, layers: {"UNITS": {"xyz": [{id:"someid"}], "abc":[{id:"otherid"}]}} },
+			state: {
+				affected: ["blah"],
+				turn: 6,
+				data: {units: {"someid":{foo:"bar",POS:"xyz"},"otherid":{foo:"baz",POS:"abc"}}},
+				marks: {somemark:"xyz",othermark:"abc"},
+				layers: {"UNITS": {"xyz": [{id:"someid"}], "abc":[{id:"otherid"}]}}
+			},
 			effect: ["SWAPUNITPOSITIONS",["IDAT",["MARKPOS","somemark"]],["IDAT",["MARKPOS","othermark"]]],
-			expected: {affected: ["blah","someid","otherid"], turn: 6, data: {units: {"someid":{foo:"bar",POS:"abc",AFFECTEDTURN:6},otherid:{foo:"baz",POS:"xyz",AFFECTEDTURN:6}}}, marks: {somemark:"xyz",othermark:"abc"}, layers: {"UNITS": {"xyz": [{id:"someid"}], "abc":[{id:"otherid"}]}} }
+			expected: {
+				affected: ["blah","someid","otherid"],
+				turn: 6,
+				data: {units: {"someid":{foo:"bar",POS:"abc",AFFECTEDTURN:6},
+				otherid:{foo:"baz",POS:"xyz",AFFECTEDTURN:6}}},
+				marks: {somemark:"xyz",othermark:"abc"},
+				layers: {"UNITS": {"xyz": [{id:"someid"}], "abc":[{id:"otherid"}]}}
+			}
 		},
 		"when using SETUNITDATA": {
-			state: {affected: [], turn: 7, data: {units: {"someid":{blah:"notmoo"}}}, marks: {somemark:"xyz"}, layers: {"UNITS": {"xyz": [{id:"someid"}]}} },
+			state: {
+				affected: [],
+				turn: 7,
+				data: {units: {"someid":{blah:"notmoo"}}},
+				marks: {somemark:"xyz"},
+				layers: {"UNITS": {"xyz": [{id:"someid"}]}}
+			},
 			effect: ["SETUNITDATA",["IDAT",["MARKPOS","somemark"]],"blah",["VAL","moo"]],
-			expected: {affected: ["someid"], turn: 7, data: {units: {"someid":{blah:"moo",AFFECTEDTURN:7}}}, marks: {somemark:"xyz"}, layers: {"UNITS": {"xyz": [{id:"someid"}]}} },
+			expected: {
+				affected: ["someid"],
+				turn: 7,
+				data: {units: {"someid":{blah:"moo",AFFECTEDTURN:7}}},
+				marks: {somemark:"xyz"},
+				layers: {"UNITS": {"xyz": [{id:"someid"}]}}
+			},
 		},
 		"when using FORALLIN": {
-			state: {turn: 8, layers:{somelayer:{a:"X"},UNITS:{a:[{id:"A"}],b:[{id:"B"}]}},data:{units:{A:{POS:"a"},B:{POS:"b"}}},context:{foo:"bar"},affected:["B"]},
+			state: {
+				turn: 8,
+				layers:{
+					somelayer:{a:"X"},
+					UNITS:{a:[{id:"A"}],b:[{id:"B"}]}
+				},
+				data:{
+					units:{
+						A:{POS:"a"},
+						B:{POS:"b"}
+					}
+				},
+				context:{foo:"bar"},
+				affected:["B"]
+			},
 			effect: ["FORALLIN",["LAYERNAME","somelayer"],["SETUNITDATA",["LOOPID"],"doomed",["VAL","yes"]]],
-			expected: {turn: 8, layers:{somelayer:{a:"X"},UNITS:{a:[{id:"A"}],b:[{id:"B"}]}},data:{units:{A:{POS:"a",doomed:"yes",AFFECTEDTURN:8},B:{POS:"b"}}},context:{foo:"bar"},affected:["B","A"]}
+			expected: {
+				turn: 8,
+				layers:{
+					somelayer:{a:"X"},
+					UNITS:{a:[{id:"A"}],b:[{id:"B"}]}
+				},
+				data:{
+					units:{
+						A:{POS:"a",doomed:"yes",AFFECTEDTURN:8},
+						B:{POS:"b"}
+					}
+				},
+				context:{foo:"bar"},
+				affected:["B","A"]}
 		},
 		"when using MULTIEFFECT": {
-			state: {turn: 9, marks:{somemark:"a"},layers:{UNITS:{a:[{id:"A"}],b:[{id:"B"}]}},data:{units:{A:{POS:"a"},B:{POS:"b"}}},context:{foo:"bar"},affected:["B"]},
-			effect: ["MULTIEFFECT",[["SETUNITDATA",["IDAT",["MARKPOS","somemark"]],"doomed",["VAL","yes"]],["KILLUNIT",["IDAT",["MARKPOS","somemark"]]]]],
-			expected: {turn: 9, marks:{somemark:"a"},layers:{UNITS:{a:[{id:"A"}],b:[{id:"B"}]}},data:{units:{A:{POS:"a",doomed:"yes",STATUS:"DEAD",AFFECTEDTURN:9},B:{POS:"b"}}},context:{foo:"bar"},affected:["B","A"]}
+			state: {
+				turn: 9,
+				marks:{somemark:"a"},
+				layers:{UNITS:{a:[{id:"A"}],b:[{id:"B"}]}},
+				data:{
+					units:{
+						A:{POS:"a"},
+						B:{POS:"b"}
+					}
+				},
+				context:{foo:"bar"},
+				affected:["B"]
+			},
+			effect: ["MULTIEFFECT",[
+				["SETUNITDATA",["IDAT",["MARKPOS","somemark"]],"doomed",["VAL","yes"]],
+				["KILLUNIT",["IDAT",["MARKPOS","somemark"]]]]
+			],
+			expected: {
+				turn: 9,
+				marks:{somemark:"a"},
+				layers:{UNITS:{a:[{id:"A"}],b:[{id:"B"}]}},
+				data:{
+					units:{
+						A:{POS:"a",doomed:"yes",STATUS:"DEAD",AFFECTEDTURN:9},
+						B:{POS:"b"}
+					}
+				},
+				context:{foo:"bar"},
+				affected:["B","A"]
+			}
 		}
 	},
 	"updateMarksFromCommand(state,commanddef)": {}

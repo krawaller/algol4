@@ -32,7 +32,10 @@ tester("the evaluate methods",Algol,{
 			expected: 1
 		},
 		"for LOOKUP": {
-			state: { layers: { foolayer: { xyz: [{a:666}] } }, marks: { somemark: "xyz" } },
+			state: {
+				layers: { foolayer: { xyz: [{a:666}] } },
+				marks: { somemark: "xyz" }
+			},
 			valuedef: ["LOOKUP","foolayer",["MARKPOS","somemark"],"a"],
 			expected: 666
 		},
@@ -91,7 +94,13 @@ tester("the evaluate methods",Algol,{
 			expected: 777
 		},
 		"for MARKINLAST": {
-			state: {steps:[{command:"somecmnd",marks:{somemark:"FOO"}},{command:"somecmnd",marks:{somemark:"BAR"}},{command:"othercmnd",marks:{somemark:"blah"}}]},
+			state: {
+				steps:[
+					{command:"somecmnd",marks:{somemark:"FOO"}},
+					{command:"somecmnd",marks:{somemark:"BAR"}},
+					{command:"othercmnd",marks:{somemark:"blah"}}
+				]
+			},
 			posdef: ["MARKINLAST","somecmnd","somemark"],
 			expected: "BAR"
 		}
@@ -103,7 +112,12 @@ tester("the evaluate methods",Algol,{
 			expected: ["a","b"]
 		},
 		"for ALLPOSINLAYERS": {
-			state: { layers: {somelayer: {a:"X",b:"X"}, someotherlayer: {b:"Y",c:"Y"}} },
+			state: {
+				layers: {
+					somelayer: {a:"X",b:"X"},
+					someotherlayer: {b:"Y",c:"Y"}
+				}
+			},
 			poslistdef: ["ALLPOSINLAYERS","somelayer","someotherlayer"],
 			expected: ["a","b","c"]
 		},
@@ -115,7 +129,10 @@ tester("the evaluate methods",Algol,{
 	},
 	"evaluateId(state,iddef)": {
 		"for IDAT": {
-			state: { layers: {UNITS: {xyz:[{id:"678"}]}}, marks: {somemark:"xyz"}},
+			state: {
+				layers: {UNITS: {xyz:[{id:"678"}]}},
+				marks: {somemark:"xyz"}
+			},
 			iddef: ["IDAT",["MARKPOS","somemark"]],
 			expected: "678"
 		}
@@ -138,12 +155,19 @@ tester("the evaluate methods",Algol,{
 			expected: false
 		},
 		"for AFFECTED when id in list": {
-			state: { layers: { UNITS: {xyz:[{id:"123"}]} }, marks: {uglymark:"xyz"}, affected:["3","7","123"] },
+			state: {
+				layers: { UNITS: {xyz:[{id:"123"}]} },
+				marks: {uglymark:"xyz"}, affected:["3","7","123"]
+			},
 			booldef: ["AFFECTED",["IDAT",["MARKPOS","uglymark"]]],
 			expected: true
 		},
 		"for AFFECTED when id not in list": {
-			state: { layers: { UNITS: {xyz:[{id:"123"}]} }, marks: {uglymark:"xyz"}, affected:["3","7","321"] },
+			state: {
+				layers: { UNITS: {xyz:[{id:"123"}]} },
+				marks: {uglymark:"xyz"},
+				affected:["3","7","321"]
+			},
 			booldef: ["AFFECTED",["IDAT",["MARKPOS","uglymark"]]],
 			expected: false
 		},
@@ -164,22 +188,34 @@ tester("the evaluate methods",Algol,{
 			expected: false
 		},
 		"for ANYAT when correct": {
-			state: { layers: {somelayer: {xyz:[{foo:"bar"}]}}, marks: {somemark:"xyz"}},
+			state: {
+				layers: {somelayer: {xyz:[{foo:"bar"}]}},
+				marks: {somemark:"xyz"}
+			},
 			booldef: ["ANYAT","somelayer",["MARKPOS","somemark"]],
 			expected: true
 		},
 		"for ANYAT when not correct": {
-			state: { layers: {somelayer: {xyz:[{foo:"bar"}]}}, marks: {somemark:"abc"}},
+			state: {
+				layers: {somelayer: {xyz:[{foo:"bar"}]}},
+				marks: {somemark:"abc"}
+			},
 			booldef: ["ANYAT","somelayer",["MARKPOS","somemark"]],
 			expected: false
 		},
 		"for NONEAT when not correct": {
-			state: { layers: {somelayer: {xyz:[{foo:"bar"}]}}, marks: {somemark:"xyz"}},
+			state: {
+				layers: {somelayer: {xyz:[{foo:"bar"}]}},
+				marks: {somemark:"xyz"}
+			},
 			booldef: ["NONEAT","somelayer",["MARKPOS","somemark"]],
 			expected: false
 		},
 		"for NONEAT when correct": {
-			state: { layers: {somelayer: {xyz:[{foo:"bar"}]}}, marks: {somemark:"abc"}},
+			state: {
+				layers: {somelayer: {xyz:[{foo:"bar"}]}},
+				marks: {somemark:"abc"}
+			},
 			booldef: ["NONEAT","somelayer",["MARKPOS","somemark"]],
 			expected: true
 		},
@@ -212,12 +248,18 @@ tester("the evaluate methods",Algol,{
 			expected: false
 		},
 		"for POSITIONINLIST when correct": {
-			state: {layers: {foolayer: {a:["X"]}}, marks: {somemark: "a"}},
+			state: {
+				layers: {foolayer: {a:["X"]}},
+				marks: {somemark: "a"}
+			},
 			booldef: ["POSITIONINLIST",["MARKPOS","somemark"],["ALLPOSINLAYER","foolayer"]],
 			expected: true
 		},
 		"for POSITIONINLIST when not correct": {
-			state: {layers: {foolayer: {a:["X"]}}, marks: {somemark: "b"}},
+			state: {
+				layers: {foolayer: {a:["X"]}},
+				marks: {somemark: "b"}
+			},
 			booldef: ["POSITIONINLIST",["MARKPOS","somemark"],["ALLPOSINLAYER","foolayer"]],
 			expected: false
 		}

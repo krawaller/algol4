@@ -20,12 +20,14 @@ Algol.generateNeighbourPods = function(state,def){
 	},I.fromJS({start:{},target:{}}),this);
 };
 
-function stopreason(state,def,dir,pos,length,blocks,steps){
+function stopreason(state,def,dir,pos,length,blocks,steps,prioblocks){
 	var nextpos = (state.getIn(["board",pos,"nextto",dir])||state.getIn(["board",pos,"nextto",dir+""]));
 	if (!nextpos){
 		return "OUTOFBOUNDS";
 	} else if (def.get("max") && length === def.get("max")) {
 		return "REACHEDMAX";
+	} else if (prioblocks && blocks && blocks.contains(nextpos)){
+		return "HITBLOCK";
 	} else if (steps && !steps.contains(nextpos)){
 		return "NOMORESTEPS";
 	} else if (blocks && blocks.contains(nextpos)){
@@ -40,7 +42,7 @@ Algol.generateWalkerPods = function(state,def){
 			var pos=startpos, walk = [], reason, blockpos,
 				blocks = def.has("blocks") && this.evaluatePositionList(startstate,def.get("blocks")),
 				steps = def.has("steps") && this.evaluatePositionList(startstate,def.get("steps"));
-			while(!(reason=stopreason(startstate,def,dir,pos,walk.length,blocks,steps))){
+			while(!(reason=stopreason(startstate,def,dir,pos,walk.length,blocks,steps,def.get("prioritizeblocksoversteps")))){
 				walk.push(pos = startstate.getIn(["board",pos,"nextto",dir])||startstate.getIn(["board",pos,"nextto",dir+""]));
 			}
 			var context = I.Map({START:startpos,DIR:dir,STEPS:walk.length,STOPREASON:reason});
@@ -54,7 +56,7 @@ Algol.generateWalkerPods = function(state,def){
 			});
 			return recorder;
 		},recorder,this);
-	},I.fromJS({start:{},step:{},block:{}}),this);
+	},I.fromJS({}),this);
 	return pods.set("all",pods.reduce(function(mem,pod){ return mem.mergeWith(I.concat,pod); }),I.Map(),this);
 };
 

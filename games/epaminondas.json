@@ -5,7 +5,13 @@
 		"height": 12,
 		"width": 14,
 		"setup": [
-		]
+		],
+		"terrain": {
+			"bases": {
+				"1001": {"owner":1}, "1002": {"owner":1}, "1003": {"owner":1}, "1004": {"owner":1}, "1005": {"owner":1}, "1006": {"owner":1}, "1007": {"owner":1}, "1008": {"owner":1},
+				"12001": {"owner":2}, "12002": {"owner":2}, "12003": {"owner":2}, "12004": {"owner":2}, "12005": {"owner":2}, "12006": {"owner":2}, "12007": {"owner":2}, "12008": {"owner":2}
+			}
+		}
 	},
 	"layers": {
 		"movetarget": {
@@ -46,6 +52,12 @@
 		},
 		"chargevictims": {
 			"paintedby": ["findchargevictims"]
+		},
+		"myinfiltrators": {
+			"paintedby": ["findinfiltrators"]
+		},
+		"oppinfiltrators": {
+			"paintedby": ["findinfiltrators"]
 		}
 	},
 	"flow": {
@@ -146,7 +158,27 @@
 	"startturn": {
 		"hydration": []
 	},
+	"endturn": {
+		"condition":["SAME",["CONTEXTVAL","PERFORMEDSTEPS"],["VAL",2]],
+		"commandcap": true,
+		"endgame": {
+			"dominance": {
+				"hydration": ["findinfiltrators"],
+				"condition": ["MORE",
+					["POSITIONSIN","myinfiltrators"],
+					["POSITIONSIN","oppinfiltrators"]
+				]
+			}
+		}
+	},
 	"generators": {
+		"findinfiltrators": {
+			"type": "filter",
+			"layer": "bases",
+			"condition": ["ANYAT","UNITS",["CONTEXTPOS","START"]],
+			"matching": {"owner":["ISNT",["LOOKUP","UNITS",["CONTEXTPOS","START"],"PLR"]]},
+			"tolayer": ["IFELSE",["ANYAT","MYUNITS",["CONTEXTPOS","START"]],"myinfiltrators","oppinfiltrators"]
+		},
 		"findchargevictims": {
 			"type": "filter",
 			"layer": "opposingphalanx",
@@ -156,7 +188,7 @@
 		"findimmediatetargets": {
 			"type": "neighbour",
 			"dirs": ["DIRS",[1,2,3,4,5,6,7,8]],
-			"start": ["MARKPOS","selecthead"],
+			"starts": ["MARKPOS","selecthead"],
 			"draw": {
 				"target": {
 					"condition": ["NONEAT","MYUNITS",["CONTEXTPOS","TARGET"]],
@@ -173,7 +205,7 @@
 		},
 		"finddueltargets": {
 			"type": "neighbour",
-			"start": ["ALLPOSINLAYER","potentialdueltarget"],
+			"starts": ["ALLPOSINLAYER","potentialdueltarget"],
 			"dirs": ["RELATIVEDIRS",[1],["LOOKUP",["CONTEXTPOS","START"],"singledir"]],
 			"draw": {
 				"start": {
@@ -185,7 +217,7 @@
 		"findpotentialtails": {
 			"type": "walker",
 			"dirs": ["DIRS",[1,2,3,4,5,6,7,8]],
-			"start": ["MARKPOS","selecthead"],
+			"starts": ["MARKPOS","selecthead"],
 			"steplayer": "MYUNITS",
 			"draw": {
 				"step": {
@@ -199,7 +231,7 @@
 		"findphalanxmembers": {
 			"type":"walker",
 			"dir": ["RELATIVEDIR",["VAL",5],["LOOKUP","potentialtail",["MARKPOS","selecttail"],"headdirection"]],
-			"start": ["MARKPOS","selecttail"],
+			"starts": ["MARKPOS","selecttail"],
 			"stoplayer": "selecthead",
 			"draw": {
 				"start": {
