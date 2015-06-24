@@ -2,26 +2,20 @@
 	"source": "http://www.di.fc.ul.pt/~jpn/gv/Archers.pdf",
 	"board": {
 		"height": 9,
-		"width": 9,
-		"terrain": {
-			"bases": {
-				"2002": {"owner":1}, "2003": {"owner":1}, "2004": {"owner":1},
-				"3002": {"owner":1}, "3003": {"owner":1}, "3004": {"owner":1},
-				"4002": {"owner":1}, "4003": {"owner":1}, "4004": {"owner":1},
-				"6006": {"owner":2}, "6007": {"owner":2}, "6008": {"owner":2},
-				"7006": {"owner":2}, "7007": {"owner":2}, "7008": {"owner":2},
-				"8006": {"owner":2}, "8007": {"owner":2}, "8008": {"owner":2}
-			}
-		},
-		"setup": [
-			{"POS":2002,"type":"archer","DIR":5,"PLR":1},{"POS":2003,"type":"archer","DIR":5,"PLR":1},{"POS":2004,"type":"archer","DIR":5,"PLR":1},
-			{"POS":3002,"type":"archer","DIR":5,"PLR":1},{"POS":3003,"type":"king","DIR":5,"PLR":1},{"POS":3004,"type":"archer","DIR":5,"PLR":1},
-			{"POS":4002,"type":"archer","DIR":5,"PLR":1},{"POS":4003,"type":"archer","DIR":5,"PLR":1},{"POS":4004,"type":"archer","DIR":5,"PLR":1},
-			{"POS":6006,"type":"archer","DIR":1,"PLR":2},{"POS":6007,"type":"archer","DIR":1,"PLR":2},{"POS":6008,"type":"archer","DIR":1,"PLR":2},
-			{"POS":7006,"type":"archer","DIR":1,"PLR":2},{"POS":7007,"type":"king","DIR":1,"PLR":2},{"POS":7008,"type":"archer","DIR":1,"PLR":2},
-			{"POS":8006,"type":"archer","DIR":1,"PLR":2},{"POS":8007,"type":"archer","DIR":1,"PLR":2},{"POS":8008,"type":"archer","DIR":1,"PLR":2}
+		"width": 9
+	},
+	"terrain": {
+		"bases": [
+			["ALL",[2002,2003,2004,3002,3003,3004,4002,4003,4004],{"owner":1}],
+			["ALL",[6006,6007,6008,7006,7007,7008,8006,8007,8008],{"owner":2}]
 		]
 	},
+	"setup": [
+		["ALL",[2002,2003,2004,3002,3004,4002,4003,4004],{"PLR":1,"DIR":5,"type":"archer"}],
+		{"POS":3003,"type":"king","DIR":5,"PLR":1},
+		["ALL",[6006,6007,6008,7006,7008,8006,8007,8008],{"PLR":2,"DIR":1,"type":"archer"}],
+		{"POS":3003,"type":"king","DIR":1,"PLR":2}
+	],
 	"startstep": {
 		"cleanse": ["myarrows","opparrows","bullseye"],
 		"hydration": ["findarrows"]

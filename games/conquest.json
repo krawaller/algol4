@@ -3,25 +3,19 @@
 	"source": "http://www.di.fc.ul.pt/~jpn/gv/conquest.htm",
 	"board": {
 		"height": 9,
-		"width": 9,
-		"terrain": {
-			"center": {"5005":{}},
-			"plus": {
-				"4005": {}, "5004": {}, "5006": {}, "6005": {}
-			},
-			"x": {
-				"4004": {}, "4006": {}, "6004": {}, "6006": {}
-			}
-		},
-		"setup": [
-			{"POS":1001,"type":"soldier","DIR":5,"PLR":1},{"POS":1002,"type":"soldier","DIR":5,"PLR":1},{"POS":1003,"type":"soldier","DIR":5,"PLR":1},
-			{"POS":2001,"type":"soldier","DIR":5,"PLR":1},{"POS":2002,"type":"king","DIR":5,"PLR":1},{"POS":2003,"type":"soldier","DIR":5,"PLR":1},
-			{"POS":3001,"type":"soldier","DIR":5,"PLR":1},{"POS":3002,"type":"soldier","DIR":5,"PLR":1},{"POS":3003,"type":"soldier","DIR":5,"PLR":1},
-			{"POS":7007,"type":"soldier","DIR":1,"PLR":2},{"POS":7008,"type":"soldier","DIR":1,"PLR":2},{"POS":7009,"type":"soldier","DIR":1,"PLR":2},
-			{"POS":8007,"type":"soldier","DIR":1,"PLR":2},{"POS":8008,"type":"king","DIR":1,"PLR":2},{"POS":8009,"type":"soldier","DIR":1,"PLR":2},
-			{"POS":9007,"type":"soldier","DIR":1,"PLR":2},{"POS":9008,"type":"soldier","DIR":1,"PLR":2},{"POS":9006,"type":"soldier","DIR":1,"PLR":2}
-		]
+		"width": 9
 	},
+	"terrain": {
+		"center": [{"POS":5005}],
+		"plus": [ ["ALL",[4005,5004,5006,6005],{}] ],
+		"x": [ ["ALL",[4004,4006,6004,6006],{}] ]
+	},
+	"setup": [
+		["ALL",[1001,1002,1003,2001,2003,3001,3002,3003],{"type":"soldier","PLR":1}],
+		{"POS":2002,"type":"king","PLR":1},
+		["ALL",[7007,7008,7009,8007,8009,9007,9008,9009],{"type":"soldier","PLR":2}],
+		{"POS":8008,"type":"king","PLR":2}
+	],
 	"marks": {
 		"selectunit": {
 			"fromlayer": "freetomove",

@@ -2,21 +2,24 @@
 	"source": "http://www.di.fc.ul.pt/~jpn/gv/krieg.htm",
 	"board": {
 		"width": 4,
-		"height": 4,
-		"terrain": {
-			"southeast": { "1001": {}, "3003": {} },
-			"northwest": { "2002": {}, "4004": {} },
-			"corners": { "1001": {"owner":1}, "4004": {"owner":2} },
-			"bases": {
-				"1002": {"owner":1}, "2001": {"owner":1}, "2002": {"owner":1},
-				"3003": {"owner":2}, "3004": {"owner":2}, "4003": {"owner":2}
-			},
-			"setup": {
-				"1001": {"PLR":1}, "2001": {"PLR":1}, "1002": {"PLR":1}, "2002": {"PLR":1},
-				"3003": {"PLR":2}, "4003": {"PLR":2}, "3004": {"PLR":2}, "4004": {"PLR":2}
-			}
-		}
+		"height": 4
 	},
+	"terrain": {
+		"southeast": [ ["ALL",[1001,3003],{}] ],
+		"northwest": [ ["ALL",[2002,4004],{}] ],
+		"corners": [
+			{"owner":1,"POS":1001},
+			{"owner":2,"POS":4004}
+		],
+		"bases": [
+			["ALL",[1002,2001,2002],{"owner":1}],
+			["ALL",[3003,3004,4003],{"owner":2}]
+		]
+	},
+	"setup": [
+		["ALL",[1001,2001,1002,2002],{"PLR":1}],
+		["ALL",[3003,4003,3004,4004],{"PLR":2}]
+	],
 	"marks": {
 		"selectunit": {
 			"fromlayer": "movers",

@@ -3,14 +3,12 @@
 	"board": {
 		"shape": "square",
 		"height": 8,
-		"width": 8,
-		"setup": [
-			{"pos":1001,"type":"king","plr":1},{"pos":1002,"type":"king","plr":1},{"pos":1003,"type":"king","plr":1},{"pos":1004,"type":"king","plr":1},
-			{"pos":1005,"type":"king","plr":2},{"pos":1006,"type":"king","plr":2},{"pos":1007,"type":"king","plr":2},{"pos":1008,"type":"king","plr":2},
-			{"pos":8001,"type":"king","plr":2},{"pos":8002,"type":"king","plr":2},{"pos":8003,"type":"king","plr":2},{"pos":8004,"type":"king","plr":2},
-			{"pos":8005,"type":"king","plr":1},{"pos":8006,"type":"king","plr":1},{"pos":8007,"type":"king","plr":1},{"pos":8008,"type":"king","plr":1}
-		]
+		"width": 8
 	},
+	"setup": [
+		["ALL",[1001,1002,1003,1004,8005,8006,8007,8008],{"type":"king","PLR":1}],
+		["ALL",[1005,1006,1007,1008,8001,8002,8003,8004],{"type":"king","PLR":2}]
+	],
 	"endturn": {
 		"condition":["SAME",["CONTEXTVAL","PERFORMEDSTEPS"],["VAL",1]],
 		"commandcap": true,
