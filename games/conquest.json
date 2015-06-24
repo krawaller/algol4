@@ -117,7 +117,7 @@
 		},
 		"findexiledestinations": {
 			"type": "filter",
-			"layer": ["IFELSE", ["SAME",["LOOKUP","BOARD",["MARKPOS","selectexiletarget"],"color"],"light"],"light","dark"],
+			"layer": ["IFELSE", ["SAME",["LOOKUP","BOARD",["MARKPOS","selectexiletarget"],"color"],"light"],"LIGHT","DARK"],
 			"condition": ["NONEAT", ["UNITS"],["CONTEXTPOS","START"]],
 			"tolayer": ["exiledestinations"]
 		},

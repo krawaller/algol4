@@ -71,7 +71,7 @@ tester("the generate methods",Algol,{
 		"for many starts": {
 			state: {
 				context:{something:"other"},
-				board:{foo:{nextto:{4:"baz",6:"bin"}},foo2:{nextto:{5:"bin",6:"buh"}}}
+				connections:{foo:{nextto:{4:"baz",6:"bin"}},foo2:{nextto:{5:"bin",6:"buh"}}}
 			},
 			nexttodef: {starts:"STARTSDEF",dirs:"DIRSDEF"},
 			expected: {
@@ -95,11 +95,11 @@ tester("the generate methods",Algol,{
 					expectedargs: [
 						[{
 							context:{START:"foo",something:"other"},
-							board:{foo:{nextto:{4:"baz",6:"bin"}},foo2:{nextto:{5:"bin",6:"buh"}}}
+							connections:{foo:{nextto:{4:"baz",6:"bin"}},foo2:{nextto:{5:"bin",6:"buh"}}}
 						},"DIRSDEF"],
 						[{
 							context:{START:"foo2",something:"other"},
-							board:{foo:{nextto:{4:"baz",6:"bin"}},foo2:{nextto:{5:"bin",6:"buh"}}}
+							connections:{foo:{nextto:{4:"baz",6:"bin"}},foo2:{nextto:{5:"bin",6:"buh"}}}
 						},"DIRSDEF"]
 					]
 				}
@@ -110,7 +110,7 @@ tester("the generate methods",Algol,{
 		"when goes out of bounds": {
 			state: {
 				marks: {somemark:"S"},
-				board: {S:{nextto:{4:"lonestep"}},lonestep:{nextto:{}}}
+				connections: {S:{nextto:{4:"lonestep"}},lonestep:{nextto:{}}}
 			},
 			walkerdef: {
 				starts: ["MARKPOS","somemark"],
@@ -128,7 +128,7 @@ tester("the generate methods",Algol,{
 		"when reaches max": {
 			state: {
 				marks: {somemark:"S"},
-				board: {S:{nextto:{5:"step1"}},
+				connections: {S:{nextto:{5:"step1"}},
 				step1: {nextto:{5:"step2"}}}
 			},
 			walkerdef: {
@@ -148,7 +148,7 @@ tester("the generate methods",Algol,{
 		"when run out of steps": {
 			state: {
 				marks: {somemark:"S"},
-				board: {S:{nextto:{6:"step1"}},step1:{nextto:{6:"step2"}}},
+				connections: {S:{nextto:{6:"step1"}},step1:{nextto:{6:"step2"}}},
 				layers: {pads: {step1:"X"}}
 			},
 			walkerdef: {
@@ -168,7 +168,7 @@ tester("the generate methods",Algol,{
 		"when hit a block": {
 			state: {
 				marks: {somemark:"S"},
-				board: {S:{nextto:{7:"step1"}},step1:{nextto:{7:"step2"}}},
+				connections: {S:{nextto:{7:"step1"}},step1:{nextto:{7:"step2"}}},
 				layers: {blocks: {step2:"X"}}
 			},
 			walkerdef: {
@@ -190,7 +190,7 @@ tester("the generate methods",Algol,{
 		"when hit block AND ran out of steps": {
 			state: {
 				marks: {somemark:"S"},
-				board: {S:{nextto:{7:"step1"}},step1:{nextto:{7:"step2"}}},
+				connections: {S:{nextto:{7:"step1"}},step1:{nextto:{7:"step2"}}},
 				layers: {blocks: {step2:"X"}, "pads": {"step1":"X"}}
 			},
 			walkerdef: {
@@ -211,7 +211,7 @@ tester("the generate methods",Algol,{
 		"when hit block AND ran out of steps AND prioritizing blocks": {
 			state: {
 				marks: {somemark:"S"},
-				board: {S:{nextto:{7:"step1"}},step1:{nextto:{7:"step2"}}},
+				connections: {S:{nextto:{7:"step1"}},step1:{nextto:{7:"step2"}}},
 				layers: {blocks: {step2:"X"}, "pads": {"step1":"X"}}
 			},
 			walkerdef: {
@@ -308,65 +308,6 @@ tester("the generate methods",Algol,{
 				context:{poo:"foo"}}
 		}
 	},
-	"generateUnitLayersFromState(state)": {
-		"for normal call": {
-			state: {
-				player: 1,
-				layers: {UNITS:"foo"},
-				data: {
-					units: {
-						id1: {POS:"pos1",PLR:1},
-						id2: {POS:"pos2",PLR:2},
-						id3: {POS:"pos2",STATUS:"DEAD",PLR:1}
-					}
-				}
-			},
-			expected: {
-				player: 1,
-				layers: {
-					DEADUNITS:{pos2:[{POS:"pos2",STATUS:"DEAD",PLR:1}]},
-					UNITS:{pos1:[{POS:"pos1",PLR:1}],pos2:[{POS:"pos2",PLR:2}]},
-					MYUNITS:{pos1:[{POS:"pos1",PLR:1}]},
-					OPPUNITS:{pos2:[{POS:"pos2",PLR:2}]}
-				},
-				data: {
-					units: {
-						id1: {POS:"pos1",PLR:1},
-						id2: {POS:"pos2",PLR:2},
-						id3: {POS:"pos2",STATUS:"DEAD",PLR:1}
-					}
-				}
-			}
-		}
-	},
-	"generateInitialDataFromGameDef(state,gamedef)": {
-		"for normal call": {
-			state: {},
-			gamedef: {setup: [{foo:"bar"},{baz:"bin"}]},
-			expected: {units: {unit1: {foo:"bar",id:"unit1"}, unit2: {baz:"bin",id:"unit2"}}}
-		}
-	},
-	"generateBoardInfoFromBoardDef(state,boarddef)": {
-		"for normal board": {
-			state: {},
-			boarddef: {height: 2, width: 3},
-			expected: {
-				1001: {x:1,y:1,nextto:{3: 1002, 4: 2002, 5: 2001}},
-				1002: {x:2,y:1,nextto:{3: 1003, 4: 2003, 5: 2002, 6: 2001, 7: 1001}},
-				1003: {x:3,y:1,nextto:{5: 2003, 6: 2002, 7: 1002}},
-				2001: {x:1,y:2,nextto:{1: 1001, 2: 1002, 3: 2002}},
-				2002: {x:2,y:2,nextto:{1: 1002, 2: 1003, 3: 2003, 7: 2001, 8: 1001}},
-				2003: {x:3,y:2,nextto:{1: 1003, 7: 2002, 8: 1002}}
-			}
-		},
-	},
-	"generateTerrainFromTerrainDef(state,terraindef)": {
-		"for normal terrain def": {
-			state: {},
-			terraindef: {"3005":{foo:"bar"}},
-			expected: {3005:{POS:3005,foo:"bar"}}
-		}
-	},
 	"applyGenerator(state,gendef)": {
 		"when lacking neededmarks": {
 			state: {marks:{}},
@@ -376,7 +317,7 @@ tester("the generate methods",Algol,{
 		"when running nextto which is applicable": {
 			state: {
 				marks:{foo:"bar"},
-				board:{bar:{nextto:{1:"bar2"}}},
+				connections:{bar:{nextto:{1:"bar2"}}},
 				context:{blaj:"paj"}
 			},
 			gendef: {
@@ -393,7 +334,7 @@ tester("the generate methods",Algol,{
 			},
 			expected: {
 				marks:{foo:"bar"},
-				board:{bar:{nextto:{1:"bar2"}}},
+				connections:{bar:{nextto:{1:"bar2"}}},
 				layers:{newlayer:{bar2:[{prop:"snopp"}]}},
 				context:{blaj:"paj"}
 			}
@@ -403,7 +344,7 @@ tester("the generate methods",Algol,{
 		"for list": {
 			state: {
 				marks:{foo:"bar"},
-				board:{bar:{nextto:{1:"bar2"}}},
+				connections:{bar:{nextto:{1:"bar2"}}},
 				context:{blaj:"paj"},
 				gamedef:{
 					generators:{
@@ -425,7 +366,7 @@ tester("the generate methods",Algol,{
 			list: ["somegen"],
 			expected: {
 				marks:{foo:"bar"},
-				board:{bar:{nextto:{1:"bar2"}}},
+				connections:{bar:{nextto:{1:"bar2"}}},
 				layers:{newlayer:{bar2:[{prop:"snopp"}]}},
 				context:{blaj:"paj"},
 				gamedef:{
@@ -445,6 +386,25 @@ tester("the generate methods",Algol,{
 					}
 				}
 			}
+		},
+		"with faked contexts": {
+			"state": {"gamedef":{"generators":{"gen1":"gen1def","gen2":"gen2def"}}},
+			"list": ["gen1","gen2"],
+			"expected": {
+				"gamedef": {"generators":{"gen1":"gen1def","gen2":"gen2def"}},
+				"gen1def": true,
+				"gen2def": true,
+			},
+			"context": {
+				"applyGenerator": {
+					"method": function(s,d){ return s.set(d,true); },
+					"expectedargs": [
+						[{"gamedef":{"generators":{"gen1":"gen1def","gen2":"gen2def"}}},"gen1def"],
+						[{"gamedef":{"generators":{"gen1":"gen1def","gen2":"gen2def"}},"gen1def":true},"gen2def"]
+					]
+				}
+			}
 		}
 	}
 },I);
+
