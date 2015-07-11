@@ -8,7 +8,7 @@ function augmentWithPrepareFunctions(Algol){
 
 
 /*
-Called at the beginning of every step.
+Called at the beginning of every step. TODO: move to other file, this just for prepping prior to game! :P
 */
 Algol.prepareUnitLayersFromData = function(unitsdata,plr){
 	var to = I.Map().set(0,"NEUTRALS").set(undefined,"NEUTRALS").set(plr,"MYUNITS");
@@ -25,7 +25,7 @@ Used in prepareState
 */
 Algol.prepareInitialUnitDataFromSetup = function(setup){
 	return I.Map(Algol.prepareEntitiesFromList(setup).reduce(function(map,unit,n){
-		return map.set("unit"+(n+1),unit.set("id","unit"+(n+1)));
+		return map.set("unit"+(n+1),unit.set("ID","unit"+(n+1)));
 	},I.Map(),this));
 };
 
@@ -43,7 +43,7 @@ Algol.addEntitiesFromDef = function(coll,def){
 }
 
 /*
-Used in prepareState 
+Used in prepareInitialUnitDataFromSetup and prepareTerrainLayerFromEntityList
 */
 Algol.prepareEntitiesFromList = function(deflist){
 	return deflist.reduce(Algol.addEntitiesFromDef,I.List());
@@ -80,6 +80,15 @@ Algol.prepareBoardLayersFromBoardDef = function(boarddef){
 };
 
 /*
+Used in prepareState.
+*/
+Algol.prepareTerrainLayerFromEntityList = function(list){
+	return Algol.prepareEntitiesFromList(list).reduce(function(mem,e){
+		return I.pushIn(mem,[e.get("POS")],e);
+	},I.Map())
+};
+
+/*
 The master function to set up a new state. Called once.
 */
 Algol.prepareState = function(gamedef,players){
@@ -87,7 +96,7 @@ Algol.prepareState = function(gamedef,players){
 		connections: Algol.prepareConnectionsFromBoardDef(gamedef.get("board")),
 		data: I.Map().set("units",Algol.prepareInitialUnitDataFromSetup(gamedef.get("setup"))),
 		baselayers: (gamedef.get("terrain")||I.Map()).reduce(function(mem,layerdef,layername){
-			return mem.set(layername,Algol.prepareEntitiesFromList(layerdef));
+			return mem.set(layername,Algol.prepareTerrainLayerFromEntityList(layerdef));
 		},Algol.prepareBoardLayersFromBoardDef(gamedef.get("board")))
 	});
 };

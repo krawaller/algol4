@@ -472,7 +472,7 @@ tester("The execute methods",Algol,{
 				turn: 4,
 				data: {units: {"someid":{foo:"muu"}}},
 				marks: {somemark:"xyz"},
-				layers: {"UNITS": {"xyz": [{id:"someid"}]}}
+				layers: {"UNITS": {"xyz": [{ID:"someid"}]}}
 			},
 			effect: ["KILLUNIT",["IDAT",["MARKPOS","somemark"]]],
 			expected: {
@@ -480,7 +480,7 @@ tester("The execute methods",Algol,{
 				turn: 4,
 				data: {units: {"someid":{foo:"muu",STATUS:"DEAD",AFFECTEDTURN:4}}},
 				marks: {somemark:"xyz"},
-				layers: {"UNITS": {"xyz": [{id:"someid"}]}}
+				layers: {"UNITS": {"xyz": [{ID:"someid"}]}}
 			}
 		},
 		"when using MOVEUNIT": {
@@ -489,7 +489,7 @@ tester("The execute methods",Algol,{
 				turn: 5,
 				data: {units: {"someid":{foo:"muu"}}},
 				marks: {somemark:"xyz",othermark:"abc"},
-				layers: {"UNITS": {"xyz": [{id:"someid"}]}}
+				layers: {"UNITS": {"xyz": [{ID:"someid"}]}}
 			},
 			effect: ["MOVEUNIT",["IDAT",["MARKPOS","somemark"]],["MARKPOS","othermark"]],
 			expected: {
@@ -497,7 +497,7 @@ tester("The execute methods",Algol,{
 				turn: 5,
 				data: {units: {"someid":{foo:"muu",POS:"abc",AFFECTEDTURN:5}}},
 				marks: {somemark:"xyz",othermark:"abc"},
-				layers: {"UNITS": {"xyz": [{id:"someid"}]}}
+				layers: {"UNITS": {"xyz": [{ID:"someid"}]}}
 			},
 		},
 		"when using TURNUNIT clockwise": {
@@ -506,7 +506,7 @@ tester("The execute methods",Algol,{
 				turn: 5,
 				data: {units: {"someid":{foo:"muu",DIR:3}}},
 				marks: {somemark:"xyz",othermark:"abc"},
-				layers: {"UNITS": {"xyz": [{id:"someid"}]}}
+				layers: {"UNITS": {"xyz": [{ID:"someid"}]}}
 			},
 			effect: ["TURNUNIT",["IDAT",["MARKPOS","somemark"]],["VAL",2]],
 			expected: {
@@ -514,7 +514,7 @@ tester("The execute methods",Algol,{
 				turn: 5,
 				data: {units: {"someid":{foo:"muu",DIR:5,AFFECTEDTURN:5}}},
 				marks: {somemark:"xyz",othermark:"abc"},
-				layers: {"UNITS": {"xyz": [{id:"someid"}]}}
+				layers: {"UNITS": {"xyz": [{ID:"someid"}]}}
 			},
 		},
 		"when using TURNUNIT anticlockwise": {
@@ -523,7 +523,7 @@ tester("The execute methods",Algol,{
 				turn: 5,
 				data: {units: {"someid":{foo:"muu",DIR:1}}},
 				marks: {somemark:"xyz",othermark:"abc"},
-				layers: {"UNITS": {"xyz": [{id:"someid"}]}}
+				layers: {"UNITS": {"xyz": [{ID:"someid"}]}}
 			},
 			effect: ["TURNUNIT",["IDAT",["MARKPOS","somemark"]],["VAL",-3]],
 			expected: {
@@ -531,7 +531,7 @@ tester("The execute methods",Algol,{
 				turn: 5,
 				data: {units: {"someid":{foo:"muu",DIR:6,AFFECTEDTURN:5}}},
 				marks: {somemark:"xyz",othermark:"abc"},
-				layers: {"UNITS": {"xyz": [{id:"someid"}]}}
+				layers: {"UNITS": {"xyz": [{ID:"someid"}]}}
 			},
 		},
 		"when using TURNUNIT clockwise with wrap": {
@@ -540,7 +540,7 @@ tester("The execute methods",Algol,{
 				turn: 5,
 				data: {units: {"someid":{foo:"muu",DIR:7}}},
 				marks: {somemark:"xyz",othermark:"abc"},
-				layers: {"UNITS": {"xyz": [{id:"someid"}]}}
+				layers: {"UNITS": {"xyz": [{ID:"someid"}]}}
 			},
 			effect: ["TURNUNIT",["IDAT",["MARKPOS","somemark"]],["VAL",4]],
 			expected: {
@@ -548,7 +548,7 @@ tester("The execute methods",Algol,{
 				turn: 5,
 				data: {units: {"someid":{foo:"muu",DIR:3,AFFECTEDTURN:5}}},
 				marks: {somemark:"xyz",othermark:"abc"},
-				layers: {"UNITS": {"xyz": [{id:"someid"}]}}
+				layers: {"UNITS": {"xyz": [{ID:"someid"}]}}
 			},
 		},
 		"when using SWAPUNITPOSITIONS": {
@@ -557,7 +557,7 @@ tester("The execute methods",Algol,{
 				turn: 6,
 				data: {units: {"someid":{foo:"bar",POS:"xyz"},"otherid":{foo:"baz",POS:"abc"}}},
 				marks: {somemark:"xyz",othermark:"abc"},
-				layers: {"UNITS": {"xyz": [{id:"someid"}], "abc":[{id:"otherid"}]}}
+				layers: {"UNITS": {"xyz": [{ID:"someid"}], "abc":[{ID:"otherid"}]}}
 			},
 			effect: ["SWAPUNITPOSITIONS",["IDAT",["MARKPOS","somemark"]],["IDAT",["MARKPOS","othermark"]]],
 			expected: {
@@ -566,7 +566,7 @@ tester("The execute methods",Algol,{
 				data: {units: {"someid":{foo:"bar",POS:"abc",AFFECTEDTURN:6},
 				otherid:{foo:"baz",POS:"xyz",AFFECTEDTURN:6}}},
 				marks: {somemark:"xyz",othermark:"abc"},
-				layers: {"UNITS": {"xyz": [{id:"someid"}], "abc":[{id:"otherid"}]}}
+				layers: {"UNITS": {"xyz": [{ID:"someid"}], "abc":[{ID:"otherid"}]}}
 			}
 		},
 		"when using SETUNITDATA": {
@@ -575,7 +575,7 @@ tester("The execute methods",Algol,{
 				turn: 7,
 				data: {units: {"someid":{blah:"notmoo"}}},
 				marks: {somemark:"xyz"},
-				layers: {"UNITS": {"xyz": [{id:"someid"}]}}
+				layers: {"UNITS": {"xyz": [{ID:"someid"}]}}
 			},
 			effect: ["SETUNITDATA",["IDAT",["MARKPOS","somemark"]],"blah",["VAL","moo"]],
 			expected: {
@@ -583,7 +583,7 @@ tester("The execute methods",Algol,{
 				turn: 7,
 				data: {units: {"someid":{blah:"moo",AFFECTEDTURN:7}}},
 				marks: {somemark:"xyz"},
-				layers: {"UNITS": {"xyz": [{id:"someid"}]}}
+				layers: {"UNITS": {"xyz": [{ID:"someid"}]}}
 			},
 		},
 		"when using FORALLIN": {
@@ -591,7 +591,7 @@ tester("The execute methods",Algol,{
 				turn: 8,
 				layers:{
 					somelayer:{a:"X"},
-					UNITS:{a:[{id:"A"}],b:[{id:"B"}]}
+					UNITS:{a:[{ID:"A"}],b:[{ID:"B"}]}
 				},
 				data:{
 					units:{
@@ -607,7 +607,7 @@ tester("The execute methods",Algol,{
 				turn: 8,
 				layers:{
 					somelayer:{a:"X"},
-					UNITS:{a:[{id:"A"}],b:[{id:"B"}]}
+					UNITS:{a:[{ID:"A"}],b:[{ID:"B"}]}
 				},
 				data:{
 					units:{
@@ -622,7 +622,7 @@ tester("The execute methods",Algol,{
 			state: {
 				turn: 9,
 				marks:{somemark:"a"},
-				layers:{UNITS:{a:[{id:"A"}],b:[{id:"B"}]}},
+				layers:{UNITS:{a:[{ID:"A"}],b:[{ID:"B"}]}},
 				data:{
 					units:{
 						A:{POS:"a"},
@@ -639,7 +639,7 @@ tester("The execute methods",Algol,{
 			expected: {
 				turn: 9,
 				marks:{somemark:"a"},
-				layers:{UNITS:{a:[{id:"A"}],b:[{id:"B"}]}},
+				layers:{UNITS:{a:[{ID:"A"}],b:[{ID:"B"}]}},
 				data:{
 					units:{
 						A:{POS:"a",doomed:"yes",STATUS:"DEAD",AFFECTEDTURN:9},

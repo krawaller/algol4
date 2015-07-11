@@ -43,7 +43,10 @@ tester("The prepare methods",Algol,{
 					expectedargs: [["SETUP"]],
 				}
 			},
-			expected: {unit1: {foo:"bar",id:"unit1"}, unit2: {baz:"bin",id:"unit2"}}
+			expected: {
+				unit1: {foo:"bar",ID:"unit1"},
+				unit2: {baz:"bin",ID:"unit2"}
+			}
 		},
 	},
 	"prepareConnectionsFromBoardDef(boarddef)": {
@@ -84,6 +87,15 @@ tester("The prepare methods",Algol,{
 			}
 		}
 	},
+	"prepareTerrainLayerFromEntityList(list)": {
+		"for normal call": {
+			list: [{POS:666,foo:"bar"},["ALL",[777,666],{foo:"baz"}]],
+			expected: {
+				666: [{foo:"bar",POS:666},{foo:"baz",POS:666}],
+				777: [{foo:"baz",POS:777}]
+			}
+		}
+	},
 	"addEntitiesFromDef(list,def)": {
 		"for single entity": {
 			list: ["X"],
@@ -110,12 +122,11 @@ tester("The prepare methods",Algol,{
 				terrain: {
 					swamp: "SWAMP",
 					marsh: "MARSH"
-				},
-				board: "BOARD"
+				}
 			},
 			players: "PLAYERS",
 			context: {
-				prepareEntitiesFromList: {
+				prepareTerrainLayerFromEntityList: {
 					method: function(e){ return "prepped"+e;}
 				},
 				prepareConnectionsFromBoardDef: {

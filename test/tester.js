@@ -29,7 +29,7 @@ describe(description,function(){
 						}));
 					});
 					it("returns the expected value",function(){
-						expect(result.toJS ? result.toJS() : result).toEqual(test.expected);
+						expect(result && result.toJS ? result.toJS() : result).toEqual(test.expected);
 					});
 					_.each(test.context||{},function(stubdef,stubname){
 						if (stubdef.expectedargs){

@@ -38,7 +38,7 @@ Algol.evaluatePositionList = function(state,def){
 };
 
 var idmethods = {
-	IDAT: function(state,position){ return state.getIn(["layers","UNITS",this.evaluatePosition(state,position),0,"id"]); },
+	IDAT: function(state,position){ return state.getIn(["layers","UNITS",this.evaluatePosition(state,position),0,"ID"]); },
 	LOOPID: function(state){ return state.getIn(["context","LOOPID"]); }
 };
 

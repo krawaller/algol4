@@ -6,6 +6,7 @@ if (typeof module !== 'undefined' && typeof module.exports !== 'undefined'){
 	require("./execute")(Algol);
 	require("./process")(Algol);
 	require("./prepare")(Algol);
+	require("./mark")(Algol);
 	module.exports = Algol;
 } else {
 	window.augmentWithEvaluateFunctions(Algol);
@@ -13,4 +14,5 @@ if (typeof module !== 'undefined' && typeof module.exports !== 'undefined'){
 	window.augmentWithExecuteFunctions(Algol);
 	window.augmentWithProcessFunctions(Algol);
 	window.augmentWithPrepareFunctions(Algol);
+	window.augmentWithMarkFunctions(Algol);
 }

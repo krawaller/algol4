@@ -130,7 +130,7 @@ tester("the evaluate methods",Algol,{
 	"evaluateId(state,iddef)": {
 		"for IDAT": {
 			state: {
-				layers: {UNITS: {xyz:[{id:"678"}]}},
+				layers: {UNITS: {xyz:[{ID:"678"}]}},
 				marks: {somemark:"xyz"}
 			},
 			iddef: ["IDAT",["MARKPOS","somemark"]],
@@ -156,7 +156,7 @@ tester("the evaluate methods",Algol,{
 		},
 		"for AFFECTED when id in list": {
 			state: {
-				layers: { UNITS: {xyz:[{id:"123"}]} },
+				layers: { UNITS: {xyz:[{ID:"123"}]} },
 				marks: {uglymark:"xyz"},
 				affected:["3","7","123"]
 			},
@@ -165,7 +165,7 @@ tester("the evaluate methods",Algol,{
 		},
 		"for AFFECTED when id not in list": {
 			state: {
-				layers: { UNITS: {xyz:[{id:"123"}]} },
+				layers: { UNITS: {xyz:[{ID:"123"}]} },
 				marks: {uglymark:"xyz"},
 				affected:["3","7","321"]
 			},
