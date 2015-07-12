@@ -6,11 +6,56 @@ function augmentWithMarkFunctions(Algol){
 
 // €€€€€€€€€€€€€€€€€€€€€€€€€€€ M A R K   F U N C T I O N S €€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€*/
 
+Algol.getAvailableMarks = function(state){
+	return state.getIn(["gamedef","marks"]).reduce(function(mem,markdef,markname){
+		return this.isMarkAvailable(state,markname) ? mem.set(markname,state.getIn(["layers",markdef.get("fromlayer")]).keySeq()) : mem;
+	},I.Map(),this);
+};
+
 Algol.isMarkAvailable = function(state,markname){
-	if (state.getIn(["marks",markname])){
+	var markdef = state.getIn(["gamedef","marks",markname]),
+		cond = markdef.get("condition"),
+		setmarks = state.get("marks"),
+		fromlayer = state.getIn(["layers",markdef.get("fromlayer")]),
+		requiredmarks = markdef.get("requiredmarks");
+	if (setmarks.has(markname)){
 		return "alreadyset";
+	} else if (cond && !this.evaluateBoolean(state,cond)){
+		return "conditionnotmet";
+	} else if (!fromlayer || !fromlayer.size){
+		return "nopositions";
+	} else if (requiredmarks && !requiredmarks.every(setmarks.has.bind(setmarks))){
+		return "missingrequiredmarks";
 	}
-}
+};
+
+/*
+User response, also used in Algol.setMark
+Removes mark
+Removes all marks in markdef.requiredby
+Clears all layers in markdef.cleanse
+*/
+Algol.removeMark = function(state,markname){
+	var def = state.getIn(["gamedef","marks",markname]);
+	return (def.get("cleanse")||I.List()).reduce(function(mem,layername){
+		return mem.removeIn(["layers",layername]);
+	},(def.get("requiredby")||I.List()).reduce(function(mem,requiredby){
+		return this.removeMark(mem,requiredby);
+	},state.removeIn(["marks",markname]),this),this);
+};
+
+/*
+User response
+Updates the mark
+Removes all marks in markdef.notwith using this.removeMark
+Runs generator list in markdef.generators with this.applyGeneratorList
+*/
+Algol.setMark = function(state,markname,position){
+	var def = state.getIn(["gamedef","marks",markname]);
+	return this.applyGeneratorList((def.get("notwith")||I.List()).reduce(function(mem,notwith){
+		return this.removeMark(mem,notwith);
+	},state.setIn(["marks",markname],position),this),def.get("generators")||I.List());
+};
 
 
 

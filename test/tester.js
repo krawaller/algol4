@@ -16,15 +16,16 @@ describe(description,function(){
 				arglist = signature.split("(")[1].replace(/\)$/,"").split(",");
 			_.each(tests,function(test,testdesc){
 				describe(testdesc,function(){
-					var result;
+					var result, method;
 					beforeEach(function(){
+						method = lib[methodname];
 						_.each(test.context||{},function(stubdef,stubname){
 							sinon.stub(lib,stubname,stubdef.method || function(){
 								var ret = test[stubdef.returns]||stubdef.returns;
 								return I ? I.fromJS(ret) : ret;
 							});
 						});
-						result = lib[methodname].apply(lib,arglist.map(function(param){
+						result = method.apply(lib,arglist.map(function(param){
 							return I ? I.fromJS(test[param]) : test[param];
 						}));
 					});
