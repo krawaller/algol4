@@ -23,11 +23,11 @@ tester("The entitice methods",Algol,{
 				id1: {group:"dorks"},
 				id2: {baz:"bin"}
 			},
-			currentplr: "PLR",
+			currentplr: "owner",
 			context: {
 				sortEntity: {
 					method: function(r){ return r+1; },
-					expectedargs: [ [1,{group:"dorks"},["units","dorks"],"PLR"],[2,{baz:"bin"},["units"],"PLR"] ]
+					expectedargs: [ [1,{group:"dorks"},["units","dorks"],"owner"],[2,{baz:"bin"},["units"],"owner"] ]
 				}
 			},
 			expected: 3

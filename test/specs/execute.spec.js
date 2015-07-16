@@ -252,7 +252,7 @@ tester("The execute methods",Algol,{
 		"when no wincondition is met": {
 			state: "STATE",
 			endturndef: {
-				passto:"NEXTPLR",
+				passto:"NEXTowner",
 				endgame:{
 					byfoo:{condition:"FOOCOND",winner:"FOOWINNER"},
 					bybar:{condition:"BARCOND",winner:"BARWINNER"}
@@ -266,7 +266,7 @@ tester("The execute methods",Algol,{
 				},
 				evaluateValue: {
 					returns: "NEXT",
-					expectedargs: [ ["state","NEXTPLR"] ]
+					expectedargs: [ ["state","NEXTowner"] ]
 				}
 			}
 		}
@@ -478,7 +478,7 @@ tester("The execute methods",Algol,{
 			expected: {
 				affected: ["someid"],
 				turn: 4,
-				data: {units: {"someid":{foo:"muu",STATUS:"DEAD",affectedturn:4}}},
+				data: {units: {"someid":{foo:"muu",status:"dead",affectedturn:4}}},
 				marks: {somemark:"xyz"},
 				layers: {"units": {"xyz": [{ID:"someid"}]}}
 			}
@@ -642,7 +642,7 @@ tester("The execute methods",Algol,{
 				layers:{units:{a:[{ID:"A"}],b:[{ID:"B"}]}},
 				data:{
 					units:{
-						A:{pos:"a",doomed:"yes",STATUS:"DEAD",affectedturn:9},
+						A:{pos:"a",doomed:"yes",status:"dead",affectedturn:9},
 						B:{pos:"b"}
 					}
 				},

@@ -180,7 +180,7 @@
 			"type": "filter",
 			"layer": "bases",
 			"condition": ["anyat","units",["contextpos","start"]],
-			"matching": {"owner":["isnt",["lookup","units",["contextpos","start"],"PLR"]]},
+			"matching": {"owner":["isnt",["lookup","units",["contextpos","start"],"owner"]]},
 			"tolayer": ["ifelse",["anyat","MYunits",["contextpos","start"]],"myinfiltrators","oppinfiltrators"]
 		},
 		"findchargevictims": {

@@ -11,10 +11,10 @@
 		]
 	},
 	"setup": [
-		["ALL",[2002,2003,2004,3002,3004,4002,4003,4004],{"PLR":1,"dir":5,"type":"archer"}],
-		{"pos":3003,"type":"king","dir":5,"PLR":1},
-		["ALL",[6006,6007,6008,7006,7008,8006,8007,8008],{"PLR":2,"dir":1,"type":"archer"}],
-		{"pos":3003,"type":"king","dir":1,"PLR":2}
+		["ALL",[2002,2003,2004,3002,3004,4002,4003,4004],{"owner":1,"dir":5,"type":"archer"}],
+		{"pos":3003,"type":"king","dir":5,"owner":1},
+		["ALL",[6006,6007,6008,7006,7008,8006,8007,8008],{"owner":2,"dir":1,"type":"archer"}],
+		{"pos":3003,"type":"king","dir":1,"owner":2}
 	],
 	"startstep": {
 		"cleanse": ["myarrows","opparrows","bullseye"],
@@ -37,7 +37,7 @@
 		},
 		"finddeadkings": {
 			"type": "filter",
-			"layer": "DEADunits",
+			"layer": "deadunits",
 			"matching": { "type": ["is",["val","crown"]] },
 			"tolayer": ["layername","deadking"]
 		},
@@ -50,13 +50,13 @@
 			"draw": {
 				"step": {
 					"tolayer": ["ifelse",
-						["same",["lookup","units",["contextpos","start"],"PLR"],["contextval","currentplayer"]],
+						["same",["lookup","units",["contextpos","start"],"owner"],["contextval","currentplayer"]],
 						["layername","myarrows"],
 						["layername","opparrows"]
 					]
 				},
 				"block": {
-					"condition": ["different",["lookup","units",["contextpos","target"],"PLR"],["lookup","units",["contextpos","start"],"PLR"]],
+					"condition": ["different",["lookup","units",["contextpos","target"],"owner"],["lookup","units",["contextpos","start"],"owner"]],
 					"tolayer": ["layername","bullseye"],
 					"include": {
 						"shooterid": ["idofunitat",["contextpos","start"]]

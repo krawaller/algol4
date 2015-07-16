@@ -5,8 +5,8 @@
 		"width": 10
 	},
 	"setup": [
-		["ALL",[1004,1007,4001,4010],{"PLR":1}],
-		["ALL",[10004,10007,7001,7010],{"PLR":2}]
+		["ALL",[1004,1007,4001,4010],{"owner":1}],
+		["ALL",[10004,10007,7001,7010],{"owner":2}]
 	],
 	"startturn": {
 		"hydration": ["findblocks","findfiretargets"]

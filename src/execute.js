@@ -9,7 +9,7 @@ function augmentWithExecuteFunctions(Algol){
 var effectmethods = {
 	killunit: function(state,id){
 		id = this.evaluateId(state,id);
-		return I.pushInIfNew(state,["affected"],id).mergeIn(["data","units",id],{STATUS:"DEAD",affectedturn:state.get("turn")});
+		return I.pushInIfNew(state,["affected"],id).mergeIn(["data","units",id],{status:"dead",affectedturn:state.get("turn")});
 	},
 	moveunit: function(state,id,pos){
 		id = this.evaluateId(state,id);
