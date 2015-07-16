@@ -6,15 +6,15 @@
 	},
 	"terrain": {
 		"bases": [
-			["ALL",[1001,1002,1003,1004,1005,1006,1007,1008],{"owner":1}],
-			["ALL",[8001,8002,8003,8004,8005,8006,8007,8008],{"owner":2}]
+			["list",[1001,1002,1003,1004,1005,1006,1007,1008],{"owner":1}],
+			["list",[8001,8002,8003,8004,8005,8006,8007,8008],{"owner":2}]
 		]
 	},
 	"setup": [
-		["ALL",[1004,1005],{"owner":1,"type":"crown"}],
-		["ALL",[2003,2004,2005,2006],{"owner":1,"type":"dagger"}],
-		["ALL",[6003,6006,7002,7003,7004,7005,7006,7007],{"owner":2,"type":"dagger"}],
-		["ALL",[8003,8006],{"owner":2,"type":"crown"}]
+		["list",[1004,1005],{"owner":1,"type":"crown"}],
+		["list",[2003,2004,2005,2006],{"owner":1,"type":"dagger"}],
+		["list",[6003,6006,7002,7003,7004,7005,7006,7007],{"owner":2,"type":"dagger"}],
+		["list",[8003,8006],{"owner":2,"type":"crown"}]
 	],
 	"endturn": {
 		"condition":["performedanycommand"],
@@ -32,7 +32,7 @@
 	},
 	"marks": {
 		"selectunit": {
-			"fromlayer":"MYunits"
+			"fromlayer":"myunits"
 		},
 		"selectmovetarget": {
 			"fromlayer": "movetarget",
@@ -79,29 +79,29 @@
 		"findinfiltrators": {
 			"type": "filter",
 			"layer": "TERRAIN",
-			"overlapping": "MYunits",
+			"overlapping": "myunits",
 			"matching": { "plr": ["isnt",["contextval","currentplayer"]] },
 			"tolayer": "infiltrator"
 		},
 		"nexttocrown": {
 			"type": "nextto",
-			"starts": ["FROMALLINLAYER","activecrown"],
+			"starts": ["allposinlayer","activecrown"],
 			"dirs": ["dirs",[1,2,3,4,5,6,7,8]],
 			"drawtarget": {
-				"condition": ["noneat","MYunits","target"],
-				"tolayer": ["ifelse",["anyat","OPPunits","target"],"killtarget","movetarget"]
+				"condition": ["noneat","myunits","target"],
+				"tolayer": ["ifelse",["anyat","oppunits","target"],"killtarget","movetarget"]
 			}
 		},
 		"abovedagger": {
 			"type": "nextto",
-			"starts": ["FROMALLINLAYER","activedagger"],
+			"starts": ["allposinlayer","activedagger"],
 			"dirs": ["dirs",[8,1,2]],
 			"drawtarget": {
 				"condition": ["and",
-					["noneat","MYunits",["contextpos","target"]],
+					["noneat","myunits",["contextpos","target"]],
 					["not",["and",
 						["same",["contextval","dir"],["val",1]],
-						["same",["lookup","OPPunits",["contextpos","target"],"type"],"dagger"]
+						["same",["lookup","oppunits",["contextpos","target"],"type"],"dagger"]
 					]]
 				],
 				"tolayer": ["ifelse",["anyat","units",["contextpos","target"]],"killtarget","movetarget"]
@@ -109,7 +109,7 @@
 		},
 		"belowdagger": {
 			"type": "walker",
-			"starts": ["FROMALLINLAYER","activedagger"],
+			"starts": ["allposinlayer","activedagger"],
 			"dirs": ["dirs",[4,5,6]],
 			"stoplayer": "units",
 			"drawstep": {
@@ -117,7 +117,7 @@
 			},
 			"drawstop": {
 				"condition": ["and",
-					["noneat","MYunits",["contextpos","target"]],
+					["noneat","myunits",["contextpos","target"]],
 					["not",["and",
 						["same",["contextval","dir"],["val",5]],
 						["same",["lookup","units",["contextpos","target"],"type"],["val","dagger"]]

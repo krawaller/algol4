@@ -6,8 +6,8 @@
 		"width": 8
 	},
 	"setup": [
-		["ALL",[1001,1002,1003,1004,8005,8006,8007,8008],{"type":"king","owner":1}],
-		["ALL",[1005,1006,1007,1008,8001,8002,8003,8004],{"type":"king","owner":2}]
+		["list",[1001,1002,1003,1004,8005,8006,8007,8008],{"type":"king","owner":1}],
+		["list",[1005,1006,1007,1008,8001,8002,8003,8004],{"type":"king","owner":2}]
 	],
 	"endturn": {
 		"condition":["same",["contextval","performedsteps"],["val",1]],
@@ -50,13 +50,13 @@
 	"generators": {
 		"findmykings": {
 			"type": "filter",
-			"layer": "MYunits",
+			"layer": "myunits",
 			"matching": {"type":["is",["val","king"]]},
 			"tolayer": ["layername","mykings"]
 		},
 		"findoppkings": {
 			"type": "filter",
-			"layer": "OPPunits",
+			"layer": "oppunits",
 			"matching": {"type":["is",["val","king"]]},
 			"tolayer": ["layername","oppkings"]
 		},
@@ -66,7 +66,7 @@
 			"start": ["markpos","selectking"],
 			"drawtarget": {
 				"condition": ["and",
-					["anyat","MYunits",["contextpos","target"]],
+					["anyat","myunits",["contextpos","target"]],
 					["noneat","mykings",["contextpos","target"]]
 				],
 				"tolayer": ["layername","swaptarget"]
@@ -85,7 +85,7 @@
 			"type": "walker",
 			"dirs": ["dirs",1,2,3,4,5,6,7,8],
 			"start": ["markpos","selectmove"],
-			"steplayer": "OPPunits",
+			"steplayer": "oppunits",
 			"stoplayer": "mykings",
 			"drawstep": {
 				"condition": ["and",

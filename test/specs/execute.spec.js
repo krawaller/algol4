@@ -478,7 +478,7 @@ tester("The execute methods",Algol,{
 			expected: {
 				affected: ["someid"],
 				turn: 4,
-				data: {units: {"someid":{foo:"muu",status:"dead",affectedturn:4}}},
+				data: {units: {"someid":{foo:"muu",dead:true,affectedturn:4}}},
 				marks: {somemark:"xyz"},
 				layers: {"units": {"xyz": [{ID:"someid"}]}}
 			}
@@ -642,7 +642,7 @@ tester("The execute methods",Algol,{
 				layers:{units:{a:[{ID:"A"}],b:[{ID:"B"}]}},
 				data:{
 					units:{
-						A:{pos:"a",doomed:"yes",status:"dead",affectedturn:9},
+						A:{pos:"a",doomed:"yes",dead:true,affectedturn:9},
 						B:{pos:"b"}
 					}
 				},

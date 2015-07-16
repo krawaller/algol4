@@ -12,7 +12,7 @@ Will add the entity to correct position in corresponding group layers depending 
 */
 Algol.sortEntity = function(layers,entity,groups,plr){
 	var owner = entity.get("owner"),
-		prefix = entity.get("status") === "dead" ? "dead" : "",
+		prefix = entity.get("dead") ? "dead" : "",
 		cat = owner === plr ? "my" : owner === 0 ? "neutral" : "opp",
 		pos = entity.get("pos");
 	return groups.reduce(function(mem,group){

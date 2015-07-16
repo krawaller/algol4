@@ -80,42 +80,42 @@ tester("The entitice methods",Algol,{
 			layers: {
 				deadkings: {pos:["foo"]}
 			},
-			entity: {status: "dead", owner: "ME",pos: "pos"},
+			entity: {dead: true, owner: "ME",pos: "pos"},
 			groups: ["kings","units"],
 			currentplr: "ME",
 			expected: {
-				deadkings: {pos:["foo",{status: "dead", owner: "ME",pos: "pos"}]},
-				mydeadkings: {pos:[{status: "dead", owner: "ME",pos: "pos"}]},
-				deadunits: {pos:[{status: "dead", owner: "ME",pos: "pos"}]},
-				mydeadunits: {pos:[{status: "dead", owner: "ME",pos: "pos"}]}
+				deadkings: {pos:["foo",{dead: true, owner: "ME",pos: "pos"}]},
+				mydeadkings: {pos:[{dead: true, owner: "ME",pos: "pos"}]},
+				deadunits: {pos:[{dead: true, owner: "ME",pos: "pos"}]},
+				mydeadunits: {pos:[{dead: true, owner: "ME",pos: "pos"}]}
 			}
 		},
 		"for dead unit belonging to opponent": {
 			layers: {
 				deadkings: {pos:["foo"]}
 			},
-			entity: {status: "dead", owner: "OPP",pos: "pos"},
+			entity: {dead: true, owner: "OPP",pos: "pos"},
 			groups: ["kings","units"],
 			currentplr: "ME",
 			expected: {
-				deadkings: {pos:["foo",{status: "dead", owner: "OPP",pos: "pos"}]},
-				oppdeadkings: {pos:[{status: "dead", owner: "OPP",pos: "pos"}]},
-				deadunits: {pos:[{status: "dead", owner: "OPP",pos: "pos"}]},
-				oppdeadunits: {pos:[{status: "dead", owner: "OPP",pos: "pos"}]}
+				deadkings: {pos:["foo",{dead: true, owner: "OPP",pos: "pos"}]},
+				oppdeadkings: {pos:[{dead: true, owner: "OPP",pos: "pos"}]},
+				deadunits: {pos:[{dead: true, owner: "OPP",pos: "pos"}]},
+				oppdeadunits: {pos:[{dead: true, owner: "OPP",pos: "pos"}]}
 			}
 		},
 		"for dead neutral unit": {
 			layers: {
 				deadkings: {pos:["foo"]}
 			},
-			entity: {status: "dead", owner: 0, pos: "pos"},
+			entity: {dead: true, owner: 0, pos: "pos"},
 			groups: ["kings","units"],
 			currentplr: "ME",
 			expected: {
-				deadkings: {pos:["foo",{status: "dead", owner: 0,pos: "pos"}]},
-				neutraldeadkings: {pos:[{status: "dead", owner: 0,pos: "pos"}]},
-				deadunits: {pos:[{status: "dead", owner: 0,pos: "pos"}]},
-				neutraldeadunits: {pos:[{status: "dead", owner: 0,pos: "pos"}]}
+				deadkings: {pos:["foo",{dead: true, owner: 0,pos: "pos"}]},
+				neutraldeadkings: {pos:[{dead: true, owner: 0,pos: "pos"}]},
+				deadunits: {pos:[{dead: true, owner: 0,pos: "pos"}]},
+				neutraldeadunits: {pos:[{dead: true, owner: 0,pos: "pos"}]}
 			}
 		}
 	},

@@ -5,61 +5,51 @@
 		"width": 9
 	},
 	"terrain": {
-		"bases": [
-			["ALL",[2002,2003,2004,3002,3003,3004,4002,4003,4004],{"owner":1}],
-			["ALL",[6006,6007,6008,7006,7007,7008,8006,8007,8008],{"owner":2}]
+		"trees": [
+			["rectangle",[2002,4004],{"owner":1}],
+			["rectangle",[6006,8008],{"owner":2}]
 		]
 	},
 	"setup": [
-		["ALL",[2002,2003,2004,3002,3004,4002,4003,4004],{"owner":1,"dir":5,"type":"archer"}],
-		{"pos":3003,"type":"king","dir":5,"owner":1},
-		["ALL",[6006,6007,6008,7006,7008,8006,8007,8008],{"owner":2,"dir":1,"type":"archer"}],
-		{"pos":3003,"type":"king","dir":1,"owner":2}
+		["list",[2002,2003,2004,3002,3004,4002,4003,4004],{"owner":1,"dir":5,"group":"archers"}],
+		{"pos":3003,"group":"kings","dir":5,"owner":1},
+		["list",[6006,6007,6008,7006,7008,8006,8007,8008],{"owner":2,"dir":1,"group":"archers"}],
+		{"pos":3003,"group":"kings","dir":1,"owner":2}
 	],
 	"startstep": {
 		"cleanse": ["myarrows","opparrows","bullseye"],
 		"hydration": ["findarrows"]
 	},
 	"generators": {
-		"findinfiltrators": {
-			"type": "filter",
-			"layer": "TERRAIN",
-			"matching": {"owner":["isnt",["contextval","currentplayer"]]},
-			"condition": ["anyat","MYunits",["contextpos","start"]],
-			"tolayer": ["layername","infiltrators"]
-		},
 		"findkilltargets": {
-			"neededmarks": ["selectunit"],
 			"type": "filter",
 			"layer": "bullseye",
 			"matching": {"shooterid":["is",["idofunitat",["markpos","selectunit"]]]},
-			"tolayer": ["layername","gonnadie"]
-		},
-		"finddeadkings": {
-			"type": "filter",
-			"layer": "deadunits",
-			"matching": { "type": ["is",["val","crown"]] },
-			"tolayer": ["layername","deadking"]
+			"tolayer": "gonnadie"
 		},
 		"findarrows": {
 			"type": "walker",
-			"starts": ["FROMALLINLAYER","units"],
+			"starts": ["allposinlayer","units"],
 			"dirs": ["relativedirs",["dirs",[1]],["lookup","units",["contextpos","start"],"dir"]],
-			"blocks": ["FROMALLINLAYER","units"],
+			"blocks": ["allposinlayer","units"],
 			"max": 3,
 			"draw": {
 				"step": {
 					"tolayer": ["ifelse",
 						["same",["lookup","units",["contextpos","start"],"owner"],["contextval","currentplayer"]],
-						["layername","myarrows"],
-						["layername","opparrows"]
+						"myarrows",
+						"opparrows"
 					]
 				},
 				"block": {
-					"condition": ["different",["lookup","units",["contextpos","target"],"owner"],["lookup","units",["contextpos","start"],"owner"]],
-					"tolayer": ["layername","bullseye"],
+					"condition": ["different",
+						["lookup","units",["contextpos","target"],"owner"],
+						["lookup","units",["contextpos","start"],"owner"]
+					],
+					"tolayer": "bullseye",
 					"include": {
-						"shooterid": ["idofunitat",["contextpos","start"]]
+						"shooterid": ["idofunitat",["contextpos","start"]],
+						"owner": ["lookup","units",["contextpos","start"],"owner"]
 					}
 				}
 			}
@@ -67,12 +57,22 @@
 		"findfooting": {
 			"type": "nextto",
 			"neededmarks": ["selectunit"],
-			"starts": ["FROMSINGLEpos",["markpos","selectunit"]],
+			"starts": ["markpos","selectunit"],
 			"dirs": ["relativedirs",["dirs",[1,5]],["lookup","units",["contextpos","start"],"dir"]],
 			"draw": {
 				"target": {
-					"condition": ["and",["noneat","units",["contextpos","target"]],["noneat","opparrows",["contextpos","target"]]],
-					"tolayer": ["ifelse",["same",["contextval","dir"],["lookup","units",["contextpos","start"],"dir"]],["layername","forwardfooting"],["layername","backwardfooting"]],
+					"condition": ["and",
+						["noneat","units",["contextpos","target"]],
+						["noneat","opparrows",["contextpos","target"]]
+					],
+					"tolayer": ["ifelse",
+						["same",
+							["contextval","dir"],
+							["lookup","units",["contextpos","start"],"dir"]
+						],
+						"forwardfooting",
+						"backwardfooting"
+					],
 					"include": {
 						"id": ["idofunitat",["contextpos","start"]]
 					}
@@ -82,53 +82,51 @@
 	},
 	"marks": {
 		"selectunit": {
-			"from":["FROMALLINLAYER","MYunits"],
+			"fromlayer": "myunits",
 			"cleanse": ["forwardfooting","backwardfooting","gonnadie"],
 			"hydration": ["findfooting","findkilltargets"]
 		}
 	},
 	"endturn": {
-		"condition":["same",["contextval","performedsteps"],["val",2]],
+		"condition":["same",["contextval","performedsteps"],2],
 		"commandcap": true,
-		"passto": ["ifelse",["same",["contextval","currentplayer"],["val",2]],["val",1],["val",2]],
+		"passto": ["ifelse",["same",["contextval","currentplayer"],2],1,2],
 		"endgame": {
 			"infiltration": {
-				"hydration": ["findinfiltrators"],
-				"condition": [["notempty","infiltrators"],["contextval","currentplayer"]]
+				"condition": [["overlaps","myunits","opptrees"],["contextval","currentplayer"]]
 			},
 			"kingkill": {
-				"hydration": ["finddeadkings"],
-				"condition": [["notempty","deadking"],["contextval","currentplayer"]]
+				"condition": [["notempty","oppdeadkings"],["contextval","currentplayer"]]
 			}
 		}
 	},
 	"commands": {
 		"stepforward": {
 			"condition": ["notempty","forwardfooting"],
-			"effect": ["moveunit",["idofunitat",["markpos","selectunit"]],["onlyposin","forwardfooting"]],
+			"effect": ["moveunit",["idofunitat",["markpos","selectunit"]],["firstposin","forwardfooting"]],
 			"setmarks": {
-				"selectunit": ["onlyposin","forwardfooting"]
+				"selectunit": ["firstposin","forwardfooting"]
 			}
 		},
 		"stepbackward": {
 			"condition": ["notempty","backwardfooting"],
-			"effect": ["moveunit",["idofunitat",["markpos","selectunit"]],["onlyposin","backwardfooting"]],
+			"effect": ["moveunit",["idofunitat",["markpos","selectunit"]],["firstposin","backwardfooting"]],
 			"setmarks": {
-				"selectunit": ["onlyposin","backwardfooting"]
+				"selectunit": ["firstposin","backwardfooting"]
 			}
 		},
 		"turnleft": {
-			"effect": ["turnunit",["idofunitat",["markpos","selectunit"]],["val",-2]]
+			"effect": ["turnunit",["idofunitat",["markpos","selectunit"]],-2]
 		},
 		"turnright": {
-			"effect": ["turnunit",["idofunitat",["markpos","selectunit"]],["val",2]]
+			"effect": ["turnunit",["idofunitat",["markpos","selectunit"]],2]
 		},
 		"fire": {
 			"condition": ["and",
 				["notempty","gonnadie"],
 				["not",["affected",["idofunitat",["markpos","selectunit"]]]]
 			],
-			"effect": ["killunit",["idofunitat",["onlyposin","gonnadie"]]]
+			"effect": ["killunit",["idofunitat",["firstposin","gonnadie"]]]
 		}
 	}
 }

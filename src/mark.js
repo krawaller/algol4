@@ -10,6 +10,16 @@ Expects state.marks to be a map of currently set marks
 Expects state.gamedef.marks to contain mark definitions
 Expects state.layers to be layermap
 
+markdef: {
+	fromlayer: name of layer which we can select positions from
+	condition: optional condition that must be true for mark to be available
+	requiredmarks: optional list of other marks that must be set
+	requiredby: other marks requiring this one                      TODO: autogenerate
+	notwith: marks that cannot be set at the same time as this one
+	generators: optional list of generators to be run when mark is set
+	cleanse: optional list of layers to be cleansed when mark deset    TODO: autogenerate
+}
+
 */
 
 Algol.getAvailableMarks = function(state){

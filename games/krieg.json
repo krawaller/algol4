@@ -64,14 +64,14 @@
 			"type": "filter",
 			"layer": "bases",
 			"matching": {"owner":["isnt",["contextval","currentplayer"]]},
-			"condition": ["anyat","MYunits",["contextpos","start"]],
+			"condition": ["anyat","myunits",["contextpos","start"]],
 			"tolayer": ["layername","occupiers"]
 		},
 		"findinfiltrators": {
 			"type": "filter",
 			"layer": "corners",
 			"matching": {"owner":["isnt",["contextval","currentplayer"]]},
-			"condition": ["anyat","MYunits",["contextpos","start"]],
+			"condition": ["anyat","myunits",["contextpos","start"]],
 			"tolayer": ["layername","infiltrators"]
 		},
 		"findcurrentmoves": {
@@ -81,25 +81,25 @@
 		},
 		"findmymovers": {
 			"type": "filter",
-			"layer": "MYunits",
+			"layer": "myunits",
 			"condition": ["different",
 				["sum",["contextval","CURRENTTURN"],["val",-2]],
-				["lookup","MYunits",["contextpos","start"],"affectedturn"]
+				["lookup","myunits",["contextpos","start"],"affectedturn"]
 			],
 			"tolayer": "freetomove"
 		},
 		"findoppmovers": {
 			"type": "filter",
-			"layer": "OPPunits",
+			"layer": "oppunits",
 			"condition": ["different",
 				["sum",["contextval","CURRENTTURN"],["val",-3]],
-				["lookup","OPPunits",["contextpos","start"],"affectedturn"]
+				["lookup","oppunits",["contextpos","start"],"affectedturn"]
 			],
 			"tolayer": "freetomove"
 		},
 		"findmovetargets": {
 			"type": "nextto",
-			"from": ["ALLINLAYER","freetomove"],
+			"from": ["listINLAYER","freetomove"],
 			"dirs": ["ifelse",
 				["anyat","southeast",["contextpos","start"]],
 				["dirs",[1,3,4,5,7]],

@@ -77,15 +77,25 @@ tester("the evaluate methods",Algol,{
 			valuedef: ["layerobjectcount",["layername","somelayer"]],
 			expected: 3
 		},
+		"for layerpositioncount when something": {
+			state: { layers: { somelayer: {x:[1,1],y:[3]} } },
+			valuedef: ["layerpositioncount",["layername","somelayer"]],
+			expected: 2
+		},
+		"for layerpositioncount when nothing": {
+			state: { layers: { otherlayer: {x:[1,1],y:[3]} } },
+			valuedef: ["layerpositioncount",["layername","somelayer"]],
+			expected: 0
+		},
 		"for primitive": {
 			valuedef: 666,
 			expected: 666
 		}
 	},
 	"evaluatePosition(state,posdef)": {
-		"for onlyposin": {
+		"for firstposin": {
 			state: { layers: { barlayer: { blah: [{a:666}] }}},
-			posdef: ["onlyposin","barlayer"],
+			posdef: ["firstposin","barlayer"],
 			expected: "blah"
 		},
 		"for contextpos": {
@@ -262,6 +272,26 @@ tester("the evaluate methods",Algol,{
 				marks: {somemark: "b"}
 			},
 			booldef: ["positionisinlist",["markpos","somemark"],["allposinlayer","foolayer"]],
+			expected: false
+		},
+		"for overlaps when correct": {
+			state: {
+				layers: {
+					somelayer: {x:"foo",y:"foo"},
+					otherlayer: {z:"foo",y:"foo"}
+				}
+			},
+			booldef: ["overlaps","somelayer","otherlayer"],
+			expected: true
+		},
+		"for overlaps when false": {
+			state: {
+				layers: {
+					somelayer: {x:"foo",y:"foo"},
+					otherlayer: {z:"foo"}
+				}
+			},
+			booldef: ["overlaps","somelayer","otherlayer"],
 			expected: false
 		}
 	}

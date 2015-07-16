@@ -7,13 +7,13 @@
 	},
 	"terrain": {
 		"center": [{"pos":5005}],
-		"plus": [ ["ALL",[4005,5004,5006,6005],{}] ],
-		"x": [ ["ALL",[4004,4006,6004,6006],{}] ]
+		"plus": [ ["list",[4005,5004,5006,6005],{}] ],
+		"x": [ ["list",[4004,4006,6004,6006],{}] ]
 	},
 	"setup": [
-		["ALL",[1001,1002,1003,2001,2003,3001,3002,3003],{"type":"soldier","owner":1}],
+		["list",[1001,1002,1003,2001,2003,3001,3002,3003],{"type":"soldier","owner":1}],
 		{"pos":2002,"type":"king","owner":1},
-		["ALL",[7007,7008,7009,8007,8009,9007,9008,9009],{"type":"soldier","owner":2}],
+		["list",[7007,7008,7009,8007,8009,9007,9008,9009],{"type":"soldier","owner":2}],
 		{"pos":8008,"type":"king","owner":2}
 	],
 	"marks": {
@@ -73,8 +73,8 @@
 			"dirs": ["dirs",[2,4,6,8]],
 			"max": 2,
 			"starts": ["markinlast","move","selectunit"],
-			"steps": "OPPunits",
-			"blocks": "MYunits",
+			"steps": "oppunits",
+			"blocks": "myunits",
 			"draw": {
 				"step": {
 					"condition": ["and",
@@ -88,7 +88,7 @@
 		"findmovers": {
 			"type": "nextto",
 			"dirs": ["dirs",[2,4,6,8]],
-			"from": ["ALLposIN","MYunits"],
+			"from": ["listposIN","myunits"],
 			"draw": {
 				"start": {
 					"condition": ["different",["contextval","neighbourcount"],0],
@@ -117,20 +117,20 @@
 		},
 		"findcenterking": {
 			"type": "filter",
-			"layer": "MYunits",
+			"layer": "myunits",
 			"matching": {"type":"king"},
 			"condition": ["anyat",["layername","center"],["contextpos","start"]],
 			"tolayer": ["layername","centerking"]
 		},
 		"findplussers": {
 			"type": "filter",
-			"layer": "MYunits",
+			"layer": "myunits",
 			"condition": ["anyat",["layername","plus"],["contextpos","start"]],
 			"tolayer": ["layername","plussers"]
 		},
 		"findexers": {
 			"type": "filter",
-			"layer": "MYunits",
+			"layer": "myunits",
 			"condition": ["anyat",["layername","x"],["contextpos","start"]],
 			"tolayer": ["layername","exers"]
 		}

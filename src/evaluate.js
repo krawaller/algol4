@@ -77,6 +77,12 @@ var boolmethods = {
 	false: function(){ return false; },
 	positionisinlist: function(state,pos,poslist){
 		return this.evaluatePositionList(state,poslist).contains(this.evaluatePosition(state,pos));
+	},
+	overlaps: function(state,layer1,layer2){
+		var otherlayer = state.getIn(["layers",layer2]);
+		return state.getIn(["layers",layer1]).some(function(entitylist,pos){
+			return otherlayer.has(pos);
+		});
 	}
 };
 
@@ -103,6 +109,9 @@ var valuemethods = {
 		return (state.getIn(["layers",this.evaluateValue(state,layername)])||I.Map()).reduce(function(count,list){
 			return count + list.size;
 		},0);
+	},
+	layerpositioncount: function(state,layername){
+		return (state.getIn(["layers",this.evaluateValue(state,layername)])||I.Map()).size;
 	}
 };
 
@@ -112,7 +121,7 @@ Algol.evaluateValue = function(state,def){
 
 var positionmethods = {
 	markpos: function(state,markname){ return state.getIn(["marks",markname]); },
-	onlyposin: function(state,layername){ return I.Iterable(state.getIn(["layers",layername]).keys()).first(); },
+	firstposin: function(state,layername){ return I.Iterable(state.getIn(["layers",layername]).keys()).first(); },
 	contextpos: function(state,ctxposname){ return state.getIn(["context",ctxposname]); },
 	markinlast: function(state,commandname,markname){
 		var step = state.get("steps").findLast(function(s){ return s.get("command") === commandname; });
