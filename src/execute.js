@@ -147,13 +147,6 @@ Algol.newTurnState = function(state,player){
 	}));
 };
 
-Algol.hydrateStateAfterMarkChange = function(state,markdef){
-	state = (markdef.get("cleanse")||I.List()).reduce(function(mem,layername){
-		return mem.deleteIn(["layers",layername]);
-	},state);
-	return markdef.get("hydration") ? this.applyGeneratorList(state,state.get("hydration")) : state;
-};
-
 var optionmethods = {
 	backto: function(state,oldstate){ return oldstate; },
 	newstep: function(state,newstate){ return this.hydrateStateAfterCommand(newstate); },

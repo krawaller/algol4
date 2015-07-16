@@ -22,6 +22,14 @@ markdef: {
 
 */
 
+
+/*
+Used in app
+Returns object like: {
+	<markname>: [pos,pos, ...], 
+	...
+}
+*/
 Algol.getAvailableMarks = function(state){
 	return state.getIn(["gamedef","marks"]).reduce(function(mem,markdef,markname){
 		return this.isMarkAvailable(state,markname) ? mem : mem.set(markname,state.getIn(["layers",markdef.get("fromlayer")]).keySeq());

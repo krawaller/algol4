@@ -5,8 +5,8 @@
 		"width": 10
 	},
 	"setup": [
-		["list",[1004,1007,4001,4010],{"owner":1}],
-		["list",[10004,10007,7001,7010],{"owner":2}]
+		["list",[1004,1007,4001,4010],{"owner":1,"group":"movers"}],
+		["list",[10004,10007,7001,7010],{"owner":2,"group":"movers"}]
 	],
 	"startturn": {
 		"hydration": ["findblocks","findfiretargets"]
@@ -14,7 +14,7 @@
 	"marks": {
 		"selectunit": {
 			"condition": ["not",["hasperformedcommand","move"]],
-			"fromlayer": "myunits",
+			"fromlayer": "mymovers",
 			"hydration": ["findmovetargets"]
 		},
 		"selectmove": {
@@ -23,7 +23,8 @@
 		},
 		"selectfire": {
 			"condition": ["hasperformedcommand","move"],
-			"fromlayer": "firetarget"
+			"fromlayer": "firetarget",
+			"hydration": ["findhindered","findblocked"]
 		}
 	},
 	"endturn": {
@@ -45,25 +46,16 @@
 		},
 		"fire": {
 			"effects": [
-				["createterrain",["markpos","selectfire"],{"type":["val","fire"]}]
+				["spawnunit",["markpos","selectfire"],{"group":"fires"}]
 			]
 		}
 	},
 	"generators": {
-		"findblocks": {
-			"type": "spawn",
-			"starts": ["allposinlayer","units","TERRAIN"],
-			"draw": {
-				"target": {
-					"tolayer": "block"
-				}
-			}
-		},
 		"findmovetargets": {
 			"type": "walker",
 			"start": ["markpos","selectunit"],
 			"dirs": ["dirs",[1,2,3,4,5,6,7,8]],
-			"stoplayer": "blocks",
+			"stoplayer": "units",
 			"draw": {
 				"step": {
 					"tolayer": "movetarget"
@@ -74,21 +66,20 @@
 			"type": "walker",
 			"start": ["markinlast","move","selectunit"],
 			"dirs": ["dirs",[1,2,3,4,5,6,7,8]],
-			"stoplayer": "blocks",
+			"stoplayer": "units",
 			"draw": {
 				"step": {
 					"tolayer": "firetarget"
 				}
 			}
 		},
-		"findenemymoves": {
-			"type": "walker",
-			"starts": ["allposinlayer","oppunits"],
+		"findhindered": {
+			"type": "nextto",
+			"starts": ["markpos","selectfire"],
 			"dirs": ["dirs",[1,2,3,4,5,6,7,8]],
-			"stoplayer": "blocks",
 			"draw": {
-				"step": {
-					"tolayer": "enemymove"
+				"target": {
+					"condition": ["isempty"]
 				}
 			}
 		}

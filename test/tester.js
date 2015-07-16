@@ -23,8 +23,8 @@ describe(description,function(){
 							sinon.stub(lib,stubname,stubdef.method || (function(){
 								var callcount = 0;
 								return function(){
-									callcount++;
 									var ret = stubdef.returnseries ? stubdef.returnseries[callcount] : test[stubdef.returns]||stubdef.returns;
+									callcount++;
 									return I ? I.fromJS(ret) : ret;
 								};
 							})());

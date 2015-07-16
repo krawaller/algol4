@@ -73,7 +73,7 @@ tester("the generate methods",Algol,{
 				context:{something:"other"},
 				connections:{foo:{nextto:{4:"baz",6:"bin"}},foo2:{nextto:{5:"bin",6:"buh"}}}
 			},
-			nexttodef: {starts:"startSDEF",dirs:"dirsDEF"},
+			nexttodef: {starts:"STARTSDEF",dirs:"DIRSDEF"},
 			expected: {
 				start: {
 					foo: [{start:"foo",neighbourcount:2}],
@@ -88,7 +88,7 @@ tester("the generate methods",Algol,{
 			context: {
 				evaluatePositionList: {
 					returns: ["foo","foo2"],
-					expectedargs: [["state","startSDEF"]]
+					expectedargs: [["state","STARTSDEF"]]
 				},
 				evaluateDirList: {
 					returns: [4,5,6],
@@ -96,11 +96,54 @@ tester("the generate methods",Algol,{
 						[{
 							context:{start:"foo",something:"other"},
 							connections:{foo:{nextto:{4:"baz",6:"bin"}},foo2:{nextto:{5:"bin",6:"buh"}}}
-						},"dirsDEF"],
+						},"DIRSDEF"],
 						[{
 							context:{start:"foo2",something:"other"},
 							connections:{foo:{nextto:{4:"baz",6:"bin"}},foo2:{nextto:{5:"bin",6:"buh"}}}
-						},"dirsDEF"]
+						},"DIRSDEF"]
+					]
+				}
+			}
+		},
+		"for condition": {
+			state: {
+				context:{something:"other"},
+				connections:{foo:{nextto:{4:"baz",6:"bin"}}}
+			},
+			nexttodef: {starts:"STARTSDEF",dirs:"DIRSDEF",condition:"COND"},
+			expected: {
+				start: {
+					foo: [{start:"foo",neighbourcount:1}]
+				},
+				target: {
+					bin:[{start:"foo",target:"bin",dir:6,neighbourcount:1}],
+				}
+			},
+			context: {
+				evaluatePositionList: {
+					returns: ["foo"],
+					expectedargs: [["state","STARTSDEF"]]
+				},
+				evaluateDirList: {
+					returns: [4,6],
+					expectedargs: [
+						[{
+							context:{start:"foo",something:"other"},
+							connections:{foo:{nextto:{4:"baz",6:"bin"}}}
+						},"DIRSDEF"]
+					]
+				},
+				evaluateBoolean: {
+					returnseries: [false,true],
+					expectedargs: [
+						[{
+							context:{something:"other",target:"baz"},
+							connections:{foo:{nextto:{4:"baz",6:"bin"}}}
+						},"COND"],
+						[{
+							context:{something:"other",target:"bin"},
+							connections:{foo:{nextto:{4:"baz",6:"bin"}}}
+						},"COND"]
 					]
 				}
 			}
