@@ -123,14 +123,20 @@ Algol.generateFilterPods = function(state,def){
 
 // Painter has tolayer and can have condition, include
 // Pod is map with positions, each have list of contexts
+// returns state with painted stuff woo
 Algol.paintSeedPod = function(state,painter,pod){
 	return pod.reduce(function(state,seeds,pos){
+		var currentplr = state.getIn(["context","currentplayer"])
 		return seeds.reduce(function(state,seed){
 			state = state.mergeIn(["context"],seed);
 			if (!painter.has("condition")||this.evaluateBoolean(state,painter.get("condition"))){
-				state = I.pushIn(state,["layers",this.evaluateValue(state,painter.get("tolayer")),pos],(painter.get("include")||I.Map()).map(function(def){
+				var targetlayer = this.evaluateValue(state,painter.get("tolayer"));
+				var entity = (painter.get("include")||I.Map()).map(function(def){
 					return this.evaluateValue(state,def);
-				},this));
+				},this);
+				state = state.set("layers", entity.has("owner")
+					? this.sortEntity(state.get("layers"),entity.set("pos",pos),[targetlayer],currentplr)
+					: I.pushIn(state.get("layers"),[targetlayer,pos],entity));
 			}
 			return state;
 		},state,this);

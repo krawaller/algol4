@@ -17,13 +17,13 @@
 		{"pos":3003,"group":"kings","dir":1,"owner":2}
 	],
 	"startstep": {
-		"cleanse": ["myarrows","opparrows","bullseye"],
+		"cleanse": ["arrows","bullseyes"],
 		"hydration": ["findarrows"]
 	},
 	"generators": {
 		"findkilltargets": {
 			"type": "filter",
-			"layer": "bullseye",
+			"layer": "bullseyes",
 			"matching": {"shooterid":["is",["idofunitat",["markpos","selectunit"]]]},
 			"tolayer": "gonnadie"
 		},
@@ -35,21 +35,20 @@
 			"max": 3,
 			"draw": {
 				"step": {
-					"tolayer": ["ifelse",
-						["same",["lookup","units",["contextpos","start"],"owner"],["contextval","currentplayer"]],
-						"myarrows",
-						"opparrows"
-					]
+					"tolayer": "arrows",
+					"include": {
+						"owner": ["lookup","units",["contextpos","start"],"owner"],
+						"dir": ["lookup","units",["contextpos","start"],"dir"]
+					}
 				},
 				"block": {
 					"condition": ["different",
 						["lookup","units",["contextpos","target"],"owner"],
 						["lookup","units",["contextpos","start"],"owner"]
 					],
-					"tolayer": "bullseye",
+					"tolayer": "bullseyes",
 					"include": {
-						"shooterid": ["idofunitat",["contextpos","start"]],
-						"owner": ["lookup","units",["contextpos","start"],"owner"]
+						"shooterid": ["idofunitat",["contextpos","start"]]
 					}
 				}
 			}

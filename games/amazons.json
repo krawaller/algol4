@@ -32,8 +32,7 @@
 		"commandcap": true,
 		"endgame": {
 			"blocked":{
-				"hydration": ["findenemymoves"],
-				"condition": ["isempty","enemymove"],
+				"condition": ["isempty","oppmovers"],
 				"winner": ["contextval","currentplayer"]
 			}
 		}
@@ -46,7 +45,10 @@
 		},
 		"fire": {
 			"effects": [
-				["spawnunit",["markpos","selectfire"],{"group":"fires"}]
+				["spawnunit",["markpos","selectfire"],{"group":"fires"}],
+				["forallin","willbeblocked",
+					["setunitdata",["contextval","loopid"],"group","immobilized"]
+				]
 			]
 		}
 	},
@@ -79,7 +81,19 @@
 			"dirs": ["dirs",[1,2,3,4,5,6,7,8]],
 			"draw": {
 				"target": {
-					"condition": ["isempty"]
+					"condition": ["anyat","movers",["context","target"]],
+					"tolayer": "hindered"
+				}
+			}
+		},
+		"findwillbeblocked": {
+			"type": "nextto",
+			"starts": ["allposinlayer","hindered"],
+			"condition": ["noneat","units",["context","target"]],
+			"draw": {
+				"start": {
+					"condition": ["same",["context","neighbourcount"],1],
+					"tolayer": "willbeblocked"
 				}
 			}
 		}

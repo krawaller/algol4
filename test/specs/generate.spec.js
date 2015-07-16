@@ -277,6 +277,32 @@ tester("the generate methods",Algol,{
 		}
 	},
 	"paintSeedPod(state,painter,pod)": {
+		"with entities owned by currentplayer": {
+			state: {
+				layers: {
+					kings: {xyz:["X"]}
+				},
+				context: {poo:"foo",currentplayer:1}
+			},
+			painter: {
+				tolayer: "kings",
+				include: {owner:1}
+			},
+			pod: {
+				xyz: [{FOO:"BIN",target:"xyz"}]
+			},
+			expected: {
+				layers: {
+					kings: {
+						xyz: ["X",{owner:1,pos:"xyz"}],
+					},
+					mykings: {
+						xyz: [{owner:1,pos:"xyz"}]
+					}
+				},
+				context: {poo:"foo",currentplayer:1}
+			}
+		},
 		"with condition and include": {
 			state: {
 				layers: {somelayer: {xyz:"X"}, newlayer: {toot:"X"}},
@@ -284,7 +310,7 @@ tester("the generate methods",Algol,{
 			},
 			painter: {
 				condition:["anyat","somelayer",["contextpos","target"]],
-				tolayer: ["val","newlayer"],
+				tolayer: "newlayer",
 				include: {myfoo:["contextval","FOO"]}
 			},
 			pod: {
@@ -359,6 +385,7 @@ tester("the generate methods",Algol,{
 		},
 		"when running nextto which is applicable": {
 			state: {
+				layers:{},
 				marks:{foo:"bar"},
 				connections:{bar:{nextto:{1:"bar2"}}},
 				context:{blaj:"paj"}
@@ -370,7 +397,7 @@ tester("the generate methods",Algol,{
 				dirs:["dirs",[1]],
 				draw:{
 					target:{
-						tolayer:["val","newlayer"],
+						tolayer:"newlayer",
 						include:{prop:["val","snopp"]}
 					}
 				}
@@ -386,6 +413,7 @@ tester("the generate methods",Algol,{
 	"applyGeneratorList(state,list)": {
 		"for list": {
 			state: {
+				layers:{},
 				marks:{foo:"bar"},
 				connections:{bar:{nextto:{1:"bar2"}}},
 				context:{blaj:"paj"},
