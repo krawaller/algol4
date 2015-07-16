@@ -35,89 +35,89 @@
 		"hydration": ["findmymovers","findmovetargets"]
 	},
 	"endturn": {
-		"condition": ["SAME",["CONTEXTVAL","PERFORMEDSTEPS"],["VAL",1]],
+		"condition": ["same",["contextval","performedsteps"],["val",1]],
 		"commandcap": true,
 		"endgame": {
 			"cornerinfiltration": {
 				"hydration": ["findinfiltrators"],
-				"condition": ["NOTEMPTY","infiltrators"]
+				"condition": ["notempty","infiltrators"]
 			},
 			"occupation": {
 				"hydration": ["findoccupiers"],
-				"condition": ["MORETHAN",1,["COUNT","infiltrators"]]
+				"condition": ["morethanTHAN",1,["layerobjectcount","infiltrators"]]
 			},
 			"oppcantmove": {
 				"hydration": ["findoppmovers","findmovetargets"],
-				"condition": ["EMPTY","movers"]
+				"condition": ["isempty","movers"]
 			}
 		}
 	},
 	"commands": {
 		"move": {
 			"neededmarks": ["selectunit","selectmove"],
-			"condition": ["NOTEMPTY","forwardfooting"],
-			"effect": ["MOVEUNIT",["IDAT",["MARKPOS","selectunit"]],["MARKPOS","selectmove"]]
+			"condition": ["notempty","forwardfooting"],
+			"effect": ["moveunit",["idofunitat",["markpos","selectunit"]],["markpos","selectmove"]]
 		}
 	},
 	"generators": {
 		"findoccupiers": {
 			"type": "filter",
 			"layer": "bases",
-			"matching": {"owner":["ISNT",["CONTEXTVAL","CURRENTPLAYER"]]},
-			"condition": ["ANYAT","MYUNITS",["CONTEXTPOS","START"]],
-			"tolayer": ["LAYERNAME","occupiers"]
+			"matching": {"owner":["isnt",["contextval","currentplayer"]]},
+			"condition": ["anyat","MYunits",["contextpos","start"]],
+			"tolayer": ["layername","occupiers"]
 		},
 		"findinfiltrators": {
 			"type": "filter",
 			"layer": "corners",
-			"matching": {"owner":["ISNT",["CONTEXTVAL","CURRENTPLAYER"]]},
-			"condition": ["ANYAT","MYUNITS",["CONTEXTPOS","START"]],
-			"tolayer": ["LAYERNAME","infiltrators"]
+			"matching": {"owner":["isnt",["contextval","currentplayer"]]},
+			"condition": ["anyat","MYunits",["contextpos","start"]],
+			"tolayer": ["layername","infiltrators"]
 		},
 		"findcurrentmoves": {
 			"type": "filter",
 			"layer": "movetargets",
-			"matching": {"moverid":["IDAT",["MARKPOS","selectunit"]]}
+			"matching": {"moverid":["idofunitat",["markpos","selectunit"]]}
 		},
 		"findmymovers": {
 			"type": "filter",
-			"layer": "MYUNITS",
-			"condition": ["DIFFERENT",
-				["SUM",["CONTEXTVAL","CURRENTTURN"],["VAL",-2]],
-				["LOOKUP","MYUNITS",["CONTEXTPOS","START"],"AFFECTEDTURN"]
+			"layer": "MYunits",
+			"condition": ["different",
+				["sum",["contextval","CURRENTTURN"],["val",-2]],
+				["lookup","MYunits",["contextpos","start"],"affectedturn"]
 			],
 			"tolayer": "freetomove"
 		},
 		"findoppmovers": {
 			"type": "filter",
-			"layer": "OPPUNITS",
-			"condition": ["DIFFERENT",
-				["SUM",["CONTEXTVAL","CURRENTTURN"],["VAL",-3]],
-				["LOOKUP","OPPUNITS",["CONTEXTPOS","START"],"AFFECTEDTURN"]
+			"layer": "OPPunits",
+			"condition": ["different",
+				["sum",["contextval","CURRENTTURN"],["val",-3]],
+				["lookup","OPPunits",["contextpos","start"],"affectedturn"]
 			],
 			"tolayer": "freetomove"
 		},
 		"findmovetargets": {
 			"type": "nextto",
 			"from": ["ALLINLAYER","freetomove"],
-			"dirs": ["IFELSE",
-				["ANYAT","southeast",["CONTEXTPOS","START"]],
-				["DIRS",[1,3,4,5,7]],
-				["IFELSE",
-					["ANYAT","northwest",["CONTEXTPOS","START"]],
-					["DIRS",[1,3,5,7,8]],
-					["DIRS",[1,3,5,7]]
+			"dirs": ["ifelse",
+				["anyat","southeast",["contextpos","start"]],
+				["dirs",[1,3,4,5,7]],
+				["ifelse",
+					["anyat","northwest",["contextpos","start"]],
+					["dirs",[1,3,5,7,8]],
+					["dirs",[1,3,5,7]]
 				]
 			],
 			"draw": {
 				"start": {
-					"condition": ["DIFFERENT",["CONTEXTVAL","NEIGHBOURS"],["VAL",0]],
-					"tolayer": ["LAYERNAME","movers"]
+					"condition": ["different",["contextval","neighbourcount"],["val",0]],
+					"tolayer": ["layername","movers"]
 				},
 				"target": {
-					"tolayer": ["LAYERNAME","movetargets"],
+					"tolayer": ["layername","movetargets"],
 					"include": {
-						"moverid": ["IDAT",["CONTEXTPOS","START"]]
+						"moverid": ["idofunitat",["contextpos","start"]]
 					}
 				}
 			}

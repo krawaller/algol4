@@ -10,11 +10,11 @@
 		["ALL",[1005,1006,1007,1008,8001,8002,8003,8004],{"type":"king","PLR":2}]
 	],
 	"endturn": {
-		"condition":["SAME",["CONTEXTVAL","PERFORMEDSTEPS"],["VAL",1]],
+		"condition":["same",["contextval","performedsteps"],["val",1]],
 		"commandcap": true,
 		"endgame": {
 			"kingkill": {
-				"condition": [["MORE",["VAL",2],["POSITIONSIN","oppkings"]],["CONTEXTVAL","CURRENTPLAYER"]]
+				"condition": [["morethan",["val",2],["positionsin","oppkings"]],["contextval","currentplayer"]]
 			}
 		}
 	},
@@ -35,14 +35,14 @@
 	"commands": {
 		"swap": {
 			"effects": [
-				["SWAPUNITPOSITIONS",["IDAT",["MARKPOS","selectking"]],["IDAT",["MARKPOS","selectswap"]]]
+				["swapunitpositions",["idofunitat",["markpos","selectking"]],["idofunitat",["markpos","selectswap"]]]
 			]
 		},
 		"move": {
 			"effects": [
-				["MOVETO",["IDAT",["MARKPOS","selectking"]],["MARKPOS","selectmove"]],
-				["FORALLIN","demoted",
-					["SETUNITDATA",["LOOPID"],"type","soldier"]
+				["MOVETO",["idofunitat",["markpos","selectking"]],["markpos","selectmove"]],
+				["forallin","demoted",
+					["setunitdata",["loopid"],"type","soldier"]
 				]
 			]
 		}
@@ -50,49 +50,49 @@
 	"generators": {
 		"findmykings": {
 			"type": "filter",
-			"layer": "MYUNITS",
-			"matching": {"type":["IS",["VAL","king"]]},
-			"tolayer": ["LAYERNAME","mykings"]
+			"layer": "MYunits",
+			"matching": {"type":["is",["val","king"]]},
+			"tolayer": ["layername","mykings"]
 		},
 		"findoppkings": {
 			"type": "filter",
-			"layer": "OPPUNITS",
-			"matching": {"type":["IS",["VAL","king"]]},
-			"tolayer": ["LAYERNAME","oppkings"]
+			"layer": "OPPunits",
+			"matching": {"type":["is",["val","king"]]},
+			"tolayer": ["layername","oppkings"]
 		},
 		"findswaptarget": {
 			"type": "nextto",
-			"dirs": ["DIRS",1,2,3,4,5,6,7,8],
-			"start": ["MARKPOS","selectking"],
+			"dirs": ["dirs",1,2,3,4,5,6,7,8],
+			"start": ["markpos","selectking"],
 			"drawtarget": {
-				"condition": ["AND",
-					["ANYAT","MYUNITS",["CONTEXTPOS","TARGET"]],
-					["NONEAT","mykings",["CONTEXTPOS","TARGET"]]
+				"condition": ["and",
+					["anyat","MYunits",["contextpos","target"]],
+					["noneat","mykings",["contextpos","target"]]
 				],
-				"tolayer": ["LAYERNAME","swaptarget"]
+				"tolayer": ["layername","swaptarget"]
 			}
 		},
 		"findmovetarget": {
 			"type": "nextto",
-			"dirs": ["DIRS",1,2,3,4,5,6,7,8],
-			"start": ["MARKPOS","selectking"],
+			"dirs": ["dirs",1,2,3,4,5,6,7,8],
+			"start": ["markpos","selectking"],
 			"drawtarget": {
-				"condition": ["NONEAT","UNITS",["CONTEXTPOS","TARGET"]],
-				"tolayer": ["LAYERNAME","movetarget"]
+				"condition": ["noneat","units",["contextpos","target"]],
+				"tolayer": ["layername","movetarget"]
 			}
 		},
 		"finddemotees": {
 			"type": "walker",
-			"dirs": ["DIRS",1,2,3,4,5,6,7,8],
-			"start": ["MARKPOS","selectmove"],
-			"steplayer": "OPPUNITS",
+			"dirs": ["dirs",1,2,3,4,5,6,7,8],
+			"start": ["markpos","selectmove"],
+			"steplayer": "OPPunits",
 			"stoplayer": "mykings",
 			"drawstep": {
-				"condition": ["AND",
-					["SAME",["CONTEXTVAL","HITSTOP"],["VAL",true]],
-					["ANYAT","oppkings",["CONTEXTPOS","TARGET"]]
+				"condition": ["and",
+					["same",["contextval","HITSTOP"],["val",true]],
+					["anyat","oppkings",["contextpos","target"]]
 				],
-				"tolayer": ["LAYERNAME","demoted"]
+				"tolayer": ["layername","demoted"]
 			}
 		}
 	}

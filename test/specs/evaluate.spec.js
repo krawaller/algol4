@@ -17,64 +17,64 @@ if (typeof require === 'function' && typeof module === 'object') {
 
 tester("the evaluate methods",Algol,{
 	"evaluateDirList(state,dirdef)": {
-		"for normal DIRS list": {
-			dirdef: ["DIRS",[1,2,3,4,5]],
+		"for normal dirs list": {
+			dirdef: ["dirs",[1,2,3,4,5]],
 			expected: [1,2,3,4,5]
 		},
-		"for RELATIVEDIRS list": {
-			dirdef: ["RELATIVEDIRS",["DIRS",[1,2,3]],["VAL",2]],
+		"for relativedirs list": {
+			dirdef: ["relativedirs",["dirs",[1,2,3]],["val",2]],
 			expected: [2,3,4]
 		}
 	},
 	"evaluateValue(state,valuedef)": {
-		"for RELATIVEDIR": {
-			valuedef: ["RELATIVEDIR",["VAL",2],["VAL",8]],
+		"for relativedir": {
+			valuedef: ["relativedir",["val",2],["val",8]],
 			expected: 1
 		},
-		"for LOOKUP": {
+		"for lookup": {
 			state: {
 				layers: { foolayer: { xyz: [{a:666}] } },
 				marks: { somemark: "xyz" }
 			},
-			valuedef: ["LOOKUP","foolayer",["MARKPOS","somemark"],"a"],
+			valuedef: ["lookup","foolayer",["markpos","somemark"],"a"],
 			expected: 666
 		},
-		"for VAL": {
-			valuedef: ["VAL",666],
+		"for val": {
+			valuedef: ["val",666],
 			expected: 666
 		},
-		"for CONTEXTVAL": {
+		"for contextval": {
 			state: {context:{somectxval:777}},
-			valuedef: ["CONTEXTVAL","somectxval"],
+			valuedef: ["contextval","somectxval"],
 			expected: 777
 		},
-		"for IFELSE with true cond": {
+		"for ifelse with true cond": {
 			state: {layers:{somelayer:{}}},
-			valuedef: ["IFELSE",["EMPTY","somelayer"],["VAL","foo"],["VAL","bar"]],
+			valuedef: ["ifelse",["isempty","somelayer"],["val","foo"],["val","bar"]],
 			expected: "foo"
 		},
-		"for IFELSE with false cond": {
+		"for ifelse with false cond": {
 			state: {layers:{somelayer:{}}},
-			valuedef: ["IFELSE",["NOTEMPTY","somelayer"],["VAL","foo"],["VAL","bar"]],
+			valuedef: ["ifelse",["notempty","somelayer"],["val","foo"],["val","bar"]],
 			expected: "bar"
 		},
-		"for POSITIONSIN": {
+		"for positionsin": {
 			state: {layers:{nicelayer:{foo:[],bar:[],baz:[]}}},
-			valuedef: ["POSITIONSIN","nicelayer"],
+			valuedef: ["positionsin","nicelayer"],
 			expected: 3
 		},
-		"for SUM": {
-			valuedef: ["SUM",["VAL",2],["VAL",3]],
+		"for sum": {
+			valuedef: ["sum",["val",2],["val",3]],
 			expected: 5
 		},
-		"for COUNT when nothing": {
+		"for layerobjectcount when nothing": {
 			state: { },
-			valuedef: ["COUNT",["LAYERNAME","somelayer"]],
+			valuedef: ["layerobjectcount",["layername","somelayer"]],
 			expected: 0
 		},
-		"for COUNT when something": {
+		"for layerobjectcount when something": {
 			state: { layers: { somelayer: {x:[1,1],y:[3]} } },
-			valuedef: ["COUNT",["LAYERNAME","somelayer"]],
+			valuedef: ["layerobjectcount",["layername","somelayer"]],
 			expected: 3
 		},
 		"for primitive": {
@@ -83,17 +83,17 @@ tester("the evaluate methods",Algol,{
 		}
 	},
 	"evaluatePosition(state,posdef)": {
-		"for ONLYPOSIN": {
+		"for onlyposin": {
 			state: { layers: { barlayer: { blah: [{a:666}] }}},
-			posdef: ["ONLYPOSIN","barlayer"],
+			posdef: ["onlyposin","barlayer"],
 			expected: "blah"
 		},
-		"for CONTEXTPOS": {
+		"for contextpos": {
 			state: {context:{somectxpos:777}},
-			posdef: ["CONTEXTPOS","somectxpos"],
+			posdef: ["contextpos","somectxpos"],
 			expected: 777
 		},
-		"for MARKINLAST": {
+		"for markinlast": {
 			state: {
 				steps:[
 					{command:"somecmnd",marks:{somemark:"FOO"}},
@@ -101,167 +101,167 @@ tester("the evaluate methods",Algol,{
 					{command:"othercmnd",marks:{somemark:"blah"}}
 				]
 			},
-			posdef: ["MARKINLAST","somecmnd","somemark"],
+			posdef: ["markinlast","somecmnd","somemark"],
 			expected: "BAR"
 		}
 	},
 	"evaluatePositionList(state,poslistdef)": {
-		"for ALLPOSINLAYER": {
+		"for allposinlayer": {
 			state: { layers: {somelayer: {a:"X",b:"X"}} },
-			poslistdef: ["ALLPOSINLAYER","somelayer"],
+			poslistdef: ["allposinlayer","somelayer"],
 			expected: ["a","b"]
 		},
-		"for ALLPOSINLAYERS": {
+		"for allposinlayers": {
 			state: {
 				layers: {
 					somelayer: {a:"X",b:"X"},
 					someotherlayer: {b:"Y",c:"Y"}
 				}
 			},
-			poslistdef: ["ALLPOSINLAYERS","somelayer","someotherlayer"],
+			poslistdef: ["allposinlayers","somelayer","someotherlayer"],
 			expected: ["a","b","c"]
 		},
 		"for using singlepos": {
 			state: { marks: {somemark: "foo"} },
-			poslistdef: ["MARKPOS","somemark"],
+			poslistdef: ["markpos","somemark"],
 			expected: ["foo"]
 		}
 	},
 	"evaluateId(state,iddef)": {
-		"for IDAT": {
+		"for idofunitat": {
 			state: {
-				layers: {UNITS: {xyz:[{ID:"678"}]}},
+				layers: {units: {xyz:[{ID:"678"}]}},
 				marks: {somemark:"xyz"}
 			},
-			iddef: ["IDAT",["MARKPOS","somemark"]],
+			iddef: ["idofunitat",["markpos","somemark"]],
 			expected: "678"
 		}
 	},
 	"evaluateBoolean(state,booldef)": {
-		"for AND with all true": {
-			booldef: ["AND",[["MORE",["VAL",3],["VAL",1]],["MORE",["VAL",3],["VAL",1]]]],
+		"for and with all true": {
+			booldef: ["and",[["morethan",["val",3],["val",1]],["morethan",["val",3],["val",1]]]],
 			expected: true
 		},
-		"for AND with all false": {
-			booldef: ["AND",[["MORE",["VAL",3],["VAL",1]],["MORE",["VAL",3],["VAL",11]]]],
+		"for and with all false": {
+			booldef: ["and",[["morethan",["val",3],["val",1]],["morethan",["val",3],["val",11]]]],
 			expected: false
 		},
-		"for OR with one true": {
-			booldef: ["OR",[["MORE",["VAL",3],["VAL",1111]],["MORE",["VAL",3],["VAL",1]]]],
+		"for or with one true": {
+			booldef: ["or",[["morethan",["val",3],["val",1111]],["morethan",["val",3],["val",1]]]],
 			expected: true
 		},
-		"for OR with none true": {
-			booldef: ["OR",[["MORE",["VAL",3],["VAL",1111]],["MORE",["VAL",3],["VAL",11]]]],
+		"for or with none true": {
+			booldef: ["or",[["morethan",["val",3],["val",1111]],["morethan",["val",3],["val",11]]]],
 			expected: false
 		},
-		"for AFFECTED when id in list": {
+		"for affected when id in list": {
 			state: {
-				layers: { UNITS: {xyz:[{ID:"123"}]} },
+				layers: { units: {xyz:[{ID:"123"}]} },
 				marks: {uglymark:"xyz"},
 				affected:["3","7","123"]
 			},
-			booldef: ["AFFECTED",["IDAT",["MARKPOS","uglymark"]]],
+			booldef: ["affected",["idofunitat",["markpos","uglymark"]]],
 			expected: true
 		},
-		"for AFFECTED when id not in list": {
+		"for affected when id not in list": {
 			state: {
-				layers: { UNITS: {xyz:[{ID:"123"}]} },
+				layers: { units: {xyz:[{ID:"123"}]} },
 				marks: {uglymark:"xyz"},
 				affected:["3","7","321"]
 			},
-			booldef: ["AFFECTED",["IDAT",["MARKPOS","uglymark"]]],
+			booldef: ["affected",["idofunitat",["markpos","uglymark"]]],
 			expected: false
 		},
-		"for SAME when not correct": {
-			booldef: ["SAME",["VAL","foo"],["VAL","bar"]],
+		"for same when not correct": {
+			booldef: ["same",["val","foo"],["val","bar"]],
 			expected: false
 		},
-		"for SAME when correct": {
-			booldef: ["SAME",["VAL","foo"],["VAL","foo"]],
+		"for same when correct": {
+			booldef: ["same",["val","foo"],["val","foo"]],
 			expected: true
 		},
-		"for DIFFERENT when correct": {
-			booldef: ["DIFFERENT",["VAL","foo"],["VAL","bar"]],
+		"for different when correct": {
+			booldef: ["different",["val","foo"],["val","bar"]],
 			expected: true
 		},
-		"for DIFFERENT when not correct": {
-			booldef: ["DIFFERENT",["VAL","foo"],["VAL","foo"]],
+		"for different when not correct": {
+			booldef: ["different",["val","foo"],["val","foo"]],
 			expected: false
 		},
-		"for ANYAT when correct": {
+		"for anyat when correct": {
 			state: {
 				layers: {somelayer: {xyz:[{foo:"bar"}]}},
 				marks: {somemark:"xyz"}
 			},
-			booldef: ["ANYAT","somelayer",["MARKPOS","somemark"]],
+			booldef: ["anyat","somelayer",["markpos","somemark"]],
 			expected: true
 		},
-		"for ANYAT when not correct": {
+		"for anyat when not correct": {
 			state: {
 				layers: {somelayer: {xyz:[{foo:"bar"}]}},
 				marks: {somemark:"abc"}
 			},
-			booldef: ["ANYAT","somelayer",["MARKPOS","somemark"]],
+			booldef: ["anyat","somelayer",["markpos","somemark"]],
 			expected: false
 		},
-		"for NONEAT when not correct": {
+		"for noneat when not correct": {
 			state: {
 				layers: {somelayer: {xyz:[{foo:"bar"}]}},
 				marks: {somemark:"xyz"}
 			},
-			booldef: ["NONEAT","somelayer",["MARKPOS","somemark"]],
+			booldef: ["noneat","somelayer",["markpos","somemark"]],
 			expected: false
 		},
-		"for NONEAT when correct": {
+		"for noneat when correct": {
 			state: {
 				layers: {somelayer: {xyz:[{foo:"bar"}]}},
 				marks: {somemark:"abc"}
 			},
-			booldef: ["NONEAT","somelayer",["MARKPOS","somemark"]],
+			booldef: ["noneat","somelayer",["markpos","somemark"]],
 			expected: true
 		},
-		"for NOT with false arg": {
-			booldef: ["NOT",["MORE",["VAL",3],["VAL",7]]],
+		"for not with false arg": {
+			booldef: ["not",["morethan",["val",3],["val",7]]],
 			expected: true
 		},
-		"for NOT with true arg": {
-			booldef: ["NOT",["MORE",["VAL",7],["VAL",3]]],
+		"for not with true arg": {
+			booldef: ["not",["morethan",["val",7],["val",3]]],
 			expected: false
 		},
-		"for PERFORMEDANYCOMMAND when correct": {
+		"for performedanycommand when correct": {
 			state: { steps: [{command:"yes"}]},
-			booldef: ["PERFORMEDANYCOMMAND"],
+			booldef: ["performedanycommand"],
 			expected: true
 		},
-		"for PERFORMEDANYCOMMAND when not correct": {
+		"for performedanycommand when not correct": {
 			state: { steps: []},
-			booldef: ["PERFORMEDANYCOMMAND"],
+			booldef: ["performedanycommand"],
 			expected: false
 		},
-		"for HASPERFORMEDCOMMAND when correct": {
+		"for hasperformedcommand when correct": {
 			state: { steps: [{command:"foo"},{command:"somecommand"}]},
-			booldef: ["HASPERFORMEDCOMMAND","somecommand"],
+			booldef: ["hasperformedcommand","somecommand"],
 			expected: true
 		},
-		"for HASPERFORMEDCOMMAND when not correct": {
+		"for hasperformedcommand when not correct": {
 			state: { steps: [{command:"foo"},{command:"bar"}]},
-			booldef: ["HASPERFORMEDCOMMAND","somecommand"],
+			booldef: ["hasperformedcommand","somecommand"],
 			expected: false
 		},
-		"for POSITIONINLIST when correct": {
+		"for positionisinlist when correct": {
 			state: {
 				layers: {foolayer: {a:["X"]}},
 				marks: {somemark: "a"}
 			},
-			booldef: ["POSITIONINLIST",["MARKPOS","somemark"],["ALLPOSINLAYER","foolayer"]],
+			booldef: ["positionisinlist",["markpos","somemark"],["allposinlayer","foolayer"]],
 			expected: true
 		},
-		"for POSITIONINLIST when not correct": {
+		"for positionisinlist when not correct": {
 			state: {
 				layers: {foolayer: {a:["X"]}},
 				marks: {somemark: "b"}
 			},
-			booldef: ["POSITIONINLIST",["MARKPOS","somemark"],["ALLPOSINLAYER","foolayer"]],
+			booldef: ["positionisinlist",["markpos","somemark"],["allposinlayer","foolayer"]],
 			expected: false
 		}
 	}

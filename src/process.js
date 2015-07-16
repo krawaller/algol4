@@ -10,7 +10,7 @@ function augmentWithProcessFunctions(Algol){
 
 // def is game object, state has settings prop. 
 Algol.populateGameWithSettings = function(state,def){
-	return I.List.isList(def) && def.first() === "SETTINGS" ? state.getIn(["settings",def.get(1)])
+	return I.List.isList(def) && def.first() === "settings" ? state.getIn(["settings",def.get(1)])
 	: def.map ? def.map(this.populateGameWithSettings.bind(this,state)) : def;
 };
 

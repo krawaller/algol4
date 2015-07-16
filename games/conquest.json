@@ -6,29 +6,29 @@
 		"width": 9
 	},
 	"terrain": {
-		"center": [{"POS":5005}],
+		"center": [{"pos":5005}],
 		"plus": [ ["ALL",[4005,5004,5006,6005],{}] ],
 		"x": [ ["ALL",[4004,4006,6004,6006],{}] ]
 	},
 	"setup": [
 		["ALL",[1001,1002,1003,2001,2003,3001,3002,3003],{"type":"soldier","PLR":1}],
-		{"POS":2002,"type":"king","PLR":1},
+		{"pos":2002,"type":"king","PLR":1},
 		["ALL",[7007,7008,7009,8007,8009,9007,9008,9009],{"type":"soldier","PLR":2}],
-		{"POS":8008,"type":"king","PLR":2}
+		{"pos":8008,"type":"king","PLR":2}
 	],
 	"marks": {
 		"selectunit": {
 			"fromlayer": "freetomove",
-			"condition": ["NOT",["HASPERFORMEDCOMMAND","move"]],
+			"condition": ["not",["hasperformedcommand","move"]],
 			"hydration": ["findmovetargets"],
 			"cleanse": ["movetargets"]
 		},
 		"selectmove": {
 			"fromlayer": "movetargets",
-			"condition": ["NOT",["HASPERFORMEDCOMMAND","move"]]
+			"condition": ["not",["hasperformedcommand","move"]]
 		},
 		"selectexilee": {
-			"condition": ["HASPERFORMEDCOMMAND","move"],
+			"condition": ["hasperformedcommand","move"],
 			"fromlayer": "exiletargets",
 			"hydration": ["findexiledestinations"],
 			"cleanse": ["exiledestinations"]
@@ -37,12 +37,12 @@
 	"commands": {
 		"move": {
 			"neededmarks": ["selectunit","selectmove"],
-			"condition": ["NOT",["HASPERFORMEDCOMMAND","move"]]
+			"condition": ["not",["hasperformedcommand","move"]]
 		},
 		"exile": {
 			"neededmarks": ["selectexiletarget","selectexiledestination"],
-			"condition": ["AND",
-				["HASPERFORMEDCOMMAND","move"]
+			"condition": ["and",
+				["hasperformedcommand","move"]
 			]
 		}
 	},
@@ -53,15 +53,15 @@
 		"hydration": ["findmovers"]
 	},
 	"endturn": {
-		"condition": ["HASPERFORMEDCOMMAND","move"],
+		"condition": ["hasperformedcommand","move"],
 		"endgame": {
 			"madepattern": {
 				"hydration": ["findcenterking","findplussers","findexers"],
-				"condition": ["AND",
-					["NOTEMPY",["LAYERNAME","centerking"]],
-					["OR",
-						["SAME",["COUNT",["LAYERNAME","plussers"]],["VAL",4]],
-						["SAME",["COUNT",["LAYERNAME","exers"]],["VAL",4]]
+				"condition": ["and",
+					["notEMPY",["layername","centerking"]],
+					["or",
+						["same",["layerobjectcount",["layername","plussers"]],["val",4]],
+						["same",["layerobjectcount",["layername","exers"]],["val",4]]
 					]
 				]
 			}
@@ -70,16 +70,16 @@
 	"generators": {
 		"findexiletargets": {
 			"type": "walker",
-			"dirs": ["DIRS",[2,4,6,8]],
+			"dirs": ["dirs",[2,4,6,8]],
 			"max": 2,
-			"starts": ["MARKINLAST","move","selectunit"],
-			"steps": "OPPUNITS",
-			"blocks": "MYUNITS",
+			"starts": ["markinlast","move","selectunit"],
+			"steps": "OPPunits",
+			"blocks": "MYunits",
 			"draw": {
 				"step": {
-					"condition": ["AND",
-						["SAME",["CONTEXTVAL","STOPREASON"],"HITBLOCK"],
-						["NOT",["AFFECTED",["IDAT",["CONTEXTPOS","TARGET"]]]]
+					"condition": ["and",
+						["same",["contextval","stopreason"],"hitblock"],
+						["not",["affected",["idofunitat",["contextpos","target"]]]]
 					],
 					"tolayer": "exiletargets"
 				}
@@ -87,18 +87,18 @@
 		},
 		"findmovers": {
 			"type": "nextto",
-			"dirs": ["DIRS",[2,4,6,8]],
-			"from": ["ALLPOSIN","MYUNITS"],
+			"dirs": ["dirs",[2,4,6,8]],
+			"from": ["ALLposIN","MYunits"],
 			"draw": {
 				"start": {
-					"condition": ["DIFFERENT",["CONTEXTVAL","NEIGHBOURS"],0],
+					"condition": ["different",["contextval","neighbourcount"],0],
 					"tolayer": "freetomove"
 				},
 				"target": {
-					"condition": ["NONEAT","UNITS",["CONTEXTPOS","TARGET"]],
+					"condition": ["noneat","units",["contextpos","target"]],
 					"tolayer": "potmovetargets",
 					"include": {
-						"moverid": ["IDAT",["CONTEXTPOS","START"]]
+						"moverid": ["idofunitat",["contextpos","start"]]
 					}
 				}
 			}
@@ -106,33 +106,33 @@
 		"findmovetargets": {
 			"type": "filter",
 			"layer": "potmovetargets",
-			"matching": {"moverid":["IDAT",["MARKPOS","selectunit"]]},
+			"matching": {"moverid":["idofunitat",["markpos","selectunit"]]},
 			"tolayer": "movetargets"
 		},
 		"findexiledestinations": {
 			"type": "filter",
-			"layer": ["IFELSE", ["SAME",["LOOKUP","BOARD",["MARKPOS","selectexiletarget"],"color"],"light"],"LIGHT","DARK"],
-			"condition": ["NONEAT", ["UNITS"],["CONTEXTPOS","START"]],
+			"layer": ["ifelse", ["same",["lookup","BOARD",["markpos","selectexiletarget"],"color"],"light"],"LIGHT","DARK"],
+			"condition": ["noneat", ["units"],["contextpos","start"]],
 			"tolayer": ["exiledestinations"]
 		},
 		"findcenterking": {
 			"type": "filter",
-			"layer": "MYUNITS",
+			"layer": "MYunits",
 			"matching": {"type":"king"},
-			"condition": ["ANYAT",["LAYERNAME","center"],["CONTEXTPOS","START"]],
-			"tolayer": ["LAYERNAME","centerking"]
+			"condition": ["anyat",["layername","center"],["contextpos","start"]],
+			"tolayer": ["layername","centerking"]
 		},
 		"findplussers": {
 			"type": "filter",
-			"layer": "MYUNITS",
-			"condition": ["ANYAT",["LAYERNAME","plus"],["CONTEXTPOS","START"]],
-			"tolayer": ["LAYERNAME","plussers"]
+			"layer": "MYunits",
+			"condition": ["anyat",["layername","plus"],["contextpos","start"]],
+			"tolayer": ["layername","plussers"]
 		},
 		"findexers": {
 			"type": "filter",
-			"layer": "MYUNITS",
-			"condition": ["ANYAT",["LAYERNAME","x"],["CONTEXTPOS","START"]],
-			"tolayer": ["LAYERNAME","exers"]
+			"layer": "MYunits",
+			"condition": ["anyat",["layername","x"],["contextpos","start"]],
+			"tolayer": ["layername","exers"]
 		}
 
 	}

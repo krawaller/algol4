@@ -19,7 +19,7 @@ tester("the process methods",Algol,{
 	"populateGameWithSettings(state,gamedef)": {
 		"for simple test": {
 			state: {settings:{foo:"bar"}},
-			gamedef: {so:["why",["am","i",["SETTINGS","foo"]]]},
+			gamedef: {so:["why",["am","i",["settings","foo"]]]},
 			expected: {so:["why",["am","i","bar"]]},
 		}
 	},

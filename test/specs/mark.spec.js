@@ -108,7 +108,7 @@ tester("The mark methods",Algol,{
 		"when we have some generators": {
 			state: {
 				marks: {othermark:"foo",thirdmark:"baz"},
-				gamedef: { marks:{somemark:{generators:"GENERATORLIST"}} }
+				gamedef: { marks:{somemark:{generators:"GENERATorLisT"}} }
 			},
 			markname: "somemark",
 			position: "somepos",
@@ -117,8 +117,8 @@ tester("The mark methods",Algol,{
 					returns: "statewithgeneratorsran",
 					expectedargs: [[{
 						marks: {othermark:"foo",thirdmark:"baz",somemark:"somepos"},
-						gamedef: { marks:{somemark:{generators:"GENERATORLIST"}}}
-					},"GENERATORLIST"]]
+						gamedef: { marks:{somemark:{generators:"GENERATorLisT"}}}
+					},"GENERATorLisT"]]
 				}
 			},
 			expected: "statewithgeneratorsran"
@@ -193,7 +193,7 @@ tester("The mark methods",Algol,{
 				gamedef:{marks:{somemark:{
 					fromlayer:"somelayer",
 					requiredmarks:["foomark"],
-					condition: ["TRUE"]
+					condition: ["true"]
 				}}},
 				marks: {foomark:"somepos"},
 				layers: {somelayer:{foo:"bar"}}

@@ -76,10 +76,10 @@ tester("The prepare methods",Algol,{
 	},
 	"prepareTerrainLayerFromEntityList(list)": {
 		"for normal call": {
-			list: [{POS:666,foo:"bar"},["positions",[777,666],{foo:"baz"}]],
+			list: [{pos:666,foo:"bar"},["positions",[777,666],{foo:"baz"}]],
 			expected: {
-				666: [{foo:"bar",POS:666},{foo:"baz",POS:666}],
-				777: [{foo:"baz",POS:777}]
+				666: [{foo:"bar",pos:666},{foo:"baz",pos:666}],
+				777: [{foo:"baz",pos:777}]
 			}
 		}
 	},
@@ -92,18 +92,18 @@ tester("The prepare methods",Algol,{
 		"for positions def": {
 			list: ["X","Y"],
 			def: ["positions",[666,777],{baz:"bin"}],
-			expected: ["X","Y",{baz:"bin","POS":666},{baz:"bin","POS":777}]
+			expected: ["X","Y",{baz:"bin","pos":666},{baz:"bin","pos":777}]
 		},
 		"for RECTANGLE def": {
 			list: ["X","Y"],
 			def: ["rectangle",3002,4003,{baz:"bin"}],
-			expected: ["X","Y",{baz:"bin","POS":3002},{baz:"bin","POS":3003},{baz:"bin","POS":4002},{baz:"bin","POS":4003}]
+			expected: ["X","Y",{baz:"bin","pos":3002},{baz:"bin","pos":3003},{baz:"bin","pos":4002},{baz:"bin","pos":4003}]
 		}
 	},
 	"prepareEntitiesFromList(list)": {
 		"for a single and an positions": {
 			list: ["X",["positions",["Y"],{foo:"bar"}]],
-			expected: ["X",{foo:"bar",POS:"Y"}]
+			expected: ["X",{foo:"bar",pos:"Y"}]
 		}
 	},
 	"prepareState(gamedef,players)": {
@@ -119,7 +119,7 @@ tester("The prepare methods",Algol,{
 					expectedargs: [ ["BOARD"] ]
 				},
 				prepareInitialUnitDataFromSetup: {
-					returns: "UNITS",
+					returns: "units",
 					expectedargs: [ ["SETUP"] ]
 				},
 				prepareBaseLayers: {
@@ -130,7 +130,7 @@ tester("The prepare methods",Algol,{
 			expected: {
 				connections: "CONNECTIONS",
 				data: {
-					units: "UNITS"
+					units: "units"
 				},
 				baselayers: "PREPPED"
 			}

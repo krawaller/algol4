@@ -27,11 +27,11 @@ tester("the generate methods",Algol,{
 			},
 			filterdef: {
 				layer: "muppets",
-				matching: {foo:["ISNT",["CONTEXTVAL","forbidden"]]},
-				tolayer:["IFELSE",
-					["SAME",["LOOKUP","muppets",["CONTEXTPOS","START"],"foo"],["VAL","bar"]],
-					["VAL","knorks"],
-					["VAL","badorks"]
+				matching: {foo:["isnt",["contextval","forbidden"]]},
+				tolayer:["ifelse",
+					["same",["lookup","muppets",["contextpos","start"],"foo"],["val","bar"]],
+					["val","knorks"],
+					["val","badorks"]
 				]
 			},
 			expected: {
@@ -53,9 +53,9 @@ tester("the generate methods",Algol,{
 			},
 			filterdef: {
 				layer: "muppets",
-				matching: {foo:["IS",["CONTEXTVAL","shouldbe"]]},
-				tolayer: ["VAL","knorks"],
-				condition: ["ANYAT","foos",["CONTEXTPOS","START"]]
+				matching: {foo:["is",["contextval","shouldbe"]]},
+				tolayer: ["val","knorks"],
+				condition: ["anyat","foos",["contextpos","start"]]
 			},
 			expected: {
 				layers: {
@@ -73,34 +73,34 @@ tester("the generate methods",Algol,{
 				context:{something:"other"},
 				connections:{foo:{nextto:{4:"baz",6:"bin"}},foo2:{nextto:{5:"bin",6:"buh"}}}
 			},
-			nexttodef: {starts:"STARTSDEF",dirs:"DIRSDEF"},
+			nexttodef: {starts:"startSDEF",dirs:"dirsDEF"},
 			expected: {
 				start: {
-					foo: [{START:"foo",NEIGHBOURS:2}],
-					foo2:[{START:"foo2",NEIGHBOURS:2}]
+					foo: [{start:"foo",neighbourcount:2}],
+					foo2:[{start:"foo2",neighbourcount:2}]
 				},
 				target: {
-					baz:[{START:"foo",TARGET:"baz",DIR:4,NEIGHBOURS:2}],
-					bin:[{START:"foo",TARGET:"bin",DIR:6,NEIGHBOURS:2},{START:"foo2",TARGET:"bin",DIR:5,NEIGHBOURS:2}],
-					buh:[{START:"foo2",TARGET:"buh",DIR:6,NEIGHBOURS:2}]
+					baz:[{start:"foo",target:"baz",dir:4,neighbourcount:2}],
+					bin:[{start:"foo",target:"bin",dir:6,neighbourcount:2},{start:"foo2",target:"bin",dir:5,neighbourcount:2}],
+					buh:[{start:"foo2",target:"buh",dir:6,neighbourcount:2}]
 				}
 			},
 			context: {
 				evaluatePositionList: {
 					returns: ["foo","foo2"],
-					expectedargs: [["state","STARTSDEF"]]
+					expectedargs: [["state","startSDEF"]]
 				},
 				evaluateDirList: {
 					returns: [4,5,6],
 					expectedargs: [
 						[{
-							context:{START:"foo",something:"other"},
+							context:{start:"foo",something:"other"},
 							connections:{foo:{nextto:{4:"baz",6:"bin"}},foo2:{nextto:{5:"bin",6:"buh"}}}
-						},"DIRSDEF"],
+						},"dirsDEF"],
 						[{
-							context:{START:"foo2",something:"other"},
+							context:{start:"foo2",something:"other"},
 							connections:{foo:{nextto:{4:"baz",6:"bin"}},foo2:{nextto:{5:"bin",6:"buh"}}}
-						},"DIRSDEF"]
+						},"dirsDEF"]
 					]
 				}
 			}
@@ -113,15 +113,15 @@ tester("the generate methods",Algol,{
 				connections: {S:{nextto:{4:"lonestep"}},lonestep:{nextto:{}}}
 			},
 			walkerdef: {
-				starts: ["MARKPOS","somemark"],
-				dirs: ["RELATIVEDIRS",["DIRS",[1]],["VAL",4]]
+				starts: ["markpos","somemark"],
+				dirs: ["relativedirs",["dirs",[1]],["val",4]]
 			},
 			expected: {
-				start: {S: [{START:"S",DIR:4,STEPS:1,STOPREASON:"OUTOFBOUNDS"}] },
-				step: {lonestep:[{START:"S",TARGET:"lonestep",DIR:4,STEPS:1,STEP:1,STOPREASON:"OUTOFBOUNDS"}]},
+				start: {S: [{start:"S",dir:4,linelength:1,stopreason:"outofbounds"}] },
+				step: {lonestep:[{start:"S",target:"lonestep",dir:4,linelength:1,step:1,stopreason:"outofbounds"}]},
 				all: {
-					S: [{START:"S",DIR:4,STEPS:1,STOPREASON:"OUTOFBOUNDS"}],
-					lonestep:[{START:"S",TARGET:"lonestep",DIR:4,STEPS:1,STEP:1,STOPREASON:"OUTOFBOUNDS"}]
+					S: [{start:"S",dir:4,linelength:1,stopreason:"outofbounds"}],
+					lonestep:[{start:"S",target:"lonestep",dir:4,linelength:1,step:1,stopreason:"outofbounds"}]
 				}
 			}
 		},
@@ -132,16 +132,16 @@ tester("the generate methods",Algol,{
 				step1: {nextto:{5:"step2"}}}
 			},
 			walkerdef: {
-				starts: ["MARKPOS","somemark"],
-				dirs: ["DIRS",[5]],
+				starts: ["markpos","somemark"],
+				dirs: ["dirs",[5]],
 				max: 1
 			},
 			expected: {
-				start: {S: [{START:"S",DIR:5,STEPS:1,STOPREASON:"REACHEDMAX"}] },
-				step: {step1:[{START:"S",TARGET:"step1",DIR:5,STEPS:1,STEP:1,STOPREASON:"REACHEDMAX"}]},
+				start: {S: [{start:"S",dir:5,linelength:1,stopreason:"reachedmax"}] },
+				step: {step1:[{start:"S",target:"step1",dir:5,linelength:1,step:1,stopreason:"reachedmax"}]},
 				all: {
-					S: [{START:"S",DIR:5,STEPS:1,STOPREASON:"REACHEDMAX"}],
-					step1:[{START:"S",TARGET:"step1",DIR:5,STEPS:1,STEP:1,STOPREASON:"REACHEDMAX"}]
+					S: [{start:"S",dir:5,linelength:1,stopreason:"reachedmax"}],
+					step1:[{start:"S",target:"step1",dir:5,linelength:1,step:1,stopreason:"reachedmax"}]
 				}
 			}
 		},
@@ -152,16 +152,16 @@ tester("the generate methods",Algol,{
 				layers: {pads: {step1:"X"}}
 			},
 			walkerdef: {
-				starts: ["MARKPOS","somemark"],
-				dirs: ["DIRS",[6]],
-				steps: ["ALLPOSINLAYER","pads"]
+				starts: ["markpos","somemark"],
+				dirs: ["dirs",[6]],
+				steps: ["allposinlayer","pads"]
 			},
 			expected: {
-				start: {S: [{START:"S",DIR:6,STEPS:1,STOPREASON:"NOMORESTEPS"}] },
-				step: {step1:[{START:"S",TARGET:"step1",DIR:6,STEPS:1,STEP:1,STOPREASON:"NOMORESTEPS"}]},
+				start: {S: [{start:"S",dir:6,linelength:1,stopreason:"nomoresteps"}] },
+				step: {step1:[{start:"S",target:"step1",dir:6,linelength:1,step:1,stopreason:"nomoresteps"}]},
 				all: {
-					S: [{START:"S",DIR:6,STEPS:1,STOPREASON:"NOMORESTEPS"}],
-					step1:[{START:"S",TARGET:"step1",DIR:6,STEPS:1,STEP:1,STOPREASON:"NOMORESTEPS"}]
+					S: [{start:"S",dir:6,linelength:1,stopreason:"nomoresteps"}],
+					step1:[{start:"S",target:"step1",dir:6,linelength:1,step:1,stopreason:"nomoresteps"}]
 				}
 			}
 		},
@@ -172,63 +172,63 @@ tester("the generate methods",Algol,{
 				layers: {blocks: {step2:"X"}}
 			},
 			walkerdef: {
-				starts: ["MARKPOS","somemark"],
-				dirs: ["DIRS",[7]],
-				blocks: ["ALLPOSINLAYER","blocks"]
+				starts: ["markpos","somemark"],
+				dirs: ["dirs",[7]],
+				blocks: ["allposinlayer","blocks"]
 			},
 			expected: {
-				start: {S: [{START:"S",DIR:7,STEPS:1,STOPREASON:"HITBLOCK"}]},
-				step: {step1:[{START:"S",TARGET:"step1",DIR:7,STEPS:1,STEP:1,STOPREASON:"HITBLOCK"}]},
-				block: {step2:[{START:"S",TARGET:"step2",DIR:7,STEPS:1,STOPREASON:"HITBLOCK"}]},
+				start: {S: [{start:"S",dir:7,linelength:1,stopreason:"hitblock"}]},
+				step: {step1:[{start:"S",target:"step1",dir:7,linelength:1,step:1,stopreason:"hitblock"}]},
+				block: {step2:[{start:"S",target:"step2",dir:7,linelength:1,stopreason:"hitblock"}]},
 				all: {
-					S: [{START:"S",DIR:7,STEPS:1,STOPREASON:"HITBLOCK"}],
-					step1:[{START:"S",TARGET:"step1",DIR:7,STEPS:1,STEP:1,STOPREASON:"HITBLOCK"}],
-					step2:[{START:"S",TARGET:"step2",DIR:7,STEPS:1,STOPREASON:"HITBLOCK"}]
+					S: [{start:"S",dir:7,linelength:1,stopreason:"hitblock"}],
+					step1:[{start:"S",target:"step1",dir:7,linelength:1,step:1,stopreason:"hitblock"}],
+					step2:[{start:"S",target:"step2",dir:7,linelength:1,stopreason:"hitblock"}]
 				}
 			}
 		},
-		"when hit block AND ran out of steps": {
+		"when hit block and ran out of steps": {
 			state: {
 				marks: {somemark:"S"},
 				connections: {S:{nextto:{7:"step1"}},step1:{nextto:{7:"step2"}}},
 				layers: {blocks: {step2:"X"}, "pads": {"step1":"X"}}
 			},
 			walkerdef: {
-				starts: ["MARKPOS","somemark"],
-				dirs: ["DIRS",[7]],
-				steps: ["ALLPOSINLAYER","pads"],
-				blocks: ["ALLPOSINLAYER","blocks"]
+				starts: ["markpos","somemark"],
+				dirs: ["dirs",[7]],
+				steps: ["allposinlayer","pads"],
+				blocks: ["allposinlayer","blocks"]
 			},
 			expected: {
-				start: {S: [{START:"S",DIR:7,STEPS:1,STOPREASON:"NOMORESTEPS"}] },
-				step: {step1:[{START:"S",TARGET:"step1",DIR:7,STEPS:1,STEP:1,STOPREASON:"NOMORESTEPS"}]},
+				start: {S: [{start:"S",dir:7,linelength:1,stopreason:"nomoresteps"}] },
+				step: {step1:[{start:"S",target:"step1",dir:7,linelength:1,step:1,stopreason:"nomoresteps"}]},
 				all: {
-					S: [{START:"S",DIR:7,STEPS:1,STOPREASON:"NOMORESTEPS"}],
-					step1:[{START:"S",TARGET:"step1",DIR:7,STEPS:1,STEP:1,STOPREASON:"NOMORESTEPS"}],
+					S: [{start:"S",dir:7,linelength:1,stopreason:"nomoresteps"}],
+					step1:[{start:"S",target:"step1",dir:7,linelength:1,step:1,stopreason:"nomoresteps"}],
 				}
 			}	
 		},
-		"when hit block AND ran out of steps AND prioritizing blocks": {
+		"when hit block and ran out of steps and prioritizing blocks": {
 			state: {
 				marks: {somemark:"S"},
 				connections: {S:{nextto:{7:"step1"}},step1:{nextto:{7:"step2"}}},
 				layers: {blocks: {step2:"X"}, "pads": {"step1":"X"}}
 			},
 			walkerdef: {
-				starts: ["MARKPOS","somemark"],
-				dirs: ["DIRS",[7]],
-				steps: ["ALLPOSINLAYER","pads"],
-				blocks: ["ALLPOSINLAYER","blocks"],
+				starts: ["markpos","somemark"],
+				dirs: ["dirs",[7]],
+				steps: ["allposinlayer","pads"],
+				blocks: ["allposinlayer","blocks"],
 				prioritizeblocksoversteps: true
 			},
 			expected: {
-				start: {S: [{START:"S",DIR:7,STEPS:1,STOPREASON:"HITBLOCK"}] },
-				step: {step1:[{START:"S",TARGET:"step1",DIR:7,STEPS:1,STEP:1,STOPREASON:"HITBLOCK"}]},
-				block: {step2:[{START:"S",TARGET:"step2",DIR:7,STEPS:1,STOPREASON:"HITBLOCK"}]},
+				start: {S: [{start:"S",dir:7,linelength:1,stopreason:"hitblock"}] },
+				step: {step1:[{start:"S",target:"step1",dir:7,linelength:1,step:1,stopreason:"hitblock"}]},
+				block: {step2:[{start:"S",target:"step2",dir:7,linelength:1,stopreason:"hitblock"}]},
 				all: {
-					S: [{START:"S",DIR:7,STEPS:1,STOPREASON:"HITBLOCK"}],
-					step1:[{START:"S",TARGET:"step1",DIR:7,STEPS:1,STEP:1,STOPREASON:"HITBLOCK"}],
-					step2:[{START:"S",TARGET:"step2",DIR:7,STEPS:1,STOPREASON:"HITBLOCK"}]
+					S: [{start:"S",dir:7,linelength:1,stopreason:"hitblock"}],
+					step1:[{start:"S",target:"step1",dir:7,linelength:1,step:1,stopreason:"hitblock"}],
+					step2:[{start:"S",target:"step2",dir:7,linelength:1,stopreason:"hitblock"}]
 				}
 			}	
 		}
@@ -240,13 +240,13 @@ tester("the generate methods",Algol,{
 				context: {poo:"foo"}
 			},
 			painter: {
-				condition:["ANYAT","somelayer",["CONTEXTPOS","TARGET"]],
-				tolayer: ["VAL","newlayer"],
-				include: {myfoo:["CONTEXTVAL","FOO"]}
+				condition:["anyat","somelayer",["contextpos","target"]],
+				tolayer: ["val","newlayer"],
+				include: {myfoo:["contextval","FOO"]}
 			},
 			pod: {
-				abc: [{FOO:"BAR",TARGET:"abc"}],
-				xyz: [{FOO:"BAZ",TARGET:"xyz"},{FOO:"BIN",TARGET:"xyz"}]
+				abc: [{FOO:"BAR",target:"abc"}],
+				xyz: [{FOO:"BAZ",target:"xyz"},{FOO:"BIN",target:"xyz"}]
 			},
 			expected: {
 				layers: {
@@ -262,10 +262,10 @@ tester("the generate methods",Algol,{
 				context:{}
 			},
 			painter: {
-				tolayer: ["IFELSE",
-					["SAME",["CONTEXTVAL","FOO"],["VAL","x1"]],
-					["VAL","newlayer"],
-					["VAL","otherlayer"]
+				tolayer: ["ifelse",
+					["same",["contextval","FOO"],["val","x1"]],
+					["val","newlayer"],
+					["val","otherlayer"]
 				]
 			},
 			pod: {abc: [{FOO:"x1"},{FOO:"x2"}]},
@@ -282,21 +282,21 @@ tester("the generate methods",Algol,{
 			state: {layers: {}, context: {poo:"foo"}},
 			draw: {
 				FLUM: {
-					tolayer: ["VAL","newlayer"],
-					include: {myfoo:["CONTEXTVAL","FOO"]}
+					tolayer: ["val","newlayer"],
+					include: {myfoo:["contextval","FOO"]}
 				},
 				HUM: {
-					tolayer: ["VAL","newlayer"],
-					include: {mybar:["CONTEXTVAL","BAR"]}
+					tolayer: ["val","newlayer"],
+					include: {mybar:["contextval","BAR"]}
 				}
 			},
 			pods: {
 				FLUM: {
-					abc: [{FOO:"BAR",TARGET:"abc"}],
-					xyz: [{FOO:"BAZ",TARGET:"xyz"},{FOO:"BIN",TARGET:"xyz"}]
+					abc: [{FOO:"BAR",target:"abc"}],
+					xyz: [{FOO:"BAZ",target:"xyz"},{FOO:"BIN",target:"xyz"}]
 				},
-				HUM: {xyz:[{BAR:"BOO",TARGET:"def"}]},
-				KKK: {moo:[{FOO:"HOOOO",TARGET:"moo"}]}
+				HUM: {xyz:[{BAR:"BOO",target:"def"}]},
+				KKK: {moo:[{FOO:"HOOOO",target:"moo"}]}
 			},
 			expected: {
 				layers: {
@@ -323,12 +323,12 @@ tester("the generate methods",Algol,{
 			gendef: {
 				neededmarks:["foo"],
 				type:"nextto",
-				starts:["MARKPOS","foo"],
-				dirs:["DIRS",[1]],
+				starts:["markpos","foo"],
+				dirs:["dirs",[1]],
 				draw:{
 					target:{
-						tolayer:["VAL","newlayer"],
-						include:{prop:["VAL","snopp"]}
+						tolayer:["val","newlayer"],
+						include:{prop:["val","snopp"]}
 					}
 				}
 			},
@@ -351,12 +351,12 @@ tester("the generate methods",Algol,{
 						somegen:{
 							neededmarks:["foo"],
 							type:"nextto",
-							starts:["MARKPOS","foo"],
-							dirs:["DIRS",[1]],
+							starts:["markpos","foo"],
+							dirs:["dirs",[1]],
 							draw:{
 								target:{
-									tolayer:["VAL","newlayer"],
-									include:{prop:["VAL","snopp"]}
+									tolayer:["val","newlayer"],
+									include:{prop:["val","snopp"]}
 								}
 							}
 						}
@@ -374,12 +374,12 @@ tester("the generate methods",Algol,{
 						somegen:{
 							neededmarks:["foo"],
 							type:"nextto",
-							starts:["MARKPOS","foo"],
-							dirs:["DIRS",[1]],
+							starts:["markpos","foo"],
+							dirs:["dirs",[1]],
 							draw:{
 								target:{
-									tolayer:["VAL","newlayer"],
-									include:{prop:["VAL","snopp"]}
+									tolayer:["val","newlayer"],
+									include:{prop:["val","snopp"]}
 								}
 							}
 						}

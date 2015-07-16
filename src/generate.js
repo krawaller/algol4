@@ -10,28 +10,28 @@ function augmentWithGenerateFunctions(Algol){
 // Called in Algol.applyGenerator
 Algol.generateNeighbourPods = function(state,def){
 	return this.evaluatePositionList(state,def.get("starts")).reduce(function(recorder,startpos){
-		var neighbours = this.evaluateDirList(state.setIn(["context","START"],startpos),def.get("dirs")).reduce(function(map,dir){
+		var neighbours = this.evaluateDirList(state.setIn(["context","start"],startpos),def.get("dirs")).reduce(function(map,dir){
 			var targetpos = state.getIn(["connections",startpos,"nextto",dir])||state.getIn(["connections",startpos,"nextto",dir+""]);
 			return targetpos ? map.set(dir,targetpos) : map;
 		},I.Map(),this);
 		return neighbours.reduce(function(recorder,pos,dir){
-			return I.pushIn(recorder,["target",pos],I.Map({START:startpos,DIR:dir,TARGET:pos,NEIGHBOURS:neighbours.size}));
-		},I.pushIn(recorder,["start",startpos],I.Map({START:startpos,NEIGHBOURS:neighbours.size})),this);
+			return I.pushIn(recorder,["target",pos],I.Map({start:startpos,dir:dir,target:pos,neighbourcount:neighbours.size}));
+		},I.pushIn(recorder,["start",startpos],I.Map({start:startpos,neighbourcount:neighbours.size})),this);
 	},I.fromJS({start:{},target:{}}),this);
 };
 
 function stopreason(state,def,dir,pos,length,blocks,steps,prioblocks){
 	var nextpos = (state.getIn(["connections",pos,"nextto",dir])||state.getIn(["connections",pos,"nextto",dir+""]));
 	if (!nextpos){
-		return "OUTOFBOUNDS";
+		return "outofbounds";
 	} else if (def.get("max") && length === def.get("max")) {
-		return "REACHEDMAX";
+		return "reachedmax";
 	} else if (prioblocks && blocks && blocks.contains(nextpos)){
-		return "HITBLOCK";
+		return "hitblock";
 	} else if (steps && !steps.contains(nextpos)){
-		return "NOMORESTEPS";
+		return "nomoresteps";
 	} else if (blocks && blocks.contains(nextpos)){
-		return "HITBLOCK";
+		return "hitblock";
 	}
 }
 
@@ -42,20 +42,20 @@ Algol.generateWalkerPodsInDir = function(startstate,def,recorder,startpos,dir){
 	while(!(reason=stopreason(startstate,def,dir,pos,walk.length,blocks,steps,def.get("prioritizeblocksoversteps")))){
 		walk.push(pos = startstate.getIn(["connections",pos,"nextto",dir])||startstate.getIn(["connections",pos,"nextto",dir+""]));
 	}
-	var context = I.Map({START:startpos,DIR:dir,STEPS:walk.length,STOPREASON:reason});
+	var context = I.Map({start:startpos,dir:dir,linelength:walk.length,stopreason:reason});
 	recorder = I.pushIn(recorder,["start",startpos],context);
-	if (reason==="HITBLOCK"){
+	if (reason==="hitblock"){
 		blockpos = startstate.getIn(["connections",pos,"nextto",dir])||startstate.getIn(["connections",pos,"nextto",dir+""]);
-		recorder = I.pushIn(recorder,["block",blockpos],context.set("TARGET",blockpos));
+		recorder = I.pushIn(recorder,["block",blockpos],context.set("target",blockpos));
 	}
 	_.each(walk,function(step,n){
-		recorder = I.pushIn(recorder,["step",step],context.set("TARGET",step).set("STEP",n+1));
+		recorder = I.pushIn(recorder,["step",step],context.set("target",step).set("step",n+1));
 	});
 	return recorder;
 };
 
 Algol.generateWalkerPodsFromStart = function(state,def,recorder,startpos){
-	var startstate = state.setIn(["context","START"],startpos);
+	var startstate = state.setIn(["context","start"],startpos);
 	return this.evaluateDirList(startstate,def.get("dirs")).reduce(function(recorder,dir){
 		return this.generateWalkerPodsInDir(startstate,def,recorder,startpos,dir);
 	},recorder,this);
@@ -73,7 +73,7 @@ Algol.applyFilter = function(state,def){
 	return state.getIn(["layers",def.get("layer")]).reduce(function(state,list,pos){
 		return list.reduce(function(state,obj){
 			return (!matching || this.evaluateObjectMatch(state,matching,obj)) && (!condition || this.evaluateBoolean(state,condition)) ? I.pushIn(state,["layers",this.evaluateValue(state,tolayer),pos],obj) : state;
-		},state.setIn(["context","START"],pos),this);
+		},state.setIn(["context","start"],pos),this);
 	},state,this).set("context",state.get("context"));
 };
 
@@ -117,7 +117,7 @@ Algol.generateFilterPods = function(state,def){
 		},this);
 	}
 	context = I.Map({TOTAL:seeds.size});
-	return I.Map({start: seeds.map(function(val,p){ return I.List([context.set("START",p)]); }) }); */
+	return I.Map({start: seeds.map(function(val,p){ return I.List([context.set("start",p)]); }) }); */
 };
 
 // Painter has tolayer and can have condition, include

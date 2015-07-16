@@ -7,10 +7,10 @@ function augmentWithEvaluateFunctions(Algol){
 // €€€€€€€€€€€€€€€€€€€€€€€€€€€ E V A L U A T E   F U N C T I O N S €€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€*/
 
 var dirlistmethods = {
-	DIRS: function(state,dirs){
+	dirs: function(state,dirs){
 		return dirs;
 	},
-	RELATIVEDIRS: function(state,dirs,reldir){
+	relativedirs: function(state,dirs,reldir){
 		var rd = this.evaluateValue(state,reldir);
 		return this.evaluateDirList(state,dirs).map(function(d){ return [1,2,3,4,5,6,7,8,1,2,3,4,5,6,7,8][rd-2+d]; });
 	}
@@ -21,8 +21,8 @@ Algol.evaluateDirList = function(state,def){
 };
 
 var positionlistmethods = {
-	ALLPOSINLAYER: function(state,layername){ return state.getIn(["layers",layername]).keySeq(); },
-	ALLPOSINLAYERS: function(){
+	allposinlayer: function(state,layername){ return state.getIn(["layers",layername]).keySeq(); },
+	allposinlayers: function(){
 		var state = arguments[0];
 		return _.reduce( _.slice(arguments,2), function(mem,name){
 			return mem.merge( state.getIn(["layers",name]) );
@@ -38,8 +38,8 @@ Algol.evaluatePositionList = function(state,def){
 };
 
 var idmethods = {
-	IDAT: function(state,position){ return state.getIn(["layers","UNITS",this.evaluatePosition(state,position),0,"ID"]); },
-	LOOPID: function(state){ return state.getIn(["context","LOOPID"]); }
+	idofunitat: function(state,position){ return state.getIn(["layers","units",this.evaluatePosition(state,position),0,"ID"]); },
+	loopid: function(state){ return state.getIn(["context","loopid"]); }
 };
 
 Algol.evaluateId = function(state,def){
@@ -47,8 +47,8 @@ Algol.evaluateId = function(state,def){
 };
 
 var proptestmethods = {
-	IS: function(state,val,rawval){ return this.evaluateValue(state,val) === rawval; },
-	ISNT: function(state,val,rawval){ return this.evaluateValue(state,val) !== rawval; },
+	is: function(state,val,rawval){ return this.evaluateValue(state,val) === rawval; },
+	isnt: function(state,val,rawval){ return this.evaluateValue(state,val) !== rawval; },
 };
 
 Algol.evaluateObjectMatch = function(state,def,map){
@@ -58,24 +58,24 @@ Algol.evaluateObjectMatch = function(state,def,map){
 };
 
 var boolmethods = {
-	AND: function(state,list){ return list.every(this.evaluateBoolean.bind(this,state)); },
-	OR: function(state,list){ return list.some(this.evaluateBoolean.bind(this,state)); },
-	NOT: function(state,bool){ return !this.evaluateBoolean(state,bool); },
-	SAME: function(state,val1,val2){ return this.evaluateValue(state,val1) === this.evaluateValue(state,val2); },
-	DIFFERENT: function(state,val1,val2){ return this.evaluateValue(state,val1) !== this.evaluateValue(state,val2); },
-	ANYAT: function(state,layername,position){ return state.hasIn(["layers",layername,this.evaluatePosition(state,position)]); },
-	NONEAT: function(state,layername,position){ return !state.hasIn(["layers",layername,this.evaluatePosition(state,position)]); },
-	MORE: function(state,val1,val2){ return this.evaluateValue(state,val1) > this.evaluateValue(state,val2); },
-	EMPTY: function(state,layername){ return state.getIn(["layers",layername]).isEmpty(); },
-	NOTEMPTY: function(state,layername){ return !state.getIn(["layers",layername]).isEmpty(); },
-	PERFORMEDANYCOMMAND: function(state){ return !state.get("steps").isEmpty(); },
-	HASPERFORMEDCOMMAND: function(state,commandname){
+	and: function(state,list){ return list.every(this.evaluateBoolean.bind(this,state)); },
+	or: function(state,list){ return list.some(this.evaluateBoolean.bind(this,state)); },
+	not: function(state,bool){ return !this.evaluateBoolean(state,bool); },
+	same: function(state,val1,val2){ return this.evaluateValue(state,val1) === this.evaluateValue(state,val2); },
+	different: function(state,val1,val2){ return this.evaluateValue(state,val1) !== this.evaluateValue(state,val2); },
+	anyat: function(state,layername,position){ return state.hasIn(["layers",layername,this.evaluatePosition(state,position)]); },
+	noneat: function(state,layername,position){ return !state.hasIn(["layers",layername,this.evaluatePosition(state,position)]); },
+	morethan: function(state,val1,val2){ return this.evaluateValue(state,val1) > this.evaluateValue(state,val2); },
+	isempty: function(state,layername){ return state.getIn(["layers",layername]).isEmpty(); },
+	notempty: function(state,layername){ return !state.getIn(["layers",layername]).isEmpty(); },
+	performedanycommand: function(state){ return !state.get("steps").isEmpty(); },
+	hasperformedcommand: function(state,commandname){
 		return state.get("steps").some(function(step){ return step.get("command") === commandname; });
 	},
-	AFFECTED: function(state,id){ return state.get("affected").contains(this.evaluateId(state,id)); },
-	TRUE: function(){ return true; },
-	FALSE: function(){ return false; },
-	POSITIONINLIST: function(state,pos,poslist){
+	affected: function(state,id){ return state.get("affected").contains(this.evaluateId(state,id)); },
+	true: function(){ return true; },
+	false: function(){ return false; },
+	positionisinlist: function(state,pos,poslist){
 		return this.evaluatePositionList(state,poslist).contains(this.evaluatePosition(state,pos));
 	}
 };
@@ -85,21 +85,21 @@ Algol.evaluateBoolean = function(state,def){
 };
 
 var valuemethods = {
-	VAL: function(state,raw){ return raw; },
-	LAYERNAME: function(state,raw){ return raw; },
-	CONTEXTVAL: function(state,ctxvalname){ return state.getIn(["context",ctxvalname]); },
-	POSITIONSIN: function(state,layername){ return state.getIn(["layers",layername]).size; },
-	IFELSE: function(state,cond,val1,val2){ return this.evaluateValue(state, this.evaluateBoolean(state,cond) ? val1 : val2); },
-	LOOKUP: function(state,layername,position,prop){ return state.getIn(["layers",layername,this.evaluatePosition(state,position),0,prop]); },
-	IDAT: idmethods.IDAT,
-	SUM: function(){
+	val: function(state,raw){ return raw; },
+	layername: function(state,raw){ return raw; },
+	contextval: function(state,ctxvalname){ return state.getIn(["context",ctxvalname]); },
+	positionsin: function(state,layername){ return state.getIn(["layers",layername]).size; },
+	ifelse: function(state,cond,val1,val2){ return this.evaluateValue(state, this.evaluateBoolean(state,cond) ? val1 : val2); },
+	lookup: function(state,layername,position,prop){ return state.getIn(["layers",layername,this.evaluatePosition(state,position),0,prop]); },
+	idofunitat: idmethods.idofunitat,
+	sum: function(){
 		var state = _.first(arguments);
 		return _.reduce(_.tail(arguments),function(acc,val){ return acc + this.evaluateValue(state,val); },0,this);
 	},
-	RELATIVEDIR: function(state,dir,reldir){
+	relativedir: function(state,dir,reldir){
 		return [1,2,3,4,5,6,7,8,1,2,3,4,5,6,7,8][this.evaluateValue(state,reldir)-2+this.evaluateValue(state,dir)];
 	},
-	COUNT: function(state,layername){
+	layerobjectcount: function(state,layername){
 		return (state.getIn(["layers",this.evaluateValue(state,layername)])||I.Map()).reduce(function(count,list){
 			return count + list.size;
 		},0);
@@ -111,10 +111,10 @@ Algol.evaluateValue = function(state,def){
 };
 
 var positionmethods = {
-	MARKPOS: function(state,markname){ return state.getIn(["marks",markname]); },
-	ONLYPOSIN: function(state,layername){ return I.Iterable(state.getIn(["layers",layername]).keys()).first(); },
-	CONTEXTPOS: function(state,ctxposname){ return state.getIn(["context",ctxposname]); },
-	MARKINLAST: function(state,commandname,markname){
+	markpos: function(state,markname){ return state.getIn(["marks",markname]); },
+	onlyposin: function(state,layername){ return I.Iterable(state.getIn(["layers",layername]).keys()).first(); },
+	contextpos: function(state,ctxposname){ return state.getIn(["context",ctxposname]); },
+	markinlast: function(state,commandname,markname){
 		var step = state.get("steps").findLast(function(s){ return s.get("command") === commandname; });
 		return step && step.getIn(["marks",markname]);
 	}

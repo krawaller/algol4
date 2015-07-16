@@ -7,43 +7,43 @@ function augmentWithExecuteFunctions(Algol){
 // €€€€€€€€€€€€€€€€€€€€€€€€€€€ E X E C U T E  F U N C T I O N S €€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€*/
 
 var effectmethods = {
-	KILLUNIT: function(state,id){
+	killunit: function(state,id){
 		id = this.evaluateId(state,id);
-		return I.pushInIfNew(state,["affected"],id).mergeIn(["data","units",id],{STATUS:"DEAD",AFFECTEDTURN:state.get("turn")});
+		return I.pushInIfNew(state,["affected"],id).mergeIn(["data","units",id],{STATUS:"DEAD",affectedturn:state.get("turn")});
 	},
-	MOVEUNIT: function(state,id,pos){
+	moveunit: function(state,id,pos){
 		id = this.evaluateId(state,id);
-		return I.pushInIfNew(state,["affected"],id).mergeIn(["data","units",id],{POS:this.evaluatePosition(state,pos),AFFECTEDTURN:state.get("turn")});
+		return I.pushInIfNew(state,["affected"],id).mergeIn(["data","units",id],{pos:this.evaluatePosition(state,pos),affectedturn:state.get("turn")});
 	},
-	TURNUNIT: function(state,id,mod){
+	turnunit: function(state,id,mod){
 		id = this.evaluateId(state,id);
-		var newdir = state.getIn(["data","units",id,"DIR"])+this.evaluateValue(state,mod);
-		return I.pushInIfNew(state,["affected"],id).mergeIn(["data","units",id],{DIR:(newdir>8?newdir-8:0>newdir?newdir+8:newdir),AFFECTEDTURN:state.get("turn")});
+		var newdir = state.getIn(["data","units",id,"dir"])+this.evaluateValue(state,mod);
+		return I.pushInIfNew(state,["affected"],id).mergeIn(["data","units",id],{dir:(newdir>8?newdir-8:0>newdir?newdir+8:newdir),affectedturn:state.get("turn")});
 	},
-	SETUNITDATA: function(state,id,propname,val){
+	setunitdata: function(state,id,propname,val){
 		id = this.evaluateId(state,id);
-		return I.pushInIfNew(state,["affected"],id).mergeIn(["data","units",id],_.object([propname,"AFFECTEDTURN"],[this.evaluateValue(state,val),state.get("turn")]));
+		return I.pushInIfNew(state,["affected"],id).mergeIn(["data","units",id],_.object([propname,"affectedturn"],[this.evaluateValue(state,val),state.get("turn")]));
 	},
-	SWAPUNITPOSITIONS: function(state,id1,id2){
+	swapunitpositions: function(state,id1,id2){
 		id1 = this.evaluateId(state,id1);
 		id2 = this.evaluateId(state,id2);
 		state = I.pushInIfNew(state,["affected"],id1);
 		state = I.pushInIfNew(state,["affected"],id2);
-		var temp = state.getIn(["data","units",id1,"POS"]);
-		state = state.mergeIn(["data","units",id1],{POS:state.getIn(["data","units",id2,"POS"]),AFFECTEDTURN:state.get("turn")});
-		return state.mergeIn(["data","units",id2],{POS:temp,AFFECTEDTURN:state.get("turn")});
+		var temp = state.getIn(["data","units",id1,"pos"]);
+		state = state.mergeIn(["data","units",id1],{pos:state.getIn(["data","units",id2,"pos"]),affectedturn:state.get("turn")});
+		return state.mergeIn(["data","units",id2],{pos:temp,affectedturn:state.get("turn")});
 	},
-	CREATETERRAIN: function(state,pos,props){
+	createterrain: function(state,pos,props){ // TODO - remove, should spawn unit instead
 		pos = this.evaluatePosition(state,pos);
-		return state.setIn(["data","terrain",pos,I.fromJS(props).set("POS",pos)]);
+		return state.setIn(["data","terrain",pos,I.fromJS(props).set("pos",pos)]);
 	},
-	FORALLIN: function(state,layername,effect){
+	forallin: function(state,layername,effect){
 		var layer = state.getIn(["layers",this.evaluateValue(state,layername)]);
 		return state.getIn(["data","units"]).reduce(function(state,unit,id){
-			return layer.has(unit.get("POS")) ? this.applyEffect(state.setIn(["context","LOOPID"],id),effect) : state;
-		},state,this)[state.hasIn(["context","LOOPID"])?"setIn":"deleteIn"](["context","LOOPID"],state.getIn(["context","LOOPID"]));
+			return layer.has(unit.get("pos")) ? this.applyEffect(state.setIn(["context","loopid"],id),effect) : state;
+		},state,this)[state.hasIn(["context","loopid"])?"setIn":"deleteIn"](["context","loopid"],state.getIn(["context","loopid"]));
 	},
-	MULTIEFFECT: function(state,list){
+	multieffect: function(state,list){
 		return list.reduce(this.applyEffect.bind(this),state,this);
 	}
 };
@@ -98,18 +98,18 @@ Algol.calculateCommandResult = function(state,newstate,commanddef){
 	// if newstate is equal to a previous step this turn, treat as a goback command
 	while(comparetostate.get("steps").size){
 		comparetostate = comparetostate.get("previousstep");
-		if (I.is(comparetostate.get("data"),newdata)){ return I.List(["BACK",comparetostate]); }
+		if (I.is(comparetostate.get("data"),newdata)){ return I.List(["backto",comparetostate]); }
 	}
 	// newstate is really new state, treat it as such
-	return I.List(["NEWSTEP",I.pushIn(newstate,["steps"],this.calculateStepData(state,commanddef)).set("previousstep",state).set("marks",this.updateMarksFromCommand(state,commanddef)).setIn(["context","PERFORMEDSTEPS"],state.getIn(["context","PERFORMEDSTEPS"])+1)]);
+	return I.List(["newstep",I.pushIn(newstate,["steps"],this.calculateStepData(state,commanddef)).set("previousstep",state).set("marks",this.updateMarksFromCommand(state,commanddef)).setIn(["context","performedsteps"],state.getIn(["context","performedsteps"])+1)]);
 };
 
 // returns an endturn option. this will either be an endgame or passing to another player
 // Used in Algol.listCommandOptions
 Algol.endTurnOption = function(state,endturndef){
 	return endturndef.get("endgame").reduce(function(mem,end,name){
-		return mem || this.evaluateBoolean(state,end.get("condition")) && ["ENDGAME",name,this.evaluateValue(state,end.get("winner"))];
-	},undefined,this) || ["PASSTO",this.evaluateValue(state,endturndef.get("passto"))];
+		return mem || this.evaluateBoolean(state,end.get("condition")) && ["endgame",name,this.evaluateValue(state,end.get("winner"))];
+	},undefined,this) || ["passto",this.evaluateValue(state,endturndef.get("passto"))];
 };
 
 // Returns an array of available commands
@@ -117,7 +117,7 @@ Algol.endTurnOption = function(state,endturndef){
 Algol.listCommandOptions = function(state,gamedef){
 	return I.setIf(I.setIf((state.get("canendturn") && gamedef.getIn(["endturn","commandcap"]) ? I.Map() : gamedef.get("commands")).reduce(function(ret,comdef,comname){
 		return this.canExecuteCommand(state,comdef) ? ret.set(comname,this.calculateCommandResult(state,this.applyEffect(state,comdef.get("effect")),comdef)) : ret;
-	},I.Map(),this),"ENDTURN",state.get("canendturn") && this.endTurnOption(state,gamedef.get("endturn"))),"UNDO",state.has("previousstep") ? ["BACK",state.get("previousstep")] : false) ;
+	},I.Map(),this),"endturn",state.get("canendturn") && this.endTurnOption(state,gamedef.get("endturn"))),"undo",state.has("previousstep") ? ["backto",state.get("previousstep")] : false) ;
 };
 
 
@@ -131,7 +131,7 @@ Algol.hydrateStateAfterCommand = function(state){
 	return state.set("commands",this.listCommandOptions(state,state.get("gamedef")));
 };
 
-// Called form Algol.performOption --- PASSTO
+// Called form Algol.performOption --- passto
 Algol.newTurnState = function(state,player){
 	return state.merge(I.fromJS({
 		steps: [],
@@ -140,10 +140,10 @@ Algol.newTurnState = function(state,player){
 		marks: {},
 		previousstep: state,
 		previousturn: state,
-		status: "ONGOING",
+		status: "ongoing",
 		player: player,
 		turn: state.get("turn")+1,
-		context: {CURRENTPLAYER:player,PERFORMEDSTEPS:0}
+		context: {currentplayer:player,performedsteps:0}
 	}));
 };
 
@@ -155,12 +155,12 @@ Algol.hydrateStateAfterMarkChange = function(state,markdef){
 };
 
 var optionmethods = {
-	BACK: function(state,oldstate){ return oldstate; },
-	NEWSTEP: function(state,newstate){ return this.hydrateStateAfterCommand(newstate); },
-	PASSTO: function(state,player){
+	backto: function(state,oldstate){ return oldstate; },
+	newstep: function(state,newstate){ return this.hydrateStateAfterCommand(newstate); },
+	passto: function(state,player){
 		return this.hydrateStateAfterCommand(this.newTurnState(state,player));
 	},
-	ENDGAME: function(state,cond,player){ return state.merge({player:player,status:cond}); }
+	endgame: function(state,cond,player){ return state.merge({player:player,status:cond}); }
 };
 
 Algol.performOption = function(state,def){

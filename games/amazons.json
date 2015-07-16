@@ -13,46 +13,46 @@
 	},
 	"marks": {
 		"selectunit": {
-			"condition": ["NOT",["HASPERFORMEDCOMMAND","move"]],
-			"fromlayer": "MYUNITS",
+			"condition": ["not",["hasperformedcommand","move"]],
+			"fromlayer": "MYunits",
 			"hydration": ["findmovetargets"]
 		},
 		"selectmove": {
-			"condition": ["NOT",["HASPERFORMEDCOMMAND","move"]],
+			"condition": ["not",["hasperformedcommand","move"]],
 			"fromlayer": "movetarget"
 		},
 		"selectfire": {
-			"condition": ["HASPERFORMEDCOMMAND","move"],
+			"condition": ["hasperformedcommand","move"],
 			"fromlayer": "firetarget"
 		}
 	},
 	"endturn": {
-		"condition":["HASPERFORMEDCOMMAND","fire"],
+		"condition":["hasperformedcommand","fire"],
 		"commandcap": true,
 		"endgame": {
 			"blocked":{
 				"hydration": ["findenemymoves"],
-				"condition": ["EMPTY","enemymove"],
-				"winner": ["CONTEXTVAL","CURRENTPLAYER"]
+				"condition": ["isempty","enemymove"],
+				"winner": ["contextval","currentplayer"]
 			}
 		}
 	},
 	"commands": {
 		"move": {
 			"effects": [
-				["MOVEUNIT",["IDAT",["MARKPOS","selectunit"]],["MARKPOS","selectmove"]]
+				["moveunit",["idofunitat",["markpos","selectunit"]],["markpos","selectmove"]]
 			]
 		},
 		"fire": {
 			"effects": [
-				["CREATETERRAIN",["MARKPOS","selectfire"],{"type":["VAL","fire"]}]
+				["createterrain",["markpos","selectfire"],{"type":["val","fire"]}]
 			]
 		}
 	},
 	"generators": {
 		"findblocks": {
 			"type": "spawn",
-			"starts": ["ALLPOSINLAYER","UNITS","TERRAIN"],
+			"starts": ["allposinlayer","units","TERRAIN"],
 			"draw": {
 				"target": {
 					"tolayer": "block"
@@ -61,8 +61,8 @@
 		},
 		"findmovetargets": {
 			"type": "walker",
-			"start": ["MARKPOS","selectunit"],
-			"dirs": ["DIRS",[1,2,3,4,5,6,7,8]],
+			"start": ["markpos","selectunit"],
+			"dirs": ["dirs",[1,2,3,4,5,6,7,8]],
 			"stoplayer": "blocks",
 			"draw": {
 				"step": {
@@ -72,8 +72,8 @@
 		},
 		"findfiretargets": {
 			"type": "walker",
-			"start": ["MARKINLAST","move","selectunit"],
-			"dirs": ["DIRS",[1,2,3,4,5,6,7,8]],
+			"start": ["markinlast","move","selectunit"],
+			"dirs": ["dirs",[1,2,3,4,5,6,7,8]],
 			"stoplayer": "blocks",
 			"draw": {
 				"step": {
@@ -83,8 +83,8 @@
 		},
 		"findenemymoves": {
 			"type": "walker",
-			"starts": ["ALLPOSINLAYER","OPPUNITS"],
-			"dirs": ["DIRS",[1,2,3,4,5,6,7,8]],
+			"starts": ["allposinlayer","OPPunits"],
+			"dirs": ["dirs",[1,2,3,4,5,6,7,8]],
 			"stoplayer": "blocks",
 			"draw": {
 				"step": {

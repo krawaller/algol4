@@ -17,22 +17,22 @@
 		["ALL",[8003,8006],{"PLR":2,"type":"crown"}]
 	],
 	"endturn": {
-		"condition":["PERFORMEDANYCOMMAND"],
+		"condition":["performedanycommand"],
 		"commandcap": true,
 		"endgame": {
 			"infiltration":{
 				"hydration": ["findinfiltrators"],
-				"condition": [["NOTEMPTY","infiltrator"],["CONTEXTVAL","CURRENTPLAYER"]]
+				"condition": [["notempty","infiltrator"],["contextval","currentplayer"]]
 			},
 			"kingkill": {
 				"hydration": ["finddeadkings"],
-				"condition": [["NOTEMPTY","deadking"],["CONTEXTVAL","CURRENTPLAYER"]]
+				"condition": [["notempty","deadking"],["contextval","currentplayer"]]
 			}
 		}
 	},
 	"marks": {
 		"selectunit": {
-			"fromlayer":"MYUNITS"
+			"fromlayer":"MYunits"
 		},
 		"selectmovetarget": {
 			"fromlayer": "movetarget",
@@ -46,31 +46,31 @@
 	"commands": {
 		"move": {
 			"effects": [
-				["MOVEUNIT",["IDAT",["MARKPOS","selectunit"]],["MARKPOS","selectmovetarget"]]
+				["moveunit",["idofunitat",["markpos","selectunit"]],["markpos","selectmovetarget"]]
 			]
 		},
 		"kill": {
 			"effects": [
-				["KILLUNIT",["IDAT",["MARKPOS","selectkilltarget"]]],
-				["MOVEUNIT",["IDAT",["MARKPOS","selectunit"]],["MARKPOS","selectkilltarget"]]
+				["killunit",["idofunitat",["markpos","selectkilltarget"]]],
+				["moveunit",["idofunitat",["markpos","selectunit"]],["markpos","selectkilltarget"]]
 			]
 		}
 	},
 	"generators": {
 		"finddeadkings": {
 			"type": "filter",
-			"layer": "DEADUNITS",
-			"matching": {"type":["IS",["VAL","crown"]],"plr":["ISNT",["CONTEXTVAL","CURRENTPLAYER"]]},
+			"layer": "DEADunits",
+			"matching": {"type":["is",["val","crown"]],"plr":["isnt",["contextval","currentplayer"]]},
 			"tolayer": "deadking"
 		},
 		"activeunittype": {
 			"type": "spawn",
 			"start": ["FROMMARK","selectunit"],
 			"drawstart": {
-				"tolayer": ["IFELSE",
-					["SAME",
-						["LOOKUP","UNITS",["CONTEXTPOS","START"],"type"],
-						["VAL","crown"]
+				"tolayer": ["ifelse",
+					["same",
+						["lookup","units",["contextpos","start"],"type"],
+						["val","crown"]
 					],
 					"activecrown","activedagger"
 				]
@@ -79,54 +79,54 @@
 		"findinfiltrators": {
 			"type": "filter",
 			"layer": "TERRAIN",
-			"overlapping": "MYUNITS",
-			"matching": { "plr": ["ISNT",["CONTEXTVAL","CURRENTPLAYER"]] },
+			"overlapping": "MYunits",
+			"matching": { "plr": ["isnt",["contextval","currentplayer"]] },
 			"tolayer": "infiltrator"
 		},
 		"nexttocrown": {
 			"type": "nextto",
 			"starts": ["FROMALLINLAYER","activecrown"],
-			"dirs": ["DIRS",[1,2,3,4,5,6,7,8]],
+			"dirs": ["dirs",[1,2,3,4,5,6,7,8]],
 			"drawtarget": {
-				"condition": ["NONEAT","MYUNITS","TARGET"],
-				"tolayer": ["IFELSE",["ANYAT","OPPUNITS","TARGET"],"killtarget","movetarget"]
+				"condition": ["noneat","MYunits","target"],
+				"tolayer": ["ifelse",["anyat","OPPunits","target"],"killtarget","movetarget"]
 			}
 		},
 		"abovedagger": {
 			"type": "nextto",
 			"starts": ["FROMALLINLAYER","activedagger"],
-			"dirs": ["DIRS",[8,1,2]],
+			"dirs": ["dirs",[8,1,2]],
 			"drawtarget": {
-				"condition": ["AND",
-					["NONEAT","MYUNITS",["CONTEXTPOS","TARGET"]],
-					["NOT",["AND",
-						["SAME",["CONTEXTVAL","DIR"],["VAL",1]],
-						["SAME",["LOOKUP","OPPUNITS",["CONTEXTPOS","TARGET"],"type"],"dagger"]
+				"condition": ["and",
+					["noneat","MYunits",["contextpos","target"]],
+					["not",["and",
+						["same",["contextval","dir"],["val",1]],
+						["same",["lookup","OPPunits",["contextpos","target"],"type"],"dagger"]
 					]]
 				],
-				"tolayer": ["IFELSE",["ANYAT","UNITS",["CONTEXTPOS","TARGET"]],"killtarget","movetarget"]
+				"tolayer": ["ifelse",["anyat","units",["contextpos","target"]],"killtarget","movetarget"]
 			}
 		},
 		"belowdagger": {
 			"type": "walker",
 			"starts": ["FROMALLINLAYER","activedagger"],
-			"dirs": ["DIRS",[4,5,6]],
-			"stoplayer": "UNITS",
+			"dirs": ["dirs",[4,5,6]],
+			"stoplayer": "units",
 			"drawstep": {
 				"tolayer": "movetarget"
 			},
 			"drawstop": {
-				"condition": ["AND",
-					["NONEAT","MYUNITS",["CONTEXTPOS","TARGET"]],
-					["NOT",["AND",
-						["SAME",["CONTEXTVAL","DIR"],["VAL",5]],
-						["SAME",["LOOKUP","UNITS",["CONTEXTPOS","TARGET"],"type"],["VAL","dagger"]]
+				"condition": ["and",
+					["noneat","MYunits",["contextpos","target"]],
+					["not",["and",
+						["same",["contextval","dir"],["val",5]],
+						["same",["lookup","units",["contextpos","target"],"type"],["val","dagger"]]
 					]]
 				],
-				"tolayer": ["IFELSE",
-					["ANYAT","UNITS",["CONTEXTPOS","TARGET"]],
-					["LAYERNAME","killtarget"],
-					["LAYERNAME","movetarget"]
+				"tolayer": ["ifelse",
+					["anyat","units",["contextpos","target"]],
+					["layername","killtarget"],
+					["layername","movetarget"]
 				]
 			}
 		}
