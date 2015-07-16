@@ -20,10 +20,14 @@ describe(description,function(){
 					beforeEach(function(){
 						method = lib[methodname];
 						_.each(test.context||{},function(stubdef,stubname){
-							sinon.stub(lib,stubname,stubdef.method || function(){
-								var ret = test[stubdef.returns]||stubdef.returns;
-								return I ? I.fromJS(ret) : ret;
-							});
+							sinon.stub(lib,stubname,stubdef.method || (function(){
+								var callcount = 0;
+								return function(){
+									callcount++;
+									var ret = stubdef.returnseries ? stubdef.returnseries[callcount] : test[stubdef.returns]||stubdef.returns;
+									return I ? I.fromJS(ret) : ret;
+								};
+							})());
 						});
 						result = method.apply(lib,arglist.map(function(param){
 							return I ? I.fromJS(test[param]) : test[param];

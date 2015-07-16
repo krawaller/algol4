@@ -16,38 +16,25 @@ if (typeof require === 'function' && typeof module === 'object') {
 }
 
 tester("The prepare methods",Algol,{
-	"prepareUnitLayersFromData(unitsdata,plr)": {
+	"addPersonalisedTerrainVersions(layers,terrains,forplr)": {
 		"for normal call": {
-			unitsdata: {
-				id1: {POS:"pos1",PLR:1},
-				id2: {POS:"pos2",PLR:2},
-				id3: {POS:"pos2",STATUS:"DEAD",PLR:1},
-				id4: {POS:"pos2",PLR:0}
-			},
-			plr: 1,
-			expected: {
-				DEADUNITS:{pos2:[{POS:"pos2",STATUS:"DEAD",PLR:1}]},
-				UNITS:{pos1:[{POS:"pos1",PLR:1}],pos2:[{POS:"pos2",PLR:2},{POS:"pos2",PLR:0}]},
-				MYUNITS:{pos1:[{POS:"pos1",PLR:1}]},
-				OPPUNITS:{pos2:[{POS:"pos2",PLR:2}]},
-				NEUTRALS:{pos2:[{POS:"pos2",PLR:0}]}
+			layers: "X",
+			terrains: {trees:["t1"],stones:["s1","s2"]},
+			forplr: 1,
+			expected: "Xt1s1s2",
+			context: {
+				sortEntity: {
+					method: function(layers,terrainentity,groups,forplr){
+						return layers+terrainentity;
+					},
+					expectedargs: [
+						["X","t1",["trees"],1],
+						["Xt1","s1",["stones"],1],
+						["Xt1s1","s2",["stones"],1],
+					]
+				}
 			}
 		}
-	},
-	"prepareInitialUnitDataFromSetup(setup)": {
-		"for normal call": {
-			setup: "SETUP",
-			context: {
-				prepareEntitiesFromList: {
-					returns: [{foo:"bar"},{baz:"bin"}],
-					expectedargs: [["SETUP"]],
-				}
-			},
-			expected: {
-				unit1: {foo:"bar",ID:"unit1"},
-				unit2: {baz:"bin",ID:"unit2"}
-			}
-		},
 	},
 	"prepareConnectionsFromBoardDef(boarddef)": {
 		"for normal board": {
@@ -66,30 +53,30 @@ tester("The prepare methods",Algol,{
 		"for normal call": {
 			"boarddef": {height:2,width:3},
 			"expected": {
-				"LIGHT": {
-					1001: [{COLOUR:"light",X:1,Y:1,POS:1001}],
-					1003: [{COLOUR:"light",X:3,Y:1,POS:1003}],
-					2002: [{COLOUR:"light",X:2,Y:2,POS:2002}]
+				"light": {
+					1001: [{colour:"light",x:1,y:1,pos:1001}],
+					1003: [{colour:"light",x:3,y:1,pos:1003}],
+					2002: [{colour:"light",x:2,y:2,pos:2002}]
 				},
-				"DARK": {
-					1002: [{COLOUR:"dark",X:2,Y:1,POS:1002}],
-					2001: [{COLOUR:"dark",X:1,Y:2,POS:2001}],
-					2003: [{COLOUR:"dark",X:3,Y:2,POS:2003}]
+				"dark": {
+					1002: [{colour:"dark",x:2,y:1,pos:1002}],
+					2001: [{colour:"dark",x:1,y:2,pos:2001}],
+					2003: [{colour:"dark",x:3,y:2,pos:2003}]
 				},
-				"BOARD": {
-					1001: [{COLOUR:"light",X:1,Y:1,POS:1001}],
-					1002: [{COLOUR:"dark",X:2,Y:1,POS:1002}],
-					1003: [{COLOUR:"light",X:3,Y:1,POS:1003}],
-					2001: [{COLOUR:"dark",X:1,Y:2,POS:2001}],
-					2002: [{COLOUR:"light",X:2,Y:2,POS:2002}],
-					2003: [{COLOUR:"dark",X:3,Y:2,POS:2003}]
+				"board": {
+					1001: [{colour:"light",x:1,y:1,pos:1001}],
+					1002: [{colour:"dark",x:2,y:1,pos:1002}],
+					1003: [{colour:"light",x:3,y:1,pos:1003}],
+					2001: [{colour:"dark",x:1,y:2,pos:2001}],
+					2002: [{colour:"light",x:2,y:2,pos:2002}],
+					2003: [{colour:"dark",x:3,y:2,pos:2003}]
 				}
 			}
 		}
 	},
 	"prepareTerrainLayerFromEntityList(list)": {
 		"for normal call": {
-			list: [{POS:666,foo:"bar"},["ALL",[777,666],{foo:"baz"}]],
+			list: [{POS:666,foo:"bar"},["positions",[777,666],{foo:"baz"}]],
 			expected: {
 				666: [{foo:"bar",POS:666},{foo:"baz",POS:666}],
 				777: [{foo:"baz",POS:777}]
@@ -102,15 +89,20 @@ tester("The prepare methods",Algol,{
 			def: {foo:"bar"},
 			expected: ["X",{foo:"bar"}]
 		},
-		"for ALL def": {
+		"for positions def": {
 			list: ["X","Y"],
-			def: ["ALL",[666,777],{baz:"bin"}],
+			def: ["positions",[666,777],{baz:"bin"}],
 			expected: ["X","Y",{baz:"bin","POS":666},{baz:"bin","POS":777}]
+		},
+		"for RECTANGLE def": {
+			list: ["X","Y"],
+			def: ["rectangle",3002,4003,{baz:"bin"}],
+			expected: ["X","Y",{baz:"bin","POS":3002},{baz:"bin","POS":3003},{baz:"bin","POS":4002},{baz:"bin","POS":4003}]
 		}
 	},
 	"prepareEntitiesFromList(list)": {
-		"for a single and an ALL": {
-			list: ["X",["ALL",["Y"],{foo:"bar"}]],
+		"for a single and an positions": {
+			list: ["X",["positions",["Y"],{foo:"bar"}]],
 			expected: ["X",{foo:"bar",POS:"Y"}]
 		}
 	},
@@ -118,17 +110,10 @@ tester("The prepare methods",Algol,{
 		"for normal call": {
 			gamedef: {
 				setup: "SETUP",
-				board: "BOARD",
-				terrain: {
-					swamp: "SWAMP",
-					marsh: "MARSH"
-				}
+				board: "BOARD"
 			},
 			players: "PLAYERS",
 			context: {
-				prepareTerrainLayerFromEntityList: {
-					method: function(e){ return "prepped"+e;}
-				},
 				prepareConnectionsFromBoardDef: {
 					returns: "CONNECTIONS",
 					expectedargs: [ ["BOARD"] ]
@@ -137,9 +122,9 @@ tester("The prepare methods",Algol,{
 					returns: "UNITS",
 					expectedargs: [ ["SETUP"] ]
 				},
-				prepareBoardLayersFromBoardDef: {
-					returns: {light:"LIGHT",dark:"DARK"},
-					expectedargs: [ ["BOARD"] ]
+				prepareBaseLayers: {
+					returns: "PREPPED",
+					expectedargs: [ ["gamedef","players"] ]
 				}
 			},
 			expected: {
@@ -147,12 +132,7 @@ tester("The prepare methods",Algol,{
 				data: {
 					units: "UNITS"
 				},
-				baselayers: {
-					light: "LIGHT",
-					dark: "DARK",
-					swamp: "preppedSWAMP",
-					marsh: "preppedMARSH"
-				}
+				baselayers: "PREPPED"
 			}
 		}
 	}

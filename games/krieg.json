@@ -5,20 +5,20 @@
 		"height": 4
 	},
 	"terrain": {
-		"southeast": [ ["ALL",[1001,3003],{}] ],
-		"northwest": [ ["ALL",[2002,4004],{}] ],
+		"southeast": [ ["positions",[1001,3003],{}] ],
+		"northwest": [ ["positions",[2002,4004],{}] ],
 		"corners": [
-			{"owner":1,"POS":1001},
-			{"owner":2,"POS":4004}
+			{"owner":1,"pos":1001},
+			{"owner":2,"pos":4004}
 		],
 		"bases": [
-			["ALL",[1002,2001,2002],{"owner":1}],
-			["ALL",[3003,3004,4003],{"owner":2}]
+			["positions",[1002,2001,2002],{"owner":1}],
+			["positions",[3003,3004,4003],{"owner":2}]
 		]
 	},
 	"setup": [
-		["ALL",[1001,2001,1002,2002],{"PLR":1}],
-		["ALL",[3003,4003,3004,4004],{"PLR":2}]
+		["rectangle",[1001,2002],{"owner":1}],
+		["rectangle",[3003,4004],{"owner":2}]
 	],
 	"marks": {
 		"selectunit": {

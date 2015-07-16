@@ -28,7 +28,7 @@ tester("The mark methods",Algol,{
 					expectedargs: [["state","somemark"],["state","othermark"]]
 				}
 			},
-			expected: {othermark:["baz","bin"]}
+			expected: {somemark:["foo","bar"]}
 		}
 	},
 	"removeMark(state,markname)": {

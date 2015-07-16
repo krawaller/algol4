@@ -35,27 +35,35 @@ function stopreason(state,def,dir,pos,length,blocks,steps,prioblocks){
 	}
 }
 
+Algol.generateWalkerPodsInDir = function(startstate,def,recorder,startpos,dir){
+	var pos=startpos, walk = [], reason, blockpos,
+		blocks = def.has("blocks") && this.evaluatePositionList(startstate,def.get("blocks")),
+		steps = def.has("steps") && this.evaluatePositionList(startstate,def.get("steps"));
+	while(!(reason=stopreason(startstate,def,dir,pos,walk.length,blocks,steps,def.get("prioritizeblocksoversteps")))){
+		walk.push(pos = startstate.getIn(["connections",pos,"nextto",dir])||startstate.getIn(["connections",pos,"nextto",dir+""]));
+	}
+	var context = I.Map({START:startpos,DIR:dir,STEPS:walk.length,STOPREASON:reason});
+	recorder = I.pushIn(recorder,["start",startpos],context);
+	if (reason==="HITBLOCK"){
+		blockpos = startstate.getIn(["connections",pos,"nextto",dir])||startstate.getIn(["connections",pos,"nextto",dir+""]);
+		recorder = I.pushIn(recorder,["block",blockpos],context.set("TARGET",blockpos));
+	}
+	_.each(walk,function(step,n){
+		recorder = I.pushIn(recorder,["step",step],context.set("TARGET",step).set("STEP",n+1));
+	});
+	return recorder;
+};
+
+Algol.generateWalkerPodsFromStart = function(state,def,recorder,startpos){
+	var startstate = state.setIn(["context","START"],startpos);
+	return this.evaluateDirList(startstate,def.get("dirs")).reduce(function(recorder,dir){
+		return this.generateWalkerPodsInDir(startstate,def,recorder,startpos,dir);
+	},recorder,this);
+};
+
 Algol.generateWalkerPods = function(state,def){
 	var pods = this.evaluatePositionList(state,def.get("starts")).reduce(function(recorder,startpos){
-		var startstate = state.setIn(["context","START"],startpos);
-		return this.evaluateDirList(startstate,def.get("dirs")).reduce(function(recorder,dir){
-			var pos=startpos, walk = [], reason, blockpos,
-				blocks = def.has("blocks") && this.evaluatePositionList(startstate,def.get("blocks")),
-				steps = def.has("steps") && this.evaluatePositionList(startstate,def.get("steps"));
-			while(!(reason=stopreason(startstate,def,dir,pos,walk.length,blocks,steps,def.get("prioritizeblocksoversteps")))){
-				walk.push(pos = startstate.getIn(["connections",pos,"nextto",dir])||startstate.getIn(["connections",pos,"nextto",dir+""]));
-			}
-			var context = I.Map({START:startpos,DIR:dir,STEPS:walk.length,STOPREASON:reason});
-			recorder = I.pushIn(recorder,["start",startpos],context);
-			if (reason==="HITBLOCK"){
-				blockpos = startstate.getIn(["connections",pos,"nextto",dir])||startstate.getIn(["connections",pos,"nextto",dir+""]);
-				recorder = I.pushIn(recorder,["block",blockpos],context.set("TARGET",blockpos));
-			}
-			_.each(walk,function(step,n){
-				recorder = I.pushIn(recorder,["step",step],context.set("TARGET",step).set("STEP",n+1));
-			});
-			return recorder;
-		},recorder,this);
+		return this.generateWalkerPodsFromStart(state,def,recorder,startpos);
 	},I.fromJS({}),this);
 	return pods.set("all",pods.reduce(function(mem,pod){ return mem.mergeWith(I.concat,pod); }),I.Map(),this);
 };

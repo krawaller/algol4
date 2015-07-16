@@ -4,14 +4,24 @@ var I = (typeof require !== "undefined" ? require("./immutableextensions.js") : 
 function augmentWithMarkFunctions(Algol){
 
 
-// €€€€€€€€€€€€€€€€€€€€€€€€€€€ M A R K   F U N C T I O N S €€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€*/
+/* €€€€€€€€€€€€€€€€€€€€€€€€€€€ M A R K   F U N C T I O N S €€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€
+
+Expects state.marks to be a map of currently set marks
+Expects state.gamedef.marks to contain mark definitions
+Expects state.layers to be layermap
+
+*/
 
 Algol.getAvailableMarks = function(state){
 	return state.getIn(["gamedef","marks"]).reduce(function(mem,markdef,markname){
-		return this.isMarkAvailable(state,markname) ? mem.set(markname,state.getIn(["layers",markdef.get("fromlayer")]).keySeq()) : mem;
+		return this.isMarkAvailable(state,markname) ? mem : mem.set(markname,state.getIn(["layers",markdef.get("fromlayer")]).keySeq());
 	},I.Map(),this);
 };
 
+/*
+Used in Algol.getAvailableMarks
+Returns error msg if unavailable, otherwise undefined
+*/
 Algol.isMarkAvailable = function(state,markname){
 	var markdef = state.getIn(["gamedef","marks",markname]),
 		cond = markdef.get("condition"),

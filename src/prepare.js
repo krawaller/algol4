@@ -8,48 +8,6 @@ function augmentWithPrepareFunctions(Algol){
 
 
 /*
-Called at the beginning of every step. TODO: move to other file, this just for prepping prior to game! :P
-*/
-Algol.prepareUnitLayersFromData = function(unitsdata,plr){
-	var to = I.Map().set(0,"NEUTRALS").set(undefined,"NEUTRALS").set(plr,"MYUNITS");
-	return unitsdata.reduce(function(map,unit){
-		var pos = unit.get("POS");
-		return unit.get("STATUS") === "DEAD" ? I.pushIn(map,["DEADUNITS",pos],unit) : 
-			I.pushIn(I.pushIn(map,[(to.get(unit.get("PLR"))||"OPPUNITS"),pos],unit),["UNITS",pos],unit);
-	},blueprint,this);
-};
-var blueprint = I.fromJS({UNITS:{},DEADUNITS:{},MYUNITS:{},OPPUNITS:{},NEUTRALS:{}});
-
-/*
-Used in prepareState
-*/
-Algol.prepareInitialUnitDataFromSetup = function(setup){
-	return I.Map(Algol.prepareEntitiesFromList(setup).reduce(function(map,unit,n){
-		return map.set("unit"+(n+1),unit.set("ID","unit"+(n+1)));
-	},I.Map(),this));
-};
-
-/*
-Helper function used only in prepareEntitiesFromList
-*/
-Algol.addEntitiesFromDef = function(coll,def){
-	if (I.List.isList(def)){ // [ALL,<list>,<blueprint>]
-		return def.get(1).reduce(function(mem,pos){
-			return mem.push(def.get(2).set("POS",pos));
-		},coll);
-	} else {
-		return coll.push(def);
-	}
-}
-
-/*
-Used in prepareInitialUnitDataFromSetup and prepareTerrainLayerFromEntityList
-*/
-Algol.prepareEntitiesFromList = function(deflist){
-	return deflist.reduce(Algol.addEntitiesFromDef,I.List());
-}
-
-/*
 Used in prepareState
 */
 Algol.prepareConnectionsFromBoardDef = function(boarddef){
@@ -72,9 +30,9 @@ Algol.prepareBoardLayersFromBoardDef = function(boarddef){
 	return I.Range(1,width+1).reduce(function(mem,x){
 		return I.Range(1,height+1).reduce(function(mem,y){
 			var pos = y*1000+x, clr = ["light","dark"][(x+(y%2))%2], obj = I.Map({
-				X: x, Y: y, POS: pos, COLOUR: clr
+				x: x, y: y, pos: pos, colour: clr
 			})
-			return mem.setIn(["BOARD",pos],I.List([obj])).setIn([(clr==="light"?"LIGHT":"DARK"),pos],I.List([obj]));
+			return mem.setIn(["board",pos],I.List([obj])).setIn([clr,pos],I.List([obj]));
 		},mem);
 	},I.Map());
 };
@@ -82,22 +40,33 @@ Algol.prepareBoardLayersFromBoardDef = function(boarddef){
 /*
 Used in prepareState.
 */
-Algol.prepareTerrainLayerFromEntityList = function(list){
-	return Algol.prepareEntitiesFromList(list).reduce(function(mem,e){
-		return I.pushIn(mem,[e.get("POS")],e);
-	},I.Map())
+Algol.prepareBaseLayers = function(gamedef,nbrofplayers){
+	var parsedterrains = (gamedef.get("terrain")||I.Map()).map(this.prepareEntitiesFromList),
+		base = this.prepareBoardLayersFromBoardDef(gamedef.get("board"));
+	return _.reduce(_.range(1,nbrofplayers+1),function(mem,plr){
+		return mem.push(this.addPersonalisedTerrainVersions(base,parsedterrains,plr));
+	},[],this);
+};
+
+/*
+Used in prepareBaseLayers. Called once per player. Augments layers with personalised terrain versions.
+*/
+Algol.addPersonalisedTerrainVersions = function(layers,terrains,forplr){
+	return terrains.reduce(function(layers,terrainentities,name){
+		return terrainentities.reduce(function(layers,terrainentity){
+			return this.sortEntity(layers,terrainentity,[name],forplr);
+		},layers,this);
+	},layers,this);
 };
 
 /*
 The master function to set up a new state. Called once.
 */
-Algol.prepareState = function(gamedef,players){
+Algol.prepareState = function(gamedef,nbrofplayers){
 	return I.fromJS({
-		connections: Algol.prepareConnectionsFromBoardDef(gamedef.get("board")),
-		data: I.Map().set("units",Algol.prepareInitialUnitDataFromSetup(gamedef.get("setup"))),
-		baselayers: (gamedef.get("terrain")||I.Map()).reduce(function(mem,layerdef,layername){
-			return mem.set(layername,Algol.prepareTerrainLayerFromEntityList(layerdef));
-		},Algol.prepareBoardLayersFromBoardDef(gamedef.get("board")))
+		connections: this.prepareConnectionsFromBoardDef(gamedef.get("board")),
+		data: I.Map().set("units",this.prepareInitialUnitDataFromSetup(gamedef.get("setup"))),
+		baselayers: this.prepareBaseLayers(gamedef,nbrofplayers)
 	});
 };
 
