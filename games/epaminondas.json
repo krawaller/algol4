@@ -6,88 +6,14 @@
 		"width": 14
 	},
 	"setup": [
-		["list",[1001,1002,1003,1004,1005,1006,1007,1008,1009,1010,1011,1012,1013,1014],{"owner":1}],
-		["list",[2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014],{"owner":1}],
-		["list",[11012,11002,11003,11004,11005,11006,11007,11008,11009,11010,11011,11012,11013,11014],{"owner":2}],
-		["list",[12012,12002,12003,12004,12005,12006,12007,12008,12009,12010,12011,12012,12013,12014],{"owner":2}]
+		["rectangle",[1001,2014],{"owner":1}],
+		["rectangle",[11012,12014],{"owner":2}]
 	],
 	"terrain": {
 		"bases": [
-			["list",[1001,1002,1003,1004,1005,1006,1007,1008,1009,1010,1011,1012,1013,1014],{"owner":1}],
-			["list",[12012,12002,12003,12004,12005,12006,12007,12008,12009,12010,12011,12012,12013,12014],{"owner":2}]
+			["rectangle",[1001,2014],{"owner":1}],
+			["rectangle",[11012,12014],{"owner":2}]
 		]
-	},
-	"layers": {
-		"movetarget": {
-			"paintedby": ["findimmediatetargets"],
-			"marks": ["selecthead"]
-		},
-		"potentialdueltarget": {
-			"paintedby": ["findimmediatetargets"],
-			"startfor": ["finddueltargets"]
-		},
-		"dueltarget": {
-			"paintedby": ["finddueltargets"],
-			"marks": ["selectduel"]
-		},
-		"potentialtail": {
-			"paintedby": ["findpotentialtails"],
-			"marks": ["selecttail"]
-		},
-		"phalanxmember": {
-			"paintedby": ["findphalanxmembers"]
-		},
-		"phalanxend": {
-			"paintedby": ["findphalanxmembers"]
-		},
-		"marchtarget": {
-			"paintedby": ["findmarchandchargetargets"],
-			"marks": ["selectmarch"]
-		},
-		"threatened": {
-			"paintedby": ["findmarchandchargetargets"]
-		},
-		"chargetarget": {
-			"paintedby": ["findopposingphalanx"],
-			"marks": ["selectcharge"]
-		},
-		"opposingphalanx": {
-			"paintedby": ["findopposingphalanx"]
-		},
-		"chargevictims": {
-			"paintedby": ["findchargevictims"]
-		},
-		"myinfiltrators": {
-			"paintedby": ["findinfiltrators"]
-		},
-		"oppinfiltrators": {
-			"paintedby": ["findinfiltrators"]
-		}
-	},
-	"flow": {
-		"MARK:selecthead": {
-			"GENERATor:findimmediatetargets": ["potentialdueltarget","movetarget"],
-			"GENERATor:finddueltargets": ["dueltarget"],
-			"GENERATor:findpotentialtails": ["potentialtail"],
-			"MARK:selectmove": {
-				"COMMandS":["move"]
-			},
-			"MARK:selectduel": {
-				"COMMandS":["duel"]
-			},
-			"MARK:selecttail": {
-				"GENERATor:findphalanxmembers": ["phalanxmember","phalanxend"],
-				"GENERATor:findmarchandchargetargets": ["marchtarget","threatened"],
-				"GENERATor:findopposingphalanx": ["chargetarget","opposingphalanx"],
-				"MARK:selectcharge": {
-					"GENERATor:findchargevictims": ["chargevictims"],
-					"COMMandS": ["charge"]
-				},
-				"MARK:selectmarch": {
-					"COMMandS": ["march"]
-				}
-			}
-		}
 	},
 	"marks": {
 		"selecthead": {
@@ -103,10 +29,6 @@
 		"selectmove": {
 			"from": "movetarget",
 			"notwith": ["selecttail","selectcharge","selectmarch","selectduel"]
-		},
-		"selectduel": {
-			"from": "dueltarget",
-			"notwith": ["selecttail","selectcharge","selectmarch","selectmove"]
 		},
 		"selectcharge": {
 			"from": "chargetarget",
@@ -124,13 +46,6 @@
 			"neededmarks": ["selecthead","selectmove"],
 			"effects": [
 				["moveunit",["idofunitat",["markpos","selecthead"]],["markpos","selectmove"]]
-			]
-		},
-		"duel": {
-			"neededmarks": ["selecthead","selectduel"],
-			"effects": [
-				["killunit",["idofunitat",["markpos","selectduel"]]],
-				["moveunit",["idofunitat",["markpos","selecthead"]],["markpos","selectduel"]]
 			]
 		},
 		"march": {
@@ -195,26 +110,11 @@
 			"starts": ["markpos","selecthead"],
 			"draw": {
 				"target": {
-					"condition": ["noneat","myunits",["contextpos","target"]],
-					"tolayer": ["ifelse",
-						["anyat","oppunits",["contextpos","target"]],
-						"potentialdueltarget",
-						"movetarget"
-					],
+					"condition": ["noneat","units",["contextpos","target"]],
+					"tolayer":  "movetarget",
 					"include": {
 						"singledir": ["contextval","dir"]
 					}
-				}
-			}
-		},
-		"finddueltargets": {
-			"type": "neighbour",
-			"starts": ["allposinlayer","potentialdueltarget"],
-			"dirs": ["relativedirs",[1],["lookup",["contextpos","start"],"singledir"]],
-			"draw": {
-				"start": {
-					"condition": ["noneat","oppunits",["contextpos","target"]],
-					"tolayer": "dueltarget"
 				}
 			}
 		},

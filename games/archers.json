@@ -6,8 +6,8 @@
 	},
 	"terrain": {
 		"trees": [
-			["rectangle",[2002,4004],{"owner":1}],
-			["rectangle",[6006,8008],{"owner":2}]
+			["rectangle",2002,4004,{"owner":1}],
+			["rectangle",6006,8008,{"owner":2}]
 		]
 	},
 	"setup": [

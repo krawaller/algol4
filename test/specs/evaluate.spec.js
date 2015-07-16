@@ -90,6 +90,11 @@ tester("the evaluate methods",Algol,{
 		"for primitive": {
 			valuedef: 666,
 			expected: 666
+		},
+		"for overlapsize when both layers exist": {
+			state: {layers: {L1: {x:1,y:1,z:1}, L2: {q:1,y:1,z:1}}},
+			valuedef: ["overlapsize","L1","L2"],
+			expected: 2
 		}
 	},
 	"evaluatePosition(state,posdef)": {

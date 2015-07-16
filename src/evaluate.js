@@ -112,6 +112,12 @@ var valuemethods = {
 	},
 	layerpositioncount: function(state,layername){
 		return (state.getIn(["layers",this.evaluateValue(state,layername)])||I.Map()).size;
+	},
+	overlapsize: function(state,layername1,layername2){
+		var lr1 = state.getIn(["layers",layername1]) || I.Map();
+		return (state.getIn(["layers",layername2])||I.Map()).reduce(function(count,entities,pos){
+			return lr1.has(pos) ? count+1 : count;
+		},0);
 	}
 };
 
