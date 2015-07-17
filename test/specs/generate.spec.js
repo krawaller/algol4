@@ -3,7 +3,6 @@
 var sinon,jasmineSinon,Algol,_,I,tester;
 if (typeof require === 'function' && typeof module === 'object') {
 	sinon = require('sinon');
-	jasmineSinon = require('jasmine-sinon');
 	Algol = require("../../src/");
 	_ = require("../../src/lodashmixins");
 	I = require("../../src/immutableextensions");
@@ -150,6 +149,32 @@ tester("the generate methods",Algol,{
 		}
 	},
 	"generateWalkerPods(state,walkerdef)": {
+		"when we have a count": {
+			state: {
+				marks: {somemark:"S"},
+				connections: {S:{nextto:{5:"step1"}},step1: {nextto:{5:"step2"}}, step2: {nextto:{5:"step3"}}, step3: {nextto:{}}},
+				layers: {tobecounted:{step1:"X",step3:"X"}}
+			},
+			walkerdef: {
+				starts: ["markpos","somemark"],
+				dirs: ["dirs",[5]],
+				count: ["allposinlayer","tobecounted"]
+			},
+			expected: {
+				start: {S: [{start:"S",dir:5,linelength:3,stopreason:"outofbounds",counttotal:2}] },
+				steps: {
+					step1:[{countsofar: 1, counttotal: 2, start:"S",target:"step1",dir:5,linelength:3,step:1,laststep:false,stopreason:"outofbounds"}],
+					step2:[{countsofar: 1, counttotal: 2, start:"S",target:"step2",dir:5,linelength:3,step:2,laststep:false,stopreason:"outofbounds"}],
+					step3:[{countsofar: 2, counttotal: 2, start:"S",target:"step3",dir:5,linelength:3,step:3,laststep:true,stopreason:"outofbounds"}]
+				},
+				all: {
+					S: [{start:"S",dir:5,linelength:3,stopreason:"outofbounds",counttotal:2}],
+					step1:[{countsofar: 1, counttotal: 2, start:"S",target:"step1",dir:5,linelength:3,step:1,laststep:false,stopreason:"outofbounds"}],
+					step2:[{countsofar: 1, counttotal: 2, start:"S",target:"step2",dir:5,linelength:3,step:2,laststep:false,stopreason:"outofbounds"}],
+					step3:[{countsofar: 2, counttotal: 2, start:"S",target:"step3",dir:5,linelength:3,step:3,laststep:true,stopreason:"outofbounds"}]
+				}
+			}
+		},
 		"when goes out of bounds": {
 			state: {
 				marks: {somemark:"S"},

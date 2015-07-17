@@ -41,18 +41,30 @@ function stopreason(state,def,dir,pos,length,blocks,steps,prioblocks){
 Algol.generateWalkerPodsInDir = function(startstate,def,recorder,startpos,dir){
 	var pos=startpos, walk = [], reason, blockpos,
 		blocks = def.has("blocks") && this.evaluatePositionList(startstate,def.get("blocks")),
-		steps = def.has("steps") && this.evaluatePositionList(startstate,def.get("steps"));
+		steps = def.has("steps") && this.evaluatePositionList(startstate,def.get("steps")),
+		tobecounted = def.has("count") && this.evaluatePositionList(startstate,def.get("count")),
+		prevcounttotal = 0, counttrack = [];
 	while(!(reason=stopreason(startstate,def,dir,pos,walk.length,blocks,steps,def.get("prioritizeblocksoversteps")))){
 		walk.push(pos = startstate.getIn(["connections",pos,"nextto",dir])||startstate.getIn(["connections",pos,"nextto",dir+""]));
+		if (tobecounted){
+			counttrack.push(prevcounttotal = (prevcounttotal + (tobecounted.contains(pos)?1:0)));
+		}
 	}
 	var context = I.Map({start:startpos,dir:dir,linelength:walk.length,stopreason:reason});
+	if (tobecounted){
+		context = context.set("counttotal",prevcounttotal);
+	}
 	recorder = I.pushIn(recorder,["start",startpos],context);
 	if (reason==="hitblock"){
 		blockpos = startstate.getIn(["connections",pos,"nextto",dir])||startstate.getIn(["connections",pos,"nextto",dir+""]);
 		recorder = I.pushIn(recorder,["block",blockpos],context.set("target",blockpos));
 	}
 	_.each(walk,function(step,n){
-		recorder = I.pushIn(recorder,["steps",step],context.set("target",step).set("step",n+1).set("laststep",n+1===walk.length));
+		var ctx = context.set("target",step).set("step",n+1).set("laststep",n+1===walk.length);
+		if (tobecounted){
+			ctx = ctx.set("countsofar",counttrack[n]);
+		}
+		recorder = I.pushIn(recorder,["steps",step],ctx);
 	});
 	return recorder;
 };
