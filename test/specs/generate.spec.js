@@ -161,30 +161,33 @@ tester("the generate methods",Algol,{
 			},
 			expected: {
 				start: {S: [{start:"S",dir:4,linelength:1,stopreason:"outofbounds"}] },
-				step: {lonestep:[{start:"S",target:"lonestep",dir:4,linelength:1,step:1,stopreason:"outofbounds"}]},
+				steps: {lonestep:[{start:"S",target:"lonestep",dir:4,linelength:1,step:1,laststep:true,stopreason:"outofbounds"}]},
 				all: {
 					S: [{start:"S",dir:4,linelength:1,stopreason:"outofbounds"}],
-					lonestep:[{start:"S",target:"lonestep",dir:4,linelength:1,step:1,stopreason:"outofbounds"}]
+					lonestep:[{start:"S",target:"lonestep",dir:4,linelength:1,step:1,laststep:true,stopreason:"outofbounds"}]
 				}
 			}
 		},
 		"when reaches max": {
 			state: {
 				marks: {somemark:"S"},
-				connections: {S:{nextto:{5:"step1"}},
-				step1: {nextto:{5:"step2"}}}
+				connections: {S:{nextto:{5:"step1"}},step1: {nextto:{5:"step2"}, step3: {nextto:{5:"step666"}}}}
 			},
 			walkerdef: {
 				starts: ["markpos","somemark"],
 				dirs: ["dirs",[5]],
-				max: 1
+				max: 2
 			},
 			expected: {
-				start: {S: [{start:"S",dir:5,linelength:1,stopreason:"reachedmax"}] },
-				step: {step1:[{start:"S",target:"step1",dir:5,linelength:1,step:1,stopreason:"reachedmax"}]},
+				start: {S: [{start:"S",dir:5,linelength:2,stopreason:"reachedmax"}] },
+				steps: {
+					step1:[{start:"S",target:"step1",dir:5,linelength:2,step:1,laststep:false,stopreason:"reachedmax"}],
+					step2:[{start:"S",target:"step2",dir:5,linelength:2,step:2,laststep:true,stopreason:"reachedmax"}]
+				},
 				all: {
-					S: [{start:"S",dir:5,linelength:1,stopreason:"reachedmax"}],
-					step1:[{start:"S",target:"step1",dir:5,linelength:1,step:1,stopreason:"reachedmax"}]
+					S: [{start:"S",dir:5,linelength:2,stopreason:"reachedmax"}],
+					step1:[{start:"S",target:"step1",dir:5,linelength:2,step:1,laststep:false,stopreason:"reachedmax"}],
+					step2:[{start:"S",target:"step2",dir:5,linelength:2,step:2,laststep:true,stopreason:"reachedmax"}]
 				}
 			}
 		},
@@ -201,10 +204,10 @@ tester("the generate methods",Algol,{
 			},
 			expected: {
 				start: {S: [{start:"S",dir:6,linelength:1,stopreason:"nomoresteps"}] },
-				step: {step1:[{start:"S",target:"step1",dir:6,linelength:1,step:1,stopreason:"nomoresteps"}]},
+				steps: {step1:[{start:"S",target:"step1",dir:6,linelength:1,step:1,laststep:true,stopreason:"nomoresteps"}]},
 				all: {
 					S: [{start:"S",dir:6,linelength:1,stopreason:"nomoresteps"}],
-					step1:[{start:"S",target:"step1",dir:6,linelength:1,step:1,stopreason:"nomoresteps"}]
+					step1:[{start:"S",target:"step1",dir:6,linelength:1,step:1,laststep:true,stopreason:"nomoresteps"}]
 				}
 			}
 		},
@@ -221,11 +224,11 @@ tester("the generate methods",Algol,{
 			},
 			expected: {
 				start: {S: [{start:"S",dir:7,linelength:1,stopreason:"hitblock"}]},
-				step: {step1:[{start:"S",target:"step1",dir:7,linelength:1,step:1,stopreason:"hitblock"}]},
+				steps: {step1:[{start:"S",target:"step1",dir:7,linelength:1,step:1,laststep:true,stopreason:"hitblock"}]},
 				block: {step2:[{start:"S",target:"step2",dir:7,linelength:1,stopreason:"hitblock"}]},
 				all: {
 					S: [{start:"S",dir:7,linelength:1,stopreason:"hitblock"}],
-					step1:[{start:"S",target:"step1",dir:7,linelength:1,step:1,stopreason:"hitblock"}],
+					step1:[{start:"S",target:"step1",dir:7,linelength:1,step:1,laststep:true,stopreason:"hitblock"}],
 					step2:[{start:"S",target:"step2",dir:7,linelength:1,stopreason:"hitblock"}]
 				}
 			}
@@ -244,10 +247,10 @@ tester("the generate methods",Algol,{
 			},
 			expected: {
 				start: {S: [{start:"S",dir:7,linelength:1,stopreason:"nomoresteps"}] },
-				step: {step1:[{start:"S",target:"step1",dir:7,linelength:1,step:1,stopreason:"nomoresteps"}]},
+				steps: {step1:[{start:"S",target:"step1",dir:7,linelength:1,step:1,laststep:true,stopreason:"nomoresteps"}]},
 				all: {
 					S: [{start:"S",dir:7,linelength:1,stopreason:"nomoresteps"}],
-					step1:[{start:"S",target:"step1",dir:7,linelength:1,step:1,stopreason:"nomoresteps"}],
+					step1:[{start:"S",target:"step1",dir:7,linelength:1,step:1,laststep:true,stopreason:"nomoresteps"}],
 				}
 			}	
 		},
@@ -266,11 +269,11 @@ tester("the generate methods",Algol,{
 			},
 			expected: {
 				start: {S: [{start:"S",dir:7,linelength:1,stopreason:"hitblock"}] },
-				step: {step1:[{start:"S",target:"step1",dir:7,linelength:1,step:1,stopreason:"hitblock"}]},
+				steps: {step1:[{start:"S",target:"step1",dir:7,linelength:1,step:1,laststep:true,stopreason:"hitblock"}]},
 				block: {step2:[{start:"S",target:"step2",dir:7,linelength:1,stopreason:"hitblock"}]},
 				all: {
 					S: [{start:"S",dir:7,linelength:1,stopreason:"hitblock"}],
-					step1:[{start:"S",target:"step1",dir:7,linelength:1,step:1,stopreason:"hitblock"}],
+					step1:[{start:"S",target:"step1",dir:7,linelength:1,step:1,laststep:true,stopreason:"hitblock"}],
 					step2:[{start:"S",target:"step2",dir:7,linelength:1,stopreason:"hitblock"}]
 				}
 			}	
@@ -478,4 +481,3 @@ tester("the generate methods",Algol,{
 		}
 	}
 },I);
-

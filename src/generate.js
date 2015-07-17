@@ -22,17 +22,19 @@ Algol.generateNeighbourPods = function(state,def){
 };
 
 function stopreason(state,def,dir,pos,length,blocks,steps,prioblocks){
-	var nextpos = (state.getIn(["connections",pos,"nextto",dir])||state.getIn(["connections",pos,"nextto",dir+""]));
-	if (!nextpos){
-		return "outofbounds";
-	} else if (def.get("max") && length === def.get("max")) {
+	if (def.get("max") && length === def.get("max")) {
 		return "reachedmax";
-	} else if (prioblocks && blocks && blocks.contains(nextpos)){
-		return "hitblock";
-	} else if (steps && !steps.contains(nextpos)){
-		return "nomoresteps";
-	} else if (blocks && blocks.contains(nextpos)){
-		return "hitblock";
+	} else {
+		var nextpos = (state.getIn(["connections",pos,"nextto",dir])||state.getIn(["connections",pos,"nextto",dir+""]));
+		if (!nextpos){
+			return "outofbounds";
+		} else if (prioblocks && blocks && blocks.contains(nextpos)){
+			return "hitblock";
+		} else if (steps && !steps.contains(nextpos)){
+			return "nomoresteps";
+		} else if (blocks && blocks.contains(nextpos)){
+			return "hitblock";
+		}
 	}
 }
 
@@ -50,7 +52,7 @@ Algol.generateWalkerPodsInDir = function(startstate,def,recorder,startpos,dir){
 		recorder = I.pushIn(recorder,["block",blockpos],context.set("target",blockpos));
 	}
 	_.each(walk,function(step,n){
-		recorder = I.pushIn(recorder,["step",step],context.set("target",step).set("step",n+1));
+		recorder = I.pushIn(recorder,["steps",step],context.set("target",step).set("step",n+1).set("laststep",n+1===walk.length));
 	});
 	return recorder;
 };
