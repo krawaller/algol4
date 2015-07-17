@@ -35,7 +35,7 @@
 		"hydration": ["findmovetargets"]
 	},
 	"endturn": {
-		"condition": ["same",["contextval","performedsteps"],["val",1]],
+		"condition": ["same",["contextval","performedsteps"],1],
 		"commandcap": true,
 		"endgame": {
 			"cornerinfiltration": {

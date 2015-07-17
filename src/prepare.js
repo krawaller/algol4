@@ -8,7 +8,7 @@ function augmentWithPrepareFunctions(Algol){
 
 
 /*
-Used in prepareState
+Used in prepareNewGameState
 */
 Algol.prepareConnectionsFromBoardDef = function(boarddef){
 	var height = boarddef.get("height"), width = boarddef.get("width");
@@ -23,7 +23,7 @@ Algol.prepareConnectionsFromBoardDef = function(boarddef){
 };
 
 /*
-Used in prepareState
+Used in prepareNewGameState
 */
 Algol.prepareBoardLayersFromBoardDef = function(boarddef){
 	var height = boarddef.get("height"), width = boarddef.get("width");
@@ -38,7 +38,7 @@ Algol.prepareBoardLayersFromBoardDef = function(boarddef){
 };
 
 /*
-Used in prepareState.
+Used in prepareNewGameState.
 */
 Algol.prepareBaseLayers = function(gamedef,nbrofplayers){
 	var parsedterrains = (gamedef.get("terrain")||I.Map()).map(this.prepareEntitiesFromList),
@@ -60,16 +60,40 @@ Algol.addPersonalisedTerrainVersions = function(layers,terrains,forplr){
 };
 
 /*
-The master function to set up a new state. Called once.
+The master function to set up a new state at the very beginning of a game. Called once.
+TODO: also pass in plr information
 */
-Algol.prepareState = function(gamedef,nbrofplayers){
+Algol.prepareNewGameState = function(gamedef,nbrofplayers){
 	return I.fromJS({
+		gamedef: gamedef,
 		connections: this.prepareConnectionsFromBoardDef(gamedef.get("board")),
 		data: I.Map().set("units",this.prepareInitialUnitDataFromSetup(gamedef.get("setup"))),
-		baselayers: this.prepareBaseLayers(gamedef,nbrofplayers)
+		baselayers: this.prepareBaseLayers(gamedef,nbrofplayers),
+		basecontext: {
+			nbrofplayers: nbrofplayers
+		},
+		status: "ongoing"
 	});
 };
 
+
+/*
+Called form Algol.performOption --- passto
+Reset all tracking, and run generators for startturn and startstep.
+*/
+Algol.prepareNewTurnState = function(state,player){
+	return this.applyGeneratorList(this.applyGeneratorList(state.merge(I.fromJS({
+		steps: [],
+		affected: [],
+		save: state.has("save") ? state.get("save").push(I.List([state.get("player")]).concat(state.get("steps"))) : [],
+		marks: {},
+		previousstep: state,
+		previousturn: state,
+		player: player,
+		turn: state.get("turn")+1,
+		context: {currentplayer:player,performedsteps:0}
+	})),state.getIn(["gamedef","startturn","hydration"])||I.List()),state.getIn(["gamedef","startstep","hydration"])||I.List());
+};
 
 // €€€€€€€€€€€€€€€€€€€€€€€€€ E X P O R T €€€€€€€€€€€€€€€€€€€€€€€€€
 

@@ -135,79 +135,6 @@ tester("The execute methods",Algol,{
 			expected: false
 		}
 	},
-	"newTurnState(state,nextplayer)": {
-		"when there is a save array in state": {
-			state: {
-				steps: ["foo","bar"],
-				save: ["FOO"],
-				marks: "FOO",
-				turn: 666,
-				context: "FOO",
-				player: 333
-			},
-			nextplayer: 777,
-			expected: {
-				steps: [],
-				save: ["FOO",[333,"foo","bar"]],
-				previousstep: {
-					player: 333,
-					steps: ["foo","bar"],
-					save: ["FOO"],
-					marks: "FOO",
-					turn: 666,
-					context: "FOO"
-				},
-				previousturn: {
-					player: 333,
-					steps: ["foo","bar"],
-					save: ["FOO"],
-					marks: "FOO",
-					turn: 666,
-					context: "FOO"
-				},
-				marks: {},
-				turn: 667,
-				player: 777,
-				context: {currentplayer:777,performedsteps:0},
-				affected: [],
-				status: "ongoing"
-			}
-		},
-		"when there isn't a save array (first turn)": {
-			state: {
-				steps: ["foo","bar"],
-				marks: "FOO",
-				turn: 666,
-				context: "FOO",
-				player: 333
-			},
-			nextplayer: 777,
-			expected: {
-				steps: [],
-				save: [],
-				previousstep: {
-					player: 333,
-					steps: ["foo","bar"],
-					marks: "FOO",
-					turn: 666,
-					context: "FOO"
-				},
-				previousturn: {
-					player: 333,
-					steps: ["foo","bar"],
-					marks: "FOO",
-					turn: 666,
-					context: "FOO"
-				},
-				marks: {},
-				turn: 667,
-				player: 777,
-				context: {currentplayer:777,performedsteps:0},
-				affected: [],
-				status: "ongoing"
-			}
-		}
-	},
 	"endTurnOption(state,endturndef)": {
 		"when second wincondition is met": {
 			state: "STATE",
@@ -367,7 +294,7 @@ tester("The execute methods",Algol,{
 					returns: "HYDRATED",
 					expectedargs: [ ["NEWTURN"] ]
 				},
-				newTurnState: {
+				prepareNewTurnState: {
 					returns: "NEWTURN",
 					expectedargs: [ ["state",3] ]
 				}

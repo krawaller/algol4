@@ -106,7 +106,7 @@ tester("The prepare methods",Algol,{
 			expected: ["X",{foo:"bar",pos:"Y"}]
 		}
 	},
-	"prepareState(gamedef,players)": {
+	"prepareNewGameState(gamedef,players)": {
 		"for normal call": {
 			gamedef: {
 				setup: "SETUP",
@@ -128,11 +128,137 @@ tester("The prepare methods",Algol,{
 				}
 			},
 			expected: {
+				gamedef: {
+					setup: "SETUP",
+					board: "BOARD"
+				},
 				connections: "CONNECTIONS",
 				data: {
 					units: "units"
 				},
-				baselayers: "PREPPED"
+				baselayers: "PREPPED",
+				basecontext: {
+					nbrofplayers: "PLAYERS"
+				},
+				status: "ongoing"
+			}
+		}
+	},
+
+	"prepareNewTurnState(state,nextplayer)": {
+		"when there is a save array in state": {
+			state: {
+				steps: ["foo","bar"],
+				gamedef: {
+					startturn: {hydration:"TURNSTART"},
+					startstep: {hydration:"STEPSTART"}
+				},
+				save: ["FOO"],
+				marks: "FOO",
+				turn: 666,
+				context: "FOO",
+				player: 333
+			},
+			nextplayer: 777,
+			expected: {
+				steps: [],
+				save: ["FOO",[333,"foo","bar"]],
+				gamedef: {
+					startturn: {hydration:"TURNSTART"},
+					startstep: {hydration:"STEPSTART"}
+				},
+				TURNSTART: "yeah",
+				STEPSTART: "yeah",
+				previousstep: {
+					player: 333,
+					steps: ["foo","bar"],
+					save: ["FOO"],
+					marks: "FOO",
+					turn: 666,
+					context: "FOO",
+					gamedef: {
+						startturn: {hydration:"TURNSTART"},
+						startstep: {hydration:"STEPSTART"}
+					}
+				},
+				previousturn: {
+					player: 333,
+					steps: ["foo","bar"],
+					save: ["FOO"],
+					marks: "FOO",
+					turn: 666,
+					context: "FOO",
+					gamedef: {
+						startturn: {hydration:"TURNSTART"},
+						startstep: {hydration:"STEPSTART"}
+					}
+				},
+				marks: {},
+				turn: 667,
+				player: 777,
+				context: {currentplayer:777,performedsteps:0},
+				affected: []
+			},
+			context: {
+				applyGeneratorList: {
+					method: function(s,l){ return s.set(l,"yeah"); }
+				}
+			}
+		},
+		"when there isn't a save array (first turn)": {
+			state: {
+				steps: ["foo","bar"],
+				marks: "FOO",
+				turn: 666,
+				context: "FOO",
+				player: 333,
+				gamedef: {
+					startturn: {hydration:"TURNSTART"},
+					startstep: {hydration:"STEPSTART"}
+				}
+			},
+			nextplayer: 777,
+			expected: {
+				steps: [],
+				save: [],
+				previousstep: {
+					player: 333,
+					steps: ["foo","bar"],
+					marks: "FOO",
+					turn: 666,
+					context: "FOO",
+					gamedef: {
+						startturn: {hydration:"TURNSTART"},
+						startstep: {hydration:"STEPSTART"}
+					}
+				},
+				previousturn: {
+					player: 333,
+					steps: ["foo","bar"],
+					marks: "FOO",
+					turn: 666,
+					context: "FOO",
+					gamedef: {
+						startturn: {hydration:"TURNSTART"},
+						startstep: {hydration:"STEPSTART"}
+					}
+				},
+				marks: {},
+				turn: 667,
+				player: 777,
+				context: {currentplayer:777,performedsteps:0},
+				affected: [],
+				TURNSTART: "yeah",
+				STEPSTART: "yeah",
+				gamedef: {
+					startturn: {hydration:"TURNSTART"},
+					startstep: {hydration:"STEPSTART"}
+				}
+			},
+			context: {
+				applyGeneratorList: {
+					method: function(s,l){ return s.set(l,"yeah"); }
+				}
 			}
 		}
 	}

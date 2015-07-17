@@ -131,27 +131,12 @@ Algol.hydrateStateAfterCommand = function(state){
 	return state.set("commands",this.listCommandOptions(state,state.get("gamedef")));
 };
 
-// Called form Algol.performOption --- passto
-Algol.newTurnState = function(state,player){
-	return state.merge(I.fromJS({
-		steps: [],
-		affected: [],
-		save: state.has("save") ? state.get("save").push(I.List([state.get("player")]).concat(state.get("steps"))) : [],
-		marks: {},
-		previousstep: state,
-		previousturn: state,
-		status: "ongoing",
-		player: player,
-		turn: state.get("turn")+1,
-		context: {currentplayer:player,performedsteps:0}
-	}));
-};
 
 var optionmethods = {
 	backto: function(state,oldstate){ return oldstate; },
 	newstep: function(state,newstate){ return this.hydrateStateAfterCommand(newstate); },
 	passto: function(state,player){
-		return this.hydrateStateAfterCommand(this.newTurnState(state,player));
+		return this.hydrateStateAfterCommand(this.prepareNewTurnState(state,player));
 	},
 	endgame: function(state,cond,player){ return state.merge({player:player,status:cond}); }
 };
