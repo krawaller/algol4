@@ -1,0 +1,18 @@
+{
+	"source": "http://www.di.fc.ul.pt/~jpn/gv/castle.htm",
+	"board": {
+		"width": 19,
+		"height": 19
+	},
+	"terrain": {
+		"walls": [
+			["rectangle",2003,8003],["rectangle",1006,6006],["rectangle",2008,6008],["rectangle",2012,6012],
+			["rectangle",1014,6014],["rectangle",2017,8017],["rectangle",8003,8009],["rectangle",8011,8016],
+			["rectangle",6009,6011],{"pos":2009},{"pos":2011},
+			["rectangle",12003,18003],["rectangle",14006,19006],["rectangle",14008,18008],["rectangle",14012,18012],
+			["rectangle",14014,19014],["rectangle",12017,18017],["rectangle",12003,12009],["rectangle",12011,12016],
+			["rectangle",14009,14011],{"pos":18009},{"pos":18011}
+		],
+		"thrones": [{"pos":4010,"owner":1},{"pos":16010,"owner":2}]
+	}
+}

@@ -1,3 +1,49 @@
 {
-	"source": "http://www.di.fc.ul.pt/~jpn/gv/90grad.htm"
+	"source": "http://www.di.fc.ul.pt/~jpn/gv/90grad.htm",
+	"terrain": {
+		"goal": [{"pos":5005}],
+		"leftcolumn": [["rectangle",2001,8001]],
+		"toprow": [["rectangle",1002,1008]],
+		"lava": [["rectangle",1001,1009,{}],["rectangle",9001,9009,{}],["rectangle",2001,8001,{}],["rectangle",2009,8009,{}]]
+	},
+	"setup": [
+		["rectangle",2003,2005,{"owner":1,"group":"soldiers"}],
+		["rectangle",3002,5002,{"owner":1,"group":"soldiers"}],
+		["rectangle",8005,8007,{"owner":2,"group":"soldiers"}],
+		["rectangle",5008,7008,{"owner":1,"group":"soldiers"}],
+		{"pos":2002,"owner":1,"group":"balls"},
+		{"pos":8008,"owner":2,"group":"balls"}
+	],
+	"generators": {
+		"findverticaldistances": {
+			"type": "walker",
+			"starts": ["allposinlayer","leftcolumn"],
+			"dirs": ["dirs",[3]],
+			"count": ["allposinlayer","units"],
+			"draw": {
+				"steps": {
+					"condition": ["anyat","units",["contextpos","target"]],
+					"tolayer": "verticaldistances",
+					"include": {
+						"distance": ["contextpos","counttotal"]
+					}
+				}
+			}
+		},
+		"findhorisontaldistances": {
+			"type": "walker",
+			"starts": ["allposinlayer","toprow"],
+			"dirs": ["dirs",[5]],
+			"count": ["allposinlayer","units"],
+			"draw": {
+				"steps": {
+					"condition": ["anyat","units",["contextpos","target"]],
+					"tolayer": "horisontaldistances",
+					"include": {
+						"distance": ["contextpos","counttotal"]
+					}
+				}
+			}
+		}
+	}
 }

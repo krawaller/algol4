@@ -148,6 +148,40 @@ tester("the generate methods",Algol,{
 			}
 		}
 	},
+	/*"generateFilterPodsFromStart(state,def,recorder,startpos)": {
+		"for float with max and blocks": {
+			state: {
+				connections: {
+					S: {nextto:{5:"step1",6:"step2",7:"step4",8:"step5"}},
+					step1: {nextto:{5:"step2",6:"step3"}},
+					step2: {nextto:{5:"step5"}},
+					step3: {nextto:{5:"step4"}}
+				},
+				layers: {
+					avoid: {step5:"X"}
+				}
+			},
+			def: {
+				dirs: ["dirs",[5,6,8]],
+				max: 2,
+				blocks: ["allposinlayer","avoid"]
+			},
+			recorder: {
+				start: {S:["FOO"]}
+			}
+			expected: {
+				start: {S:["FOO",{floatmaxdistance:2,floatsize:3,floatblocks:1}]},
+				steps: {
+					step1: [{floatmaxdistance:2,floatsize:3,floatblocks:1,floatdistance:1,target:"step1",start:"S"}],
+					step2: [{floatmaxdistance:2,floatsize:3,floatblocks:1,floatdistance:1,target:"step2",start:"S"}]
+					step3: [{floatmaxdistance:2,floatsize:3,floatblocks:1,floatdistance:2,target:"step3",start:"S"}]
+				},
+				blocks: {
+					step5: [{floatmaxdistance:2,floatsize:3,floatblocks:1,floatdistance:1,target:"step3",start:"S"}]
+				}
+			}
+		}
+	},*/
 	"generateWalkerPods(state,walkerdef)": {
 		"when we have a count": {
 			state: {
