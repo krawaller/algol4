@@ -12,7 +12,7 @@ Algol.generateNeighbourPods = function(state,def){
 	var cond = def.get("condition");
 	return this.evaluatePositionList(state,def.get("starts")).reduce(function(recorder,startpos){
 		var neighbours = this.evaluateDirList(state.setIn(["context","start"],startpos),def.get("dirs")).reduce(function(map,dir){
-			var targetpos = state.getIn(["connections",startpos,"nextto",dir])||state.getIn(["connections",startpos,"nextto",dir+""]);
+			var targetpos = state.getIn(["connections",startpos,dir])||state.getIn(["connections",startpos,dir+""]);
 			return targetpos && (!cond || this.evaluateBoolean(state.setIn(["context","target"],targetpos),cond)) ? map.set(dir,targetpos) : map;
 		},I.Map(),this);
 		return neighbours.reduce(function(recorder,pos,dir){
@@ -25,7 +25,7 @@ function stopreason(state,def,dir,pos,length,blocks,steps,prioblocks){
 	if (def.get("max") && length === def.get("max")) {
 		return "reachedmax";
 	} else {
-		var nextpos = (state.getIn(["connections",pos,"nextto",dir])||state.getIn(["connections",pos,"nextto",dir+""]));
+		var nextpos = (state.getIn(["connections",pos,dir])||state.getIn(["connections",pos,dir+""]));
 		if (!nextpos){
 			return "outofbounds";
 		} else if (prioblocks && blocks && blocks.contains(nextpos)){
@@ -45,7 +45,7 @@ Algol.generateWalkerPodsInDir = function(startstate,def,recorder,startpos,dir){
 		tobecounted = def.has("count") && this.evaluatePositionList(startstate,def.get("count")),
 		prevcounttotal = 0, counttrack = [];
 	while(!(reason=stopreason(startstate,def,dir,pos,walk.length,blocks,steps,def.get("prioritizeblocksoversteps")))){
-		walk.push(pos = startstate.getIn(["connections",pos,"nextto",dir])||startstate.getIn(["connections",pos,"nextto",dir+""]));
+		walk.push(pos = startstate.getIn(["connections",pos,dir])||startstate.getIn(["connections",pos,dir+""]));
 		if (tobecounted){
 			counttrack.push(prevcounttotal = (prevcounttotal + (tobecounted.contains(pos)?1:0)));
 		}
@@ -56,7 +56,7 @@ Algol.generateWalkerPodsInDir = function(startstate,def,recorder,startpos,dir){
 	}
 	recorder = I.pushIn(recorder,["start",startpos],context);
 	if (reason==="hitblock"){
-		blockpos = startstate.getIn(["connections",pos,"nextto",dir])||startstate.getIn(["connections",pos,"nextto",dir+""]);
+		blockpos = startstate.getIn(["connections",pos,dir])||startstate.getIn(["connections",pos,dir+""]);
 		recorder = I.pushIn(recorder,["block",blockpos],context.set("target",blockpos));
 	}
 	_.each(walk,function(step,n){

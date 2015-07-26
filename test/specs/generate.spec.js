@@ -70,7 +70,7 @@ tester("the generate methods",Algol,{
 		"for many starts": {
 			state: {
 				context:{something:"other"},
-				connections:{foo:{nextto:{4:"baz",6:"bin"}},foo2:{nextto:{5:"bin",6:"buh"}}}
+				connections:{foo:{4:"baz",6:"bin"},foo2:{5:"bin",6:"buh"}}
 			},
 			nexttodef: {starts:"STARTSDEF",dirs:"DIRSDEF"},
 			expected: {
@@ -94,11 +94,11 @@ tester("the generate methods",Algol,{
 					expectedargs: [
 						[{
 							context:{start:"foo",something:"other"},
-							connections:{foo:{nextto:{4:"baz",6:"bin"}},foo2:{nextto:{5:"bin",6:"buh"}}}
+							connections:{foo:{4:"baz",6:"bin"},foo2:{5:"bin",6:"buh"}}
 						},"DIRSDEF"],
 						[{
 							context:{start:"foo2",something:"other"},
-							connections:{foo:{nextto:{4:"baz",6:"bin"}},foo2:{nextto:{5:"bin",6:"buh"}}}
+							connections:{foo:{4:"baz",6:"bin"},foo2:{5:"bin",6:"buh"}}
 						},"DIRSDEF"]
 					]
 				}
@@ -107,7 +107,7 @@ tester("the generate methods",Algol,{
 		"for condition": {
 			state: {
 				context:{something:"other"},
-				connections:{foo:{nextto:{4:"baz",6:"bin"}}}
+				connections:{foo:{4:"baz",6:"bin"}}
 			},
 			nexttodef: {starts:"STARTSDEF",dirs:"DIRSDEF",condition:"COND"},
 			expected: {
@@ -128,7 +128,7 @@ tester("the generate methods",Algol,{
 					expectedargs: [
 						[{
 							context:{start:"foo",something:"other"},
-							connections:{foo:{nextto:{4:"baz",6:"bin"}}}
+							connections:{foo:{4:"baz",6:"bin"}}
 						},"DIRSDEF"]
 					]
 				},
@@ -137,11 +137,11 @@ tester("the generate methods",Algol,{
 					expectedargs: [
 						[{
 							context:{something:"other",target:"baz"},
-							connections:{foo:{nextto:{4:"baz",6:"bin"}}}
+							connections:{foo:{4:"baz",6:"bin"}}
 						},"COND"],
 						[{
 							context:{something:"other",target:"bin"},
-							connections:{foo:{nextto:{4:"baz",6:"bin"}}}
+							connections:{foo:{4:"baz",6:"bin"}}
 						},"COND"]
 					]
 				}
@@ -186,7 +186,7 @@ tester("the generate methods",Algol,{
 		"when we have a count": {
 			state: {
 				marks: {somemark:"S"},
-				connections: {S:{nextto:{5:"step1"}},step1: {nextto:{5:"step2"}}, step2: {nextto:{5:"step3"}}, step3: {nextto:{}}},
+				connections: {S:{5:"step1"},step1: {5:"step2"}, step2: {5:"step3"}, step3: {}},
 				layers: {tobecounted:{step1:"X",step3:"X"}}
 			},
 			walkerdef: {
@@ -212,7 +212,7 @@ tester("the generate methods",Algol,{
 		"when goes out of bounds": {
 			state: {
 				marks: {somemark:"S"},
-				connections: {S:{nextto:{4:"lonestep"}},lonestep:{nextto:{}}}
+				connections: {S:{4:"lonestep"},lonestep:{}}
 			},
 			walkerdef: {
 				starts: ["markpos","somemark"],
@@ -230,7 +230,7 @@ tester("the generate methods",Algol,{
 		"when reaches max": {
 			state: {
 				marks: {somemark:"S"},
-				connections: {S:{nextto:{5:"step1"}},step1: {nextto:{5:"step2"}, step3: {nextto:{5:"step666"}}}}
+				connections: {S:{5:"step1"},step1: {5:"step2"}, step3: {5:"step666"}}
 			},
 			walkerdef: {
 				starts: ["markpos","somemark"],
@@ -253,7 +253,7 @@ tester("the generate methods",Algol,{
 		"when run out of steps": {
 			state: {
 				marks: {somemark:"S"},
-				connections: {S:{nextto:{6:"step1"}},step1:{nextto:{6:"step2"}}},
+				connections: {S:{6:"step1"},step1:{6:"step2"}},
 				layers: {pads: {step1:"X"}}
 			},
 			walkerdef: {
@@ -273,7 +273,7 @@ tester("the generate methods",Algol,{
 		"when hit a block": {
 			state: {
 				marks: {somemark:"S"},
-				connections: {S:{nextto:{7:"step1"}},step1:{nextto:{7:"step2"}}},
+				connections: {S:{7:"step1"},step1:{7:"step2"}},
 				layers: {blocks: {step2:"X"}}
 			},
 			walkerdef: {
@@ -295,7 +295,7 @@ tester("the generate methods",Algol,{
 		"when hit block and ran out of steps": {
 			state: {
 				marks: {somemark:"S"},
-				connections: {S:{nextto:{7:"step1"}},step1:{nextto:{7:"step2"}}},
+				connections: {S:{7:"step1"},step1:{7:"step2"}},
 				layers: {blocks: {step2:"X"}, "pads": {"step1":"X"}}
 			},
 			walkerdef: {
@@ -316,7 +316,7 @@ tester("the generate methods",Algol,{
 		"when hit block and ran out of steps and prioritizing blocks": {
 			state: {
 				marks: {somemark:"S"},
-				connections: {S:{nextto:{7:"step1"}},step1:{nextto:{7:"step2"}}},
+				connections: {S:{7:"step1"},step1:{7:"step2"}},
 				layers: {blocks: {step2:"X"}, "pads": {"step1":"X"}}
 			},
 			walkerdef: {
@@ -449,7 +449,7 @@ tester("the generate methods",Algol,{
 			state: {
 				layers:{},
 				marks:{foo:"bar"},
-				connections:{bar:{nextto:{1:"bar2"}}},
+				connections:{bar:{1:"bar2"}},
 				context:{blaj:"paj"}
 			},
 			gendef: {
@@ -466,7 +466,7 @@ tester("the generate methods",Algol,{
 			},
 			expected: {
 				marks:{foo:"bar"},
-				connections:{bar:{nextto:{1:"bar2"}}},
+				connections:{bar:{1:"bar2"}},
 				layers:{newlayer:{bar2:[{prop:"snopp"}]}},
 				context:{blaj:"paj"}
 			}
@@ -477,7 +477,7 @@ tester("the generate methods",Algol,{
 			state: {
 				layers:{},
 				marks:{foo:"bar"},
-				connections:{bar:{nextto:{1:"bar2"}}},
+				connections:{bar:{1:"bar2"}},
 				context:{blaj:"paj"},
 				gamedef:{
 					generators:{
@@ -499,7 +499,7 @@ tester("the generate methods",Algol,{
 			list: ["somegen"],
 			expected: {
 				marks:{foo:"bar"},
-				connections:{bar:{nextto:{1:"bar2"}}},
+				connections:{bar:{1:"bar2"}},
 				layers:{newlayer:{bar2:[{prop:"snopp"}]}},
 				context:{blaj:"paj"},
 				gamedef:{
