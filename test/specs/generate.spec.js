@@ -152,10 +152,10 @@ tester("the generate methods",Algol,{
 		"for float with max and blocks": {
 			state: {
 				connections: {
-					S: {nextto:{5:"step1",6:"step2",7:"step4",8:"step5"}},
-					step1: {nextto:{5:"step2",6:"step3"}},
-					step2: {nextto:{5:"step5"}},
-					step3: {nextto:{5:"step4"}}
+					S: {5:"step1",6:"step2",7:"step4",8:"step5"},
+					step1: {5:"step2",6:"step3"},
+					step2: {5:"step5"},
+					step3: {5:"step4"}
 				},
 				layers: {
 					avoid: {step5:"X"}
