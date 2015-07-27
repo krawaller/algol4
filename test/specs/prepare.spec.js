@@ -119,7 +119,7 @@ tester("The prepare methods",Algol,{
 					expectedargs: [ ["BOARD"] ]
 				},
 				prepareInitialUnitDataFromSetup: {
-					returns: "units",
+					returns: "UNITS",
 					expectedargs: [ ["SETUP"] ]
 				},
 				prepareBaseLayers: {
@@ -133,9 +133,7 @@ tester("The prepare methods",Algol,{
 					board: "BOARD"
 				},
 				connections: "CONNECTIONS",
-				data: {
-					units: "units"
-				},
+				units: "UNITS",
 				baselayers: "PREPPED",
 				basecontext: {
 					nbrofplayers: "PLAYERS"

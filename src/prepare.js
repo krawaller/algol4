@@ -67,7 +67,7 @@ Algol.prepareNewGameState = function(gamedef,nbrofplayers){
 	return I.fromJS({
 		gamedef: gamedef,
 		connections: this.prepareConnectionsFromBoardDef(gamedef.get("board")),
-		data: I.Map().set("units",this.prepareInitialUnitDataFromSetup(gamedef.get("setup"))),
+		units: this.prepareInitialUnitDataFromSetup(gamedef.get("setup")),
 		baselayers: this.prepareBaseLayers(gamedef,nbrofplayers),
 		basecontext: {
 			nbrofplayers: nbrofplayers
