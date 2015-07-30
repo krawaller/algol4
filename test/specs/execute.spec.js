@@ -395,130 +395,71 @@ tester("The execute methods",Algol,{
 	"applyEffect(state,effect)": {
 		"when using KILL": {
 			state: {
-				affected: [],
-				turn: 4,
-				data: {units: {"someid":{foo:"muu"}}},
-				marks: {somemark:"xyz"},
-				layers: {"units": {"xyz": [{ID:"someid"}]}}
+				data: {units: {"someid":{foo:"muu"}}}
 			},
-			effect: ["killunit",["idofunitat",["markpos","somemark"]]],
+			effect: ["killunit",["id","someid"]],
 			expected: {
-				affected: ["someid"],
-				turn: 4,
-				data: {units: {"someid":{foo:"muu",dead:true,affectedturn:4}}},
-				marks: {somemark:"xyz"},
-				layers: {"units": {"xyz": [{ID:"someid"}]}}
+				data: {units: {"someid":{foo:"muu",dead:true}}}
 			}
 		},
 		"when using moveunit": {
 			state: {
-				affected: [],
-				turn: 5,
-				data: {units: {"someid":{foo:"muu"}}},
-				marks: {somemark:"xyz",othermark:"abc"},
-				layers: {"units": {"xyz": [{ID:"someid"}]}}
+				data: {units: {"someid":{foo:"muu"}}}
 			},
-			effect: ["moveunit",["idofunitat",["markpos","somemark"]],["markpos","othermark"]],
+			effect: ["moveunit",["id","someid"],["pos","xyz"]],
 			expected: {
-				affected: ["someid"],
-				turn: 5,
-				data: {units: {"someid":{foo:"muu",pos:"abc",affectedturn:5}}},
-				marks: {somemark:"xyz",othermark:"abc"},
-				layers: {"units": {"xyz": [{ID:"someid"}]}}
+				data: {units: {"someid":{foo:"muu",pos:"xyz"}}}
 			},
 		},
 		"when using turnunit clockwise": {
 			state: {
-				affected: [],
-				turn: 5,
-				data: {units: {"someid":{foo:"muu",dir:3}}},
-				marks: {somemark:"xyz",othermark:"abc"},
-				layers: {"units": {"xyz": [{ID:"someid"}]}}
+				data: {units: {"someid":{foo:"muu",dir:3}}}
 			},
-			effect: ["turnunit",["idofunitat",["markpos","somemark"]],["val",2]],
+			effect: ["turnunit",["id","someid"],["val",2]],
 			expected: {
-				affected: ["someid"],
-				turn: 5,
-				data: {units: {"someid":{foo:"muu",dir:5,affectedturn:5}}},
-				marks: {somemark:"xyz",othermark:"abc"},
-				layers: {"units": {"xyz": [{ID:"someid"}]}}
+				data: {units: {"someid":{foo:"muu",dir:5}}}
 			},
 		},
 		"when using turnunit anticlockwise": {
 			state: {
-				affected: [],
-				turn: 5,
-				data: {units: {"someid":{foo:"muu",dir:1}}},
-				marks: {somemark:"xyz",othermark:"abc"},
-				layers: {"units": {"xyz": [{ID:"someid"}]}}
+				data: {units: {"someid":{foo:"muu",dir:1}}}
 			},
-			effect: ["turnunit",["idofunitat",["markpos","somemark"]],["val",-3]],
+			effect: ["turnunit",["id","someid"],["val",-3]],
 			expected: {
-				affected: ["someid"],
-				turn: 5,
-				data: {units: {"someid":{foo:"muu",dir:6,affectedturn:5}}},
-				marks: {somemark:"xyz",othermark:"abc"},
-				layers: {"units": {"xyz": [{ID:"someid"}]}}
+				data: {units: {"someid":{foo:"muu",dir:6}}}
 			},
 		},
 		"when using turnunit clockwise with wrap": {
 			state: {
-				affected: [],
-				turn: 5,
-				data: {units: {"someid":{foo:"muu",dir:7}}},
-				marks: {somemark:"xyz",othermark:"abc"},
-				layers: {"units": {"xyz": [{ID:"someid"}]}}
+				data: {units: {"someid":{foo:"muu",dir:7}}}
 			},
-			effect: ["turnunit",["idofunitat",["markpos","somemark"]],["val",4]],
+			effect: ["turnunit",["id","someid"],["val",4]],
 			expected: {
-				affected: ["someid"],
-				turn: 5,
-				data: {units: {"someid":{foo:"muu",dir:3,affectedturn:5}}},
-				marks: {somemark:"xyz",othermark:"abc"},
-				layers: {"units": {"xyz": [{ID:"someid"}]}}
+				data: {units: {"someid":{foo:"muu",dir:3}}}
 			},
 		},
 		"when using swapunitpositions": {
 			state: {
-				affected: ["blah"],
-				turn: 6,
-				data: {units: {"someid":{foo:"bar",pos:"xyz"},"otherid":{foo:"baz",pos:"abc"}}},
-				marks: {somemark:"xyz",othermark:"abc"},
-				layers: {"units": {"xyz": [{ID:"someid"}], "abc":[{ID:"otherid"}]}}
+				data: {units: {"someid":{foo:"bar",pos:"xyz"},otherid:{foo:"baz",pos:"abc"}}}
 			},
-			effect: ["swapunitpositions",["idofunitat",["markpos","somemark"]],["idofunitat",["markpos","othermark"]]],
+			effect: ["swapunitpositions",["id","someid"],["id","otherid"]],
 			expected: {
-				affected: ["blah","someid","otherid"],
-				turn: 6,
-				data: {units: {"someid":{foo:"bar",pos:"abc",affectedturn:6},
-				otherid:{foo:"baz",pos:"xyz",affectedturn:6}}},
-				marks: {somemark:"xyz",othermark:"abc"},
-				layers: {"units": {"xyz": [{ID:"someid"}], "abc":[{ID:"otherid"}]}}
+				data: {units: {"someid":{foo:"bar",pos:"abc"},otherid:{foo:"baz",pos:"xyz"}}}
 			}
 		},
 		"when using setunitdata": {
 			state: {
-				affected: [],
-				turn: 7,
-				data: {units: {"someid":{blah:"notmoo"}}},
-				marks: {somemark:"xyz"},
-				layers: {"units": {"xyz": [{ID:"someid"}]}}
+				data: {units: {"someid":{blah:"notmoo"}}}
 			},
-			effect: ["setunitdata",["idofunitat",["markpos","somemark"]],"blah",["val","moo"]],
+			effect: ["setunitdata",["id","someid"],"blah",["val","moo"]],
 			expected: {
-				affected: ["someid"],
-				turn: 7,
-				data: {units: {"someid":{blah:"moo",affectedturn:7}}},
-				marks: {somemark:"xyz"},
-				layers: {"units": {"xyz": [{ID:"someid"}]}}
+				data: {units: {"someid":{blah:"moo"}}}
 			},
 		},
 		"when using forallin": {
 			state: {
-				turn: 8,
 				layers:{
-					somelayer:{a:"X"},
-					units:{a:[{ID:"A"}],b:[{ID:"B"}]}
+					somelayer:{a:"X"}
 				},
 				data:{
 					units:{
@@ -526,55 +467,44 @@ tester("The execute methods",Algol,{
 						B:{pos:"b"}
 					}
 				},
-				context:{foo:"bar"},
-				affected:["B"]
+				context:{foo:"bar"}
 			},
 			effect: ["forallin",["layername","somelayer"],["setunitdata",["loopid"],"doomed",["val","yes"]]],
 			expected: {
-				turn: 8,
 				layers:{
-					somelayer:{a:"X"},
-					units:{a:[{ID:"A"}],b:[{ID:"B"}]}
+					somelayer:{a:"X"}
 				},
 				data:{
 					units:{
-						A:{pos:"a",doomed:"yes",affectedturn:8},
+						A:{pos:"a",doomed:"yes"},
 						B:{pos:"b"}
 					}
 				},
-				context:{foo:"bar"},
-				affected:["B","A"]}
+				context:{foo:"bar"}
+			}
 		},
 		"when using multieffect": {
 			state: {
-				turn: 9,
-				marks:{somemark:"a"},
-				layers:{units:{a:[{ID:"A"}],b:[{ID:"B"}]}},
 				data:{
 					units:{
 						A:{pos:"a"},
 						B:{pos:"b"}
 					}
 				},
-				context:{foo:"bar"},
-				affected:["B"]
+				context:{foo:"bar"}
 			},
 			effect: ["multieffect",[
-				["setunitdata",["idofunitat",["markpos","somemark"]],"doomed",["val","yes"]],
-				["killunit",["idofunitat",["markpos","somemark"]]]]
-			],
+				["setunitdata",["id","A"],"doomed",["val","yes"]],
+				["killunit",["id","A"]]
+			]],
 			expected: {
-				turn: 9,
-				marks:{somemark:"a"},
-				layers:{units:{a:[{ID:"A"}],b:[{ID:"B"}]}},
 				data:{
 					units:{
-						A:{pos:"a",doomed:"yes",dead:true,affectedturn:9},
+						A:{pos:"a",doomed:"yes",dead:true},
 						B:{pos:"b"}
 					}
 				},
-				context:{foo:"bar"},
-				affected:["B","A"]
+				context:{foo:"bar"}
 			}
 		}
 	},

@@ -112,7 +112,7 @@ tester("The prepare methods",Algol,{
 				setup: "SETUP",
 				board: "BOARD"
 			},
-			players: "PLAYERS",
+			players: 2,
 			context: {
 				prepareConnectionsFromBoardDef: {
 					returns: "CONNECTIONS",
@@ -133,12 +133,15 @@ tester("The prepare methods",Algol,{
 					board: "BOARD"
 				},
 				connections: "CONNECTIONS",
-				units: "UNITS",
+				data: {
+					units: "UNITS"
+				},
 				baselayers: "PREPPED",
 				basecontext: {
-					nbrofplayers: "PLAYERS"
+					nbrofplayers: 2
 				},
-				status: "ongoing"
+				status: "ongoing",
+				passto: {1:2,2:1}
 			}
 		}
 	},
@@ -155,7 +158,8 @@ tester("The prepare methods",Algol,{
 				marks: "FOO",
 				turn: 666,
 				context: "FOO",
-				player: 333
+				player: 333,
+				passto: {777:999}
 			},
 			nextplayer: 777,
 			expected: {
@@ -177,7 +181,8 @@ tester("The prepare methods",Algol,{
 					gamedef: {
 						startturn: {hydration:"TURNSTART"},
 						startstep: {hydration:"STEPSTART"}
-					}
+					},
+					passto: {777:999}
 				},
 				previousturn: {
 					player: 333,
@@ -189,12 +194,14 @@ tester("The prepare methods",Algol,{
 					gamedef: {
 						startturn: {hydration:"TURNSTART"},
 						startstep: {hydration:"STEPSTART"}
-					}
+					},
+					passto: {777:999}
 				},
 				marks: {},
 				turn: 667,
 				player: 777,
-				context: {currentplayer:777,performedsteps:0},
+				passto: {777:999},
+				context: {currentplayer:777,performedsteps:0,nextplayer:999},
 				affected: []
 			},
 			context: {
@@ -261,6 +268,4 @@ tester("The prepare methods",Algol,{
 		}
 	}
 },I);
-
-
 

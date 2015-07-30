@@ -39,7 +39,8 @@ Algol.evaluatePositionList = function(state,def){
 
 var idmethods = {
 	idofunitat: function(state,position){ return state.getIn(["layers","units",this.evaluatePosition(state,position),0,"ID"]); },
-	loopid: function(state){ return state.getIn(["context","loopid"]); }
+	loopid: function(state){ return state.getIn(["context","loopid"]); },
+	id: function(state,id){ return this.evaluateValue(state,id); }
 };
 
 Algol.evaluateId = function(state,def){
@@ -132,7 +133,8 @@ var positionmethods = {
 	markinlast: function(state,commandname,markname){
 		var step = state.get("steps").findLast(function(s){ return s.get("command") === commandname; });
 		return step && step.getIn(["marks",markname]);
-	}
+	},
+	pos: function(state,pos){ return this.evaluateValue(state,pos); }
 };
 
 Algol.evaluatePosition = function(state,def){

@@ -17,7 +17,6 @@
 		{"pos":3003,"group":"kings","dir":1,"owner":2}
 	],
 	"startstep": {
-		"cleanse": ["arrows","bullseyes"],
 		"hydration": ["findarrows"]
 	},
 	"generators": {

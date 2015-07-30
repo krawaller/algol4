@@ -67,12 +67,15 @@ Algol.prepareNewGameState = function(gamedef,nbrofplayers){
 	return I.fromJS({
 		gamedef: gamedef,
 		connections: this.prepareConnectionsFromBoardDef(gamedef.get("board")),
-		units: this.prepareInitialUnitDataFromSetup(gamedef.get("setup")),
+		data: I.Map().set("units",this.prepareInitialUnitDataFromSetup(gamedef.get("setup"))),
 		baselayers: this.prepareBaseLayers(gamedef,nbrofplayers),
 		basecontext: {
 			nbrofplayers: nbrofplayers
 		},
-		status: "ongoing"
+		status: "ongoing",
+		passto: _.reduce(_.range(1,nbrofplayers+1),function(mem,p){
+			return mem.set(p,p===nbrofplayers?1:p+1);
+		},I.Map())
 	});
 };
 
@@ -91,7 +94,7 @@ Algol.prepareNewTurnState = function(state,player){
 		previousturn: state,
 		player: player,
 		turn: state.get("turn")+1,
-		context: {currentplayer:player,performedsteps:0}
+		context: {currentplayer:player,performedsteps:0,nextplayer:state.getIn(["passto",player])||state.getIn(["passto",""+player])}
 	})),state.getIn(["gamedef","startturn","hydration"])||I.List()),state.getIn(["gamedef","startstep","hydration"])||I.List());
 };
 

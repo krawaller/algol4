@@ -8,34 +8,24 @@ function augmentWithExecuteFunctions(Algol){
 
 var effectmethods = {
 	killunit: function(state,id){
-		id = this.evaluateId(state,id);
-		return I.pushInIfNew(state,["affected"],id).mergeIn(["data","units",id],{dead:true,affectedturn:state.get("turn")});
+		return state.setIn(["data","units",this.evaluateId(state,id),"dead"],true);
 	},
 	moveunit: function(state,id,pos){
-		id = this.evaluateId(state,id);
-		return I.pushInIfNew(state,["affected"],id).mergeIn(["data","units",id],{pos:this.evaluatePosition(state,pos),affectedturn:state.get("turn")});
+		return state.setIn(["data","units",this.evaluateId(state,id),"pos"],this.evaluatePosition(state,pos));
 	},
 	turnunit: function(state,id,mod){
 		id = this.evaluateId(state,id);
 		var newdir = state.getIn(["data","units",id,"dir"])+this.evaluateValue(state,mod);
-		return I.pushInIfNew(state,["affected"],id).mergeIn(["data","units",id],{dir:(newdir>8?newdir-8:0>newdir?newdir+8:newdir),affectedturn:state.get("turn")});
+		return state.setIn(["data","units",id,"dir"],newdir>8?newdir-8:0>newdir?newdir+8:newdir);
 	},
 	setunitdata: function(state,id,propname,val){
-		id = this.evaluateId(state,id);
-		return I.pushInIfNew(state,["affected"],id).mergeIn(["data","units",id],_.object([propname,"affectedturn"],[this.evaluateValue(state,val),state.get("turn")]));
+		return state.setIn(["data","units",this.evaluateId(state,id),this.evaluateValue(state,propname)],this.evaluateValue(state,val));
 	},
 	swapunitpositions: function(state,id1,id2){
 		id1 = this.evaluateId(state,id1);
 		id2 = this.evaluateId(state,id2);
-		state = I.pushInIfNew(state,["affected"],id1);
-		state = I.pushInIfNew(state,["affected"],id2);
 		var temp = state.getIn(["data","units",id1,"pos"]);
-		state = state.mergeIn(["data","units",id1],{pos:state.getIn(["data","units",id2,"pos"]),affectedturn:state.get("turn")});
-		return state.mergeIn(["data","units",id2],{pos:temp,affectedturn:state.get("turn")});
-	},
-	createterrain: function(state,pos,props){ // TODO - remove, should spawn unit instead
-		pos = this.evaluatePosition(state,pos);
-		return state.setIn(["data","terrain",pos,I.fromJS(props).set("pos",pos)]);
+		return state.setIn(["data","units",id1,"pos"],state.getIn(["data","units",id2,"pos"])).setIn(["data","units",id2,"pos"],temp);
 	},
 	forallin: function(state,layername,effect){
 		var layer = state.getIn(["layers",this.evaluateValue(state,layername)]);
