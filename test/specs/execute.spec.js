@@ -506,6 +506,33 @@ tester("The execute methods",Algol,{
 				},
 				context:{foo:"bar"}
 			}
+		},
+		"when using setcontextval": {
+			state: {
+				context: {foo:"bar",bin:"baz"}
+			},
+			effect: ["setcontextval",["val","bin"],["val","boo"]],
+			expected: {
+				context: {foo:"bar",bin:"boo"}
+			}
+		},
+		"when using addtocontextval on existing var": {
+			state: {
+				context: {foo:"bar",bin:4}
+			},
+			effect: ["addtocontextval",["val","bin"],3],
+			expected: {
+				context: {foo:"bar",bin:7}
+			}
+		},
+		"when using addtocontextval on new var": {
+			state: {
+				context: {foo:"bar"}
+			},
+			effect: ["addtocontextval",["val","bin"],3],
+			expected: {
+				context: {foo:"bar",bin:3}
+			}
 		}
 	},
 	"updateMarksFromCommand(state,commanddef)": {}

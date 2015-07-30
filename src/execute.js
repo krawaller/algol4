@@ -35,6 +35,13 @@ var effectmethods = {
 	},
 	multieffect: function(state,list){
 		return list.reduce(this.applyEffect.bind(this),state,this);
+	},
+	setcontextval: function(state,prop,val){
+		return state.setIn(["context",this.evaluateValue(state,prop)],this.evaluateValue(state,val));
+	},
+	addtocontextval: function(state,prop,val){
+		var propname = this.evaluateValue(state,prop);
+		return state.setIn(["context",propname],this.evaluateValue(state,val)+(state.getIn(["context",propname])||0));
 	}
 };
 

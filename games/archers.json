@@ -10,14 +10,15 @@
 			["rectangle",6006,8008,{"owner":2}]
 		]
 	},
-	"setup": [
-		["list",[2002,2003,2004,3002,3004,4002,4003,4004],{"owner":1,"dir":5,"group":"archers"}],
-		{"pos":3003,"group":"kings","dir":5,"owner":1},
-		["list",[6006,6007,6008,7006,7008,8006,8007,8008],{"owner":2,"dir":1,"group":"archers"}],
-		{"pos":3003,"group":"kings","dir":1,"owner":2}
-	],
+	"setup": {
+		"archers": [
+			["list",[2002,2003,2004,3002,3004,4002,4003,4004],{"owner":1,"dir":5}],
+			["list",[6006,6007,6008,7006,7008,8006,8007,8008],{"owner":2,"dir":1}]
+		],
+		"kings": [{"pos":3003,"dir":5,"owner":1},{"pos":3003,"dir":1,"owner":2}]
+	},
 	"startstep": {
-		"hydration": ["findarrows"]
+		"rungenerators": ["findarrows"]
 	},
 	"generators": {
 		"findkilltargets": {
@@ -59,10 +60,10 @@
 			"dirs": ["relativedirs",["dirs",[1,5]],["lookup","units",["contextpos","start"],"dir"]],
 			"draw": {
 				"target": {
-					"condition": ["and",
+					"condition": ["and",[
 						["noneat","units",["contextpos","target"]],
 						["noneat","opparrows",["contextpos","target"]]
-					],
+					]],
 					"tolayer": ["ifelse",
 						["same",
 							["contextval","dir"],
@@ -82,49 +83,65 @@
 		"selectunit": {
 			"fromlayer": "myunits",
 			"cleanse": ["forwardfooting","backwardfooting","gonnadie"],
-			"hydration": ["findfooting","findkilltargets"]
+			"rungenerators": ["findfooting","findkilltargets"]
 		}
 	},
 	"endturn": {
-		"condition":["same",["contextval","performedsteps"],2],
+		"condition":["same",["contextval","nonfiremoves"],2],
 		"commandcap": true,
-		"passto": ["ifelse",["same",["contextval","currentplayer"],2],1,2],
+		"passto": ["contextval","nextplayer"],
 		"endgame": {
-			"infiltration": {
-				"condition": [["overlaps","myunits","opptrees"],["contextval","currentplayer"]]
-			},
-			"kingkill": {
-				"condition": [["notempty","oppdeadkings"],["contextval","currentplayer"]]
-			}
+			"infiltration": ["overlaps","myunits","opptrees"],
+			"kingkill": ["notempty","oppdeadkings"]
 		}
 	},
 	"commands": {
 		"stepforward": {
 			"condition": ["notempty","forwardfooting"],
-			"effect": ["moveunit",["idofunitat",["markpos","selectunit"]],["firstposin","forwardfooting"]],
+			"effect": ["multieffect",[
+				["moveunit",["idofunitat",["markpos","selectunit"]],["firstposin","forwardfooting"]],
+				["setcontextval",["idofunitat",["markpos","selectunit"]],"hasmoved"],
+				["addtocontextval","nonfiremoves",1]
+			]],
 			"setmarks": {
 				"selectunit": ["firstposin","forwardfooting"]
 			}
 		},
 		"stepbackward": {
 			"condition": ["notempty","backwardfooting"],
-			"effect": ["moveunit",["idofunitat",["markpos","selectunit"]],["firstposin","backwardfooting"]],
+			"effect": ["multieffect",[
+				["moveunit",["idofunitat",["markpos","selectunit"]],["firstposin","backwardfooting"]],
+				["setcontextval",["idofunitat",["markpos","selectunit"]],"hasmoved"],
+				["addtocontextval","nonfiremoves",1]
+			]],
 			"setmarks": {
 				"selectunit": ["firstposin","backwardfooting"]
 			}
 		},
 		"turnleft": {
-			"effect": ["turnunit",["idofunitat",["markpos","selectunit"]],-2]
+			"effect": ["multieffect",[
+				["turnunit",["idofunitat",["markpos","selectunit"]],-2],
+				["setcontextval",["idofunitat",["markpos","selectunit"]],"hasmoved"],
+				["addtocontextval","nonfiremoves",1]
+			]]
 		},
 		"turnright": {
-			"effect": ["turnunit",["idofunitat",["markpos","selectunit"]],2]
+			"effect": ["multieffect",[
+				["turnunit",["idofunitat",["markpos","selectunit"]],2],
+				["setcontextval",["idofunitat",["markpos","selectunit"]],"hasmoved"],
+				["addtocontextval","nonfiremoves",1]
+			]]
 		},
 		"fire": {
-			"condition": ["and",
+			"condition": ["and",[
 				["notempty","gonnadie"],
-				["not",["affected",["idofunitat",["markpos","selectunit"]]]]
-			],
-			"effect": ["killunit",["idofunitat",["firstposin","gonnadie"]]]
+				["not",["truthy",["contextval","nonfiremoves"]]],
+				["not",["truthy",["contextval",["idat",["markpos","selectunit"]]]]]
+			]],
+			"effect": ["multieffect",[
+				["killunit",["idofunitat",["firstposin","gonnadie"]]],
+				["setcontextval",["idofunitat",["markpos","selectunit"]],"hasmoved"]
+			]]
 		}
 	}
 }

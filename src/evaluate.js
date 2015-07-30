@@ -38,7 +38,7 @@ Algol.evaluatePositionList = function(state,def){
 };
 
 var idmethods = {
-	idofunitat: function(state,position){ return state.getIn(["layers","units",this.evaluatePosition(state,position),0,"ID"]); },
+	idofunitat: function(state,position){ return state.getIn(["layers","units",this.evaluatePosition(state,position),0,"id"]); },
 	loopid: function(state){ return state.getIn(["context","loopid"]); },
 	id: function(state,id){ return this.evaluateValue(state,id); }
 };
@@ -69,11 +69,6 @@ var boolmethods = {
 	morethan: function(state,val1,val2){ return this.evaluateValue(state,val1) > this.evaluateValue(state,val2); },
 	isempty: function(state,layername){ return state.getIn(["layers",layername]).isEmpty(); },
 	notempty: function(state,layername){ return !state.getIn(["layers",layername]).isEmpty(); },
-	performedanycommand: function(state){ return !state.get("steps").isEmpty(); },
-	hasperformedcommand: function(state,commandname){
-		return state.get("steps").some(function(step){ return step.get("command") === commandname; });
-	},
-	affected: function(state,id){ return state.get("affected").contains(this.evaluateId(state,id)); },
 	true: function(){ return true; },
 	false: function(){ return false; },
 	positionisinlist: function(state,pos,poslist){
@@ -84,7 +79,8 @@ var boolmethods = {
 		return state.getIn(["layers",layer1]).some(function(entitylist,pos){
 			return otherlayer.has(pos);
 		});
-	}
+	},
+	truthy: function(state,def){ return !!this.evaluateValue(state,def); }
 };
 
 Algol.evaluateBoolean = function(state,def){
@@ -130,10 +126,6 @@ var positionmethods = {
 	markpos: function(state,markname){ return state.getIn(["marks",markname]); },
 	firstposin: function(state,layername){ return I.Iterable(state.getIn(["layers",layername]).keys()).first(); },
 	contextpos: function(state,ctxposname){ return state.getIn(["context",ctxposname]); },
-	markinlast: function(state,commandname,markname){
-		var step = state.get("steps").findLast(function(s){ return s.get("command") === commandname; });
-		return step && step.getIn(["marks",markname]);
-	},
 	pos: function(state,pos){ return this.evaluateValue(state,pos); }
 };
 

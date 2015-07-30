@@ -74,15 +74,6 @@ tester("The prepare methods",Algol,{
 			}
 		}
 	},
-	"prepareTerrainLayerFromEntityList(list)": {
-		"for normal call": {
-			list: [{pos:666,foo:"bar"},["positions",[777,666],{foo:"baz"}]],
-			expected: {
-				666: [{foo:"bar",pos:666},{foo:"baz",pos:666}],
-				777: [{foo:"baz",pos:777}]
-			}
-		}
-	},
 	"addEntitiesFromDef(list,def)": {
 		"for single entity": {
 			list: ["X"],

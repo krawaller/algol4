@@ -107,17 +107,6 @@ tester("the evaluate methods",Algol,{
 			state: {context:{somectxpos:777}},
 			posdef: ["contextpos","somectxpos"],
 			expected: 777
-		},
-		"for markinlast": {
-			state: {
-				steps:[
-					{command:"somecmnd",marks:{somemark:"FOO"}},
-					{command:"somecmnd",marks:{somemark:"BAR"}},
-					{command:"othercmnd",marks:{somemark:"blah"}}
-				]
-			},
-			posdef: ["markinlast","somecmnd","somemark"],
-			expected: "BAR"
 		}
 	},
 	"evaluatePositionList(state,poslistdef)": {
@@ -145,7 +134,7 @@ tester("the evaluate methods",Algol,{
 	"evaluateId(state,iddef)": {
 		"for idofunitat": {
 			state: {
-				layers: {units: {xyz:[{ID:"678"}]}},
+				layers: {units: {xyz:[{id:"678"}]}},
 				marks: {somemark:"xyz"}
 			},
 			iddef: ["idofunitat",["markpos","somemark"]],
@@ -167,24 +156,6 @@ tester("the evaluate methods",Algol,{
 		},
 		"for or with none true": {
 			booldef: ["or",[["morethan",["val",3],["val",1111]],["morethan",["val",3],["val",11]]]],
-			expected: false
-		},
-		"for affected when id in list": {
-			state: {
-				layers: { units: {xyz:[{ID:"123"}]} },
-				marks: {uglymark:"xyz"},
-				affected:["3","7","123"]
-			},
-			booldef: ["affected",["idofunitat",["markpos","uglymark"]]],
-			expected: true
-		},
-		"for affected when id not in list": {
-			state: {
-				layers: { units: {xyz:[{ID:"123"}]} },
-				marks: {uglymark:"xyz"},
-				affected:["3","7","321"]
-			},
-			booldef: ["affected",["idofunitat",["markpos","uglymark"]]],
 			expected: false
 		},
 		"for same when not correct": {
@@ -241,26 +212,6 @@ tester("the evaluate methods",Algol,{
 		},
 		"for not with true arg": {
 			booldef: ["not",["morethan",["val",7],["val",3]]],
-			expected: false
-		},
-		"for performedanycommand when correct": {
-			state: { steps: [{command:"yes"}]},
-			booldef: ["performedanycommand"],
-			expected: true
-		},
-		"for performedanycommand when not correct": {
-			state: { steps: []},
-			booldef: ["performedanycommand"],
-			expected: false
-		},
-		"for hasperformedcommand when correct": {
-			state: { steps: [{command:"foo"},{command:"somecommand"}]},
-			booldef: ["hasperformedcommand","somecommand"],
-			expected: true
-		},
-		"for hasperformedcommand when not correct": {
-			state: { steps: [{command:"foo"},{command:"bar"}]},
-			booldef: ["hasperformedcommand","somecommand"],
 			expected: false
 		},
 		"for positionisinlist when correct": {

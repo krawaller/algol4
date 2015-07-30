@@ -123,16 +123,21 @@ tester("The entitice methods",Algol,{
 	},
 	"prepareInitialUnitDataFromSetup(setup)": {
 		"for normal call": {
-			setup: "SETUP",
+			setup: {
+				group1: "SETUP1",
+				group2: "SETUP2"
+			},
 			context: {
 				prepareEntitiesFromList: {
 					returns: [{foo:"bar"},{baz:"bin"}],
-					expectedargs: [["SETUP"]],
+					expectedargs: [["SETUP1"],["SETUP2"]],
 				}
 			},
 			expected: {
-				unit1: {foo:"bar",ID:"unit1"},
-				unit2: {baz:"bin",ID:"unit2"}
+				unit1: {foo:"bar",id:"unit1",group:"group1"},
+				unit2: {baz:"bin",id:"unit2",group:"group1"},
+				unit3: {foo:"bar",id:"unit3",group:"group2"},
+				unit4: {baz:"bin",id:"unit4",group:"group2"},
 			}
 		},
 	},

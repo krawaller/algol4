@@ -36,9 +36,13 @@ Algol.addUnitLayersFromData = function(layers,unitsdata,plr){
 Used in prepareState
 */
 Algol.prepareInitialUnitDataFromSetup = function(setup){
-	return I.Map(Algol.prepareEntitiesFromList(setup).reduce(function(map,unit,n){
-		return map.set("unit"+(n+1),unit.set("ID","unit"+(n+1)));
-	},I.Map(),this));
+	var n = 0;
+	return setup.reduce(function(data,list,groupname){
+		return this.prepareEntitiesFromList(list).reduce(function(data,unit){
+			var id = "unit"+(++n);
+			return data.set(id,unit.set("id",id).set("group",groupname));
+		},data,this);
+	},I.Map(),this);
 };
 
 /*
@@ -68,19 +72,10 @@ Algol.addEntitiesFromDef = function(coll,def){
 /*
 Used in prepareInitialUnitDataFromSetup and prepareTerrainLayerFromEntityList
 */
-Algol.prepareEntitiesFromList = function(deflist){
-	return deflist.reduce(Algol.addEntitiesFromDef,I.List());
+Algol.prepareEntitiesFromList = function(deflist,group){
+	return deflist.reduce(this.addEntitiesFromDef,I.List());
 }
 
-/*
-TODO: truncate, or at least fix up
-Used in prepareState.
-*/
-Algol.prepareTerrainLayerFromEntityList = function(list){
-	return Algol.prepareEntitiesFromList(list).reduce(function(mem,e){
-		return I.pushIn(mem,[e.get("pos")],e);
-	},I.Map())
-};
 
 // €€€€€€€€€€€€€€€€€€€€€€€€€ E X P O R T €€€€€€€€€€€€€€€€€€€€€€€€€
 
