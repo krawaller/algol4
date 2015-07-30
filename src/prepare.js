@@ -6,6 +6,14 @@ function augmentWithPrepareFunctions(Algol){
 
 // €€€€€€€€€€€€€€€€€€€€€€€€€€€ P R E P A R E   F U N C T I O N S €€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€*/
 
+// def is game object, state has settings prop. 
+Algol.populateGameWithSettings = function(state,def){
+	return I.List.isList(def) && def.first() === "settings" ? state.getIn(["settings",def.get(1)])
+	: def.map ? def.map(this.populateGameWithSettings.bind(this,state)) : def;
+};
+
+
+
 
 /*
 Used in prepareNewGameState
@@ -85,17 +93,20 @@ Called form Algol.performOption --- passto
 Reset all tracking, and run generators for startturn and startstep.
 */
 Algol.prepareNewTurnState = function(state,player){
-	return this.applyGeneratorList(this.applyGeneratorList(state.merge(I.fromJS({
+	state = state.delete("previousstep").merge(I.fromJS({
 		steps: [],
-		affected: [],
-		save: state.has("save") ? state.get("save").push(I.List([state.get("player")]).concat(state.get("steps"))) : [],
 		marks: {},
-		previousstep: state,
-		previousturn: state,
 		player: player,
 		turn: state.get("turn")+1,
-		context: {currentplayer:player,performedsteps:0,nextplayer:state.getIn(["passto",player])||state.getIn(["passto",""+player])}
-	})),state.getIn(["gamedef","startturn","hydration"])||I.List()),state.getIn(["gamedef","startstep","hydration"])||I.List());
+		context: state.get("basecontext").merge(I.fromJS({
+			currentplayer:player,
+			performedsteps:0,
+			nextplayer:state.getIn(["passto",player])||state.getIn(["passto",""+player])
+		}))
+	}));
+	state = this.applyGeneratorList(state,state.getIn(["gamedef","startturn","hydration"])||I.List());
+	state = this.applyGeneratorList(state,state.getIn(["gamedef","startstep","hydration"])||I.List());
+	return state;
 };
 
 // €€€€€€€€€€€€€€€€€€€€€€€€€ E X P O R T €€€€€€€€€€€€€€€€€€€€€€€€€

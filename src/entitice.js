@@ -7,17 +7,17 @@ function augmentWithEntiticeFunctions(Algol){
 // €€€€€€€€€€€€€€€€€€€€€€€€€€€ E N T I T I C E  F U N C T I O N S €€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€*/
 
 /*
-Used in addUnitLayersFromData and ....terrain....
+Used in addUnitLayersFromData and addPersonalisedTerrainVersions (prepare)
 Will add the entity to correct position in corresponding group layers depending on plr and status
 */
-Algol.sortEntity = function(layers,entity,groups,plr){
+Algol.sortEntity = function(layers,entity,groups,plr,compare){
 	var owner = entity.get("owner"),
 		prefix = entity.get("dead") ? "dead" : "",
 		cat = owner === plr ? "my" : owner === 0 ? "neutral" : "opp",
 		pos = entity.get("pos");
 	return groups.reduce(function(mem,group){
 		return I.pushIn(I.pushIn(mem,[prefix+group,pos],entity),[cat+prefix+group,pos],entity);
-	},layers);
+	},compare ? I.pushIn(layers,["compare",pos],entity.delete("id")) : layers);
 };
 
 /*
@@ -27,7 +27,7 @@ This means either just the "units" group, and also special group if unit has one
 Algol.addUnitLayersFromData = function(layers,unitsdata,plr){
 	return unitsdata.reduce(function(mem,unit){
 		var group = unit.get("group");
-		return this.sortEntity(mem,unit,group?["units",group]:["units"],plr);
+		return this.sortEntity(mem,unit,group?["units",group]:["units"],plr,true);
 	},layers,this);
 };
 

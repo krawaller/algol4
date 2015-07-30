@@ -27,13 +27,13 @@ tester("The entitice methods",Algol,{
 			context: {
 				sortEntity: {
 					method: function(r){ return r+1; },
-					expectedargs: [ [1,{group:"dorks"},["units","dorks"],"owner"],[2,{baz:"bin"},["units"],"owner"] ]
+					expectedargs: [ [1,{group:"dorks"},["units","dorks"],"owner",true],[2,{baz:"bin"},["units"],"owner",true] ]
 				}
 			},
 			expected: 3
 		}
 	},
-	"sortEntity(layers,entity,groups,currentplr)": {
+	"sortEntity(layers,entity,groups,currentplr,comparing)": {
 		"for unit belonging to currentplr": {
 			layers: {
 				kings: {pos:["foo"]}
@@ -104,18 +104,20 @@ tester("The entitice methods",Algol,{
 				oppdeadunits: {pos:[{dead: true, owner: "OPP",pos: "pos"}]}
 			}
 		},
-		"for dead neutral unit": {
+		"for dead neutral unit and comparing": {
 			layers: {
 				deadkings: {pos:["foo"]}
 			},
-			entity: {dead: true, owner: 0, pos: "pos"},
+			entity: {dead: true, owner: 0, pos: "pos", id: 666},
 			groups: ["kings","units"],
 			currentplr: "ME",
+			comparing: true,
 			expected: {
-				deadkings: {pos:["foo",{dead: true, owner: 0,pos: "pos"}]},
-				neutraldeadkings: {pos:[{dead: true, owner: 0,pos: "pos"}]},
-				deadunits: {pos:[{dead: true, owner: 0,pos: "pos"}]},
-				neutraldeadunits: {pos:[{dead: true, owner: 0,pos: "pos"}]}
+				deadkings: {pos:["foo",{dead: true, owner: 0,pos: "pos", id:666}]},
+				neutraldeadkings: {pos:[{dead: true, owner: 0,pos: "pos", id:666}]},
+				deadunits: {pos:[{dead: true, owner: 0,pos: "pos", id:666}]},
+				neutraldeadunits: {pos:[{dead: true, owner: 0,pos: "pos",id:666}]},
+				compare: {pos:[{dead: true, owner: 0,pos: "pos"}]}
 			}
 		}
 	},

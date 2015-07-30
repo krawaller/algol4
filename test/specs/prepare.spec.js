@@ -145,120 +145,36 @@ tester("The prepare methods",Algol,{
 			}
 		}
 	},
-
 	"prepareNewTurnState(state,nextplayer)": {
-		"when there is a save array in state": {
+		"for normal call": {
 			state: {
-				steps: ["foo","bar"],
+				steps: "SOMETHING",
 				gamedef: {
 					startturn: {hydration:"TURNSTART"},
 					startstep: {hydration:"STEPSTART"}
 				},
-				save: ["FOO"],
 				marks: "FOO",
 				turn: 666,
 				context: "FOO",
 				player: 333,
-				passto: {777:999}
+				passto: {777:999},
+				basecontext: {base:true}
 			},
 			nextplayer: 777,
 			expected: {
 				steps: [],
-				save: ["FOO",[333,"foo","bar"]],
 				gamedef: {
 					startturn: {hydration:"TURNSTART"},
 					startstep: {hydration:"STEPSTART"}
 				},
 				TURNSTART: "yeah",
 				STEPSTART: "yeah",
-				previousstep: {
-					player: 333,
-					steps: ["foo","bar"],
-					save: ["FOO"],
-					marks: "FOO",
-					turn: 666,
-					context: "FOO",
-					gamedef: {
-						startturn: {hydration:"TURNSTART"},
-						startstep: {hydration:"STEPSTART"}
-					},
-					passto: {777:999}
-				},
-				previousturn: {
-					player: 333,
-					steps: ["foo","bar"],
-					save: ["FOO"],
-					marks: "FOO",
-					turn: 666,
-					context: "FOO",
-					gamedef: {
-						startturn: {hydration:"TURNSTART"},
-						startstep: {hydration:"STEPSTART"}
-					},
-					passto: {777:999}
-				},
 				marks: {},
 				turn: 667,
 				player: 777,
 				passto: {777:999},
-				context: {currentplayer:777,performedsteps:0,nextplayer:999},
-				affected: []
-			},
-			context: {
-				applyGeneratorList: {
-					method: function(s,l){ return s.set(l,"yeah"); }
-				}
-			}
-		},
-		"when there isn't a save array (first turn)": {
-			state: {
-				steps: ["foo","bar"],
-				marks: "FOO",
-				turn: 666,
-				context: "FOO",
-				player: 333,
-				gamedef: {
-					startturn: {hydration:"TURNSTART"},
-					startstep: {hydration:"STEPSTART"}
-				}
-			},
-			nextplayer: 777,
-			expected: {
-				steps: [],
-				save: [],
-				previousstep: {
-					player: 333,
-					steps: ["foo","bar"],
-					marks: "FOO",
-					turn: 666,
-					context: "FOO",
-					gamedef: {
-						startturn: {hydration:"TURNSTART"},
-						startstep: {hydration:"STEPSTART"}
-					}
-				},
-				previousturn: {
-					player: 333,
-					steps: ["foo","bar"],
-					marks: "FOO",
-					turn: 666,
-					context: "FOO",
-					gamedef: {
-						startturn: {hydration:"TURNSTART"},
-						startstep: {hydration:"STEPSTART"}
-					}
-				},
-				marks: {},
-				turn: 667,
-				player: 777,
-				context: {currentplayer:777,performedsteps:0},
-				affected: [],
-				TURNSTART: "yeah",
-				STEPSTART: "yeah",
-				gamedef: {
-					startturn: {hydration:"TURNSTART"},
-					startstep: {hydration:"STEPSTART"}
-				}
+				basecontext: {base:true},
+				context: {currentplayer:777,performedsteps:0,nextplayer:999,base:true}
 			},
 			context: {
 				applyGeneratorList: {
@@ -266,6 +182,15 @@ tester("The prepare methods",Algol,{
 				}
 			}
 		}
+	},
+	"populateGameWithSettings(state,gamedef)": {
+		"for simple test": {
+			state: {settings:{foo:"bar"}},
+			gamedef: {so:["why",["am","i",["settings","foo"]]]},
+			expected: {so:["why",["am","i","bar"]]},
+		}
 	}
 },I);
+
+
 
