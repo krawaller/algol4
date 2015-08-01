@@ -31,8 +31,9 @@ Returns object like: {
 }
 */
 Algol.getAvailableMarks = function(state){
+	var layers = state.get("layers");
 	return state.getIn(["gamedef","marks"]).reduce(function(mem,markdef,markname){
-		return this.isMarkAvailable(state,markname) ? mem : mem.set(markname,state.getIn(["layers",markdef.get("fromlayer")]).keySeq());
+		return this.isMarkAvailable(state,markname) ? mem : mem.set(markname,layers.get(markdef.get("fromlayer")).keySeq());
 	},I.Map(),this);
 };
 
@@ -76,13 +77,13 @@ Algol.removeMark = function(state,markname){
 User response
 Updates the mark
 Removes all marks in markdef.notwith using this.removeMark
-Runs generator list in markdef.generators with this.applyGeneratorList
+Runs generator list in markdef.rungenerators with this.applyGeneratorList
 */
 Algol.setMark = function(state,markname,position){
 	var def = state.getIn(["gamedef","marks",markname]);
 	return this.applyGeneratorList((def.get("notwith")||I.List()).reduce(function(mem,notwith){
 		return this.removeMark(mem,notwith);
-	},state.setIn(["marks",markname],position),this),def.get("generators")||I.List());
+	},state.setIn(["marks",markname],position),this),def.get("rungenerators")||I.List());
 };
 
 

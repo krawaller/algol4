@@ -87,7 +87,7 @@ tester("the generate methods",Algol,{
 			context: {
 				evaluatePositionList: {
 					returns: ["foo","foo2"],
-					expectedargs: [["state","STARTSDEF"]]
+					expectedargs: [["@state","STARTSDEF"]]
 				},
 				evaluateDirList: {
 					returns: [4,5,6],
@@ -121,7 +121,7 @@ tester("the generate methods",Algol,{
 			context: {
 				evaluatePositionList: {
 					returns: ["foo"],
-					expectedargs: [["state","STARTSDEF"]]
+					expectedargs: [["@state","STARTSDEF"]]
 				},
 				evaluateDirList: {
 					returns: [4,6],

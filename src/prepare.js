@@ -72,8 +72,12 @@ The master function to set up a new state at the very beginning of a game. Calle
 TODO: also pass in plr information
 */
 Algol.prepareNewGameState = function(gamedef,nbrofplayers){
+	var commandslist = gamedef.get("commands").keySeq().sort();
 	return I.fromJS({
-		gamedef: gamedef,
+		gamedef: gamedef.set("commands",commandslist.reduce(function(map,comname,n){
+			return map.set(comname,gamedef.getIn(["commands",comname]).set("number",n+1));
+		},I.Map())),
+		commandsinorder: commandslist,
 		connections: this.prepareConnectionsFromBoardDef(gamedef.get("board")),
 		data: I.Map().set("units",this.prepareInitialUnitDataFromSetup(gamedef.get("setup"))),
 		baselayers: this.prepareBaseLayers(gamedef,nbrofplayers),
@@ -89,24 +93,36 @@ Algol.prepareNewGameState = function(gamedef,nbrofplayers){
 
 
 /*
-Called form Algol.performOption --- passto
-Reset all tracking, and run generators for startturn and startstep.
+Called from ....
+Reset all stuff, run generators for startturn, finally call prepareNewStepState
 */
-Algol.prepareNewTurnState = function(state,player){
+Algol.prepareNewTurnState = function(state,newturnplayer){
+	var startturn = state.getIn(["gamedef","startturn"]),
+		effect = startturn.get("applyeffect");
 	state = state.delete("previousstep").merge(I.fromJS({
 		steps: [],
 		marks: {},
-		player: player,
-		turn: state.get("turn")+1,
+		player: newturnplayer,
+		turn: (state.get("turn")||0)+1,
+		baselayer: state.getIn(["baselayers",newturnplayer])||state.getIn(["baselayers",newturnplayer+""]),
 		context: state.get("basecontext").merge(I.fromJS({
-			currentplayer:player,
+			currentplayer:newturnplayer,
 			performedsteps:0,
-			nextplayer:state.getIn(["passto",player])||state.getIn(["passto",""+player])
+			nextplayer:state.getIn(["passto",newturnplayer])||state.getIn(["passto",""+newturnplayer])
 		}))
 	}));
-	state = this.applyGeneratorList(state,state.getIn(["gamedef","startturn","hydration"])||I.List());
-	state = this.applyGeneratorList(state,state.getIn(["gamedef","startstep","hydration"])||I.List());
-	return state;
+	state = this.applyGeneratorList(state,startturn.get("rungenerators")||I.List());
+	state = effect ? this.applyEffect(state,effect) : state;
+	return this.prepareNewStepState(state);
+};
+
+/*
+Called from prepareNewTurnState as well as... sth else involving commands! :)
+*/
+Algol.prepareNewStepState = function(state){
+	state = state.get("steps").isEmpty() ? state : state.set("previousstep",state);
+	state = this.applyGeneratorList(state,state.getIn(["gamedef","startstep","rungenerators"])||I.List());
+	return state.set("layers",state.get("baselayer"));
 };
 
 // €€€€€€€€€€€€€€€€€€€€€€€€€ E X P O R T €€€€€€€€€€€€€€€€€€€€€€€€€

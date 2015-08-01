@@ -106,11 +106,11 @@ tester("The execute methods",Algol,{
 			context: {
 				updateMarksFromCommand: {
 					returns: "NEWMARKDATA",
-					expectedargs: [["state","commanddef"]]
+					expectedargs: [["@state","@commanddef"]]
 				},
 				calculateStepData: {
 					returns: "stepDATA",
-					expectedargs: [["state","commanddef"]]
+					expectedargs: [["@state","@commanddef"]]
 				}
 			}
 		}
@@ -148,11 +148,11 @@ tester("The execute methods",Algol,{
 			context: {
 				evaluateBoolean: {
 					method: function(s,c){ return c==="BARCOND"; },
-					expectedargs: [ ["state","FOOCOND"], ["state","BARCOND"] ]
+					expectedargs: [ ["@state","FOOCOND"], ["@state","BARCOND"] ]
 				},
 				evaluateValue: {
 					returns: "WINNER",
-					expectedargs: [ ["state","BARWINNER"] ]
+					expectedargs: [ ["@state","BARWINNER"] ]
 				}
 			}
 		},
@@ -168,11 +168,11 @@ tester("The execute methods",Algol,{
 			context: {
 				evaluateBoolean: {
 					returns: true,
-					expectedargs: [ ["state","FOOCOND"] ]
+					expectedargs: [ ["@state","FOOCOND"] ]
 				},
 				evaluateValue: {
 					returns: "WINNER",
-					expectedargs: [ ["state","FOOWINNER"] ]
+					expectedargs: [ ["@state","FOOWINNER"] ]
 				}
 			}
 		},
@@ -189,11 +189,11 @@ tester("The execute methods",Algol,{
 			context: {
 				evaluateBoolean: {
 					returns: false,
-					expectedargs: [ ["state","FOOCOND"], ["state","BARCOND"] ]
+					expectedargs: [ ["@state","FOOCOND"], ["@state","BARCOND"] ]
 				},
 				evaluateValue: {
 					returns: "NEXT",
-					expectedargs: [ ["state","NEXTowner"] ]
+					expectedargs: [ ["@state","NEXTowner"] ]
 				}
 			}
 		}
@@ -224,15 +224,15 @@ tester("The execute methods",Algol,{
 			context: {
 				evaluateBoolean: {
 					returns: false,
-					expectedargs: [ ["state","COND"] ]
+					expectedargs: [ ["@state","COND"] ]
 				},
 				applyGeneratorList: {
 					method: function(s){ return s; },
-					expectedargs: [ ["state","LIIisT"] ]
+					expectedargs: [ ["@state","LIIisT"] ]
 				},
 				listCommandOptions: {
 					returns: "COMOPTS",
-					expectedargs: [ ["aftereval",{hydration:"LIIisT",endturn:{condition:"COND"}}] ]
+					expectedargs: [ ["@aftereval",{hydration:"LIIisT",endturn:{condition:"COND"}}] ]
 				}
 			}
 		},
@@ -261,15 +261,15 @@ tester("The execute methods",Algol,{
 			context: {
 				evaluateBoolean: {
 					returns: true,
-					expectedargs: [ ["state","COND"] ]
+					expectedargs: [ ["@state","COND"] ]
 				},
 				applyGeneratorList: {
 					method: function(s){ return s; },
-					expectedargs: [ ["state","LisT"],["aftereval","LisT2"] ]
+					expectedargs: [ ["@state","LisT"],["@aftereval","LisT2"] ]
 				},
 				listCommandOptions: {
 					returns: "COMOPTS",
-					expectedargs: [ ["aftereval",{hydration:"LisT",endturn:{condition:"COND",hydration:"LisT2"}}] ]
+					expectedargs: [ ["@aftereval",{hydration:"LisT",endturn:{condition:"COND",hydration:"LisT2"}}] ]
 				}
 			}
 		}
@@ -296,7 +296,7 @@ tester("The execute methods",Algol,{
 				},
 				prepareNewTurnState: {
 					returns: "NEWTURN",
-					expectedargs: [ ["state",3] ]
+					expectedargs: [ ["@state",3] ]
 				}
 			}
 		},
@@ -325,7 +325,7 @@ tester("The execute methods",Algol,{
 			context: {
 				endTurnOption: {
 					returns: "endturnOPTION",
-					expectedargs: [ ["state","endturn"] ]
+					expectedargs: [ ["@state","endturn"] ]
 				}
 			}
 		},
@@ -341,7 +341,7 @@ tester("The execute methods",Algol,{
 			context: {
 				endTurnOption: {
 					returns: "endturnOPTION",
-					expectedargs: [ ["state",{commandcap:true}] ]
+					expectedargs: [ ["@state",{commandcap:true}] ]
 				}
 			}
 		},
@@ -362,15 +362,15 @@ tester("The execute methods",Algol,{
 			context: {
 				canExecuteCommand: {
 					method: function(s,c){ return c.get("name") === "mope"; },
-					expectedargs: [ ["state",{name:"mope",effect:"mopify"}], ["state",{name:"dope",effect:"dopify"}] ]
+					expectedargs: [ ["@state",{name:"mope",effect:"mopify"}], ["@state",{name:"dope",effect:"dopify"}] ]
 				},
 				applyEffect: {
 					returns: "EFFECT",
-					expectedargs: [ ["state","mopify"] ]
+					expectedargs: [ ["@state","mopify"] ]
 				},
 				calculateCommandResult: {
 					returns: "RESULT",
-					expectedargs: [ ["state","EFFECT",{name:"mope",effect:"mopify"}] ]
+					expectedargs: [ ["@state","EFFECT",{name:"mope",effect:"mopify"}] ]
 				}
 			}
 		},

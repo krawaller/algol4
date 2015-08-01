@@ -25,7 +25,7 @@ tester("The mark methods",Algol,{
 			context: {
 				isMarkAvailable: {
 					method: function(s,n){ return n === "othermark"; },
-					expectedargs: [["state","somemark"],["state","othermark"]]
+					expectedargs: [["@state","somemark"],["@state","othermark"]]
 				}
 			},
 			expected: {somemark:["foo","bar"]}
@@ -108,7 +108,7 @@ tester("The mark methods",Algol,{
 		"when we have some generators": {
 			state: {
 				marks: {othermark:"foo",thirdmark:"baz"},
-				gamedef: { marks:{somemark:{generators:"GENERATorLisT"}} }
+				gamedef: { marks:{somemark:{rungenerators:"GENERATorLisT"}} }
 			},
 			markname: "somemark",
 			position: "somepos",
@@ -117,7 +117,7 @@ tester("The mark methods",Algol,{
 					returns: "statewithgeneratorsran",
 					expectedargs: [[{
 						marks: {othermark:"foo",thirdmark:"baz",somemark:"somepos"},
-						gamedef: { marks:{somemark:{generators:"GENERATorLisT"}}}
+						gamedef: { marks:{somemark:{rungenerators:"GENERATorLisT"}}}
 					},"GENERATorLisT"]]
 				}
 			},
@@ -148,7 +148,7 @@ tester("The mark methods",Algol,{
 			context: {
 				evaluateBoolean: {
 					returns: false,
-					expectedargs: [["state","SOMECOND"]]
+					expectedargs: [["@state","SOMECOND"]]
 				}
 			},
 			expected: "conditionnotmet"

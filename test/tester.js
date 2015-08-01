@@ -15,6 +15,10 @@ describe(description,function(){
 			var methodname = signature.split("(")[0],
 				arglist = signature.split("(")[1].replace(/\)$/,"").split(",");
 			_.each(tests,function(test,testdesc){
+				var givenargs = _.reduce(_.keys(test),function(mem,arg){
+					mem["@"+arg] = test[arg];
+					return mem;
+				},{});
 				describe(testdesc,function(){
 					var result, method;
 					beforeEach(function(){
@@ -50,7 +54,7 @@ describe(description,function(){
 										_.each(args,function(arg,a){
 											it("used correct parameter "+a,function(){
 												var usedargs = (lib[stubname].getCall(n)||{args:[]}).args;
-												expect((I?I.List(usedargs).toJS():usedargs)[a]).toEqual(test[arg]||arg);
+												expect((I?I.List(usedargs).toJS():usedargs)[a]).toEqual(givenargs[arg]||arg);
 											});
 										});
 									});

@@ -82,6 +82,7 @@ Algol.calculateStepData = function(state,commanddef){
 // returns new mark data for a new step. will either be empty or contain the marks
 // specified by the commanddef
 // Used only in Algol.calculateCommandResult
+// TODO - obsolete!
 Algol.updateMarksFromCommand = function(state,commanddef){
 	return (commanddef.get("setmarks")||I.Map()).reduce(function(ret,pos,markname){
 		return ret.set(markname,this.evaluateValue(state,pos));

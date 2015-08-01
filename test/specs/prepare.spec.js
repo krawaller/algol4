@@ -101,7 +101,8 @@ tester("The prepare methods",Algol,{
 		"for normal call": {
 			gamedef: {
 				setup: "SETUP",
-				board: "BOARD"
+				board: "BOARD",
+				commands: {"foo":{},"bar":{}}
 			},
 			players: 2,
 			context: {
@@ -115,14 +116,16 @@ tester("The prepare methods",Algol,{
 				},
 				prepareBaseLayers: {
 					returns: "PREPPED",
-					expectedargs: [ ["gamedef","players"] ]
+					expectedargs: [ ["@gamedef","@players"] ]
 				}
 			},
 			expected: {
 				gamedef: {
 					setup: "SETUP",
-					board: "BOARD"
+					board: "BOARD",
+					commands: {"foo":{number:2},"bar":{number:1}}
 				},
+				commandsinorder: ["bar","foo"],
 				connections: "CONNECTIONS",
 				data: {
 					units: "UNITS"
@@ -137,30 +140,31 @@ tester("The prepare methods",Algol,{
 		}
 	},
 	"prepareNewTurnState(state,nextplayer)": {
-		"for normal call": {
+		"for call with effect": {
+			nextplayer: 777,
 			state: {
 				steps: "SOMETHING",
 				gamedef: {
-					startturn: {hydration:"TURNSTART"},
-					startstep: {hydration:"STEPSTART"}
+					startturn: {rungenerators:"TURNSTART",applyeffect:"EFFECT"}
 				},
 				marks: "FOO",
+				baselayers: {777:"basefor777"},
 				turn: 666,
 				context: "FOO",
 				player: 333,
 				passto: {777:999},
 				basecontext: {base:true}
 			},
-			nextplayer: 777,
 			expected: {
 				steps: [],
 				gamedef: {
-					startturn: {hydration:"TURNSTART"},
-					startstep: {hydration:"STEPSTART"}
+					startturn: {rungenerators:"TURNSTART",applyeffect:"EFFECT"}
 				},
-				TURNSTART: "yeah",
-				STEPSTART: "yeah",
+				TURNSTART: "yeahandSTEP!",
+				EFFECT: "did them!",
 				marks: {},
+				baselayers: {777:"basefor777"},
+				baselayer: "basefor777",
 				turn: 667,
 				player: 777,
 				passto: {777:999},
@@ -170,7 +174,68 @@ tester("The prepare methods",Algol,{
 			context: {
 				applyGeneratorList: {
 					method: function(s,l){ return s.set(l,"yeah"); }
+				},
+				prepareNewStepState: {
+					method: function(s){ return s.set("TURNSTART",s.get("TURNSTART")+"andSTEP!") }
+				},
+				applyEffect: {
+					method: function(s,e){ return s.set(e,"did them!"); }
 				}
+			}
+		}
+	},
+	"prepareNewStepState(state)": {
+		"when state has empty steps array": {
+			state: {
+				gamedef: {
+					startstep: {rungenerators:"STEPSTART"}
+				},
+				steps: [],
+				baselayer: "BASE"
+			},
+			context: {
+				applyGeneratorList: {
+					method: function(s,l){ return s.set(l,"yeah"); }
+				}
+			},
+			expected: {
+				gamedef: {
+					startstep: {rungenerators:"STEPSTART"}
+				},
+				steps: [],
+				baselayer: "BASE",
+				layers: "BASE",
+				STEPSTART: "yeah"
+			}
+		},
+		"when state has previous steps array": {
+			state: {
+				gamedef: {
+					startstep: {rungenerators:"STEPSTART"}
+				},
+				steps: ["STEPS"],
+				baselayer: "BASE"
+			},
+			context: {
+				applyGeneratorList: {
+					method: function(s,l){ return s.set(l,"yeah"); }
+				}
+			},
+			expected: {
+				previousstep: {
+					gamedef: {
+						startstep: {rungenerators:"STEPSTART"}
+					},
+					steps: ["STEPS"],
+					baselayer: "BASE"
+				},
+				gamedef: {
+					startstep: {rungenerators:"STEPSTART"}
+				},
+				steps: ["STEPS"],
+				baselayer: "BASE",
+				layers: "BASE",
+				STEPSTART: "yeah"
 			}
 		}
 	},
