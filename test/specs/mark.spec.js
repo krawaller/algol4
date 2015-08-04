@@ -19,34 +19,41 @@ tester("The mark methods",Algol,{
 	"getAvailableMarks(state)": {
 		"when nothing strange going on": {
 			state: {
-				gamedef: { marks: {somemark:{fromlayer:"somelayer"},othermark:{fromlayer:"otherlayer"}} },
+				gamedef: { marks: {
+					somemark:{fromlayer:"somelayer"},
+					othermark:{fromlayer:"otherlayer"},
+					sillymark:{from:"somelayer"}
+				} },
 				layers: { somelayer: {foo:1,bar:1}, otherlayer: {baz:1,bin:1} }
 			},
 			context: {
 				isMarkAvailable: {
-					method: function(s,n){ return n === "othermark"; },
-					expectedargs: [["@state","somemark"],["@state","othermark"]]
+					method: function(s,n){ return n === "sillymark"; },
+					expectedargs: [["@state","somemark"],["@state","othermark"],["@state","sillymark"]]
 				}
 			},
-			expected: {somemark:["foo","bar"]}
+			expected: {foo:"somemark",bar:"somemark",baz:"othermark",bin:"othermark"}
 		}
 	},
 	"removeMark(state,markname)": {
 		"when nothing else affected": {
 			state: {
 				marks: {somemark:"foo",othermark:"bar"},
-				gamedef: {marks:{somemark:{}}}
+				gamedef: {marks:{somemark:{}}},
+				marksat: {foo:"somemark",bar:"othermark"}
 			},
 			markname: "somemark",
 			expected: {
 				marks: {othermark:"bar"},
-				gamedef: {marks:{somemark:{}}}
+				gamedef: {marks:{somemark:{}}},
+				marksat: {bar:"othermark"}
 			}
 		},
 		"when we have some requiredby marks": {
 			state: {
 				marks: {somemark:"foo",othermark:"bar",thirdmark:"baz"},
-				gamedef: {marks:{somemark:{requiredby:["thirdmark"]}}}
+				gamedef: {marks:{somemark:{requiredby:["thirdmark"]}}},
+				marksat: {foo:"somemark",bar:"othermark",baz:"thirdmark"}
 			},
 			markname: "somemark",
 			context: {
@@ -54,6 +61,7 @@ tester("The mark methods",Algol,{
 					returns: "withmarksremoved",
 					expectedargs: [[{
 						marks: {othermark:"bar",thirdmark:"baz"},
+						marksat: {bar:"othermark",baz:"thirdmark"},
 						gamedef: {marks:{somemark:{requiredby:["thirdmark"]}}}
 					},"thirdmark"]]
 				}
@@ -64,13 +72,15 @@ tester("The mark methods",Algol,{
 			state: {
 				marks: {somemark:"foo",othermark:"bar"},
 				gamedef: {marks:{somemark:{cleanse:["somelayer"]}}},
-				layers: {somelayer:"FOO",otherlayer:"BAR"}
+				layers: {somelayer:"FOO",otherlayer:"BAR"},
+				marksat: {foo:"somemark",bar:"othermark"}
 			},
 			markname: "somemark",
 			expected: {
 				marks: {othermark:"bar"},
 				gamedef: {marks:{somemark:{cleanse:["somelayer"]}}},
-				layers: {otherlayer:"BAR"}
+				layers: {otherlayer:"BAR"},
+				marksat: {bar:"othermark"}
 			}
 		}
 	},
@@ -78,36 +88,45 @@ tester("The mark methods",Algol,{
 		"when nothing else affected": {
 			state: {
 				marks: {othermark:"foo"},
-				gamedef: {marks:{somemark:{}}}
+				gamedef: {marks:{somemark:{}}},
+				marksat: {foo:"othermark"}
 			},
 			markname: "somemark",
 			position: "somepos",
 			expected: {
 				marks: {somemark:"somepos",othermark:"foo"},
-				gamedef: {marks:{somemark:{}}}
+				gamedef: {marks:{somemark:{}}},
+				marksat: {foo:"othermark",somepos:"somemark"}
 			}
 		},
 		"when we have some notwith": {
 			state: {
 				marks: {othermark:"foo",thirdmark:"baz"},
-				gamedef: {marks:{somemark:{notwith:["othermark"]}}}
+				gamedef: {marks:{somemark:{notwith:["othermark"]}}},
+				marksat: {foo:"othermark",baz:"thirdmark"}
 			},
 			markname: "somemark",
 			position: "somepos",
 			context: {
 				removeMark: {
-					returns: "statewithremovednotwiths",
+					returnsarg: 0,
 					expectedargs: [[{
 						marks: {somemark:"somepos",othermark:"foo",thirdmark:"baz"},
-						gamedef: {marks:{somemark:{notwith:["othermark"]}}}
+						gamedef: {marks:{somemark:{notwith:["othermark"]}}},
+						marksat: {somepos:"somemark",foo:"othermark",baz:"thirdmark"}
 					},"othermark"]]
 				}
 			},
-			expected: "statewithremovednotwiths"
+			expected: {
+				marks: {somemark:"somepos",othermark:"foo",thirdmark:"baz"},
+				gamedef: {marks:{somemark:{notwith:["othermark"]}}},
+				marksat: {somepos:"somemark",foo:"othermark",baz:"thirdmark"}
+			}
 		},
 		"when we have some generators": {
 			state: {
 				marks: {othermark:"foo",thirdmark:"baz"},
+				marksat: {foo:"othermark",baz:"thirdmark"},
 				gamedef: { marks:{somemark:{rungenerators:"GENERATorLisT"}} }
 			},
 			markname: "somemark",
@@ -117,7 +136,8 @@ tester("The mark methods",Algol,{
 					returns: "statewithgeneratorsran",
 					expectedargs: [[{
 						marks: {othermark:"foo",thirdmark:"baz",somemark:"somepos"},
-						gamedef: { marks:{somemark:{rungenerators:"GENERATorLisT"}}}
+						gamedef: { marks:{somemark:{rungenerators:"GENERATorLisT"}}},
+						marksat: {somepos:"somemark",foo:"othermark",baz:"thirdmark"}
 					},"GENERATorLisT"]]
 				}
 			},

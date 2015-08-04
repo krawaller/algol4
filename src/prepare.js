@@ -95,6 +95,10 @@ Algol.prepareNewGameState = function(gamedef,nbrofplayers){
 /*
 Called from ....
 Reset all stuff, run generators for startturn, finally call prepareNewStepState
+1: remove old previousstep
+2: reset steps, marks, baselayer and context, and update player
+3: apply startturn generators
+4: apply startturn effects
 */
 Algol.prepareNewTurnState = function(state,newturnplayer){
 	var startturn = state.getIn(["gamedef","startturn"]),
@@ -117,12 +121,17 @@ Algol.prepareNewTurnState = function(state,newturnplayer){
 };
 
 /*
+
 Called from prepareNewTurnState as well as... sth else involving commands! :)
+1: resets state.layers to state.baselayer
+2: runs generator list in state.gamedef.startstep.rungenerators
+3: if not first step in turn then saves previousstep and calculates canendturn
 */
 Algol.prepareNewStepState = function(state){
-	state = state.get("steps").isEmpty() ? state : state.set("previousstep",state);
-	state = this.applyGeneratorList(state,state.getIn(["gamedef","startstep","rungenerators"])||I.List());
-	return state.set("layers",state.get("baselayer"));
+	var oldstate = state;
+	state = state.set("layers",state.get("baselayer"));
+	state = this.applyGeneratorList(state,state.getIn(["gamedef","startstep","rungenerators"])||I.List()); 
+	return state.get("steps").isEmpty() ? state : state.set("previousstep",oldstate).set("canendturn",this.evaluateBoolean(state,state.getIn(["gamedef","endturn","condition"]))); 
 };
 
 // €€€€€€€€€€€€€€€€€€€€€€€€€ E X P O R T €€€€€€€€€€€€€€€€€€€€€€€€€

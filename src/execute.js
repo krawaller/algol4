@@ -119,8 +119,8 @@ Algol.listCommandOptions = function(state,gamedef){
 };
 
 
-// Called from Algol.performOption (various)
-Algol.hydrateStateAfterCommand = function(state){
+// Called from Algol.performOption (various) // TODO - kull of this crap
+Algol.hydrateStateAfterCommand = function(state){ 
 	state = this.applyGeneratorList(state,state.getIn(["gamedef","hydration"]));
 	state = state.set("canendturn",this.evaluateBoolean(state,state.getIn(["gamedef","endturn","condition"])));
 	if (state.get("canendturn")){

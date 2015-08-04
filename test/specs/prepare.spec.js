@@ -211,31 +211,61 @@ tester("The prepare methods",Algol,{
 		"when state has previous steps array": {
 			state: {
 				gamedef: {
-					startstep: {rungenerators:"STEPSTART"}
+					startstep: {rungenerators:"STEPSTART"},
+					endturn: {condition:"ENDTURNCOND"}
 				},
 				steps: ["STEPS"],
 				baselayer: "BASE"
 			},
 			context: {
 				applyGeneratorList: {
-					method: function(s,l){ return s.set(l,"yeah"); }
+					method: function(s,l){ return s.set(l,"yeah"); },
+					expectedargs: [[{
+						gamedef: {
+							startstep: {rungenerators:"STEPSTART"},
+							endturn: {condition:"ENDTURNCOND"}
+						},
+						steps: ["STEPS"],
+						baselayer: "BASE",
+						layers: "BASE"
+					},"STEPSTART"]]
+				},
+				evaluateBoolean: {
+					returns: "trueorfalse",
+					expectedargs: [[{
+						gamedef: {
+							startstep: {rungenerators:"STEPSTART"},
+							endturn: {condition:"ENDTURNCOND"}
+						},
+						steps: ["STEPS"],
+						baselayer: "BASE",
+						layers: "BASE",
+						STEPSTART: "yeah"
+					},"ENDTURNCOND"]]
 				}
 			},
 			expected: {
 				previousstep: {
 					gamedef: {
-						startstep: {rungenerators:"STEPSTART"}
+						startstep: {rungenerators:"STEPSTART"},
+						endturn: {
+							condition: "ENDTURNCOND"
+						}
 					},
 					steps: ["STEPS"],
 					baselayer: "BASE"
 				},
 				gamedef: {
-					startstep: {rungenerators:"STEPSTART"}
+					startstep: {rungenerators:"STEPSTART"},
+					endturn: {
+						condition: "ENDTURNCOND"
+					}
 				},
 				steps: ["STEPS"],
 				baselayer: "BASE",
 				layers: "BASE",
-				STEPSTART: "yeah"
+				STEPSTART: "yeah",
+				canendturn: "trueorfalse"
 			}
 		}
 	},

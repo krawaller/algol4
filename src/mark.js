@@ -26,14 +26,17 @@ markdef: {
 /*
 Used in app
 Returns object like: {
-	<markname>: [pos,pos, ...], 
+	pos: markname,
+	pos: markname,  
 	...
 }
 */
 Algol.getAvailableMarks = function(state){
 	var layers = state.get("layers");
 	return state.getIn(["gamedef","marks"]).reduce(function(mem,markdef,markname){
-		return this.isMarkAvailable(state,markname) ? mem : mem.set(markname,layers.get(markdef.get("fromlayer")).keySeq());
+		return this.isMarkAvailable(state,markname) ? mem : layers.get(markdef.get("fromlayer")).reduce(function(o,arr,pos){
+			return o.set(pos,markname);
+		},mem);
 	},I.Map(),this);
 };
 
@@ -60,7 +63,8 @@ Algol.isMarkAvailable = function(state,markname){
 
 /*
 User response, also used in Algol.setMark
-Removes mark
+Removes mark from state.mark
+Removes position from state.marksat
 Removes all marks in markdef.requiredby
 Clears all layers in markdef.cleanse
 */
@@ -70,12 +74,13 @@ Algol.removeMark = function(state,markname){
 		return mem.removeIn(["layers",layername]);
 	},(def.get("requiredby")||I.List()).reduce(function(mem,requiredby){
 		return this.removeMark(mem,requiredby);
-	},state.removeIn(["marks",markname]),this),this);
+	},state.removeIn(["marksat",state.getIn(["marks",markname])]).removeIn(["marks",markname]),this),this);
 };
 
 /*
 User response
-Updates the mark
+Adds mark to state.marks
+Adds position to state.marksat
 Removes all marks in markdef.notwith using this.removeMark
 Runs generator list in markdef.rungenerators with this.applyGeneratorList
 */
@@ -83,7 +88,7 @@ Algol.setMark = function(state,markname,position){
 	var def = state.getIn(["gamedef","marks",markname]);
 	return this.applyGeneratorList((def.get("notwith")||I.List()).reduce(function(mem,notwith){
 		return this.removeMark(mem,notwith);
-	},state.setIn(["marks",markname],position),this),def.get("rungenerators")||I.List());
+	},state.setIn(["marks",markname],position).setIn(["marksat",position],markname),this),def.get("rungenerators")||I.List());
 };
 
 

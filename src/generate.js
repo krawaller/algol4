@@ -24,7 +24,7 @@ Algol.generateNeighbourPods = function(state,def){
 function stopreason(state,def,dir,pos,length,blocks,steps,prioblocks){
 	if (def.get("max") && length === def.get("max")) {
 		return "reachedmax";
-	} else {
+	} else {
 		var nextpos = (state.getIn(["connections",pos,dir])||state.getIn(["connections",pos,dir+""]));
 		if (!nextpos){
 			return "outofbounds";
