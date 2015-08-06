@@ -221,6 +221,26 @@ tester("The mark methods",Algol,{
 			markname: "somemark",
 			expected: undefined
 		}
+	},
+	"newMarksAfterCommand(state,commanddef)": {
+		"when has def": {
+			state: "STATE",
+			commanddef: {setmarks:{
+				foo: "FOOPOS",
+				bar: "BARPOS"
+			}},
+			expected: { foo: "1st", bar: "2nd" },
+			context: {
+				evaluatePosition: {
+					returnseries: ["1st","2nd"],
+					expectedargs: [["@state","FOOPOS"],["@state","BARPOS"]]
+				}
+			}
+		},
+		"when no def": {
+			commanddef: {},
+			expected: {}
+		}
 	}
 },I);
 

@@ -27,90 +27,56 @@ tester("The execute methods",Algol,{
 		"when data matches two steps back": {
 			state: {
 				steps:[1,2],
-				data:{a:1},
 				previousstep:{
 					steps:[1],
-					data:{b:2},
 					previousstep:{
-						steps:[],
-						data:{c:3}
+						last: "TRUE",
+						steps:[]
 					}
 				}
 			},
-			newstate: {data:{c:3}},
-			expected: ["backto",{
-				steps:[],
-				data:{c:3}
-			}]
-		},
-		"when newstate matches one step back": {
-			state: {
-				steps:[1,2],
-				data:{a:1},
-				previousstep:{
-					steps:[1],
-					data:{b:2},
-					previousstep:{
-						steps:[],
-						data:{c:3}
-					}
+			newstate: "NEWSTATE",
+			expected: ["backto",{last: "TRUE",steps:[]}],
+			context: {
+				areStatesEqual: {
+					returnseries: [false,true],
+					expectedargs: [[{
+						steps:[1],
+						previousstep:{
+							last: "TRUE",
+							steps:[]
+						}
+					},"NEWSTATE"],[{last: "TRUE",steps:[]},"NEWSTATE"]]
 				}
-			},
-			newstate: {data:{b:2}},
-			expected: ["backto",{
-				steps:[1],
-				data:{b:2},
-				previousstep:{
-					steps:[],
-					data:{c:3}
-				}
-			}]
+			}
 		},
 		"when newstate means new step": {
 			state: {
 				marks:{mark1:"foo",mark2:"bar"},
 				steps:[1,2],
-				data:{a:1},
 				previousstep:{
 					steps:[1],
-					data:{b:2},
-					previousstep:{
-						steps:[],
-						data:{c:3}
-					}
-				},
-				context:{performedsteps:4}
+					previousstep:{steps:[]}
+				}
 			},
 			newstate: {data:{c:666},steps:["foo"]},
 			commanddef: {name:"somecommand",neededmarks:["mark1"]},
 			expected: ["newstep",{
 				marks:"NEWMARKDATA",
 				data:{c:666},
-				steps:["foo","stepDATA"],
-				previousstep: {
-					marks:{mark1:"foo",mark2:"bar"},
-					steps:[1,2],
-					data:{a:1},
-					previousstep:{
-						steps:[1],
-						data:{b:2},
-						previousstep:{
-							steps:[],
-							data:{c:3}
-						}
-					},
-					context:{performedsteps:4}
-				},
-				context:{performedsteps:5}
+				steps:["foo","stepDATA"]
 			}],
 			context: {
-				updateMarksFromCommand: {
+				newMarksAfterCommand: {
 					returns: "NEWMARKDATA",
 					expectedargs: [["@state","@commanddef"]]
 				},
 				calculateStepData: {
 					returns: "stepDATA",
 					expectedargs: [["@state","@commanddef"]]
+				},
+				areStatesEqual: {
+					returns: false
 				}
 			}
 		}
@@ -136,43 +102,63 @@ tester("The execute methods",Algol,{
 		}
 	},
 	"endTurnOption(state,endturndef)": {
-		"when second wincondition is met": {
+		"when second condition is met and result is win": {
 			state: "STATE",
 			endturndef: {
 				endgame:{
-					byfoo:{condition:"FOOCOND",winner:"FOOWINNER"},
-					bybar:{condition:"BARCOND",winner:"BARWINNER"}
+					byfoo:{condition:"FOOCOND"},
+					bybar:{condition:"BARCOND",result:"WHATHAPPENS"}
 				}
 			},
-			expected: ["endgame","bybar","WINNER"],
+			expected: ["win","bybar"],
 			context: {
 				evaluateBoolean: {
-					method: function(s,c){ return c==="BARCOND"; },
+					returnseries: [ false, true ],
 					expectedargs: [ ["@state","FOOCOND"], ["@state","BARCOND"] ]
 				},
 				evaluateValue: {
-					returns: "WINNER",
-					expectedargs: [ ["@state","BARWINNER"] ]
+					returns: "win",
+					expectedargs: [ ["@state","WHATHAPPENS"] ]
 				}
 			}
 		},
-		"when first wincondition is met": {
+		"when first condition is met and result is loseto": {
 			state: "STATE",
 			endturndef: {
 				endgame:{
-					byfoo:{condition:"FOOCOND",winner:"FOOWINNER"},
-					bybar:{condition:"BARCOND",winner:"BARWINNER"}
+					byfoo:{condition:"FOOCOND",result:"loseto",who:"theotherguy"},
+					bybar:{condition:"BARCOND"}
 				}
 			},
-			expected: ["endgame","byfoo","WINNER"],
+			expected: ["loseto","byfoo","theotherguy"],
 			context: {
 				evaluateBoolean: {
 					returns: true,
 					expectedargs: [ ["@state","FOOCOND"] ]
 				},
 				evaluateValue: {
-					returns: "WINNER",
-					expectedargs: [ ["@state","FOOWINNER"] ]
+					returnsarg: 1,
+					expectedargs: [ ["@state","loseto"], ["@state","theotherguy"] ]
+				}
+			}
+		},
+		"when first condition is met and result is draw": {
+			state: "STATE",
+			endturndef: {
+				endgame:{
+					byfoo:{condition:"FOOCOND",result:"draw"},
+					bybar:{condition:"BARCOND"}
+				}
+			},
+			expected: ["draw","byfoo"],
+			context: {
+				evaluateBoolean: {
+					returns: true,
+					expectedargs: [ ["@state","FOOCOND"] ]
+				},
+				evaluateValue: {
+					returnsarg: 1,
+					expectedargs: [ ["@state","draw"] ]
 				}
 			}
 		},
@@ -181,8 +167,8 @@ tester("The execute methods",Algol,{
 			endturndef: {
 				passto:"NEXTowner",
 				endgame:{
-					byfoo:{condition:"FOOCOND",winner:"FOOWINNER"},
-					bybar:{condition:"BARCOND",winner:"BARWINNER"}
+					byfoo:{condition:"FOOCOND"},
+					bybar:{condition:"BARCOND"}
 				}
 			},
 			expected: ["passto","NEXT"],
@@ -198,82 +184,6 @@ tester("The execute methods",Algol,{
 			}
 		}
 	},
-	"hydrateStateAfterCommand(state)": {
-		"when cannot end turn": {
-			state: {
-				gamedef:{
-					hydration:"LIIisT",
-					endturn:{condition:"COND"}
-				}
-			},
-			aftereval: {
-				gamedef:{
-					hydration:"LIIisT",
-					endturn:{condition:"COND"}
-				},
-				canendturn:false
-			},
-			expected: {
-				gamedef:{
-					hydration:"LIIisT",
-					endturn:{condition:"COND"}
-				},
-				canendturn:false,
-				commands:"COMOPTS"
-			},
-			context: {
-				evaluateBoolean: {
-					returns: false,
-					expectedargs: [ ["@state","COND"] ]
-				},
-				applyGeneratorList: {
-					method: function(s){ return s; },
-					expectedargs: [ ["@state","LIIisT"] ]
-				},
-				listCommandOptions: {
-					returns: "COMOPTS",
-					expectedargs: [ ["@aftereval",{hydration:"LIIisT",endturn:{condition:"COND"}}] ]
-				}
-			}
-		},
-		"when can end turn": {
-			state: {
-				gamedef:{
-					hydration: "LisT",
-					endturn: {condition:"COND",hydration:"LisT2"}
-				}
-			},
-			aftereval: {
-				gamedef:{
-					hydration: "LisT",
-					endturn: {condition:"COND",hydration:"LisT2"}
-				},
-				canendturn:true
-			},
-			expected: {
-				gamedef:{
-					hydration:"LisT",
-					endturn:{condition:"COND",hydration:"LisT2"}
-				},
-				canendturn:true,
-				commands:"COMOPTS"
-			},
-			context: {
-				evaluateBoolean: {
-					returns: true,
-					expectedargs: [ ["@state","COND"] ]
-				},
-				applyGeneratorList: {
-					method: function(s){ return s; },
-					expectedargs: [ ["@state","LisT"],["@aftereval","LisT2"] ]
-				},
-				listCommandOptions: {
-					returns: "COMOPTS",
-					expectedargs: [ ["@aftereval",{hydration:"LisT",endturn:{condition:"COND",hydration:"LisT2"}}] ]
-				}
-			}
-		}
-	},
 	"performOption(state,optiondef)": {
 		"when option is backto": {
 			state: {foo:"bar"},
@@ -281,43 +191,42 @@ tester("The execute methods",Algol,{
 			expected: {foo:"baz"}
 		},
 		"when option is passto": {
-			state: {
-				turn: 6,
-				foo: "bar",
-				save: [["BLAH"]],
-				steps: ["1st","2nd"]
-			},
-			optiondef: ["passto",3],
-			expected: "HYDRATED",
+			state: "STATE",
+			optiondef: ["passto","NEXTPLR"],
 			context: {
-				hydrateStateAfterCommand: {
-					returns: "HYDRATED",
-					expectedargs: [ ["NEWTURN"] ]
-				},
 				prepareNewTurnState: {
 					returns: "NEWTURN",
-					expectedargs: [ ["@state",3] ]
+					expectedargs: [["@state","NEXTPLR"]]
+				},
+				setOptions: {
+					returns: "WITHOPTIONS",
+					expectedargs: [["NEWTURN"]]
 				}
-			}
+			},
+			expected: "WITHOPTIONS"
 		},
-		"when option is endgame": {
+		/*"when option is endgame": {
 			state: {foo:"bar"},
 			optiondef: ["endgame","somecond",2],
 			expected: {foo:"bar",status:"somecond", player:2}
-		},
+		},*/
 		"when option is newstep": {
-			state: {foo:"bar"},
-			optiondef: ["newstep",{some:"other"}],
-			expected: "HYDRATEDSTATE",
+			state: "STATE",
+			optiondef: ["newstep","NEWSTATE"],
 			context: {
-				hydrateStateAfterCommand: {
-					returns: "HYDRATEDSTATE",
-					expectedargs: [ [{some:"other"}] ]
+				prepareNewStepState: {
+					returns: "PREPPEDNEWSTATE",
+					expectedargs: [["NEWSTATE"]]
+				},
+				setOptions: {
+					returns: "WITHOPTIONS",
+					expectedargs: [["PREPPEDNEWSTATE"]]
 				}
-			}
+			},
+			expected: "WITHOPTIONS"
 		}
 	},
-	"listCommandOptions(state,gamedef)": {
+	"getAvailableCommands(state,gamedef)": {
 		"when no commands": {
 			state: {canendturn:true},
 			gamedef: {commands:{},endturn:"endturn"},
@@ -535,7 +444,22 @@ tester("The execute methods",Algol,{
 			}
 		}
 	},
-	"updateMarksFromCommand(state,commanddef)": {}
+	"setOptions(state)": {
+		"for normal call": {
+			state: {foo:"bar","gamedef":"GAMEDEF"},
+			context: {
+				getAvailableCommands: {
+					returns: "COMMANDS",
+					expectedargs: [["@state","GAMEDEF"]]
+				},
+				getAvailableMarks: {
+					returns: "MARKS",
+					expectedargs: [["@state"]]
+				}
+			},
+			expected: {foo:"bar","gamedef":"GAMEDEF",availableMarks:"MARKS",availableCommands:"COMMANDS"}
+		}
+	}
 },I);
 
 

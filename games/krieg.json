@@ -7,10 +7,7 @@
 	"terrain": {
 		"southeast": [ ["positions",[1001,3003],{}] ],
 		"northwest": [ ["positions",[2002,4004],{}] ],
-		"corners": [
-			{"owner":1,"pos":1001},
-			{"owner":2,"pos":4004}
-		],
+		"corners": [ {"owner":1,"pos":1001}, {"owner":2,"pos":4004} ],
 		"bases": [
 			["positions",[1002,2001,2002],{"owner":1}],
 			["positions",[3003,3004,4003],{"owner":2}]

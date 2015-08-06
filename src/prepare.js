@@ -6,7 +6,7 @@ function augmentWithPrepareFunctions(Algol){
 
 // €€€€€€€€€€€€€€€€€€€€€€€€€€€ P R E P A R E   F U N C T I O N S €€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€*/
 
-// def is game object, state has settings prop. 
+// def is gamedef object, state has settings prop. 
 Algol.populateGameWithSettings = function(state,def){
 	return I.List.isList(def) && def.first() === "settings" ? state.getIn(["settings",def.get(1)])
 	: def.map ? def.map(this.populateGameWithSettings.bind(this,state)) : def;
@@ -96,28 +96,31 @@ Algol.prepareNewGameState = function(gamedef,nbrofplayers){
 Called from ....
 Reset all stuff, run generators for startturn, finally call prepareNewStepState
 1: remove old previousstep
-2: reset steps, marks, baselayer and context, and update player
-3: apply startturn generators
-4: apply startturn effects
+2: reset steps, marks, baselayer and context, and update player, and set layers to baselayer
+3: apply startturn effects
+4: apply startturn generators
+
 */
 Algol.prepareNewTurnState = function(state,newturnplayer){
 	var startturn = state.getIn(["gamedef","startturn"]),
-		effect = startturn.get("applyeffect");
+		effect = startturn.get("applyeffect"),
+		baselayer = state.getIn(["baselayers",newturnplayer])||state.getIn(["baselayers",newturnplayer+""]);
 	state = state.delete("previousstep").merge(I.fromJS({
 		steps: [],
 		marks: {},
 		player: newturnplayer,
 		turn: (state.get("turn")||0)+1,
-		baselayer: state.getIn(["baselayers",newturnplayer])||state.getIn(["baselayers",newturnplayer+""]),
+		baselayer: baselayer,
+		layers: baselayer,
 		context: state.get("basecontext").merge(I.fromJS({
 			currentplayer:newturnplayer,
 			performedsteps:0,
 			nextplayer:state.getIn(["passto",newturnplayer])||state.getIn(["passto",""+newturnplayer])
 		}))
 	}));
-	state = this.applyGeneratorList(state,startturn.get("rungenerators")||I.List());
 	state = effect ? this.applyEffect(state,effect) : state;
-	return this.prepareNewStepState(state);
+	state = this.applyGeneratorList(state,startturn.get("rungenerators")||I.List());
+	return this.prepareNewStepState(state); // TODO - don't do this here?
 };
 
 /*
@@ -126,6 +129,7 @@ Called from prepareNewTurnState as well as... sth else involving commands! :)
 1: resets state.layers to state.baselayer
 2: runs generator list in state.gamedef.startstep.rungenerators
 3: if not first step in turn then saves previousstep and calculates canendturn
+TODO: remove all marks? I think so! NO! calculateCommandResult's responsibility!
 */
 Algol.prepareNewStepState = function(state){
 	var oldstate = state;

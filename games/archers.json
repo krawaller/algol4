@@ -99,8 +99,8 @@
 		"stepforward": {
 			"condition": ["notempty","forwardfooting"],
 			"effect": ["multieffect",[
-				["moveunit",["idofunitat",["markpos","selectunit"]],["firstposin","forwardfooting"]],
 				["setcontextval",["idofunitat",["markpos","selectunit"]],"hasmoved"],
+				["moveunit",["idofunitat",["markpos","selectunit"]],["firstposin","forwardfooting"]],
 				["addtocontextval","nonfiremoves",1]
 			]],
 			"setmarks": {
@@ -110,8 +110,8 @@
 		"stepbackward": {
 			"condition": ["notempty","backwardfooting"],
 			"effect": ["multieffect",[
-				["moveunit",["idofunitat",["markpos","selectunit"]],["firstposin","backwardfooting"]],
 				["setcontextval",["idofunitat",["markpos","selectunit"]],"hasmoved"],
+				["moveunit",["idofunitat",["markpos","selectunit"]],["firstposin","backwardfooting"]],
 				["addtocontextval","nonfiremoves",1]
 			]],
 			"setmarks": {
@@ -120,27 +120,27 @@
 		},
 		"turnleft": {
 			"effect": ["multieffect",[
+				["setcontextval",["idofunitat",["markpos","selectunit"]],"hasmoved",true],
 				["turnunit",["idofunitat",["markpos","selectunit"]],-2],
-				["setcontextval",["idofunitat",["markpos","selectunit"]],"hasmoved"],
 				["addtocontextval","nonfiremoves",1]
 			]]
 		},
 		"turnright": {
 			"effect": ["multieffect",[
+				["setcontextval",["idofunitat",["markpos","selectunit"]],"hasmoved",true],
 				["turnunit",["idofunitat",["markpos","selectunit"]],2],
-				["setcontextval",["idofunitat",["markpos","selectunit"]],"hasmoved"],
 				["addtocontextval","nonfiremoves",1]
 			]]
 		},
 		"fire": {
 			"condition": ["and",[
 				["notempty","gonnadie"],
-				["not",["truthy",["contextval","nonfiremoves"]]],
-				["not",["truthy",["contextval",["idat",["markpos","selectunit"]]]]]
+				["falsy",["contextval","nonfiremoves"]],
+				["falsy",["contextval",["idat",["markpos","selectunit"]]]]
 			]],
 			"effect": ["multieffect",[
-				["killunit",["idofunitat",["firstposin","gonnadie"]]],
-				["setcontextval",["idofunitat",["markpos","selectunit"]],"hasmoved"]
+				["setcontextval",["idofunitat",["markpos","selectunit"]],"hasmoved",true],
+				["killunit",["idofunitat",["firstposin","gonnadie"]]]
 			]]
 		}
 	}

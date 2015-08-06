@@ -80,7 +80,8 @@ var boolmethods = {
 			return otherlayer.has(pos);
 		});
 	},
-	truthy: function(state,def){ return !!this.evaluateValue(state,def); }
+	truthy: function(state,def){ return !!this.evaluateValue(state,def); },
+	falsy: function(state,def){ return !this.evaluateValue(state,def); }
 };
 
 Algol.evaluateBoolean = function(state,def){
@@ -133,7 +134,12 @@ Algol.evaluatePosition = function(state,def){
 	return positionmethods[def.first()].apply(this,[state].concat(def.rest().toArray()));	
 };
 
-
+/*
+Used to determine if a command results in a new state or is a repeat of a previous state
+*/
+Algol.areStatesEqual = function(s1,s2){
+	return s1.getIn(["layers","compare"]).equals(s2.getIn(["layers","compare"]));
+};
 
 
 // €€€€€€€€€€€€€€€€€€€€€€€€€ E X P O R T €€€€€€€€€€€€€€€€€€€€€€€€€

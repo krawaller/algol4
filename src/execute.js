@@ -42,16 +42,18 @@ var effectmethods = {
 	addtocontextval: function(state,prop,val){
 		var propname = this.evaluateValue(state,prop);
 		return state.setIn(["context",propname],this.evaluateValue(state,val)+(state.getIn(["context",propname])||0));
-	}
+	} // TODO - add spawnunit
 };
 
 // returns an updated state
-// Called from Algol.listCommandOptions
+// Called from Algol.listCommandOptions -- hmm?
+// Called from Algol.prepareNewTurnState
+
 Algol.applyEffect = function(state,def){
 	return effectmethods[def.first()].apply(this,[state].concat(def.rest().toArray()));
 };
 
-// Called from Algol.listCommandOptions
+// Called from Algol.listCommandOptions TODO - invert to return error string or nothing
 Algol.canExecuteCommand = function(state,def){
 	return !(
 		(def.has("condition") && !this.evaluateBoolean(state,def.get("condition"))) || 
@@ -60,7 +62,7 @@ Algol.canExecuteCommand = function(state,def){
 };
 
 
-// TODO - obsolete
+// TODO - obsolete?
 Algol.buildSaveEntryFromStep = function(state,stepentry){
 	var commanddef = state.getIn(["gamedef","commands",stepentry.get("command")]);
 	return commanddef.get("neededmarks").reduce(function(ret,markname){
@@ -79,68 +81,60 @@ Algol.calculateStepData = function(state,commanddef){
 	});
 };
 
-// returns new mark data for a new step. will either be empty or contain the marks
-// specified by the commanddef
-// Used only in Algol.calculateCommandResult
-// TODO - obsolete!
-Algol.updateMarksFromCommand = function(state,commanddef){
-	return (commanddef.get("setmarks")||I.Map()).reduce(function(ret,pos,markname){
-		return ret.set(markname,this.evaluateValue(state,pos));
-	},I.Map(),this);
-};
 
-
-// Called from Algol.listCommandOptions
+// Called from Algol.getAvailableCommands
 Algol.calculateCommandResult = function(state,newstate,commanddef){
-	var newdata = newstate.get("data"), comparetostate = state;
+	var comparetostate = state;
 	// if newstate is equal to a previous step this turn, treat as a goback command
 	while(comparetostate.get("steps").size){
 		comparetostate = comparetostate.get("previousstep");
-		if (I.is(comparetostate.get("data"),newdata)){ return I.List(["backto",comparetostate]); }
+		if (this.areStatesEqual(comparetostate,newstate)){ return I.List(["backto",comparetostate]); }
 	}
 	// newstate is really new state, treat it as such
-	return I.List(["newstep",I.pushIn(newstate,["steps"],this.calculateStepData(state,commanddef)).set("previousstep",state).set("marks",this.updateMarksFromCommand(state,commanddef)).setIn(["context","performedsteps"],state.getIn(["context","performedsteps"])+1)]);
+	newstate = I.pushIn(newstate,["steps"],this.calculateStepData(state,commanddef));
+	newstate = newstate.set("marks",this.newMarksAfterCommand(state,commanddef));
+	return I.List(["newstep",newstate]);
 };
 
-// returns an endturn option. this will either be an endgame or passing to another player
-// Used in Algol.listCommandOptions
+// returns an endturn option. this will either be win/draw/loseto or passto
+// Used in Algol.getAvailableCommands
+// TODO - update who he passes to, use nextplayer as default!
 Algol.endTurnOption = function(state,endturndef){
 	return endturndef.get("endgame").reduce(function(mem,end,name){
-		return mem || this.evaluateBoolean(state,end.get("condition")) && ["endgame",name,this.evaluateValue(state,end.get("winner"))];
+		if (!mem && this.evaluateBoolean(state,end.get("condition"))) {
+			var res = this.evaluateValue(state,end.get("result")),
+				who = (res==="loseto" && this.evaluateValue(state,end.get("who")));
+			return res==="loseto" ? I.List([res,name,who]) : I.List([res,name]);
+		}
+		return mem;
 	},undefined,this) || ["passto",this.evaluateValue(state,endturndef.get("passto"))];
 };
 
 // Returns an array of available commands
 // Used in Algol.hydrateState  -- TODO really the right place?
-Algol.listCommandOptions = function(state,gamedef){
+Algol.getAvailableCommands = function(state,gamedef){
 	return I.setIf(I.setIf((state.get("canendturn") && gamedef.getIn(["endturn","commandcap"]) ? I.Map() : gamedef.get("commands")).reduce(function(ret,comdef,comname){
 		return this.canExecuteCommand(state,comdef) ? ret.set(comname,this.calculateCommandResult(state,this.applyEffect(state,comdef.get("effect")),comdef)) : ret;
 	},I.Map(),this),"endturn",state.get("canendturn") && this.endTurnOption(state,gamedef.get("endturn"))),"undo",state.has("previousstep") ? ["backto",state.get("previousstep")] : false) ;
 };
 
-
-// Called from Algol.performOption (various) // TODO - kull of this crap
-Algol.hydrateStateAfterCommand = function(state){ 
-	state = this.applyGeneratorList(state,state.getIn(["gamedef","hydration"]));
-	state = state.set("canendturn",this.evaluateBoolean(state,state.getIn(["gamedef","endturn","condition"])));
-	if (state.get("canendturn")){
-		state = this.applyGeneratorList(state,state.getIn(["gamedef","endturn","hydration"]));
-	}
-	return state.set("commands",this.listCommandOptions(state,state.get("gamedef")));
-};
-
-
 var optionmethods = {
 	backto: function(state,oldstate){ return oldstate; },
-	newstep: function(state,newstate){ return this.hydrateStateAfterCommand(newstate); },
-	passto: function(state,player){
-		return this.hydrateStateAfterCommand(this.prepareNewTurnState(state,player));
-	},
+	newstep: function(state,newstate){ return this.setOptions(this.prepareNewStepState(newstate)); },
+	passto: function(state,player){ return this.setOptions(this.prepareNewTurnState(state,player)); },
+	// still not updated:
 	endgame: function(state,cond,player){ return state.merge({player:player,status:cond}); }
 };
 
-Algol.performOption = function(state,def){
+Algol.performOption = function(state,def){ // TODO - add marks to here (?)
 	return optionmethods[def.first()].apply(this,[state].concat(def.rest().toArray()));
+};
+
+/*
+Usd in performOption newstep and passto methods
+*/
+Algol.setOptions = function(state){
+	return state.set("availableMarks",this.getAvailableMarks(state)).set("availableCommands",this.getAvailableCommands(state,state.get("gamedef")));
 };
 
 

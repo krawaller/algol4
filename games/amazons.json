@@ -8,7 +8,7 @@
 		["list",[1004,1007,4001,4010],{"owner":1,"group":"movers"}],
 		["list",[10004,10007,7001,7010],{"owner":2,"group":"movers"}]
 	],
-	"startturn": {
+	"startstep": {
 		"hydration": ["findblocks","findfiretargets"]
 	},
 	"marks": {
@@ -45,7 +45,7 @@
 		},
 		"fire": {
 			"effects": [
-				["spawnunit",["markpos","selectfire"],{"group":"fires"}],
+				["spawnunit",["markpos","selectfire"],{"group":"fires","owner":0}],
 				["forallin","willbeblocked",
 					["setunitdata",["contextval","loopid"],"group","immobilized"]
 				]
@@ -79,9 +79,9 @@
 			"type": "nextto",
 			"starts": ["markpos","selectfire"],
 			"dirs": ["dirs",[1,2,3,4,5,6,7,8]],
+			"condition": ["anyat","movers",["context","target"]],
 			"draw": {
 				"target": {
-					"condition": ["anyat","movers",["context","target"]],
 					"tolayer": "hindered"
 				}
 			}

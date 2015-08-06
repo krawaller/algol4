@@ -92,6 +92,14 @@ Algol.setMark = function(state,markname,position){
 };
 
 
+/*
+Called from calculateCommandResult
+*/
+Algol.newMarksAfterCommand = function(state,commanddef){
+	return (commanddef.get("setmarks") || I.Map()).reduce(function(mem,pos,name){
+		return mem.set(name,this.evaluatePosition(state,pos));
+	},I.Map(),this);
+};
 
 // €€€€€€€€€€€€€€€€€€€€€€€€€ E X P O R T €€€€€€€€€€€€€€€€€€€€€€€€€
 

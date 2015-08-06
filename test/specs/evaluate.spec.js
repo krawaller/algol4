@@ -16,6 +16,18 @@ if (typeof require === 'function' && typeof module === 'object') {
 }
 
 tester("the evaluate methods",Algol,{
+	"areStatesEqual(state1,state2)": {
+		"when compare layers are different": {
+			state1: {layers:{compare:{666:777}},baz:1},
+			state2: {layers:{compare:{666:666}},baz:2},
+			expected: false
+		},
+		"when compare layers are equal": {
+			state1: {layers:{compare:{666:777}},baz:1},
+			state2: {layers:{compare:{666:777}},baz:2},
+			expected: true
+		}
+	},
 	"evaluateDirList(state,dirdef)": {
 		"for normal dirs list": {
 			dirdef: ["dirs",[1,2,3,4,5]],
@@ -249,6 +261,30 @@ tester("the evaluate methods",Algol,{
 			},
 			booldef: ["overlaps","somelayer","otherlayer"],
 			expected: false
-		}
+		},
+		"for truthy with a string": {
+			booldef: ["truthy","BLAH"],
+			expected: true
+		},
+		"for truthy with a non-zero number": {
+			booldef: ["truthy",7],
+			expected: true
+		},
+		"for truthy with a non-existent value": {
+			booldef: ["truthy",undefined],
+			expected: false
+		},
+		"for falsy with a string": {
+			booldef: ["falsy","BLAH"],
+			expected: false
+		},
+		"for falsy with a non-zero number": {
+			booldef: ["falsy",7],
+			expected: false
+		},
+		"for falsy with a non-existent value": {
+			booldef: ["falsy",undefined],
+			expected: true
+		},
 	}
 },I);

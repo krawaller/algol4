@@ -165,6 +165,7 @@ tester("The prepare methods",Algol,{
 				marks: {},
 				baselayers: {777:"basefor777"},
 				baselayer: "basefor777",
+				layers: "basefor777",
 				turn: 667,
 				player: 777,
 				passto: {777:999},
