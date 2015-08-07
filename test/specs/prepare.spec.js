@@ -117,26 +117,30 @@ tester("The prepare methods",Algol,{
 				prepareBaseLayers: {
 					returns: "PREPPED",
 					expectedargs: [ ["@gamedef","@players"] ]
+				},
+				performOption: {
+					returns: "READYFORFIRSTSTEP",
+					expectedargs: [[{
+						gamedef: {
+							setup: "SETUP",
+							board: "BOARD",
+							commands: {"foo":{number:2},"bar":{number:1}}
+						},
+						commandsinorder: ["bar","foo"],
+						connections: "CONNECTIONS",
+						data: {
+							units: "UNITS"
+						},
+						baselayers: "PREPPED",
+						basecontext: {
+							nbrofplayers: 2
+						},
+						status: "ongoing",
+						passto: {1:2,2:1}
+					},["passto",1]]]
 				}
 			},
-			expected: {
-				gamedef: {
-					setup: "SETUP",
-					board: "BOARD",
-					commands: {"foo":{number:2},"bar":{number:1}}
-				},
-				commandsinorder: ["bar","foo"],
-				connections: "CONNECTIONS",
-				data: {
-					units: "UNITS"
-				},
-				baselayers: "PREPPED",
-				basecontext: {
-					nbrofplayers: 2
-				},
-				status: "ongoing",
-				passto: {1:2,2:1}
-			}
+			expected: "READYFORFIRSTSTEP"
 		}
 	},
 	"prepareNewTurnState(state,nextplayer)": {

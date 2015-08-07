@@ -72,7 +72,7 @@ TODO: also pass in plr information. oh, and default for nbrofplayers?
 */
 Algol.prepareNewGameState = function(gamedef,nbrofplayers){
 	var commandslist = gamedef.get("commands").keySeq().sort();
-	return I.fromJS({
+	var state = I.fromJS({
 		gamedef: gamedef.set("commands",commandslist.reduce(function(map,comname,n){
 			return map.set(comname,gamedef.getIn(["commands",comname]).set("number",n+1));
 		},I.Map())),
@@ -88,6 +88,7 @@ Algol.prepareNewGameState = function(gamedef,nbrofplayers){
 			return mem.set(p,p===nbrofplayers?1:p+1);
 		},I.Map())
 	});
+	return this.performOption(state,I.List(["passto",1]));
 };
 
 

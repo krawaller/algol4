@@ -24,7 +24,7 @@ TODO
 [x] perform setmark (setMark and options)
 [x] perform removemark (removeMark)
 
-[ ] make prepareNewGameState do performOption passto
+[x] make prepareNewGameState do performOption passto
 
 [ ] make resetLayers function
 
