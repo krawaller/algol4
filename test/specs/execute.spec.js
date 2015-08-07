@@ -62,10 +62,9 @@ tester("The execute methods",Algol,{
 			newstate: {data:{c:666},steps:["foo"]},
 			commanddef: {name:"somecommand",neededmarks:["mark1"]},
 			expected: ["newstep",{
-				marks:"NEWMARKDATA",
 				data:{c:666},
 				steps:["foo","stepDATA"]
-			}],
+			},"NEWMARKDATA"],
 			context: {
 				newMarksAfterCommand: {
 					returns: "NEWMARKDATA",
@@ -217,11 +216,11 @@ tester("The execute methods",Algol,{
 		},
 		"when option is newstep": {
 			state: "STATE",
-			optiondef: ["newstep","NEWSTATE"],
+			optiondef: ["newstep","NEWSTATE","NEWMARKS"],
 			context: {
 				prepareNewStepState: {
 					returns: "PREPPEDNEWSTATE",
-					expectedargs: [["NEWSTATE"]]
+					expectedargs: [["NEWSTATE","NEWMARKS"]]
 				},
 				setOptions: {
 					returns: "WITHOPTIONS",

@@ -25,3 +25,7 @@ TODO
 [x] perform removemark (removeMark)
 
 [ ] make prepareNewGameState do performOption passto
+
+[ ] make resetLayers function
+
+[x] change so marks to set as commandresults are passed to prepareNewStep!

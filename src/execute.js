@@ -86,14 +86,13 @@ Algol.calculateStepData = function(state,commanddef){
 Algol.calculateCommandResult = function(state,newstate,commanddef){
 	var comparetostate = state;
 	// if newstate is equal to a previous step this turn, treat as a goback command
-	while(comparetostate.get("steps").size){
+	while(comparetostate.has("previousstep")){
 		comparetostate = comparetostate.get("previousstep");
 		if (this.areStatesEqual(comparetostate,newstate)){ return I.List(["backto",comparetostate]); }
 	}
 	// newstate is really new state, treat it as such
 	newstate = I.pushIn(newstate,["steps"],this.calculateStepData(state,commanddef));
-	newstate = newstate.set("marks",this.newMarksAfterCommand(state,commanddef));
-	return I.List(["newstep",newstate]);
+	return I.List(["newstep",newstate,this.newMarksAfterCommand(state,commanddef)]);
 };
 
 // returns an endturn option. this will either be win/draw/loseto or passto
@@ -119,7 +118,7 @@ Algol.getAvailableCommands = function(state,gamedef){
 
 var optionmethods = {
 	backto: function(state,oldstate){ return oldstate; },
-	newstep: function(state,newstate){ return this.setOptions(this.prepareNewStepState(newstate)); },
+	newstep: function(state,newstate,newmarks){ return this.setOptions(this.prepareNewStepState(newstate,newmarks)); },
 	passto: function(state,player){ return this.setOptions(this.prepareNewTurnState(state,player)); },
 	win: function(state,by){ return state.set("endedby",by).set("winner",state.get("player")).delete("availableMarks").delete("availableCommands"); },
 	draw: function(state,by){ return state.set("endedby",by).set("winner",0).delete("availableMarks").delete("availableCommands"); },

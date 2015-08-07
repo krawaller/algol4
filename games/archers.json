@@ -91,8 +91,8 @@
 		"commandcap": true,
 		"passto": ["contextval","nextplayer"],
 		"endgame": {
-			"infiltration": ["overlaps","myunits","opptrees"],
-			"kingkill": ["notempty","oppdeadkings"]
+			"infiltration": {"condition":["overlaps","myunits","opptrees"],"result":"win"},
+			"kingkill": {"condition":["notempty","oppdeadkings"],"result":"win"}
 		}
 	},
 	"commands": {
@@ -116,9 +116,7 @@
 				["moveunit",["idofunitat",["markpos","selectunit"]],["firstposin","backwardfooting"]],
 				["addtocontextval","nonfiremoves",1]
 			]],
-			"setmarks": {
-				"selectunit": ["firstposin","backwardfooting"]
-			}
+			"setmarks": { "selectunit": ["firstposin","backwardfooting"] }
 		},
 		"turnleft": {
 			"neededmarks": ["selectunit"],
@@ -126,7 +124,8 @@
 				["setcontextval",["idofunitat",["markpos","selectunit"]],"hasmoved",true],
 				["turnunit",["idofunitat",["markpos","selectunit"]],-2],
 				["addtocontextval","nonfiremoves",1]
-			]]
+			]],
+			"setmarks": { "selectunit": ["markpos","selectunit"] }
 		},
 		"turnright": {
 			"neededmarks": ["selectunit"],
@@ -134,7 +133,8 @@
 				["setcontextval",["idofunitat",["markpos","selectunit"]],"hasmoved",true],
 				["turnunit",["idofunitat",["markpos","selectunit"]],2],
 				["addtocontextval","nonfiremoves",1]
-			]]
+			]],
+			"setmarks": { "selectunit": ["markpos","selectunit"] }
 		},
 		"fire": {
 			"neededmarks": ["selectunit"],

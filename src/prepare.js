@@ -126,19 +126,23 @@ Algol.prepareNewTurnState = function(state,newturnplayer){
 Called from prepareNewTurnState as well as... sth else involving commands! :)
 
 */
-Algol.prepareNewStepState = function(state){
+Algol.prepareNewStepState = function(state,newmarks){
 	var oldstate = state, startturn = state.getIn(["gamedef","startturn"]) || I.Map();
 	state = state.set("layers",this.addUnitLayersFromData(state.get("baselayer"),state.getIn(["data","units"]),state.get("player")));
 	if (state.get("steps").isEmpty()){
 		if (startturn.has("applyeffect")){
 			state = this.applyEffect(state,startturn.get("applyeffect"));
 			state = state.set("layers",this.addUnitLayersFromData(state.get("baselayer"),state.getIn(["data","units"]),state.get("player")));
-			state = this.applyGeneratorList(state,state.getIn(["gamedef","startstep","rungenerators"])||I.List());
 		}
+		state = this.applyGeneratorList(state,state.getIn(["gamedef","startstep","rungenerators"])||I.List());
 	} else {
 		state = this.applyGeneratorList(state,state.getIn(["gamedef","startstep","rungenerators"])||I.List());
 		state = state.set("previousstep",oldstate).set("canendturn",this.evaluateBoolean(state,state.getIn(["gamedef","endturn","condition"])));
 	}
+	state = state.set("marks",I.Map());
+	state = (newmarks||I.Map()).reduce(function(mem,pos,markname){
+		return this.setMark(mem,markname,pos);
+	},state,this);
 	return state;
 	//return state.get("steps").isEmpty() ? state : state.set("previousstep",oldstate).set("canendturn",this.evaluateBoolean(state,state.getIn(["gamedef","endturn","condition"]))); 
 };

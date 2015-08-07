@@ -171,7 +171,7 @@ tester("The prepare methods",Algol,{
 			}
 		}
 	},
-	"prepareNewStepState(state)": {
+	"prepareNewStepState(state,newmarks)": {
 		"when state has empty steps array": {
 			state: {
 				gamedef: {
@@ -206,10 +206,11 @@ tester("The prepare methods",Algol,{
 				baselayer: {BASE:true},
 				layers: {BASE:true,WITHUNITS:true},
 				STEPSTART: "yeah",
-				EFFECTS: "yeah"
+				EFFECTS: "yeah",
+				marks: {}
 			}
 		},
-		"when state has previous steps array": {
+		"when state has previous steps array and new marks": {
 			state: {
 				gamedef: {
 					startstep: {rungenerators:"STEPSTART"},
@@ -220,7 +221,13 @@ tester("The prepare methods",Algol,{
 				steps: ["STEP"],
 				baselayer: {BASE:true}
 			},
+			newmarks: {mark1:"MARK1POS",mark2:"MARK2POS"},
 			context: {
+				setMark: {
+					method: function(state,markname,pos){
+						return state.set(markname,pos);
+					}
+				},
 				applyGeneratorList: {
 					method: function(s,l){ return s.set(l,"yeah"); }
 				},
@@ -266,7 +273,10 @@ tester("The prepare methods",Algol,{
 				STEPSTART: "yeah",
 				canendturn: "trueorfalse",
 				data : { units : 'UNITSDATA' },
-				player : 'PLAYER'
+				player : 'PLAYER',
+				mark1: "MARK1POS",
+				mark2: "MARK2POS",
+				marks: {}
 			}
 		}
 	},
