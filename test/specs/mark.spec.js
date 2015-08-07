@@ -24,7 +24,8 @@ tester("The mark methods",Algol,{
 					othermark:{fromlayer:"otherlayer"},
 					sillymark:{from:"somelayer"}
 				} },
-				layers: { somelayer: {foo:1,bar:1}, otherlayer: {baz:1,bin:1} }
+				layers: { somelayer: {foo:1,bar:1}, otherlayer: {baz:1,bin:1} },
+				marks: {sillymark:"buh"}
 			},
 			context: {
 				isMarkAvailable: {
@@ -32,7 +33,13 @@ tester("The mark methods",Algol,{
 					expectedargs: [["@state","somemark"],["@state","othermark"],["@state","sillymark"]]
 				}
 			},
-			expected: {foo:"somemark",bar:"somemark",baz:"othermark",bin:"othermark"}
+			expected: {
+				foo:["setmark","somemark","foo"],
+				bar:["setmark","somemark","bar"],
+				baz:["setmark","othermark","baz"],
+				bin:["setmark","othermark","bin"],
+				buh:["removemark","sillymark"]
+			}
 		}
 	},
 	"removeMark(state,markname)": {

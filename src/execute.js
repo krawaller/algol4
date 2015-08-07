@@ -75,7 +75,7 @@ Algol.buildSaveEntryFromStep = function(state,stepentry){
 Algol.calculateStepData = function(state,commanddef){
 	return I.fromJS({
 		command: commanddef.get("name"),
-		marks: commanddef.get("neededmarks").reduce(function(mem,mname){
+		marks: (commanddef.get("neededmarks")||I.List()).reduce(function(mem,mname){
 			return mem.set(mname,state.getIn(["marks",mname]));
 		},I.Map())
 	});
@@ -98,7 +98,6 @@ Algol.calculateCommandResult = function(state,newstate,commanddef){
 
 // returns an endturn option. this will either be win/draw/loseto or passto
 // Used in Algol.getAvailableCommands
-// TODO - update who he passes to, use nextplayer as default!
 Algol.endTurnOption = function(state,endturndef){
 	return endturndef.get("endgame").reduce(function(mem,end,name){
 		if (!mem && this.evaluateBoolean(state,end.get("condition"))) {
@@ -107,7 +106,7 @@ Algol.endTurnOption = function(state,endturndef){
 			return res==="loseto" ? I.List([res,name,who]) : I.List([res,name]);
 		}
 		return mem;
-	},undefined,this) || ["passto",this.evaluateValue(state,endturndef.get("passto"))];
+	},undefined,this) || ["passto",state.getIn(["passto",state.get("player")])];
 };
 
 // Returns an array of available commands
@@ -122,11 +121,14 @@ var optionmethods = {
 	backto: function(state,oldstate){ return oldstate; },
 	newstep: function(state,newstate){ return this.setOptions(this.prepareNewStepState(newstate)); },
 	passto: function(state,player){ return this.setOptions(this.prepareNewTurnState(state,player)); },
-	// still not updated:
-	endgame: function(state,cond,player){ return state.merge({player:player,status:cond}); }
+	win: function(state,by){ return state.set("endedby",by).set("winner",state.get("player")).delete("availableMarks").delete("availableCommands"); },
+	draw: function(state,by){ return state.set("endedby",by).set("winner",0).delete("availableMarks").delete("availableCommands"); },
+	loseto: function(state,by,player){ return state.set("endedby",by).set("winner",player).delete("availableMarks").delete("availableCommands"); },
+	setmark: function(state,mark,pos){ return this.setOptions(this.setMark(state,mark,pos)); },
+	removemark: function(state,mark){ return this.setOptions(this.removeMark(state,mark)); }
 };
 
-Algol.performOption = function(state,def){ // TODO - add marks to here (?)
+Algol.performOption = function(state,def){
 	return optionmethods[def.first()].apply(this,[state].concat(def.rest().toArray()));
 };
 

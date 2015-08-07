@@ -144,9 +144,6 @@ tester("The prepare methods",Algol,{
 			nextplayer: 777,
 			state: {
 				steps: "SOMETHING",
-				gamedef: {
-					startturn: {rungenerators:"TURNSTART",applyeffect:"EFFECT"}
-				},
 				marks: "FOO",
 				baselayers: {777:"basefor777"},
 				turn: 666,
@@ -157,15 +154,10 @@ tester("The prepare methods",Algol,{
 			},
 			expected: {
 				steps: [],
-				gamedef: {
-					startturn: {rungenerators:"TURNSTART",applyeffect:"EFFECT"}
-				},
-				TURNSTART: "yeahandSTEP!",
-				EFFECT: "did them!",
+				TURNSTART: "RANSTEP!",
 				marks: {},
 				baselayers: {777:"basefor777"},
 				baselayer: "basefor777",
-				layers: "basefor777",
 				turn: 667,
 				player: 777,
 				passto: {777:999},
@@ -173,14 +165,8 @@ tester("The prepare methods",Algol,{
 				context: {currentplayer:777,performedsteps:0,nextplayer:999,base:true}
 			},
 			context: {
-				applyGeneratorList: {
-					method: function(s,l){ return s.set(l,"yeah"); }
-				},
 				prepareNewStepState: {
-					method: function(s){ return s.set("TURNSTART",s.get("TURNSTART")+"andSTEP!") }
-				},
-				applyEffect: {
-					method: function(s,e){ return s.set(e,"did them!"); }
+					method: function(s){ return s.set("TURNSTART","RANSTEP!") }
 				}
 			}
 		}
@@ -189,24 +175,38 @@ tester("The prepare methods",Algol,{
 		"when state has empty steps array": {
 			state: {
 				gamedef: {
+					startturn: {rungenerators:"TURNSTART",applyeffect:"EFFECTS"},
 					startstep: {rungenerators:"STEPSTART"}
 				},
+				data: {units:"UNITSDATA"},
+				player: "PLAYER",
 				steps: [],
-				baselayer: "BASE"
+				baselayer: {BASE:true},
 			},
 			context: {
 				applyGeneratorList: {
 					method: function(s,l){ return s.set(l,"yeah"); }
+				},
+				applyEffect: {
+					method: function(s,l){ return s.set(l,"yeah"); }	
+				},
+				addUnitLayersFromData: {
+					method: function(layers,unitdata,plr){ return layers.set("WITHUNITS",true)},
+					expectedargs: [[{BASE:true},"UNITSDATA","PLAYER"],[{BASE:true},"UNITSDATA","PLAYER"]]
 				}
 			},
 			expected: {
 				gamedef: {
+					startturn: {rungenerators:"TURNSTART",applyeffect:"EFFECTS"},
 					startstep: {rungenerators:"STEPSTART"}
 				},
+				data: {units:"UNITSDATA"},
+				player: "PLAYER",
 				steps: [],
-				baselayer: "BASE",
-				layers: "BASE",
-				STEPSTART: "yeah"
+				baselayer: {BASE:true},
+				layers: {BASE:true,WITHUNITS:true},
+				STEPSTART: "yeah",
+				EFFECTS: "yeah"
 			}
 		},
 		"when state has previous steps array": {
@@ -215,25 +215,25 @@ tester("The prepare methods",Algol,{
 					startstep: {rungenerators:"STEPSTART"},
 					endturn: {condition:"ENDTURNCOND"}
 				},
-				steps: ["STEPS"],
-				baselayer: "BASE"
+				data: {units:"UNITSDATA"},
+				player: "PLAYER",
+				steps: ["STEP"],
+				baselayer: {BASE:true}
 			},
 			context: {
 				applyGeneratorList: {
-					method: function(s,l){ return s.set(l,"yeah"); },
-					expectedargs: [[{
-						gamedef: {
-							startstep: {rungenerators:"STEPSTART"},
-							endturn: {condition:"ENDTURNCOND"}
-						},
-						steps: ["STEPS"],
-						baselayer: "BASE",
-						layers: "BASE"
-					},"STEPSTART"]]
+					method: function(s,l){ return s.set(l,"yeah"); }
+				},
+				applyEffect: {
+					method: function(s,l){ return s.set(l,"yeah"); }	
+				},
+				addUnitLayersFromData: {
+					method: function(layers,unitdata,plr){ return layers.set("WITHUNITS",true)},
+					expectedargs: [[{BASE:true},"UNITSDATA","PLAYER"]]
 				},
 				evaluateBoolean: {
 					returns: "trueorfalse",
-					expectedargs: [[{
+					/*expectedargs: [[{
 						gamedef: {
 							startstep: {rungenerators:"STEPSTART"},
 							endturn: {condition:"ENDTURNCOND"}
@@ -242,31 +242,31 @@ tester("The prepare methods",Algol,{
 						baselayer: "BASE",
 						layers: "BASE",
 						STEPSTART: "yeah"
-					},"ENDTURNCOND"]]
+					},"ENDTURNCOND"]]*/
 				}
 			},
 			expected: {
 				previousstep: {
 					gamedef: {
 						startstep: {rungenerators:"STEPSTART"},
-						endturn: {
-							condition: "ENDTURNCOND"
-						}
+						endturn: {condition:"ENDTURNCOND"}
 					},
-					steps: ["STEPS"],
-					baselayer: "BASE"
+					data: {units:"UNITSDATA"},
+					player: "PLAYER",
+					steps: ["STEP"],
+					baselayer: {BASE:true}
 				},
 				gamedef: {
 					startstep: {rungenerators:"STEPSTART"},
-					endturn: {
-						condition: "ENDTURNCOND"
-					}
+					endturn: {condition:"ENDTURNCOND"}
 				},
-				steps: ["STEPS"],
-				baselayer: "BASE",
-				layers: "BASE",
+				steps: ["STEP"],
+				baselayer: {BASE:true},
+				layers: {BASE:true,WITHUNITS:true},
 				STEPSTART: "yeah",
-				canendturn: "trueorfalse"
+				canendturn: "trueorfalse",
+				data : { units : 'UNITSDATA' },
+				player : 'PLAYER'
 			}
 		}
 	},

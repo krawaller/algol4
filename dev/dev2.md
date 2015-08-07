@@ -14,10 +14,14 @@ TODO
 [X] create newMarksAfterCommand
 [x] update calculateCommandResult to use newMarksAfterCommand
 [x] create setOptions
-[ ] endTurnOption should pass to state.nextplayer as default
+[x] endTurnOption should use state.passto
 
-[ ] perform newstep (prepareNewStep and setOptions)
-[x] perform passto (prepareNewTurn and setOptions)
-[ ] perform win
-[ ] perform draw
-[ ] perform loseto
+[x] perform newstep (prepareNewStep and setOptions) [newstate]
+[x] perform passto (prepareNewTurn and setOptions) [plr]
+[x] perform win
+[x] perform draw
+[x] perform loseto
+[x] perform setmark (setMark and options)
+[x] perform removemark (removeMark)
+
+[ ] make prepareNewGameState do performOption passto

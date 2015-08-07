@@ -163,23 +163,18 @@ tester("The execute methods",Algol,{
 			}
 		},
 		"when no wincondition is met": {
-			state: "STATE",
+			state: {player:"plr1",passto:{plr1:"plr2"}},
 			endturndef: {
-				passto:"NEXTowner",
 				endgame:{
 					byfoo:{condition:"FOOCOND"},
 					bybar:{condition:"BARCOND"}
 				}
 			},
-			expected: ["passto","NEXT"],
+			expected: ["passto","plr2"],
 			context: {
 				evaluateBoolean: {
 					returns: false,
 					expectedargs: [ ["@state","FOOCOND"], ["@state","BARCOND"] ]
-				},
-				evaluateValue: {
-					returns: "NEXT",
-					expectedargs: [ ["@state","NEXTowner"] ]
 				}
 			}
 		}
@@ -205,11 +200,21 @@ tester("The execute methods",Algol,{
 			},
 			expected: "WITHOPTIONS"
 		},
-		/*"when option is endgame": {
-			state: {foo:"bar"},
-			optiondef: ["endgame","somecond",2],
-			expected: {foo:"bar",status:"somecond", player:2}
-		},*/
+		"when option is win": {
+			state: {player:"me",availableCommands:"CMNDS",availableMarks:"MARKS"},
+			optiondef: ["win","byfoo"],
+			expected: {player:"me",endedby:"byfoo","winner":"me"}
+		},
+		"when option is draw": {
+			state: {baz:"bin",availableCommands:"CMNDS",availableMarks:"MARKS"},
+			optiondef: ["draw","byfoo"],
+			expected: {baz:"bin",endedby:"byfoo","winner":0}
+		},
+		"when option is loseto": {
+			state: {baz:"bin",availableCommands:"CMNDS",availableMarks:"MARKS"},
+			optiondef: ["loseto","byfoo","sirpoo"],
+			expected: {baz:"bin",endedby:"byfoo","winner":"sirpoo"}
+		},
 		"when option is newstep": {
 			state: "STATE",
 			optiondef: ["newstep","NEWSTATE"],
@@ -221,6 +226,36 @@ tester("The execute methods",Algol,{
 				setOptions: {
 					returns: "WITHOPTIONS",
 					expectedargs: [["PREPPEDNEWSTATE"]]
+				}
+			},
+			expected: "WITHOPTIONS"
+		},
+		"when option is setmark": {
+			state: "STATE",
+			optiondef: ["setmark","NEWMARK","somepos"],
+			context: {
+				setMark: {
+					returns: "WITHNEWMARK",
+					expectedargs: [["@state","NEWMARK","somepos"]]
+				},
+				setOptions: {
+					returns: "WITHOPTIONS",
+					expectedargs: [["WITHNEWMARK"]]
+				}
+			},
+			expected: "WITHOPTIONS"
+		},
+		"when option is removemark": {
+			state: "STATE",
+			optiondef: ["removemark","TOBEREMOVED"],
+			context: {
+				removeMark: {
+					returns: "WITHOUTMARK",
+					expectedargs: [["@state","TOBEREMOVED"]]
+				},
+				setOptions: {
+					returns: "WITHOPTIONS",
+					expectedargs: [["WITHOUTMARK"]]
 				}
 			},
 			expected: "WITHOPTIONS"

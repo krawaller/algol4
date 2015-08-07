@@ -1,62 +1,13 @@
-var I = require("../src/immutableextensions");
-
-var origmap = I.Map({a:1,b:2,c:3});
-var newmap = origmap.set("a",666).set("a",1);
-
-var powmap = I.Map([[origmap,1]]);
-
-console.log("So",powmap.get(newmap));
-
-var GG = origmap.merge({a:7,b:777});
-
-console.log(GG.get("a"),GG.get("b"));
-
-var anothertest = I.fromJS({a:{b:{c:777}}});
-
-console.log("HEREWEARE",anothertest.getIn(["a","b","c"]));
+var I = require("../src/immutableextensions"),
+	Algol = require("../src/index"),
+	archers = I.fromJS(require("../games/archers.json")),
+	state = Algol.prepareNewGameState(archers,2);
 
 
+state = Algol.performOption(state,I.List(["passto",1]));
+state = Algol.performOption(state,I.List(["setmark","selectunit",4004]));
 
-var toot = I.fromJS({
-	a: 62,
-	b: [4,5,"kurt"]
-});
+console.log("MARKS",state.get("marks"))
 
-console.log("SO?", toot.some(function(val){
-	console.log("...checking",val);
-	return val  === "kurt";
-}));
-
-console.log("KEEEEYS",I.Iterable(I.fromJS({a:1,b:2}).keys()).first());
-
-I.fromJS({a:1,b:[1,2,3]}).forEach(function(val,key){
-	console.log("MOOO",val,key);
-});
-
-var momo = I.fromJS({
-	a: 62
-}).set("b",I.fromJS({c:"d"}));
-
-console.log("really?",momo.getIn(["b","c"]));
-
-console.log(I.fromJS({a:[1,2,3]}).get("a").push(3).push(97));
-
-var m1 = I.fromJS({a:1,b:2,c:3});
-var m2 = I.fromJS({d:1,b:6,c:9});
-console.log("REALLY?",m1.filter(I.keyInMap(m2)));
-
-console.log("testing",I.fromJS([1,[2,3],4]).toJS());
-
-console.log("merging",I.List([1,2,3]).concat(I.List([4,5,6])));
-
-var list = I.List([1,2,3]);
-
-list.reduce(function(mem,item,n,all){
-	console.log("reducing",item,n,all);
-	return mem.push(item);
-},I.List());
-
-var m = I.fromJS({a:1,b:2,c:3});
-console.log("mapping",m.map(function(val,name){ return name+": "+val; }));
-
-console.log(I.isMap(I.Map()));
+console.log("what can I mark",state.get("availableMarks"));
+console.log("and what can i do?",state.get("availableCommands").keySeq());

@@ -49,22 +49,24 @@ Algol.prepareInitialUnitDataFromSetup = function(setup){
 Helper function used only in prepareEntitiesFromList
 */
 Algol.addEntitiesFromDef = function(coll,def){
+	var blueprint, topleft, bottomright;
 	if (I.List.isList(def)){ 
 		if (def.first()==="positions"){ // [positions,<list>,<blueprint>]
+			blueprint = def.get(2);
 			return def.get(1).reduce(function(mem,pos){
-				return mem.push(def.get(2).set("pos",pos));
+				return mem.push(blueprint.set("pos",pos));
 			},coll);
 		} else { // [rectangle,topleft,bottomright,blueprint]
-			var blueprint = def.get(3),
-				topleft = parseInt(def.get(1)),
-				bottomright = parseInt(def.get(2));
-			return _.reduce(_.range(Math.floor(topleft/1000),Math.floor(bottomright/1000)+1),function(mem,r){
+			blueprint = def.get(3);
+			topleft = parseInt(def.get(1));
+			bottomright = parseInt(def.get(2));
+			return rect =  _.reduce(_.range(Math.floor(topleft/1000),Math.floor(bottomright/1000)+1),function(mem,r){
 				return _.reduce(_.range(topleft % 1000,bottomright % 1000+1),function(mem,c){
 					return mem.push(blueprint.set("pos",r*1000+c));
 				},mem);
 			},coll);
 		}
-	} else {
+	} else { // single definition
 		return coll.push(def);
 	}
 }

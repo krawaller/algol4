@@ -67,8 +67,8 @@ var boolmethods = {
 	anyat: function(state,layername,position){ return state.hasIn(["layers",layername,this.evaluatePosition(state,position)]); },
 	noneat: function(state,layername,position){ return !state.hasIn(["layers",layername,this.evaluatePosition(state,position)]); },
 	morethan: function(state,val1,val2){ return this.evaluateValue(state,val1) > this.evaluateValue(state,val2); },
-	isempty: function(state,layername){ return state.getIn(["layers",layername]).isEmpty(); },
-	notempty: function(state,layername){ return !state.getIn(["layers",layername]).isEmpty(); },
+	isempty: function(state,layername){ return (state.getIn(["layers",layername])||I.Map()).isEmpty(); },
+	notempty: function(state,layername){ return !(state.getIn(["layers",layername])||I.Map()).isEmpty(); },
 	true: function(){ return true; },
 	false: function(){ return false; },
 	positionisinlist: function(state,pos,poslist){

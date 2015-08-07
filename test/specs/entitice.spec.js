@@ -160,8 +160,8 @@ tester("The entitice methods",Algol,{
 	},
 	"prepareEntitiesFromList(list)": {
 		"for a single and an positions": {
-			list: ["X",["positions",["Y"],{foo:"bar"}]],
-			expected: ["X",{foo:"bar",pos:"Y"}]
+			list: [{},["positions",["Y"],{foo:"bar"}]],
+			expected: [{},{foo:"bar",pos:"Y"}]
 		}
 	}
 },I);

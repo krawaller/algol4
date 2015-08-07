@@ -26,18 +26,20 @@ markdef: {
 /*
 Used in app
 Returns object like: {
-	pos: markname,
-	pos: markname,  
+	pos: [setmark,markname,pos],
+	pos: [removemark,markname], 
 	...
 }
 */
 Algol.getAvailableMarks = function(state){
 	var layers = state.get("layers");
-	return state.getIn(["gamedef","marks"]).reduce(function(mem,markdef,markname){
+	return state.get("marks").reduce(function(mem,pos,markname){
+		return mem.set(pos,["removemark",markname]);
+	},state.getIn(["gamedef","marks"]).reduce(function(mem,markdef,markname){
 		return this.isMarkAvailable(state,markname) ? mem : layers.get(markdef.get("fromlayer")).reduce(function(o,arr,pos){
-			return o.set(pos,markname);
+			return o.set(pos,I.List(["setmark",markname,pos]));
 		},mem);
-	},I.Map(),this);
+	},I.Map(),this),this);
 };
 
 /*

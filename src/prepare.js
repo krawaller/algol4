@@ -13,8 +13,6 @@ Algol.populateGameWithSettings = function(state,def){
 };
 
 
-
-
 /*
 Used in prepareNewGameState
 */
@@ -49,11 +47,11 @@ Algol.prepareBoardLayersFromBoardDef = function(boarddef){
 Used in prepareNewGameState.
 */
 Algol.prepareBaseLayers = function(gamedef,nbrofplayers){
-	var parsedterrains = (gamedef.get("terrain")||I.Map()).map(this.prepareEntitiesFromList),
-		base = this.prepareBoardLayersFromBoardDef(gamedef.get("board"));
+	var parsedterrains = (gamedef.get("terrain")||I.Map()).map(this.prepareEntitiesFromList,this);
+	var base = this.prepareBoardLayersFromBoardDef(gamedef.get("board"));
 	return _.reduce(_.range(1,nbrofplayers+1),function(mem,plr){
 		return mem.push(this.addPersonalisedTerrainVersions(base,parsedterrains,plr));
-	},[],this);
+	},I.List(),this);
 };
 
 /*
@@ -69,7 +67,7 @@ Algol.addPersonalisedTerrainVersions = function(layers,terrains,forplr){
 
 /*
 The master function to set up a new state at the very beginning of a game. Called once.
-TODO: also pass in plr information
+TODO: also pass in plr information. oh, and default for nbrofplayers?
 */
 Algol.prepareNewGameState = function(gamedef,nbrofplayers){
 	var commandslist = gamedef.get("commands").keySeq().sort();
@@ -102,8 +100,8 @@ Reset all stuff, run generators for startturn, finally call prepareNewStepState
 
 */
 Algol.prepareNewTurnState = function(state,newturnplayer){
-	var startturn = state.getIn(["gamedef","startturn"]),
-		effect = startturn.get("applyeffect"),
+	var startturn = state.getIn(["gamedef","startturn"])||I.Map(),
+		//effect = startturn.get("applyeffect"),
 		baselayer = state.getIn(["baselayers",newturnplayer])||state.getIn(["baselayers",newturnplayer+""]);
 	state = state.delete("previousstep").merge(I.fromJS({
 		steps: [],
@@ -111,31 +109,38 @@ Algol.prepareNewTurnState = function(state,newturnplayer){
 		player: newturnplayer,
 		turn: (state.get("turn")||0)+1,
 		baselayer: baselayer,
-		layers: baselayer,
+		//layers: baselayer,
 		context: state.get("basecontext").merge(I.fromJS({
 			currentplayer:newturnplayer,
 			performedsteps:0,
 			nextplayer:state.getIn(["passto",newturnplayer])||state.getIn(["passto",""+newturnplayer])
 		}))
 	}));
-	state = effect ? this.applyEffect(state,effect) : state;
-	state = this.applyGeneratorList(state,startturn.get("rungenerators")||I.List());
+	//state = effect ? this.applyEffect(state,effect) : state;
+	//state = this.applyGeneratorList(state,startturn.get("rungenerators")||I.List());
 	return this.prepareNewStepState(state); // TODO - don't do this here?
 };
 
 /*
 
 Called from prepareNewTurnState as well as... sth else involving commands! :)
-1: resets state.layers to state.baselayer
-2: runs generator list in state.gamedef.startstep.rungenerators
-3: if not first step in turn then saves previousstep and calculates canendturn
-TODO: remove all marks? I think so! NO! calculateCommandResult's responsibility!
+
 */
 Algol.prepareNewStepState = function(state){
-	var oldstate = state;
-	state = state.set("layers",state.get("baselayer"));
-	state = this.applyGeneratorList(state,state.getIn(["gamedef","startstep","rungenerators"])||I.List()); 
-	return state.get("steps").isEmpty() ? state : state.set("previousstep",oldstate).set("canendturn",this.evaluateBoolean(state,state.getIn(["gamedef","endturn","condition"]))); 
+	var oldstate = state, startturn = state.getIn(["gamedef","startturn"]) || I.Map();
+	state = state.set("layers",this.addUnitLayersFromData(state.get("baselayer"),state.getIn(["data","units"]),state.get("player")));
+	if (state.get("steps").isEmpty()){
+		if (startturn.has("applyeffect")){
+			state = this.applyEffect(state,startturn.get("applyeffect"));
+			state = state.set("layers",this.addUnitLayersFromData(state.get("baselayer"),state.getIn(["data","units"]),state.get("player")));
+			state = this.applyGeneratorList(state,state.getIn(["gamedef","startstep","rungenerators"])||I.List());
+		}
+	} else {
+		state = this.applyGeneratorList(state,state.getIn(["gamedef","startstep","rungenerators"])||I.List());
+		state = state.set("previousstep",oldstate).set("canendturn",this.evaluateBoolean(state,state.getIn(["gamedef","endturn","condition"])));
+	}
+	return state;
+	//return state.get("steps").isEmpty() ? state : state.set("previousstep",oldstate).set("canendturn",this.evaluateBoolean(state,state.getIn(["gamedef","endturn","condition"]))); 
 };
 
 // €€€€€€€€€€€€€€€€€€€€€€€€€ E X P O R T €€€€€€€€€€€€€€€€€€€€€€€€€
