@@ -50,8 +50,9 @@ Algol.prepareBaseLayers = function(gamedef,nbrofplayers){
 	var parsedterrains = (gamedef.get("terrain")||I.Map()).map(this.prepareEntitiesFromList,this);
 	var base = this.prepareBoardLayersFromBoardDef(gamedef.get("board"));
 	return _.reduce(_.range(1,nbrofplayers+1),function(mem,plr){
-		return mem.push(this.addPersonalisedTerrainVersions(base,parsedterrains,plr));
-	},I.List(),this);
+		console.log("personalizing for",plr)
+		return mem.set(plr,this.addPersonalisedTerrainVersions(base,parsedterrains,plr));
+	},I.Map(),this);
 };
 
 /*
@@ -103,7 +104,7 @@ Algol.prepareNewTurnState = function(state,newturnplayer){
 	var startturn = state.getIn(["gamedef","startturn"])||I.Map(),
 		//effect = startturn.get("applyeffect"),
 		baselayer = state.getIn(["baselayers",newturnplayer])||state.getIn(["baselayers",newturnplayer+""]);
-	state = state.delete("previousstep").merge(I.fromJS({
+	state = state.delete("previousstep").delete("canendturn").merge(I.fromJS({
 		steps: [],
 		marks: {},
 		player: newturnplayer,

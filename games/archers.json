@@ -15,7 +15,7 @@
 			["positions",[2002,2003,2004,3002,3004,4002,4003,4004],{"owner":1,"dir":5}],
 			["positions",[6006,6007,6008,7006,7008,8006,8007,8008],{"owner":2,"dir":1}]
 		],
-		"kings": [{"pos":3003,"dir":5,"owner":1},{"pos":3003,"dir":1,"owner":2}]
+		"kings": [{"pos":3003,"dir":5,"owner":1},{"pos":7007,"dir":1,"owner":2}]
 	},
 	"startstep": {
 		"rungenerators": ["findarrows"]
@@ -34,7 +34,7 @@
 			"blocks": ["allposinlayer","units"],
 			"max": 3,
 			"draw": {
-				"step": {
+				"steps": {
 					"tolayer": "arrows",
 					"include": {
 						"owner": ["lookup","units",["contextpos","start"],"owner"],

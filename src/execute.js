@@ -105,7 +105,7 @@ Algol.endTurnOption = function(state,endturndef){
 			return res==="loseto" ? I.List([res,name,who]) : I.List([res,name]);
 		}
 		return mem;
-	},undefined,this) || ["passto",state.getIn(["passto",state.get("player")])];
+	},undefined,this) || I.List(["passto",state.getIn(["passto",state.get("player")])]);
 };
 
 // Returns an array of available commands

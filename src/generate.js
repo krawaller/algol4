@@ -140,6 +140,7 @@ Algol.generateFilterPods = function(state,def){
 // Pod is map with positions, each have list of contexts
 // returns state with painted stuff woo
 Algol.paintSeedPod = function(state,painter,pod){
+	//console.log("painting seed pod",pod)
 	return pod.reduce(function(state,seeds,pos){
 		var currentplr = state.getIn(["context","currentplayer"])
 		return seeds.reduce(function(state,seed){
