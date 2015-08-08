@@ -2,7 +2,7 @@
 
 var React = require('react');
 
-var Piece = React.createClass({
+var Mark = React.createClass({
     render: function() {
         var p = this.props, css = {
             height: p.tileheight+"%",
@@ -10,8 +10,8 @@ var Piece = React.createClass({
             top: (p.y-1)*p.tileheight+"%",
             left: (p.x-1)*p.tilewidth+"%"
         };
-        return ( <div style={css} className={"piece dir"+(p.dir||1)+" owner"+(p.owner||0)}><span>{p.icon.substr(0,4)}</span></div> );
+        return ( <div onClick={this.props.cb} style={css} className={p.isset ? "mark setmark" : "mark potentialmark"}>&nbsp;</div> );
     }
 });
 
-module.exports = Piece;
+module.exports = Mark;

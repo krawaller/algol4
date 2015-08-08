@@ -6,7 +6,22 @@
 	position: relative;
 }
 
-.tile, .piece, .terrain, .pieces {
+.mark {
+	border-radius: 100px;
+	border: 5px solid white;
+	box-sizing: border-box;
+	z-index: 20;
+}
+
+.setmark {
+
+}
+
+.potentialmark {
+	opacity: 0.2;
+}
+
+.tile, .piece, .potentialmark, .terrain, .pieces, .marks, .mark {
 	position: absolute;
 }
 
@@ -14,7 +29,7 @@
 	z-index: 3;
 }
 
-.terrain, .board, .pieces {
+.terrain, .board, .pieces, .marks {
 	height: 100%;
 	width: 100%;
 }
@@ -32,3 +47,14 @@
 	z-index: 2;
 	background-color: rgba(0,0,0,0.1);
 }
+
+.dir2 { transform: rotate(45deg); }
+.dir3 { transform: rotate(90deg); }
+.dir4 { transform: rotate(135deg); }
+.dir5 { transform: rotate(180deg); }
+.dir6 { transform: rotate(225deg); }
+.dir7 { transform: rotate(270deg); }
+.dir8 { transform: rotate(315deg); }
+
+.owner1 { color: red; }
+.owner2 { color: blue; }

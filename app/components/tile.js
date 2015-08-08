@@ -4,11 +4,11 @@ var React = require('react');
 
 var Tile = React.createClass({
     render: function() {
-        var offx = 100/this.props.boardwidth, offy = 100/this.props.boardheight, css = {
-            height: offy+"%",
-            width: offx+"%",
-            top: (this.props.y-1)*offy+"%",
-            left: (this.props.x-1)*offx+"%"
+        var css = {
+            height: this.props.tileheight+"%",
+            width: this.props.tileheight+"%",
+            top: (this.props.y-1)*this.props.tileheight+"%",
+            left: (this.props.x-1)*this.props.tilewidth+"%"
         };
         return ( <div style={css} className={"tile "+this.props.look}></div> );
     }

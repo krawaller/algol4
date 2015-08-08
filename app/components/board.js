@@ -3,17 +3,32 @@
 var React = require('react'),
     Terrain = require('./terrain'),
     Pieces = require('./pieces'),
+    Marks = require('./marks'),
     Algol = require("../../src/index"),
     I = require("../../src/immutableextensions"),
-    archers = I.fromJS(require("../../games/archers.json")),
-    state = Algol.prepareNewGameState(archers,2);
+    archers = I.fromJS(require("../../games/archers.json"));
 
 var Board = React.createClass({
+    getInitialState: function(){
+        return {
+            state: Algol.prepareNewGameState(archers,2)
+        };
+    },
+    doCommand: function(cmnd){
+        this.setState({"state":Algol.performOption(this.state.state,cmnd)});
+    },
     render: function() {
+        var state = this.state.state;
+            board = state.getIn(["layers","board"]),
+            height = state.getIn(["gamedef","board","height"]),
+            width = state.getIn(["gamedef","board","width"]),
+            tileheight = 100/height,
+            tilewidth = 100/width;
         return (
             <div>
-                <Terrain state={state} />
-                <Pieces state={state} />
+                <Terrain state={state} tileheight={tileheight} tilewidth={tilewidth} />
+                <Pieces state={state} tileheight={tileheight} tilewidth={tilewidth} />
+                <Marks state={state} tileheight={tileheight} tilewidth={tilewidth} broadcaster={this.doCommand} />
             </div>
         );
     }

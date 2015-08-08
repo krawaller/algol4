@@ -7,9 +7,7 @@ var Pieces = React.createClass({
     render: function() {
         var state = this.props.state,
             graphics = state.getIn(["gamedef","graphics"]),
-            board = state.getIn(["layers","board"]),
-            height = state.getIn(["gamedef","board","height"]),
-            width = state.getIn(["gamedef","board","width"]);
+            board = state.getIn(["layers","board"]);
         return (
             <div className="pieces">
                 { graphics.get("icons").reduce(function(list,look,layer){
@@ -17,17 +15,18 @@ var Pieces = React.createClass({
                         var x = board.getIn([pos,0,"x"]), y = board.getIn([pos,0,"y"]);
                         return arr.reduce(function(list,entity){
                             return list.concat(<Piece
-                                key = {entity.get("id")}
-                                boardheight={height} 
-                                boardwidth={width}
+                                key = {entity.get("id") || entity.get("parentid")+entity.get("suffix")}
+                                tileheight={this.props.tileheight} 
+                                tilewidth={this.props.tilewidth}
                                 x={x}
                                 y={y}
-                                icon={look+entity.get("owner")}
+                                icon={look}
+                                owner={entity.get("owner")}
                                 dir={entity.get("dir")}
                             />);
-                        },list);
-                    },list);
-                },[]) }
+                        },list,this);
+                    },list,this);
+                },[],this) }
             </div>
         )
     }

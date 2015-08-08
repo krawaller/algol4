@@ -7,7 +7,7 @@
 	"graphics": {
 		"background": "wood",
 		"tiles": { "trees": "grass" },
-		"icons": { "archers": "bow", "kings": "king" }
+		"icons": { "archers": "bow", "kings": "king", "arrows": "projectiles" }
 	},
 	"terrain": {
 		"trees": [
@@ -29,7 +29,7 @@
 		"findkilltargets": {
 			"type": "filter",
 			"layer": "bullseyes",
-			"matching": {"shooterid":["is",["idofunitat",["markpos","selectunit"]]]},
+			"matching": {"parentid":["is",["idofunitat",["markpos","selectunit"]]]},
 			"tolayer": "gonnadie"
 		},
 		"findarrows": {
@@ -42,6 +42,8 @@
 				"steps": {
 					"tolayer": "arrows",
 					"include": {
+						"parentid": ["idofunitat",["contextpos","start"]],
+						"suffix": ["contextval","step"],
 						"owner": ["lookup","units",["contextpos","start"],"owner"],
 						"dir": ["lookup","units",["contextpos","start"],"dir"]
 					}
@@ -53,7 +55,8 @@
 					],
 					"tolayer": "bullseyes",
 					"include": {
-						"shooterid": ["idofunitat",["contextpos","start"]]
+						"suffix": ["contextval","step"],
+						"parentid": ["idofunitat",["contextpos","start"]]
 					}
 				}
 			}

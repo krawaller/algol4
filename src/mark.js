@@ -33,13 +33,17 @@ Returns object like: {
 */
 Algol.getAvailableMarks = function(state){
 	var layers = state.get("layers");
-	return state.get("marks").reduce(function(mem,pos,markname){
-		return mem.set(pos,["removemark",markname]);
-	},state.getIn(["gamedef","marks"]).reduce(function(mem,markdef,markname){
+	return state.getIn(["gamedef","marks"]).reduce(function(mem,markdef,markname){
 		return this.isMarkAvailable(state,markname) ? mem : layers.get(markdef.get("fromlayer")).reduce(function(o,arr,pos){
 			return o.set(pos,I.List(["setmark",markname,pos]));
 		},mem);
-	},I.Map(),this),this);
+	},I.Map(),this);
+};
+
+Algol.getCurrentMarks = function(state){
+	return state.get("marks").reduce(function(mem,pos,markname){
+		return mem.set(pos,I.List(["removemark",markname]));
+	},I.Map(),this);
 };
 
 /*
