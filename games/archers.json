@@ -95,7 +95,7 @@
 		}
 	},
 	"endturn": {
-		"condition":["same",["contextval","nonfiremoves"],2],
+		"condition":["morethan",["contextval","nonfiremoves"],1],
 		"commandcap": true,
 		"passto": ["contextval","nextplayer"],
 		"endgame": {
@@ -129,7 +129,7 @@
 		"turnleft": {
 			"neededmarks": ["selectunit"],
 			"effect": ["multieffect",[
-				["setcontextval",["idofunitat",["markpos","selectunit"]],"hasmoved",true],
+				["setcontextval",["idofunitat",["markpos","selectunit"]],"hasmoved"],
 				["turnunit",["idofunitat",["markpos","selectunit"]],-2],
 				["addtocontextval","nonfiremoves",1]
 			]],
@@ -138,7 +138,7 @@
 		"turnright": {
 			"neededmarks": ["selectunit"],
 			"effect": ["multieffect",[
-				["setcontextval",["idofunitat",["markpos","selectunit"]],"hasmoved",true],
+				["setcontextval",["idofunitat",["markpos","selectunit"]],"hasmoved"],
 				["turnunit",["idofunitat",["markpos","selectunit"]],2],
 				["addtocontextval","nonfiremoves",1]
 			]],
@@ -148,13 +148,14 @@
 			"neededmarks": ["selectunit"],
 			"condition": ["and",[
 				["notempty","gonnadie"],
-				["falsy",["contextval","nonfiremoves"]],
-				["falsy",["contextval",["idat",["markpos","selectunit"]]]]
+				["falsy",["contextval",["idofunitat",["markpos","selectunit"]]]],
+				["falsy",["contextval","nonfiremoves"]]
 			]],
 			"effect": ["multieffect",[
-				["setcontextval",["idofunitat",["markpos","selectunit"]],"hasmoved",true],
+				["setcontextval",["idofunitat",["markpos","selectunit"]],"hasmoved"],
 				["killunit",["idofunitat",["firstposin","gonnadie"]]]
-			]]
+			]],
+			"setmarks": { "selectunit": ["markpos","selectunit"] }
 		}
 	}
 }

@@ -4,6 +4,7 @@ var React = require('react'),
     Terrain = require('./terrain'),
     Pieces = require('./pieces'),
     Marks = require('./marks'),
+    Controls = require('./controls'),
     Algol = require("../../src/index"),
     I = require("../../src/immutableextensions"),
     archers = I.fromJS(require("../../games/archers.json"));
@@ -29,6 +30,7 @@ var Board = React.createClass({
                 <Terrain state={state} tileheight={tileheight} tilewidth={tilewidth} />
                 <Pieces state={state} tileheight={tileheight} tilewidth={tilewidth} />
                 <Marks state={state} tileheight={tileheight} tilewidth={tilewidth} broadcaster={this.doCommand} />
+                <Controls state={state} top={tileheight*height} broadcaster={this.doCommand} />
             </div>
         );
     }

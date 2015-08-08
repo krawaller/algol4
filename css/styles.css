@@ -21,8 +21,14 @@
 	opacity: 0.2;
 }
 
-.tile, .piece, .potentialmark, .terrain, .pieces, .marks, .mark {
+.tile, .piece, .potentialmark, .terrain, .pieces, .marks, .mark, .controls {
 	position: absolute;
+}
+
+.piece {
+	-webkit-transition: top 0.5s, left 0.5s;
+	-moz-transition: top 0.5s, left 0.5s;
+	transition: top 0.5s, left 0.5s;
 }
 
 .pieces {

@@ -113,7 +113,7 @@ Algol.endTurnOption = function(state,endturndef){
 Algol.getAvailableCommands = function(state,gamedef){
 	return I.setIf(I.setIf((state.get("canendturn") && gamedef.getIn(["endturn","commandcap"]) ? I.Map() : gamedef.get("commands")).reduce(function(ret,comdef,comname){
 		return this.canExecuteCommand(state,comdef) ? ret.set(comname,this.calculateCommandResult(state,this.applyEffect(state,comdef.get("effect")),comdef)) : ret;
-	},I.Map(),this),"endturn",state.get("canendturn") && this.endTurnOption(state,gamedef.get("endturn"))),"undo",state.has("previousstep") ? ["backto",state.get("previousstep")] : false) ;
+	},I.Map(),this),"endturn",state.get("canendturn") && this.endTurnOption(state,gamedef.get("endturn"))),"undo",state.has("previousstep") ? I.List(["backto",state.get("previousstep")]) : false) ;
 };
 
 var optionmethods = {
