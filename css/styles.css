@@ -3,15 +3,18 @@
 	width: 500px;
 	margin: 3em;
 	border: 1px solid black;
+	position: relative;
 }
 
-
-.tile {
+.tile, .piece, .terrain, .pieces {
 	position: absolute;
 }
 
-.terrain {
-	position: relative;
+.pieces {
+	z-index: 3;
+}
+
+.terrain, .board, .pieces {
 	height: 100%;
 	width: 100%;
 }
@@ -21,7 +24,7 @@
 }
 
 .grass {
-	background-color: #408000;
+	background-color: #008040;
 }
 
 

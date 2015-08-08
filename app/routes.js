@@ -4,11 +4,11 @@ var React = require('react'),
     Router = require('react-router'),
     Route = Router.Route,
     DefaultRoute = Router.DefaultRoute,
-    Terrain = require('./components/terrain'),
+    Board = require('./components/board'),
     Wrapper = require('./components/wrapper');
 
 module.exports = (
     <Route handler={Wrapper}>
-        <DefaultRoute handler={Terrain} />
+        <DefaultRoute handler={Board} />
     </Route>
 );

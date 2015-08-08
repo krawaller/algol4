@@ -7,7 +7,7 @@
 	"graphics": {
 		"background": "wood",
 		"tiles": { "trees": "grass" },
-		"icons": { "archers": "bow", "king": "king" }
+		"icons": { "archers": "bow", "kings": "king" }
 	},
 	"terrain": {
 		"trees": [

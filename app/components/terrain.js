@@ -1,15 +1,12 @@
 /** @jsx React.DOM */
 
 var React = require('react'),
-    Tile = require('./tile'),
-    Algol = require("../../src/index"),
-    I = require("../../src/immutableextensions"),
-    archers = I.fromJS(require("../../games/archers.json")),
-    state = Algol.prepareNewGameState(archers,2);
+    Tile = require('./tile');
 
 var Terrain = React.createClass({
     render: function() {
-        var graphics = state.getIn(["gamedef","graphics"]),
+        var state = this.props.state,
+            graphics = state.getIn(["gamedef","graphics"]),
             board = state.getIn(["layers","board"]),
             height = state.getIn(["gamedef","board","height"]),
             width = state.getIn(["gamedef","board","width"]);
