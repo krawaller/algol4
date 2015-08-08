@@ -26,6 +26,6 @@ TODO
 
 [x] make prepareNewGameState do performOption passto
 
-[ ] make resetLayers function
+[ ] make resetLayers into a function
 
 [x] change so marks to set as commandresults are passed to prepareNewStep!

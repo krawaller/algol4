@@ -1,0 +1,31 @@
+.wrapper {
+	height: 500px;
+	width: 500px;
+	margin: 3em;
+	border: 1px solid black;
+}
+
+
+.tile {
+	position: absolute;
+}
+
+.terrain {
+	position: relative;
+	height: 100%;
+	width: 100%;
+}
+
+.wood {
+	background-color: #996633;
+}
+
+.grass {
+	background-color: #408000;
+}
+
+
+.dark {
+	z-index: 2;
+	background-color: rgba(0,0,0,0.1);
+}

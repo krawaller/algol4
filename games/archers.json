@@ -4,6 +4,11 @@
 		"height": 9,
 		"width": 9
 	},
+	"graphics": {
+		"background": "wood",
+		"tiles": { "trees": "grass" },
+		"icons": { "archers": "bow", "king": "king" }
+	},
 	"terrain": {
 		"trees": [
 			["rectangle",2002,4004,{"owner":1}],
