@@ -6,7 +6,7 @@
 	},
 	"graphics": {
 		"background": "wood",
-		"tiles": { "corners": "grass" },
+		"tiles": { "corners": "grass", "bases": "castle" },
 		"icons": { "notfrozens": "soldier", "frozens": "frozen" }
 	},
 	"terrain": {

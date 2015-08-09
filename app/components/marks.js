@@ -1,7 +1,8 @@
 /** @jsx React.DOM */
 
 var React = require('react'),
-    Mark = require('./mark');
+    Mark = require('./mark'),
+    I = require('../../src/immutableextensions');
 
 var Marks = React.createClass({
     render: function() {
@@ -10,7 +11,7 @@ var Marks = React.createClass({
             cb = this.props.broadcaster;
         return (
             <div className="marks">
-                { state.get("availableMarks").merge(state.get("currentMarks")).reduce(function(list,cmnd,pos){
+                { (state.get("availableMarks")||I.Map()).merge(state.get("currentMarks")||I.Map()).reduce(function(list,cmnd,pos){
                     return list.concat(<Mark
                         key = {pos}
                         tileheight={this.props.tileheight} 

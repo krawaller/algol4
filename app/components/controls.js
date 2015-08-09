@@ -1,14 +1,15 @@
 /** @jsx React.DOM */
 
 var React = require('react'),
-    Tile = require('./tile');
+    Tile = require('./tile'),
+    I = require('../../src/immutableextensions');
 
-var Terrain = React.createClass({
+var Controls = React.createClass({
     render: function() {
         var state = this.props.state, style = {top:this.props.top+"%"}, cb = this.props.broadcaster;
         return (
             <div style={style} className="controls">
-                { state.get("availableCommands").reduce(function(list,cmnd,name){
+                { (state.get("availableCommands")||I.Map()).reduce(function(list,cmnd,name){
                     return list.concat(<button
                         key={name}
                         onClick={function(){cb(cmnd)}}
@@ -19,4 +20,4 @@ var Terrain = React.createClass({
     }
 });
 
-module.exports = Terrain;
+module.exports = Controls;

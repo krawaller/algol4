@@ -139,7 +139,11 @@ Algol.performOption = function(state,def){
 Usd in performOption newstep and passto methods
 */
 Algol.setOptions = function(state){
-	return state
+	return state.has("endedby") ?
+		state.set("availableMarks",I.Map()).set("availableCommands",I.Map()).set("currentMarks",I.Map())
+		: state.get("canendturn") ? 
+		state.set("availableMarks",I.Map()).set("availableCommands",this.getAvailableCommands(state,state.get("gamedef"))).set("currentMarks",I.Map())
+		: state
 		.set("availableMarks",this.getAvailableMarks(state))
 		.set("availableCommands",this.getAvailableCommands(state,state.get("gamedef")))
 		.set("currentMarks",this.getCurrentMarks(state));

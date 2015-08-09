@@ -1,7 +1,8 @@
 /** @jsx React.DOM */
 
 var React = require('react'),
-    Tile = require('./tile');
+    Tile = require('./tile'),
+    I = require('../../src/immutableextensions');
 
 var Terrain = React.createClass({
     render: function() {

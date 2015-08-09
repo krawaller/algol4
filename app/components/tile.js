@@ -10,7 +10,9 @@ var Tile = React.createClass({
             top: (this.props.y-1)*this.props.tileheight+"%",
             left: (this.props.x-1)*this.props.tilewidth+"%"
         };
-        return ( <div style={css} className={"tile "+this.props.look}></div> );
+        return ( <div style={css} className="square">
+        	<div className={"tile "+this.props.look}></div>
+        </div>);
     }
 });
 

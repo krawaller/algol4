@@ -7,7 +7,8 @@
 	"graphics": {
 		"background": "wood",
 		"tiles": { "trees": "grass" },
-		"icons": { "archers": "bow", "kings": "king", "arrows": "projectiles" }
+		"icons": { "archers": "bow", "kings": "king", "arrows": "projectiles" },
+		"turnvars": { "nonfiremoves": "moves left" }
 	},
 	"terrain": {
 		"trees": [
@@ -94,8 +95,11 @@
 			"rungenerators": ["findfooting","findkilltargets"]
 		}
 	},
+	"startturn": {
+		"applyeffect": ["setcontextval","nonfiremoves",2]
+	},
 	"endturn": {
-		"condition":["morethan",["contextval","nonfiremoves"],1],
+		"condition":["falsy",["contextval","nonfiremoves"]],
 		"commandcap": true,
 		"passto": ["contextval","nextplayer"],
 		"endgame": {
@@ -110,7 +114,7 @@
 			"effect": ["multieffect",[
 				["setcontextval",["idofunitat",["markpos","selectunit"]],"hasmoved"],
 				["moveunit",["idofunitat",["markpos","selectunit"]],["firstposin","forwardfooting"]],
-				["addtocontextval","nonfiremoves",1]
+				["addtocontextval","nonfiremoves",-1]
 			]],
 			"setmarks": {
 				"selectunit": ["firstposin","forwardfooting"]
@@ -122,7 +126,7 @@
 			"effect": ["multieffect",[
 				["setcontextval",["idofunitat",["markpos","selectunit"]],"hasmoved"],
 				["moveunit",["idofunitat",["markpos","selectunit"]],["firstposin","backwardfooting"]],
-				["addtocontextval","nonfiremoves",1]
+				["addtocontextval","nonfiremoves",-1]
 			]],
 			"setmarks": { "selectunit": ["firstposin","backwardfooting"] }
 		},
@@ -131,7 +135,7 @@
 			"effect": ["multieffect",[
 				["setcontextval",["idofunitat",["markpos","selectunit"]],"hasmoved"],
 				["turnunit",["idofunitat",["markpos","selectunit"]],-2],
-				["addtocontextval","nonfiremoves",1]
+				["addtocontextval","nonfiremoves",-1]
 			]],
 			"setmarks": { "selectunit": ["markpos","selectunit"] }
 		},
@@ -140,7 +144,7 @@
 			"effect": ["multieffect",[
 				["setcontextval",["idofunitat",["markpos","selectunit"]],"hasmoved"],
 				["turnunit",["idofunitat",["markpos","selectunit"]],2],
-				["addtocontextval","nonfiremoves",1]
+				["addtocontextval","nonfiremoves",-1]
 			]],
 			"setmarks": { "selectunit": ["markpos","selectunit"] }
 		},
@@ -149,7 +153,7 @@
 			"condition": ["and",[
 				["notempty","gonnadie"],
 				["falsy",["contextval",["idofunitat",["markpos","selectunit"]]]],
-				["falsy",["contextval","nonfiremoves"]]
+				["same",["contextval","nonfiremoves"],2]
 			]],
 			"effect": ["multieffect",[
 				["setcontextval",["idofunitat",["markpos","selectunit"]],"hasmoved"],

@@ -5,6 +5,7 @@ var React = require('react'),
     Pieces = require('./pieces'),
     Marks = require('./marks'),
     Controls = require('./controls'),
+    Status = require('./status'),
     Algol = require("../../src/index"),
     I = require("../../src/immutableextensions"),
     game = I.fromJS(require("../../games/archers.json"));
@@ -27,10 +28,13 @@ var Board = React.createClass({
             tilewidth = 100/width;
         return (
             <div>
-                <Terrain state={state} tileheight={tileheight} tilewidth={tilewidth} />
-                <Pieces state={state} tileheight={tileheight} tilewidth={tilewidth} />
-                <Marks state={state} tileheight={tileheight} tilewidth={tilewidth} broadcaster={this.doCommand} />
-                <Controls state={state} top={tileheight*height} broadcaster={this.doCommand} />
+                <Status state={state} />
+                <div className="board">
+                    <Terrain state={state} tileheight={tileheight} tilewidth={tilewidth} />
+                    <Pieces state={state} tileheight={tileheight} tilewidth={tilewidth} />
+                    <Marks state={state} tileheight={tileheight} tilewidth={tilewidth} broadcaster={this.doCommand} />
+                    <Controls state={state} top={tileheight*height} broadcaster={this.doCommand} />
+                </div>
             </div>
         );
     }

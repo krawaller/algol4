@@ -10,7 +10,9 @@ var Mark = React.createClass({
             top: (p.y-1)*p.tileheight+"%",
             left: (p.x-1)*p.tilewidth+"%"
         };
-        return ( <div onClick={this.props.cb} style={css} className={p.isset ? "mark setmark" : "mark potentialmark"}>&nbsp;</div> );
+        return ( <div style={css} className="square" onClick={this.props.cb}>
+        	<div className={p.isset ? "mark setmark" : "mark potentialmark"}>&nbsp;</div>
+        </div>);
     }
 });
 

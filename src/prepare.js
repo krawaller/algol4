@@ -50,7 +50,6 @@ Algol.prepareBaseLayers = function(gamedef,nbrofplayers){
 	var parsedterrains = (gamedef.get("terrain")||I.Map()).map(this.prepareEntitiesFromList,this);
 	var base = this.prepareBoardLayersFromBoardDef(gamedef.get("board"));
 	return _.reduce(_.range(1,nbrofplayers+1),function(mem,plr){
-		console.log("personalizing for",plr)
 		return mem.set(plr,this.addPersonalisedTerrainVersions(base,parsedterrains,plr));
 	},I.Map(),this);
 };
@@ -141,7 +140,6 @@ Algol.prepareNewStepState = function(state,oldstate,newmarks){
 		state = state.setIn(["context","performedsteps"],state.getIn(["context","performedsteps"])+1);
 		state = this.applyGeneratorList(state,state.getIn(["gamedef","startstep","rungenerators"])||I.List());
 		state = state.set("previousstep",oldstate).set("canendturn",this.evaluateBoolean(state,state.getIn(["gamedef","endturn","condition"])));
-		console.log("what we did",state.toJS());
 	}
 	state = state.set("marks",I.Map());
 	state = (newmarks||I.Map()).reduce(function(mem,pos,markname){
