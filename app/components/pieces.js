@@ -2,7 +2,8 @@
 
 var React = require('react/addons'),
     ReactCSSTransitionGroup = React.addons.CSSTransitionGroup;
-    Piece = require('./piece');
+    Piece = require('./piece'),
+    I = require('../../src/immutableextensions');
 
 var Pieces = React.createClass({
     render: function() {
@@ -13,7 +14,7 @@ var Pieces = React.createClass({
             <div className="pieces">
                 <ReactCSSTransitionGroup transitionName="pieces">
                     { graphics.get("icons").reduce(function(list,look,layer){
-                        return state.getIn(["layers",layer]).reduce(function(list,arr,pos){
+                        return (state.getIn(["layers",layer])||I.Map()).reduce(function(list,arr,pos){
                             var x = board.getIn([pos,0,"x"]), y = board.getIn([pos,0,"y"]);
                             return arr.reduce(function(list,entity){
                                 return list.concat(<Piece

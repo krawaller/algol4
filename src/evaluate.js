@@ -13,7 +13,8 @@ var dirlistmethods = {
 	relativedirs: function(state,dirs,reldir){
 		var rd = this.evaluateValue(state,reldir);
 		return this.evaluateDirList(state,dirs).map(function(d){ return [1,2,3,4,5,6,7,8,1,2,3,4,5,6,7,8][rd-2+d]; });
-	}
+	},
+	ifelse: function(state,cond,val1,val2){ return this.evaluateDirList(state, this.evaluateBoolean(state,cond) ? val1 : val2); },
 };
 
 Algol.evaluateDirList = function(state,def){

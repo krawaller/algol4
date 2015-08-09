@@ -7,12 +7,12 @@ var React = require('react'),
     Controls = require('./controls'),
     Algol = require("../../src/index"),
     I = require("../../src/immutableextensions"),
-    archers = I.fromJS(require("../../games/archers.json"));
+    game = I.fromJS(require("../../games/archers.json"));
 
 var Board = React.createClass({
     getInitialState: function(){
         return {
-            state: Algol.prepareNewGameState(archers,2)
+            state: Algol.prepareNewGameState(game,2)
         };
     },
     doCommand: function(cmnd){

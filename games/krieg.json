@@ -4,6 +4,11 @@
 		"width": 4,
 		"height": 4
 	},
+	"graphics": {
+		"background": "wood",
+		"tiles": { "corners": "grass" },
+		"icons": { "notfrozens": "soldier", "frozens": "frozen" }
+	},
 	"terrain": {
 		"southeast": [ ["positions",[1001,3003],{}] ],
 		"northwest": [ ["positions",[2002,4004],{}] ],
@@ -13,62 +18,65 @@
 			["positions",[3003,3004,4003],{"owner":2}]
 		]
 	},
-	"setup": [
-		["rectangle",1001,2002,{"owner":1,"group":"notfrozens"}],
-		["rectangle",3003,4004,{"owner":2,"group":"notfrozens"}]
-	],
+	"setup": {
+		"notfrozens": [
+			["rectangle",1001,2002,{"owner":1}],
+			["rectangle",3003,4004,{"owner":2}]
+		]
+	},
 	"marks": {
 		"selectunit": {
 			"fromlayer": "mymovers",
 			"cleanse": ["currentmoves"],
-			"hydration": ["findcurrentmoves"]
+			"rungenerators": ["findcurrentmoves"],
+			"requiredby": ["selectmove"]
 		},
 		"selectmove": {
 			"neededmarks": ["selectunit"],
 			"fromlayer": "currentmoves"
 		}
 	},
-	"startturn": {
-		"hydration": ["findmovetargets"]
+	"startstep": {
+		"rungenerators": ["findmovetargets"]
 	},
 	"endturn": {
 		"condition": ["same",["contextval","performedsteps"],1],
 		"commandcap": true,
 		"endgame": {
 			"cornerinfiltration": {
-				"condition": ["overlap","myunits","oppcorners"]
+				"condition": ["overlaps","myunits","oppcorners"], "result": "win"
 			},
 			"occupation": {
-				"condition": ["same",["overlapsize","myunits","oppbases"],2]
+				"condition": ["same",["overlapsize","myunits","oppbases"],2], "result": "win"
 			},
 			"oppcantmove": {
-				"condition": ["isempty","oppmovers"]
+				"condition": ["isempty","oppmovers"], "result": "win"
 			}
 		}
 	},
 	"commands": {
 		"move": {
 			"neededmarks": ["selectunit","selectmove"],
-			"condition": ["notempty","forwardfooting"],
-			"effect": ["multieffect",
+			"condition": ["notempty","currentmoves"],
+			"effect": ["multieffect",[
 				["forallin","myfrozens",
-					["setunitdata",["contextval","loopid"],"group","notfrozens"]
+					["setunitdata",["loopid"],"group","notfrozens"]
 				],
 				["moveunit",["idofunitat",["markpos","selectunit"]],["markpos","selectmove"]],
-				["setunitdata",["contextval","loopid"],"group","frozens"]
-			]
+				["setunitdata",["idofunitat",["markpos","selectunit"]],"group","frozens"]
+			]]
 		}
 	},
 	"generators": {
 		"findcurrentmoves": {
 			"type": "filter",
 			"layer": "mymovetargets",
-			"matching": {"moverid":["idofunitat",["markpos","selectunit"]]},
+			"matching": {"moverid":["is",["idofunitat",["markpos","selectunit"]]]},
 			"tolayer": "currentmoves"
 		},
 		"findmovetargets": {
 			"type": "nextto",
-			"from": ["allposinlayer","notfrozens"],
+			"starts": ["allposinlayer","notfrozens"],
 			"condition": ["noneat","units",["contextpos","target"]],
 			"dirs": ["ifelse",
 				["anyat","southeast",["contextpos","start"]],

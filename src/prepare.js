@@ -131,15 +131,17 @@ Called from prepareNewTurnState as well as... sth else involving commands! :)
 Algol.prepareNewStepState = function(state,oldstate,newmarks){
 	var startturn = state.getIn(["gamedef","startturn"]) || I.Map();
 	state = state.set("layers",this.addUnitLayersFromData(state.get("baselayer"),state.getIn(["data","units"]),state.get("player")));
-	if (state.get("steps").isEmpty()){
+	if (!oldstate){
 		if (startturn.has("applyeffect")){
 			state = this.applyEffect(state,startturn.get("applyeffect"));
 			state = state.set("layers",this.addUnitLayersFromData(state.get("baselayer"),state.getIn(["data","units"]),state.get("player")));
 		}
 		state = this.applyGeneratorList(state,state.getIn(["gamedef","startstep","rungenerators"])||I.List());
 	} else {
+		state = state.setIn(["context","performedsteps"],state.getIn(["context","performedsteps"])+1);
 		state = this.applyGeneratorList(state,state.getIn(["gamedef","startstep","rungenerators"])||I.List());
 		state = state.set("previousstep",oldstate).set("canendturn",this.evaluateBoolean(state,state.getIn(["gamedef","endturn","condition"])));
+		console.log("what we did",state.toJS());
 	}
 	state = state.set("marks",I.Map());
 	state = (newmarks||I.Map()).reduce(function(mem,pos,markname){
