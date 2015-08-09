@@ -86,6 +86,9 @@ var boolmethods = {
 };
 
 Algol.evaluateBoolean = function(state,def){
+	if (typeof def.first !== "function"){
+		console.log("THE HECK BOOL",state.toJS(),"def",def.toJS && def.toJS() || def)
+	}
 	return boolmethods[def.first()].apply(this,[state].concat(def.rest().toArray()));
 };
 
@@ -132,6 +135,9 @@ var positionmethods = {
 };
 
 Algol.evaluatePosition = function(state,def){
+	if (typeof def.first !== "function"){
+		console.log("THE HECK POS",state.toJS(),"def",def.toJS && def.toJS() || def)
+	}
 	return positionmethods[def.first()].apply(this,[state].concat(def.rest().toArray()));	
 };
 

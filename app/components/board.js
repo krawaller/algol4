@@ -8,18 +8,43 @@ var React = require('react'),
     Status = require('./status'),
     Algol = require("../../src/index"),
     I = require("../../src/immutableextensions"),
-    game = I.fromJS(require("../../games/archers.json"));
+    _ = require("lodash"),
+    games = {
+        archers: I.fromJS(require("../../games/archers.json")),
+        krieg: I.fromJS(require("../../games/krieg.json")),
+        daggers: I.fromJS(require("../../games/daggers.json")),
+    };
 
 var Board = React.createClass({
     getInitialState: function(){
-        return {
-            state: Algol.prepareNewGameState(game,2)
-        };
+        return {};
+    },
+    chooseGame: function(def){
+        this.setState({
+            state: Algol.prepareNewGameState(def,2)
+        });
     },
     doCommand: function(cmnd){
         this.setState({"state":Algol.performOption(this.state.state,cmnd)});
     },
     render: function() {
+        if (!this.state.state){
+            return (
+                <div>
+                    <p>Choose game:</p>
+                    <ul>
+                    { _.reduce(games,function(ret,def,name){
+                        return ret.concat(
+                            <li
+                                key={name}
+                                onClick={function(){this.chooseGame(def);}.bind(this)}
+                            >{name}</li>
+                        );
+                    },[],this) }
+                    </ul>
+                </div>
+            );
+        }
         var state = this.state.state;
             board = state.getIn(["layers","board"]),
             height = state.getIn(["gamedef","board","height"]),
