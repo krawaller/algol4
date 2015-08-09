@@ -19,7 +19,8 @@ var Marks = React.createClass({
                         x={board.getIn([pos,0,"x"])}
                         y={board.getIn([pos,0,"y"])}
                         isset={state.get("currentMarks").has(pos)}
-                        cb={(function(){
+                        cb={(function(e){
+                            e && e.preventDefault() && e.stopPropagation();
                             cb(cmnd);
                         })}
                     />);

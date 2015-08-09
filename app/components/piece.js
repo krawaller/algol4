@@ -11,7 +11,7 @@ var Piece = React.createClass({
             left: (p.x-1)*p.tilewidth+"%"
         };
         return ( <div style={css} className="square">
-        	<div className={"piece dir"+(p.dir||1)+" owner"+(p.owner||0)+" "+p.icon}><span>{p.icon.substr(0,1).toUpperCase()}</span></div>
+        	<div className={"piece dir"+(p.dir||1)+" owner"+(p.owner||0)+" "+(p.icon==="projectiles"?"projectiles":"")}><span>{p.icon.substr(0,1).toUpperCase()}</span></div>
         </div>);
     }
 });

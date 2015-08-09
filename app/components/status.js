@@ -6,13 +6,14 @@ var React = require('react'),
 var Status = React.createClass({
     render: function() {
         var s = this.props.state,
+            turn = "Turn "+s.get("turn"),
             desc = s.has("endedby") ? "Ended by "+s.get("endedby")+", winner is player"+s.get("winner")+"!"
                 : "Player"+s.get("player")+" is playing.",
             vars = (s.getIn(["gamedef","graphics","turnvars"])||I.Map()).reduce(function(ret,str,name){
                 return ""+str+": "+s.getIn(["context",name])+"  ";
             },"");
         return <div className="status">
-            { desc+" "+vars }
+            { turn+". "+desc+" "+vars }
         </div>
     }
 });
