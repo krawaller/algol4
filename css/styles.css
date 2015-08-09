@@ -11,6 +11,10 @@
 	border: 5px solid white;
 	box-sizing: border-box;
 	z-index: 20;
+	-webkit-user-select: none;  /* Chrome all / Safari all */
+	  -moz-user-select: none;     /* Firefox all */
+	  -ms-user-select: none;      /* IE 10+ */
+	  user-select: none;          /* Likely future */ 
 }
 
 .setmark {
@@ -29,7 +33,40 @@
 	-webkit-transition: top 0.5s, left 0.5s;
 	-moz-transition: top 0.5s, left 0.5s;
 	transition: top 0.5s, left 0.5s;
+	border: 5px solid transparent;
+	box-sizing: border-box;
+	border-radius: 100px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-size: 2em;
+	transform: scale3d(0.8,0.8,1);
+	-webkit-user-select: none;  /* Chrome all / Safari all */
+	  -moz-user-select: none;     /* Firefox all */
+	  -ms-user-select: none;      /* IE 10+ */
+	  user-select: none;          /* Likely future */ 
 }
+
+.projectiles * {
+	display: none;
+}
+
+.projectiles:after {
+	content: " ";
+	height: 10px;
+	width: 10px;
+	border-radius: 100px;
+	display: inline-block;
+	margin-top: 17px;
+}
+
+.piece.owner1, .projectiles.owner1:after { color: red; background-color: darkred; }
+.piece.owner2, .projectiles.owner2:after { color: blue; background-color: darkblue; }
+
+.projectiles.owner1, .projectiles.owner2 {
+	background-color: transparent;
+}
+
 
 .pieces {
 	z-index: 3;
@@ -54,13 +91,32 @@
 	background-color: rgba(0,0,0,0.1);
 }
 
-.dir2 { transform: rotate(45deg); }
-.dir3 { transform: rotate(90deg); }
-.dir4 { transform: rotate(135deg); }
-.dir5 { transform: rotate(180deg); }
-.dir6 { transform: rotate(225deg); }
-.dir7 { transform: rotate(270deg); }
-.dir8 { transform: rotate(315deg); }
+.dir2 { transform: rotate(45deg)  scale3d(0.8,0.8,1);}
+.dir3 { transform: rotate(90deg)  scale3d(0.8,0.8,1);}
+.dir4 { transform: rotate(135deg) scale3d(0.8,0.8,1); }
+.dir5 { transform: rotate(180deg) scale3d(0.8,0.8,1); }
+.dir6 { transform: rotate(225deg) scale3d(0.8,0.8,1); }
+.dir7 { transform: rotate(270deg) scale3d(0.8,0.8,1); }
+.dir8 { transform: rotate(315deg) scale3d(0.8,0.8,1); }
 
-.owner1 { color: red; }
-.owner2 { color: blue; }
+
+
+
+
+.pieces-enter {
+  opacity: 0.01;
+}
+
+.pieces-enter.pieces-enter-active {
+  opacity: 1;
+  transition: opacity .5s ease-in;
+}
+
+.pieces-leave {
+  opacity: 1;
+}
+
+.pieces-leave.pieces-leave-active {
+  opacity: 0.01;
+  transition: opacity .5s ease-in;
+}

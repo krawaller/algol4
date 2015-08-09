@@ -83,9 +83,13 @@ Algol.calculateStepData = function(state,commanddef){
 
 
 // Called from Algol.getAvailableCommands
-Algol.calculateCommandResult = function(state,newstate,commanddef){
-	var comparetostate = state;
+Algol.calculateCommandResult = function(state,newstate,commanddef,commandname){
+	var comparetostate = state; //I.Map().set("previousstep",state);
 	// if newstate is equal to a previous step this turn, treat as a goback command
+
+	// TODO - fix this!
+	newstate = newstate.set("layers",this.addUnitLayersFromData(newstate.get("baselayer"),newstate.getIn(["data","units"]),newstate.get("player")));
+
 	while(comparetostate.has("previousstep")){
 		comparetostate = comparetostate.get("previousstep");
 		if (this.areStatesEqual(comparetostate,newstate)){ return I.List(["backto",comparetostate]); }
@@ -109,16 +113,16 @@ Algol.endTurnOption = function(state,endturndef){
 };
 
 // Returns an array of available commands
-// Used in Algol.hydrateState  -- TODO really the right place?
+// Used in Algol.setOptions  -- TODO really the right place?
 Algol.getAvailableCommands = function(state,gamedef){
 	return I.setIf(I.setIf((state.get("canendturn") && gamedef.getIn(["endturn","commandcap"]) ? I.Map() : gamedef.get("commands")).reduce(function(ret,comdef,comname){
-		return this.canExecuteCommand(state,comdef) ? ret.set(comname,this.calculateCommandResult(state,this.applyEffect(state,comdef.get("effect")),comdef)) : ret;
+		return this.canExecuteCommand(state,comdef) ? ret.set(comname,this.calculateCommandResult(state,this.applyEffect(state,comdef.get("effect")),comdef,comname)) : ret;
 	},I.Map(),this),"endturn",state.get("canendturn") && this.endTurnOption(state,gamedef.get("endturn"))),"undo",state.has("previousstep") ? I.List(["backto",state.get("previousstep")]) : false) ;
 };
 
 var optionmethods = {
 	backto: function(state,oldstate){ return oldstate; },
-	newstep: function(state,newstate,newmarks){ return this.setOptions(this.prepareNewStepState(newstate,newmarks)); },
+	newstep: function(state,newstate,newmarks){ return this.setOptions(this.prepareNewStepState(newstate,state,newmarks)); },
 	passto: function(state,player){ return this.setOptions(this.prepareNewTurnState(state,player)); },
 	win: function(state,by){ return state.set("endedby",by).set("winner",state.get("player")).delete("availableMarks").delete("availableCommands"); },
 	draw: function(state,by){ return state.set("endedby",by).set("winner",0).delete("availableMarks").delete("availableCommands"); },

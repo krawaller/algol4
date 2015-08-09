@@ -128,8 +128,8 @@ Algol.prepareNewTurnState = function(state,newturnplayer){
 Called from prepareNewTurnState as well as... sth else involving commands! :)
 
 */
-Algol.prepareNewStepState = function(state,newmarks){
-	var oldstate = state, startturn = state.getIn(["gamedef","startturn"]) || I.Map();
+Algol.prepareNewStepState = function(state,oldstate,newmarks){
+	var startturn = state.getIn(["gamedef","startturn"]) || I.Map();
 	state = state.set("layers",this.addUnitLayersFromData(state.get("baselayer"),state.getIn(["data","units"]),state.get("player")));
 	if (state.get("steps").isEmpty()){
 		if (startturn.has("applyeffect")){

@@ -10,7 +10,7 @@ var Piece = React.createClass({
             top: (p.y-1)*p.tileheight+"%",
             left: (p.x-1)*p.tilewidth+"%"
         };
-        return ( <div style={css} className={"piece dir"+(p.dir||1)+" owner"+(p.owner||0)}><span>{p.icon.substr(0,4)}</span></div> );
+        return ( <div style={css} className={"piece dir"+(p.dir||1)+" owner"+(p.owner||0)+" "+p.icon}><span>{p.icon.substr(0,1).toUpperCase()}</span></div> );
     }
 });
 

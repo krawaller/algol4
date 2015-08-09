@@ -91,7 +91,7 @@ Algol.evaluateBoolean = function(state,def){
 var valuemethods = {
 	val: function(state,raw){ return raw; },
 	layername: function(state,raw){ return raw; },
-	contextval: function(state,ctxvalname){ return state.getIn(["context",ctxvalname]); },
+	contextval: function(state,ctxvalname){ return state.getIn(["context",this.evaluateValue(state,ctxvalname)]); },
 	positionsin: function(state,layername){ return state.getIn(["layers",layername]).size; },
 	ifelse: function(state,cond,val1,val2){ return this.evaluateValue(state, this.evaluateBoolean(state,cond) ? val1 : val2); },
 	lookup: function(state,layername,position,prop){ return state.getIn(["layers",layername,this.evaluatePosition(state,position),0,prop]); },
