@@ -1,6 +1,6 @@
 {
 	"name": "Sombrero",
-	"source": "http://www.abstractstrategy.com/sombrero-rules.html",
+	"source": "http://www.di.fc.ul.pt/~jpn/gv/sombrero.htm",
 	"graphics": {
 		"icons": {"soldiers":"soldiers","kings":"kings"},
 		"turnvars": { "movesleft": "moves left" }
