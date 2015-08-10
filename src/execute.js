@@ -94,7 +94,8 @@ Algol.calculateCommandResult = function(state,newstate,commanddef,commandname){
 	// if newstate is equal to a previous step this turn, treat as a goback command
 
 	// TODO - fix this!
-	newstate = newstate.set("layers",this.addUnitLayersFromData(newstate.get("baselayer"),newstate.getIn(["data","units"]),newstate.get("player")));
+	newstate = this.prepareBasicUnitLayers(newstate); // state.set("layers",this.addUnitLayersFromData(state.get("baselayer"),state.getIn(["data","units"]),state.get("player")));
+	//newstate = newstate.set("layers",this.addUnitLayersFromData(newstate.get("baselayer"),newstate.getIn(["data","units"]),newstate.get("player")));
 
 	while(comparetostate.has("previousstep")){
 		comparetostate = comparetostate.get("previousstep");
@@ -102,7 +103,7 @@ Algol.calculateCommandResult = function(state,newstate,commanddef,commandname){
 	}
 	// newstate is really new state, treat it as such
 	newstate = I.pushIn(newstate,["steps"],this.calculateStepData(state,commanddef));
-	return I.List(["newstep",newstate,this.newMarksAfterCommand(state,commanddef)]);
+	return I.List(["newstep",newstate,this.newMarksAfterCommand(state,commanddef),commanddef.get("rungenerators")]);
 };
 
 // returns an endturn option. this will either be win/draw/loseto or passto
@@ -128,7 +129,7 @@ Algol.getAvailableCommands = function(state,gamedef){
 
 var optionmethods = {
 	backto: function(state,oldstate){ return oldstate; },
-	newstep: function(state,newstate,newmarks){ return this.setOptions(this.prepareNewStepState(newstate,state,newmarks)); },
+	newstep: function(state,newstate,newmarks,generators){ return this.setOptions(this.prepareNewStepState(newstate,state,newmarks,generators)); },
 	passto: function(state,player){ return this.setOptions(this.prepareNewTurnState(state,player)); },
 	win: function(state,by){ return state.set("endedby",by).set("winner",state.get("player")).delete("availableMarks").delete("availableCommands"); },
 	draw: function(state,by){ return state.set("endedby",by).set("winner",0).delete("availableMarks").delete("availableCommands"); },

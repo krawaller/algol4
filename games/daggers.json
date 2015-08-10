@@ -1,11 +1,11 @@
 {
+	"name": "Daggers",
 	"source": "http://www.di.fc.ul.pt/~jpn/gv/daggers.htm",
 	"board": {
 		"height": 8,
 		"width": 8
 	},
 	"graphics": {
-		"background": "wood",
 		"tiles": { "bases": "grass" },
 		"icons": { "daggers": "dagger", "crowns": "crowns" }
 	},
@@ -34,7 +34,7 @@
 			"kingkill": { "condition": ["notempty","oppdeadkings"], "result": "win" }
 		}
 	},
-	"startstep": {
+	"startturn": {
 		"rungenerators": ["findcrowntargets","findtargetsabovedagger","findtargetsbelowdagger"]
 	},
 	"marks": {

@@ -1,11 +1,8 @@
 {
+	"name": "Archers",
 	"source": "http://www.di.fc.ul.pt/~jpn/gv/Archers.pdf",
-	"board": {
-		"height": 9,
-		"width": 9
-	},
+	"board": { "height": 9, "width": 9 },
 	"graphics": {
-		"background": "wood",
 		"tiles": { "trees": "grass" },
 		"icons": { "archers": "bow", "kings": "king", "arrows": "projectiles" },
 		"turnvars": { "nonfiremoves": "moves left" }

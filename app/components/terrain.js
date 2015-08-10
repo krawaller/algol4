@@ -10,7 +10,7 @@ var Terrain = React.createClass({
             graphics = state.getIn(["gamedef","graphics"]),
             board = state.getIn(["layers","board"]);
         return (
-            <div className={graphics.get("background")+" terrain"}>
+            <div className={(graphics.get("background")||"wood")+" terrain"}>
                 { (graphics.get("tiles")||I.Map()).set("dark","dark").reduce(function(list,look,layer){
                     return state.getIn(["layers",layer]).reduce(function(list,arr,pos){
                         return list.concat(<Tile

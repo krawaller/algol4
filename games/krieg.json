@@ -1,11 +1,11 @@
 {
+	"name": "Krieg",
 	"source": "http://www.di.fc.ul.pt/~jpn/gv/krieg.htm",
 	"board": {
 		"width": 4,
 		"height": 4
 	},
 	"graphics": {
-		"background": "wood",
 		"tiles": { "corners": "grass", "bases": "castle" },
 		"icons": { "notfrozens": "soldier", "frozens": "frozen" }
 	},
@@ -36,7 +36,7 @@
 			"fromlayer": "currentmoves"
 		}
 	},
-	"startstep": {
+	"startturn": {
 		"rungenerators": ["findmovetargets"]
 	},
 	"endturn": {
@@ -64,10 +64,23 @@
 				],
 				["moveunit",["idofunitat",["markpos","selectunit"]],["markpos","selectmove"]],
 				["setunitdata",["idofunitat",["markpos","selectunit"]],"group","frozens"]
-			]]
+			]],
+			"rungenerators": ["findoppmovers"]
 		}
 	},
 	"generators": {
+		"findoppmovers": {
+			"type": "nextto",
+			"starts": ["allposinlayer","oppnotfrozens"],
+			"dirs": ["dirs",[1,2,3,4,5,6,7,8]],
+			"condition": ["noneat","units",["contextpos","target"]],
+			"draw": {
+				"start": {
+					"condition": ["truthy",["contextval","neighbourcount"]],
+					"tolayer": "oppmovers"
+				}
+			}
+		},
 		"findcurrentmoves": {
 			"type": "filter",
 			"layer": "mymovetargets",

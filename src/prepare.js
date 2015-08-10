@@ -117,34 +117,43 @@ Algol.prepareNewTurnState = function(state,newturnplayer){
 			nextplayer:state.getIn(["passto",newturnplayer])||state.getIn(["passto",""+newturnplayer])
 		}))
 	}));
-	//state = effect ? this.applyEffect(state,effect) : state;
-	//state = this.applyGeneratorList(state,startturn.get("rungenerators")||I.List());
-	return this.prepareNewStepState(state); // TODO - don't do this here?
+	return this.prepareFirstStepInTurn(state);
 };
 
 /*
-
-Called from prepareNewTurnState as well as... sth else involving commands! :)
-
+Used in prepareNewStepState, prepareFirstStepInTurn, calculateCommandResult
 */
-Algol.prepareNewStepState = function(state,oldstate,newmarks){
+Algol.prepareBasicUnitLayers = function(state){
+	return state.set("layers",this.addUnitLayersFromData(state.get("baselayer"),state.getIn(["data","units"]),state.get("player")));
+}
+
+Algol.prepareFirstStepInTurn = function(state){
 	var startturn = state.getIn(["gamedef","startturn"]) || I.Map();
-	state = state.set("layers",this.addUnitLayersFromData(state.get("baselayer"),state.getIn(["data","units"]),state.get("player")));
-	if (!oldstate){
-		if (startturn.has("applyeffect")){
-			state = this.applyEffect(state,startturn.get("applyeffect"));
-			state = state.set("layers",this.addUnitLayersFromData(state.get("baselayer"),state.getIn(["data","units"]),state.get("player")));
-		}
+	state = this.prepareBasicUnitLayers(state);
+	state = this.applyGeneratorList(state,startturn.get("rungenerators")||I.List());
+	state = this.applyGeneratorList(state,state.getIn(["gamedef","startstep","rungenerators"])||I.List());
+	if (startturn.has("applyeffect")){
+		state = this.applyEffect(state,startturn.get("applyeffect"));
+		state = this.prepareBasicUnitLayers(state);
+		state = this.applyGeneratorList(state,startturn.get("rungenerators")||I.List());
 		state = this.applyGeneratorList(state,state.getIn(["gamedef","startstep","rungenerators"])||I.List());
-	} else {
-		state = state.setIn(["context","performedsteps"],state.getIn(["context","performedsteps"])+1);
-		state = this.applyGeneratorList(state,state.getIn(["gamedef","startstep","rungenerators"])||I.List());
-		state = state.set("previousstep",oldstate).set("canendturn",this.evaluateBoolean(state,state.getIn(["gamedef","endturn","condition"])));
 	}
+	return state;
+}
+
+/*
+Called from prepareNewTurnState as well as... sth else involving commands! :)
+*/
+Algol.prepareNewStepState = function(state,oldstate,newmarks,generators){
+	state = this.prepareBasicUnitLayers(state);
+	state = state.setIn(["context","performedsteps"],state.getIn(["context","performedsteps"])+1);
+	state = this.applyGeneratorList(state,state.getIn(["gamedef","startstep","rungenerators"])||I.List());
+	state = state.set("previousstep",oldstate).set("canendturn",this.evaluateBoolean(state,state.getIn(["gamedef","endturn","condition"])));
 	state = state.set("marks",I.Map());
 	state = (newmarks||I.Map()).reduce(function(mem,pos,markname){
 		return this.setMark(mem,markname,pos);
 	},state,this);
+	state = this.applyGeneratorList(state,generators||I.List());
 	return state;
 	//return state.get("steps").isEmpty() ? state : state.set("previousstep",oldstate).set("canendturn",this.evaluateBoolean(state,state.getIn(["gamedef","endturn","condition"]))); 
 };

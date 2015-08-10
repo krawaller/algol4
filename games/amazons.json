@@ -1,28 +1,19 @@
 {
+	"name": "Amazons",
 	"source": "http://www.chessvariants.org/other.dir/amazons.html",
 	"graphics": {
-		"background": "wood",
 		"icons": { "queens": "queens", "fires": "fires" }
 	},
-	"board": {
-		"height": 10,
-		"width": 10
-	},
-	"setup": {
-		"queens":[
-			["positions",[1004,1007,4001,4010],{"owner":1}],
-			["positions",[10004,10007,7001,7010],{"owner":2}]
-		]
-	},
-	"startstep": {
-		"rungenerators": ["findmymovers","findfiretargets","findoppmovers"]
-	},
+	"board": { "height": 10, "width": 10 },
+	"setup": { "queens":[ ["positions",[1004,1007,4001,4010],{"owner":1}], ["positions",[10004,10007,7001,7010],{"owner":2}] ] },
+	"startturn": { "rungenerators": ["findmymovers"] },
 	"marks": {
 		"selectunit": {
 			"condition": ["falsy",["contextval","movedto"]],
 			"fromlayer": "mymovers",
 			"requiredby": ["selectmovetarget"],
-			"rungenerators": ["findmovetargets"]
+			"rungenerators": ["findmovetargets"],
+			"cleanse": ["movetarget"]
 		},
 		"selectmovetarget": {
 			"requiredmarks": ["selectunit"],
@@ -50,16 +41,15 @@
 			"effect": ["multieffect",[
 				["moveunit",["idofunitat",["markpos","selectunit"]],["markpos","selectmovetarget"]],
 				["setcontextval","movedto",["markpos","selectmovetarget"]]
-			]]
+			]],
+			"rungenerators": ["findfiretargets"]
 		},
 		"fire": {
 			"neededmarks": ["selectfiretarget"],
 			"effect": ["multieffect",[
-				["spawnunit",["markpos","selectfiretarget"],"fires",{"owner":0}],
-				["forallin","willbeblocked",
-					["setunitdata",["loopid"],"group","immobilized"]
-				]
-			]]
+				["spawnunit",["markpos","selectfiretarget"],"fires",{"owner":0}]
+			]],
+			"rungenerators": ["findoppmovers"]
 		}
 	},
 	"generators": {
