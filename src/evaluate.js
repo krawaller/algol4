@@ -127,7 +127,7 @@ var valuemethods = {
 };
 
 Algol.evaluateValue = function(state,def){
-	if (I.List.isList(def) && !valuemethods[def.first()]){
+	if (I.List.isList(def) && !valuemethods[def.first()] && !positionmethods[def.first()]){
 		console.log("THE HECK VAL",state.toJS(),"def",def.toJS && def.toJS() || def)
 	}
 	return I.List.isList(def) ? (valuemethods[def.first()] || positionmethods[def.first()]).apply(this,[state].concat(def.rest().toArray())) : def;

@@ -42,7 +42,6 @@ var effectmethods = {
 	spawnunit: function(state,pos,group,obj){
 		var id = "unit"+(state.getIn(["data","units"]).size+1),
 			newstate = state.setIn(["data","units",id],(obj||I.Map()).set("id",id).set("group",group).set("pos",this.evaluatePosition(state,pos)));
-		console.log("added unit",id,"new state",newstate.toJS());
 		return newstate;
 	},
 	addtocontextval: function(state,prop,val){
