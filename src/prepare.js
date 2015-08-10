@@ -154,6 +154,7 @@ Algol.prepareNewStepState = function(state,oldstate,newmarks,generators){
 		return this.setMark(mem,markname,pos);
 	},state,this);
 	state = this.applyGeneratorList(state,generators||I.List());
+	//console.log("NEW STEP",state.toJS())
 	return state;
 	//return state.get("steps").isEmpty() ? state : state.set("previousstep",oldstate).set("canendturn",this.evaluateBoolean(state,state.getIn(["gamedef","endturn","condition"]))); 
 };

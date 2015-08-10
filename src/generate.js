@@ -85,7 +85,7 @@ Algol.generateWalkerPods = function(state,def){
 
 Algol.applyFilter = function(state,def){
 	var matching = def.get("matching"), tolayer = def.get("tolayer"), condition = def.get("condition");
-	return (state.getIn(["layers",def.get("layer")])||I.Map()).reduce(function(state,list,pos){
+	return (state.getIn(["layers",this.evaluateValue(state,def.get("layer"))])||I.Map()).reduce(function(state,list,pos){
 		return list.reduce(function(state,obj){
 			return (!matching || this.evaluateObjectMatch(state,matching,obj)) && (!condition || this.evaluateBoolean(state,condition)) ? I.pushIn(state,["layers",this.evaluateValue(state,tolayer),pos],obj) : state;
 		},state.setIn(["context","start"],pos),this);

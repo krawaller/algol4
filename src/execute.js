@@ -102,6 +102,7 @@ Algol.calculateCommandResult = function(state,newstate,commanddef,commandname){
 	}
 	// newstate is really new state, treat it as such
 	newstate = I.pushIn(newstate,["steps"],this.calculateStepData(state,commanddef));
+	newstate = newstate.setIn(["context","hasperformed"+commandname],true);
 	return I.List(["newstep",newstate,this.newMarksAfterCommand(state,commanddef),commanddef.get("rungenerators")]);
 };
 
@@ -147,7 +148,7 @@ Usd in performOption newstep and passto methods
 Algol.setOptions = function(state){
 	return state.has("endedby") ?
 		state.set("availableMarks",I.Map()).set("availableCommands",I.Map()).set("currentMarks",I.Map())
-		: state.get("canendturn") ? 
+		: state.get("canendturn") && state.getIn(["gamedef","endturn","commandcap"]) ? 
 		state.set("availableMarks",I.Map()).set("availableCommands",this.getAvailableCommands(state,state.get("gamedef"))).set("currentMarks",I.Map())
 		: state
 		.set("availableMarks",this.getAvailableMarks(state))

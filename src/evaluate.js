@@ -73,6 +73,7 @@ var boolmethods = {
 	morethan: function(state,val1,val2){ return this.evaluateValue(state,val1) > this.evaluateValue(state,val2); },
 	isempty: function(state,layername){ return (state.getIn(["layers",layername])||I.Map()).isEmpty(); },
 	notempty: function(state,layername){ return !(state.getIn(["layers",layername])||I.Map()).isEmpty(); },
+	hasperformedcommand: function(state,command){ return !!state.getIn(["context","hasperformed"+command]); },
 	true: function(){ return true; },
 	false: function(){ return false; },
 	positionisinlist: function(state,pos,poslist){
@@ -85,7 +86,7 @@ var boolmethods = {
 		});
 	},
 	truthy: function(state,def){ return !!this.evaluateValue(state,def); },
-	falsy: function(state,def){ return !this.evaluateValue(state,def); }
+	falsy: function(state,def){ return !this.evaluateValue(state,def); },
 };
 
 Algol.evaluateBoolean = function(state,def){

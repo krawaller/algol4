@@ -1,0 +1,8 @@
+{
+	"name": "Pawnographic chess",
+	"board": { "height": 8, "width": 8 },
+	"setup": { "pawns":[ ["rectangle",2001,2008,{"owner":1,"dir":5}], ["rectangle",7001,7008,{"owner":2}] ] },
+	"terrain": {
+		"homerow": [ ["rectangle",2001,2008,{"owner":1}], ["rectangle",7001,7008,{"owner":2}] ]
+	}
+}

@@ -1,67 +1,84 @@
 {
-	"TODO": ["who won?"],
+	"name": "Conquest",
 	"source": "http://www.di.fc.ul.pt/~jpn/gv/conquest.htm",
 	"board": {"height": 9,"width": 9},
+	"graphics": {
+		"tiles": {"plus":"castle","x":"castle","center":"grass"},
+		"icons": { "soldiers":"soldiers","kings":"kings" }
+	},
 	"terrain": {
 		"center": [{"pos":5005}],
 		"plus": [ ["positions",[4005,5004,5006,6005],{}] ],
-		"x": [ ["positions",[4004,4006,6004,6006],{}] ]
+		"x": [ ["positions",[4004,4006,6004,6006],{}] ],
+		"fortress": [ ["rectangle",4004,6006,{}] ]
 	},
 	"setup": {
 		"soldiers": [
-			["positions",[1001,1002,1003,2001,2003,3001,3002,3003],{"type":"soldier","owner":1}],
-			["positions",[7007,7008,7009,8007,8009,9007,9008,9009],{"type":"soldier","owner":2}]
+			["positions",[1001,1002,1003,2001,2003,3001,3002,3003],{"owner":1}],
+			["positions",[7007,7008,7009,8007,8009,9007,9008,9009],{"owner":2}]
 		],
-		"kings": [{"pos":2002,"type":"king","owner":1},{"pos":8008,"type":"king","owner":2}]
+		"kings": [{"pos":2002,"owner":1},{"pos":8008,"owner":2}]
 	},
 	"marks": {
 		"selectunit": {
 			"fromlayer": "freetomove",
 			"condition": ["not",["hasperformedcommand","move"]],
-			"hydration": ["findmovetargets"],
-			"cleanse": ["movetargets"]
+			"rungenerators": ["findmovetargets"],
+			"cleanse": ["movetargets"],
+			"requiredby": ["selectmovetarget"]
 		},
-		"selectmove": {
-			"fromlayer": "movetargets",
-			"condition": ["not",["hasperformedcommand","move"]]
+		"selectmovetarget": {
+			"requiredmarks": ["selectunit"],
+			"fromlayer": "movetargets"
 		},
-		"selectexilee": {
-			"condition": ["hasperformedcommand","move"],
+		"selectexiletarget": {
 			"fromlayer": "exiletargets",
-			"hydration": ["findexiledestinations"],
+			"condition": ["hasperformedcommand","move"],
+			"rungenerators": ["findexiledestinations"],
+			"requiredby": ["selectexiledestination"],
 			"cleanse": ["exiledestinations"]
+		},
+		"selectexiledestination": {
+			"requiredmarks": ["selectexiletarget"],
+			"fromlayer": "exiledestinations"
 		}
 	},
 	"commands": {
 		"move": {
-			"neededmarks": ["selectunit","selectmove"],
-			"condition": ["not",["hasperformedcommand","move"]]
+			"neededmarks": ["selectmovetarget"],
+			"effect": ["multieffect",[
+				["moveunit",["idofunitat",["markpos","selectunit"]],["markpos","selectmovetarget"]],
+				["setcontextval","movedto",["markpos","selectmovetarget"]]
+			]],
+			"rungenerators": ["findexiletargets"]
 		},
 		"exile": {
-			"neededmarks": ["selectexiletarget","selectexiledestination"],
-			"condition": ["and",
-				["hasperformedcommand","move"]
-			]
+			"neededmarks": ["selectexiledestination"],
+			"condition": ["hasperformedcommand","move"],
+			"rungenerators": ["findexiletargets"],
+			"effect": ["moveunit",["idofunitat",["markpos","selectexiletarget"]],["markpos","selectexiledestination"]]
 		}
 	},
-	"startstep": {
-		"hydration": ["findexiletargets"]
-	},
 	"startturn": {
-		"hydration": ["findmovers"]
+		"rungenerators": ["findmovers"]
 	},
 	"endturn": {
 		"condition": ["hasperformedcommand","move"],
+		"commandcap": false,
 		"endgame": {
-			"madepattern": {
-				"hydration": ["findcenterking","findplussers","findexers"],
-				"condition": ["and",
-					["notEMPY",["layername","centerking"]],
-					["or",
-						["same",["layerobjectcount",["layername","plussers"]],["val",4]],
-						["same",["layerobjectcount",["layername","exers"]],["val",4]]
-					]
-				]
+			"madeplus": {
+				"condition": ["and",[
+					["overlaps","mykings","center"],
+					["same",["overlapsize","myunits","plus"],4]
+				]],
+				"result": "win"
+			},
+			"madex": {
+				"condition": ["and",[
+					["overlaps","mykings","center"],
+					["same",["overlapsize","myunits","x"],4]
+				]],
+				"result": "win"
 			}
 		}
 	},
@@ -70,15 +87,13 @@
 			"type": "walker",
 			"dirs": ["dirs",[2,4,6,8]],
 			"max": 2,
-			"starts": ["markinlast","move","selectunit"],
-			"steps": "oppunits",
-			"blocks": "myunits",
+			"starts": ["contextpos","movedto"],
+			"steps": ["allposinlayer","oppunits"],
+			"blocks": ["allposinlayer","myunits"],
+			"prioritizeblocksoversteps":true,
 			"draw": {
-				"step": {
-					"condition": ["and",
-						["same",["contextval","stopreason"],"hitblock"],
-						["not",["affected",["idofunitat",["contextpos","target"]]]]
-					],
+				"steps": {
+					"condition": ["same",["contextval","stopreason"],"hitblock"],
 					"tolayer": "exiletargets"
 				}
 			}
@@ -86,14 +101,14 @@
 		"findmovers": {
 			"type": "nextto",
 			"dirs": ["dirs",[2,4,6,8]],
-			"from": ["listposIN","myunits"],
+			"starts": ["allposinlayer","myunits"],
+			"condition": ["noneat","units",["contextpos","target"]],
 			"draw": {
 				"start": {
-					"condition": ["different",["contextval","neighbourcount"],0],
+					"condition": ["truthy",["contextval","neighbourcount"]],
 					"tolayer": "freetomove"
 				},
 				"target": {
-					"condition": ["noneat","units",["contextpos","target"]],
 					"tolayer": "potmovetargets",
 					"include": {
 						"moverid": ["idofunitat",["contextpos","start"]]
@@ -104,34 +119,17 @@
 		"findmovetargets": {
 			"type": "filter",
 			"layer": "potmovetargets",
-			"matching": {"moverid":["idofunitat",["markpos","selectunit"]]},
+			"matching": {"moverid":["is",["idofunitat",["markpos","selectunit"]]]},
 			"tolayer": "movetargets"
 		},
 		"findexiledestinations": {
 			"type": "filter",
-			"layer": ["ifelse", ["same",["lookup","BOARD",["markpos","selectexiletarget"],"color"],"light"],"LIGHT","DARK"],
-			"condition": ["noneat", ["units"],["contextpos","start"]],
-			"tolayer": ["exiledestinations"]
-		},
-		"findcenterking": {
-			"type": "filter",
-			"layer": "myunits",
-			"matching": {"type":"king"},
-			"condition": ["anyat",["layername","center"],["contextpos","start"]],
-			"tolayer": ["layername","centerking"]
-		},
-		"findplussers": {
-			"type": "filter",
-			"layer": "myunits",
-			"condition": ["anyat",["layername","plus"],["contextpos","start"]],
-			"tolayer": ["layername","plussers"]
-		},
-		"findexers": {
-			"type": "filter",
-			"layer": "myunits",
-			"condition": ["anyat",["layername","x"],["contextpos","start"]],
-			"tolayer": ["layername","exers"]
+			"layer": ["ifelse", ["same",["lookup","board",["markpos","selectexiletarget"],"colour"],"light"],"light","dark"],
+			"condition": ["and",[
+				["noneat","fortress",["contextpos","start"]],
+				["noneat","units",["contextpos","start"]]
+			]],
+			"tolayer": "exiledestinations"
 		}
-
 	}
 }
