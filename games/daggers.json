@@ -31,7 +31,7 @@
 		"commandcap": true,
 		"endgame": {
 			"infiltration":{ "condition": ["overlaps","myunits","oppbases"], "result": "win" },
-			"kingkill": { "condition": ["notempty","oppdeadkings"], "result": "win" }
+			"kingkill": { "condition": ["notempty","oppdeadcrowns"], "result": "win" }
 		}
 	},
 	"startturn": {

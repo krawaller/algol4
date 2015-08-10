@@ -1,86 +1,118 @@
 {
-	"source": "http://www.di.fc.ul.pt/~jpn/gv/sombrero.htm",
-	"board": {
-		"shape": "square",
-		"height": 8,
-		"width": 8
+	"name": "Sombrero",
+	"source": "http://www.abstractstrategy.com/sombrero-rules.html",
+	"graphics": {
+		"icons": {"soldiers":"soldiers","kings":"kings"},
+		"turnvars": { "movesleft": "moves left" }
 	},
-	"setup": [
-		["list",[1001,1002,1003,1004,8005,8006,8007,8008],{"group":"kings","owner":1}],
-		["list",[1005,1006,1007,1008,8001,8002,8003,8004],{"group":"kings","owner":2}]
-	],
+	"board": { "height": 8, "width": 8 },
+	"setup": {
+		"kings": [
+			["positions",[1001,1002,1003,1004,8005,8006,8007,8008],{"owner":1}],
+			["positions",[1005,1006,1007,1008,8001,8002,8003,8004],{"owner":2}]
+		]
+	},
+	"startturn": { "applyeffect": ["setcontextval","movesleft",2] },
 	"endturn": {
-		"condition":["same",["contextval","performedsteps"],["val",1]],
+		"condition":["falsy",["contextval","movesleft"]],
 		"commandcap": true,
 		"endgame": {
 			"kingkill": {
-				"condition": ["morethan",2,["positionsin","oppkings"]]
+				"condition": ["morethan",2,["positionsin","oppkings"]],"result":"win"
 			}
 		}
 	},
 	"marks": {
 		"selectking": {
-			"from": "mykings"
+			"fromlayer": "mykings",
+			"cleanse": ["movetarget","swaptarget"],
+			"rungenerators": ["findtargets","findsecondtargets"],
+			"requiredby": ["selectswap","selectmove"]
 		},
 		"selectswap": {
-			"from": "swaptarget",
-			"notwith": "selectmove"
+			"fromlayer": "swaptarget",
+			"notwith": ["selectmove"],
+			"requiredmarks": ["selectking"]
 		},
 		"selectmove": {
-			"from": "movetarget",
-			"notwith": "selectswap",
+			"fromlayer": "movetarget",
+			"notwith": ["selectswap"],
 			"cleanse": ["demoted"],
-			"hydration": ["finddemotees"]
+			"rungenerators": ["finddemotees"],
+			"requiredmarks": ["selectking"]
 		}
-	},
-	"startturn": {
-		"hydration": ["findtargets"]
 	},
 	"commands": {
 		"swap": {
-			"effects": [
-				["swapunitpositions",["idofunitat",["markpos","selectking"]],["idofunitat",["markpos","selectswap"]]]
-			]
-		},
-		"move": {
-			"effects": [
-				["MOVETO",["idofunitat",["markpos","selectking"]],["markpos","selectmove"]],
+			"neededmarks": ["selectswap"],
+			"effect": ["multieffect",[
+				["setunitdata",["idofunitat",["markpos","selectking"]],"group","soldiers"],
+				["setunitdata",["idofunitat",["markpos","selectswap"]],"group","kings"],
 				["forallin","demoted",
 					["setunitdata",["loopid"],"group","soldiers"]
-				]
-			]
+				],
+				["addtocontextval","movesleft",-1]
+			]]
+		},
+		"move": {
+			"neededmarks": ["selectmove"],
+			"effect": ["multieffect",[
+				["moveunit",["idofunitat",["markpos","selectking"]],["markpos","selectmove"]],
+				["forallin","demoted",
+					["setunitdata",["loopid"],"group","soldiers"]
+				],
+				["addtocontextval","movesleft",["lookup","movetarget",["markpos","selectmove"],"cost"]]
+			]]
 		}
 	},
 	"generators": {
 		"findtargets": {
 			"type": "nextto",
 			"dirs": ["dirs",[1,2,3,4,5,6,7,8]],
-			"start": ["markpos","selectking"],
-			"condition": ["and",
+			"starts": ["markpos","selectking"],
+			"condition": ["and",[
 				["noneat","oppunits",["contextpos","target"]],
 				["noneat","mykings",["contextpos","target"]]
-			],
+			]],
 			"draw": {
 				"target": {
 					"tolayer": ["ifelse",
 						["anyat","mysoldiers",["contextpos","target"]],
 						"swaptarget","movetarget"
-					]
+					],
+					"include": { "cost": -1 }
+				}
+			}
+		},
+		"findsecondtargets": {
+			"type": "nextto",
+			"dirs": ["dirs",[1,2,3,4,5,6,7,8]],
+			"starts": ["allposinlayer","movetarget"],
+			"condition": ["and",[
+				["same",["contextval","movesleft"],2],
+				["noneat","movetarget",["contextpos","target"]],
+				["noneat","units",["contextpos","target"]]
+			]],
+			"draw": {
+				"target": {
+					"tolayer": "movetarget",
+					"include": { "cost": -2 }
 				}
 			}
 		},
 		"finddemotees": {
 			"type": "walker",
 			"dirs": ["dirs",[1,2,3,4,5,6,7,8]],
-			"start": ["markpos","selectmove"],
-			"steplayer": "oppunits",
-			"stoplayer": "mykings",
+			"starts": ["markpos","selectmove"],
+			"steps": ["allposinlayer","oppunits"],
+			"blocks": ["allposinlayer","mykings"],
+			"prioritizeblocksoversteps":true,
 			"draw": {
-				"step": {
-					"condition": ["and",
-						["same",["contextval","hitblock"],true],
+				"steps": {
+					"condition": ["and",[
+						["same",["contextval","stopreason"],"hitblock"],
 						["anyat","oppkings",["contextpos","target"]]
-					],
+					]],
 					"tolayer": "demoted"
 				}
 			}

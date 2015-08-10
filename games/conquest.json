@@ -1,21 +1,19 @@
 {
 	"TODO": ["who won?"],
 	"source": "http://www.di.fc.ul.pt/~jpn/gv/conquest.htm",
-	"board": {
-		"height": 9,
-		"width": 9
-	},
+	"board": {"height": 9,"width": 9},
 	"terrain": {
 		"center": [{"pos":5005}],
-		"plus": [ ["list",[4005,5004,5006,6005],{}] ],
-		"x": [ ["list",[4004,4006,6004,6006],{}] ]
+		"plus": [ ["positions",[4005,5004,5006,6005],{}] ],
+		"x": [ ["positions",[4004,4006,6004,6006],{}] ]
 	},
-	"setup": [
-		["list",[1001,1002,1003,2001,2003,3001,3002,3003],{"type":"soldier","owner":1}],
-		{"pos":2002,"type":"king","owner":1},
-		["list",[7007,7008,7009,8007,8009,9007,9008,9009],{"type":"soldier","owner":2}],
-		{"pos":8008,"type":"king","owner":2}
-	],
+	"setup": {
+		"soldiers": [
+			["positions",[1001,1002,1003,2001,2003,3001,3002,3003],{"type":"soldier","owner":1}],
+			["positions",[7007,7008,7009,8007,8009,9007,9008,9009],{"type":"soldier","owner":2}]
+		],
+		"kings": [{"pos":2002,"type":"king","owner":1},{"pos":8008,"type":"king","owner":2}]
+	},
 	"marks": {
 		"selectunit": {
 			"fromlayer": "freetomove",

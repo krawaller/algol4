@@ -14,6 +14,7 @@ var React = require('react'),
         krieg: I.fromJS(require("../../games/krieg.json")),
         daggers: I.fromJS(require("../../games/daggers.json")),
         amazons: I.fromJS(require("../../games/amazons.json")),
+        sombrero: I.fromJS(require("../../games/sombrero.json"))
     };
 
 var Board = React.createClass({
