@@ -39,6 +39,12 @@ var effectmethods = {
 	setcontextval: function(state,prop,val){
 		return state.setIn(["context",this.evaluateValue(state,prop)],this.evaluateValue(state,val));
 	},
+	spawnunit: function(state,pos,group,obj){
+		var id = "unit"+(state.getIn(["data","units"]).size+1),
+			newstate = state.setIn(["data","units",id],(obj||I.Map()).set("id",id).set("group",group).set("pos",this.evaluatePosition(state,pos)));
+		console.log("added unit",id,"new state",newstate.toJS());
+		return newstate;
+	},
 	addtocontextval: function(state,prop,val){
 		var propname = this.evaluateValue(state,prop);
 		return state.setIn(["context",propname],this.evaluateValue(state,val)+(state.getIn(["context",propname])||0));

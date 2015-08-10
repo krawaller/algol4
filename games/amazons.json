@@ -1,76 +1,110 @@
 {
 	"source": "http://www.chessvariants.org/other.dir/amazons.html",
+	"graphics": {
+		"background": "wood",
+		"icons": { "queens": "queens", "fires": "fires" }
+	},
 	"board": {
 		"height": 10,
 		"width": 10
 	},
-	"setup": [
-		["list",[1004,1007,4001,4010],{"owner":1,"group":"movers"}],
-		["list",[10004,10007,7001,7010],{"owner":2,"group":"movers"}]
-	],
+	"setup": {
+		"queens":[
+			["positions",[1004,1007,4001,4010],{"owner":1}],
+			["positions",[10004,10007,7001,7010],{"owner":2}]
+		]
+	},
 	"startstep": {
-		"hydration": ["findblocks","findfiretargets"]
+		"rungenerators": ["findmymovers","findfiretargets","findoppmovers"]
 	},
 	"marks": {
 		"selectunit": {
-			"condition": ["not",["hasperformedcommand","move"]],
+			"condition": ["falsy",["contextval","movedto"]],
 			"fromlayer": "mymovers",
-			"hydration": ["findmovetargets"]
+			"requiredby": ["selectmovetarget"],
+			"rungenerators": ["findmovetargets"]
 		},
-		"selectmove": {
-			"condition": ["not",["hasperformedcommand","move"]],
+		"selectmovetarget": {
+			"requiredmarks": ["selectunit"],
+			"condition": ["falsy",["contextval","movedto"]],
 			"fromlayer": "movetarget"
 		},
-		"selectfire": {
-			"condition": ["hasperformedcommand","move"],
-			"fromlayer": "firetarget",
-			"hydration": ["findhindered","findblocked"]
+		"selectfiretarget": {
+			"condition": ["truthy",["contextval","movedto"]],
+			"fromlayer": "firetarget"
 		}
 	},
 	"endturn": {
-		"condition":["hasperformedcommand","fire"],
+		"condition":["same",["contextval","performedsteps"],2],
 		"commandcap": true,
 		"endgame": {
 			"blocked":{
 				"condition": ["isempty","oppmovers"],
-				"winner": ["contextval","currentplayer"]
+				"result": "win"
 			}
 		}
 	},
 	"commands": {
 		"move": {
-			"effects": [
-				["moveunit",["idofunitat",["markpos","selectunit"]],["markpos","selectmove"]]
-			]
+			"neededmarks": ["selectunit","selectmovetarget"],
+			"effect": ["multieffect",[
+				["moveunit",["idofunitat",["markpos","selectunit"]],["markpos","selectmovetarget"]],
+				["setcontextval","movedto",["markpos","selectmovetarget"]]
+			]]
 		},
 		"fire": {
-			"effects": [
-				["spawnunit",["markpos","selectfire"],{"group":"fires","owner":0}],
+			"neededmarks": ["selectfiretarget"],
+			"effect": ["multieffect",[
+				["spawnunit",["markpos","selectfiretarget"],"fires",{"owner":0}],
 				["forallin","willbeblocked",
-					["setunitdata",["contextval","loopid"],"group","immobilized"]
+					["setunitdata",["loopid"],"group","immobilized"]
 				]
-			]
+			]]
 		}
 	},
 	"generators": {
+		"findmymovers": {
+			"type": "nextto",
+			"starts": ["allposinlayer","myunits"],
+			"dirs": ["dirs",[1,2,3,4,5,6,7,8]],
+			"condition": ["noneat","units",["contextpos","target"]],
+			"draw": {
+				"start": {
+					"condition": ["truthy",["contextval","neighbourcount"]],
+					"tolayer": "mymovers"
+				}
+			}
+		},
+		"findoppmovers": {
+			"type": "nextto",
+			"starts": ["allposinlayer","oppunits"],
+			"dirs": ["dirs",[1,2,3,4,5,6,7,8]],
+			"condition": ["noneat","units",["contextpos","target"]],
+			"draw": {
+				"start": {
+					"condition": ["truthy",["contextval","neighbourcount"]],
+					"tolayer": "oppmovers"
+				}
+			}
+		},
 		"findmovetargets": {
 			"type": "walker",
-			"start": ["markpos","selectunit"],
+			"starts": ["markpos","selectunit"],
 			"dirs": ["dirs",[1,2,3,4,5,6,7,8]],
-			"stoplayer": "units",
+			"blocks": ["allposinlayer","units"],
 			"draw": {
-				"step": {
+				"steps": {
 					"tolayer": "movetarget"
 				}
 			}
 		},
 		"findfiretargets": {
 			"type": "walker",
-			"start": ["markinlast","move","selectunit"],
+			"starts": ["contextpos","movedto"],
 			"dirs": ["dirs",[1,2,3,4,5,6,7,8]],
-			"stoplayer": "units",
+			"blocks": ["allposinlayer","units"],
 			"draw": {
-				"step": {
+				"steps": {
 					"tolayer": "firetarget"
 				}
 			}
@@ -79,21 +113,10 @@
 			"type": "nextto",
 			"starts": ["markpos","selectfire"],
 			"dirs": ["dirs",[1,2,3,4,5,6,7,8]],
-			"condition": ["anyat","movers",["context","target"]],
+			"condition": ["anyat","movers",["contextpos","target"]],
 			"draw": {
 				"target": {
 					"tolayer": "hindered"
-				}
-			}
-		},
-		"findwillbeblocked": {
-			"type": "nextto",
-			"starts": ["allposinlayer","hindered"],
-			"condition": ["noneat","units",["context","target"]],
-			"draw": {
-				"start": {
-					"condition": ["same",["context","neighbourcount"],1],
-					"tolayer": "willbeblocked"
 				}
 			}
 		}

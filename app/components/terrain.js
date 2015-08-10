@@ -11,7 +11,7 @@ var Terrain = React.createClass({
             board = state.getIn(["layers","board"]);
         return (
             <div className={graphics.get("background")+" terrain"}>
-                { graphics.get("tiles").set("dark","dark").reduce(function(list,look,layer){
+                { (graphics.get("tiles")||I.Map()).set("dark","dark").reduce(function(list,look,layer){
                     return state.getIn(["layers",layer]).reduce(function(list,arr,pos){
                         return list.concat(<Tile
                             key = {look+pos}

@@ -13,6 +13,7 @@ var React = require('react'),
         archers: I.fromJS(require("../../games/archers.json")),
         krieg: I.fromJS(require("../../games/krieg.json")),
         daggers: I.fromJS(require("../../games/daggers.json")),
+        amazons: I.fromJS(require("../../games/amazons.json")),
     };
 
 var Board = React.createClass({

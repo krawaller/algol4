@@ -22,16 +22,19 @@ Algol.evaluateDirList = function(state,def){
 };
 
 var positionlistmethods = {
-	allposinlayer: function(state,layername){ return state.getIn(["layers",layername]).keySeq(); },
+	allposinlayer: function(state,layername){ return (state.getIn(["layers",layername])||I.Map()).keySeq(); },
 	allposinlayers: function(){
 		var state = arguments[0];
 		return _.reduce( _.slice(arguments,2), function(mem,name){
-			return mem.merge( state.getIn(["layers",name]) );
-		},state.getIn(["layers",arguments[1]]),this).keySeq();
+			return mem.merge( state.getIn(["layers",name]) || I.Map() );
+		},state.getIn(["layers",arguments[1]])||I.Map(),this).keySeq();
 	}
 };
 
 Algol.evaluatePositionList = function(state,def){
+	if (typeof def.first !== "function"){
+		console.log("THE HECK POSLIST",state.toJS(),"def",def.toJS && def.toJS() || def)
+	}
 	var name = def.first(), rest = def.rest().toArray();
 	return positionlistmethods[name] ?
 		positionlistmethods[name].apply(this,[state].concat(rest))
@@ -124,7 +127,10 @@ var valuemethods = {
 };
 
 Algol.evaluateValue = function(state,def){
-	return I.List.isList(def) ? valuemethods[def.first()].apply(this,[state].concat(def.rest().toArray())) : def;
+	if (I.List.isList(def) && !valuemethods[def.first()]){
+		console.log("THE HECK VAL",state.toJS(),"def",def.toJS && def.toJS() || def)
+	}
+	return I.List.isList(def) ? (valuemethods[def.first()] || positionmethods[def.first()]).apply(this,[state].concat(def.rest().toArray())) : def;
 };
 
 var positionmethods = {

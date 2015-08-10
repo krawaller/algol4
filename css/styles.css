@@ -80,6 +80,7 @@ a.square {
 	margin-top: 17px;
 }
 
+.piece.owner0, .projectiles.owner0:after { color: grey; background-color: darkgrey; }
 .piece.owner1, .projectiles.owner1:after { color: red; background-color: darkred; }
 .piece.owner2, .projectiles.owner2:after { color: blue; background-color: darkblue; }
 
