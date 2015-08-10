@@ -21,7 +21,11 @@ var React = require('react'),
 var Board = React.createClass({
     mixins: [Router.State],
     getInitialState: function(){
-        return {state: Algol.prepareNewGameState(games[this.getParams().gamename],2)};
+        var game = Algol.prepareNewGameState(games[this.getParams().gamename],2);
+        return {
+            state: game,
+            terrainstate: game
+        };
     },
     doCommand: function(cmnd){
         this.setState({"state":Algol.performOption(this.state.state,cmnd)});
@@ -37,7 +41,7 @@ var Board = React.createClass({
             <div>
                 <Status state={state} />
                 <div className="board">
-                    <Terrain state={state} tileheight={tileheight} tilewidth={tilewidth} />
+                    <Terrain state={this.state.terrainstate} tileheight={tileheight} tilewidth={tilewidth} />
                     <Pieces state={state} tileheight={tileheight} tilewidth={tilewidth} />
                     <Marks state={state} tileheight={tileheight} tilewidth={tilewidth} broadcaster={this.doCommand} />
                     <Controls state={state} top={tileheight*height} broadcaster={this.doCommand} />
