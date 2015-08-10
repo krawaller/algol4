@@ -30,7 +30,7 @@
 		"condition":["truthy",["contextval","performedsteps"]],
 		"commandcap": true,
 		"endgame": {
-			"infiltration":{ "condition": ["overlaps","myunits","oppbases"], "result": "win" },
+			"infiltration":{ "condition": ["overlaps","mycrowns","oppbases"], "result": "win" },
 			"kingkill": { "condition": ["notempty","oppdeadcrowns"], "result": "win" }
 		}
 	},
