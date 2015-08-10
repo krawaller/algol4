@@ -5,10 +5,12 @@ var React = require('react'),
     Route = Router.Route,
     DefaultRoute = Router.DefaultRoute,
     Board = require('./components/board'),
+    SelectGame = require('./components/selectgame'),
     Wrapper = require('./components/wrapper');
 
 module.exports = (
     <Route handler={Wrapper}>
-        <DefaultRoute handler={Board} />
+    	<Route name="game" path="/game/:gamename" handler={Board} />
+        <DefaultRoute handler={SelectGame} />
     </Route>
 );

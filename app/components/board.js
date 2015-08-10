@@ -1,6 +1,7 @@
 /** @jsx React.DOM */
 
 var React = require('react'),
+    Router = require('react-router'),
     Terrain = require('./terrain'),
     Pieces = require('./pieces'),
     Marks = require('./marks'),
@@ -18,35 +19,14 @@ var React = require('react'),
     };
 
 var Board = React.createClass({
+    mixins: [Router.State],
     getInitialState: function(){
-        return {};
-    },
-    chooseGame: function(def){
-        this.setState({
-            state: Algol.prepareNewGameState(def,2)
-        });
+        return {state: Algol.prepareNewGameState(games[this.getParams().gamename],2)};
     },
     doCommand: function(cmnd){
         this.setState({"state":Algol.performOption(this.state.state,cmnd)});
     },
     render: function() {
-        if (!this.state.state){
-            return (
-                <div>
-                    <p>Choose game:</p>
-                    <ul>
-                    { _.reduce(games,function(ret,def,name){
-                        return ret.concat(
-                            <li
-                                key={name}
-                                onClick={function(){this.chooseGame(def);}.bind(this)}
-                            >{name}</li>
-                        );
-                    },[],this) }
-                    </ul>
-                </div>
-            );
-        }
         var state = this.state.state;
             board = state.getIn(["layers","board"]),
             height = state.getIn(["gamedef","board","height"]),
