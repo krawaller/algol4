@@ -21,7 +21,7 @@
 	},
 	"marks": {
 		"selectunit": {
-			"fromlayer": "freetomove",
+			"from": "freetomove",
 			"condition": ["not",["hasperformedcommand","move"]],
 			"rungenerators": ["findmovetargets"],
 			"cleanse": ["movetargets"],
@@ -29,10 +29,10 @@
 		},
 		"selectmovetarget": {
 			"requiredmarks": ["selectunit"],
-			"fromlayer": "movetargets"
+			"from": "movetargets"
 		},
 		"selectexiletarget": {
-			"fromlayer": "exiletargets",
+			"from": "exiletargets",
 			"condition": ["hasperformedcommand","move"],
 			"rungenerators": ["findexiledestinations"],
 			"requiredby": ["selectexiledestination"],
@@ -40,7 +40,7 @@
 		},
 		"selectexiledestination": {
 			"requiredmarks": ["selectexiletarget"],
-			"fromlayer": "exiledestinations"
+			"from": "exiledestinations"
 		}
 	},
 	"commands": {
@@ -88,8 +88,8 @@
 			"dirs": ["dirs",[2,4,6,8]],
 			"max": 2,
 			"starts": ["contextpos","movedto"],
-			"steps": ["allposinlayer","oppunits"],
-			"blocks": ["allposinlayer","myunits"],
+			"steps": "oppunits",
+			"blocks": "myunits",
 			"prioritizeblocksoversteps":true,
 			"draw": {
 				"steps": {
@@ -101,7 +101,7 @@
 		"findmovers": {
 			"type": "nextto",
 			"dirs": ["dirs",[2,4,6,8]],
-			"starts": ["allposinlayer","myunits"],
+			"starts": "myunits",
 			"condition": ["noneat","units",["contextpos","target"]],
 			"draw": {
 				"start": {

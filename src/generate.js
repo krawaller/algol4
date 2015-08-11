@@ -10,7 +10,7 @@ function augmentWithGenerateFunctions(Algol){
 // Called in Algol.applyGenerator
 Algol.generateNeighbourPods = function(state,def){
 	var cond = def.get("condition");
-	return this.evaluatePositionList(state,def.get("starts")).reduce(function(recorder,startpos){
+	var ret = this.evaluatePositionSet(state,def.get("starts")).reduce(function(recorder,startpos){
 		var neighbours = this.evaluateDirList(state.setIn(["context","start"],startpos),def.get("dirs")).reduce(function(map,dir){
 			var targetpos = state.getIn(["connections",startpos,dir])||state.getIn(["connections",startpos,dir+""]);
 			return targetpos && (!cond || this.evaluateBoolean(state.setIn(["context","target"],targetpos),cond)) ? map.set(dir,targetpos) : map;
@@ -19,6 +19,8 @@ Algol.generateNeighbourPods = function(state,def){
 			return I.pushIn(recorder,["target",pos],I.Map({start:startpos,dir:dir,target:pos,neighbourcount:neighbours.size}));
 		},I.pushIn(recorder,["start",startpos],I.Map({start:startpos,neighbourcount:neighbours.size})),this);
 	},I.fromJS({start:{},target:{}}),this);
+	//console.log("NEI",def.toJS(),"ret",ret.toJS());
+	return ret;
 };
 
 function stopreason(state,def,dir,pos,length,blocks,steps,prioblocks){
@@ -40,9 +42,9 @@ function stopreason(state,def,dir,pos,length,blocks,steps,prioblocks){
 
 Algol.generateWalkerPodsInDir = function(startstate,def,recorder,startpos,dir){
 	var pos=startpos, walk = [], reason, blockpos,
-		blocks = def.has("blocks") && this.evaluatePositionList(startstate,def.get("blocks")),
-		steps = def.has("steps") && this.evaluatePositionList(startstate,def.get("steps")),
-		tobecounted = def.has("count") && this.evaluatePositionList(startstate,def.get("count")),
+		blocks = def.has("blocks") && this.evaluatePositionSet(startstate,def.get("blocks")),
+		steps = def.has("steps") && this.evaluatePositionSet(startstate,def.get("steps")),
+		tobecounted = def.has("count") && this.evaluatePositionSet(startstate,def.get("count")),
 		prevcounttotal = 0, counttrack = [];
 	while(!(reason=stopreason(startstate,def,dir,pos,walk.length,blocks,steps,def.get("prioritizeblocksoversteps")))){
 		walk.push(pos = startstate.getIn(["connections",pos,dir])||startstate.getIn(["connections",pos,dir+""]));
@@ -66,6 +68,7 @@ Algol.generateWalkerPodsInDir = function(startstate,def,recorder,startpos,dir){
 		}
 		recorder = I.pushIn(recorder,["steps",step],ctx);
 	});
+	//console.log("WALKER",startpos,"DIR",dir,"RESULT",recorder.toJS());
 	return recorder;
 };
 
@@ -77,7 +80,7 @@ Algol.generateWalkerPodsFromStart = function(state,def,recorder,startpos){
 };
 
 Algol.generateWalkerPods = function(state,def){
-	var pods = this.evaluatePositionList(state,def.get("starts")).reduce(function(recorder,startpos){
+	var pods = this.evaluatePositionSet(state,def.get("starts")).reduce(function(recorder,startpos){
 		return this.generateWalkerPodsFromStart(state,def,recorder,startpos);
 	},I.fromJS({}),this);
 	return pods.set("all",pods.reduce(function(mem,pod){ return mem.mergeWith(I.concat,pod); }),I.Map(),this);
@@ -121,7 +124,7 @@ Algol.generateFilterPods = function(state,def){
 		overlapping = def.get("overlapping"),
 		matching = def.get("matching");
 	if (overlapping){
-		var legal = this.evaluatePositionList(state,overlapping);
+		var legal = this.evaluatePositionSet(state,overlapping);
 		seeds = seeds.filter(function(val,pos){ return legal.contains(pos); });
 	}
 	if (matching){

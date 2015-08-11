@@ -10,14 +10,7 @@ var React = require('react'),
     Algol = require("../../src/index"),
     I = require("../../src/immutableextensions"),
     _ = require("lodash"),
-    games = {
-        archers: I.fromJS(require("../../games/archers.json")),
-        krieg: I.fromJS(require("../../games/krieg.json")),
-        daggers: I.fromJS(require("../../games/daggers.json")),
-        amazons: I.fromJS(require("../../games/amazons.json")),
-        sombrero: I.fromJS(require("../../games/sombrero.json")),
-        conquest: I.fromJS(require("../../games/conquest.json"))
-    };
+    games = require("../games");
 
 var Board = React.createClass({
     mixins: [Router.State],
@@ -29,7 +22,9 @@ var Board = React.createClass({
         };
     },
     doCommand: function(cmnd){
-        this.setState({"state":Algol.performOption(this.state.state,cmnd)});
+        var newstate = Algol.performOption(this.state.state,cmnd);
+        this.setState({"state":newstate});
+        //console.log("NEW STATE",newstate.toJS());
     },
     render: function() {
         var state = this.state.state;

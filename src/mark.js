@@ -32,9 +32,8 @@ Returns object like: {
 }
 */
 Algol.getAvailableMarks = function(state){
-	var layers = state.get("layers");
 	return state.getIn(["gamedef","marks"]).reduce(function(mem,markdef,markname){
-		return this.isMarkAvailable(state,markname) ? mem : layers.get(markdef.get("fromlayer")).reduce(function(o,arr,pos){
+		return this.isMarkAvailable(state,markname) ? mem : this.evaluatePositionSet(state,markdef.get("from")).reduce(function(o,pos){
 			return o.set(pos,I.List(["setmark",markname,pos]));
 		},mem);
 	},I.Map(),this);
@@ -54,16 +53,19 @@ Algol.isMarkAvailable = function(state,markname){
 	var markdef = state.getIn(["gamedef","marks",markname]),
 		cond = markdef.get("condition"),
 		setmarks = state.get("marks"),
-		fromlayer = state.getIn(["layers",markdef.get("fromlayer")]),
-		requiredmarks = markdef.get("requiredmarks");
+		//fromlayer = state.getIn(["layers",markdef.get("fromlayer")]),
+		requiredmarks = markdef.get("requiredmarks"),
+		notif = markdef.get("notif");
 	if (setmarks.has(markname)){
 		return "alreadyset";
 	} else if (cond && !this.evaluateBoolean(state,cond)){
 		return "conditionnotmet";
-	} else if (!fromlayer || !fromlayer.size){
-		return "nopositions";
+	//} else if (!fromlayer || !fromlayer.size){
+	//	return "nopositions";
 	} else if (requiredmarks && !requiredmarks.every(setmarks.has.bind(setmarks))){
 		return "missingrequiredmarks";
+	} else if (notif && notif.some(function(m){return state.hasIn(["marks",m]);})) {
+		return "nonlikedmarkset";
 	}
 };
 

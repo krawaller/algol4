@@ -41,7 +41,8 @@ var effectmethods = {
 	},
 	spawnunit: function(state,pos,group,obj){
 		var id = "unit"+(state.getIn(["data","units"]).size+1),
-			newstate = state.setIn(["data","units",id],(obj||I.Map()).set("id",id).set("group",group).set("pos",this.evaluatePosition(state,pos)));
+			obj = (obj||I.Map()).reduce(function(o,def,key){ return o.set(key,this.evaluateValue(state,def)); },I.Map(),this),
+			newstate = state.setIn(["data","units",id],obj.set("id",id).set("group",group).set("pos",this.evaluatePosition(state,pos)));
 		return newstate;
 	},
 	addtocontextval: function(state,prop,val){
@@ -139,7 +140,9 @@ var optionmethods = {
 };
 
 Algol.performOption = function(state,def){
-	return optionmethods[def.first()].apply(this,[state].concat(def.rest().toArray()));
+	var ret = optionmethods[def.first()].apply(this,[state].concat(def.rest().toArray()));
+	//console.log("did option",def.toJS(),"result is",state.toJS());
+	return ret;
 };
 
 /*

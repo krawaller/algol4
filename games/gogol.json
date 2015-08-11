@@ -1,0 +1,124 @@
+{
+	"name": "Gogol",
+	"source": "http://www.di.fc.ul.pt/~jpn/gv/gogol.htm",
+	"board": {"height":8,"width":8},
+	"terrain": {
+		"homerow": [ ["rectangle",1001,1008,{"owner":2}], ["rectangle",8001,8008,{"owner":1}] ],
+		"edges": [ ["rectangle",1001,8001,{}], ["rectangle",1008,8008,{}], ["rectangle",1002,1007,{}], ["rectangle",8002,8007,{}] ]
+	},
+	"graphics": {
+		"tiles": {"homerow":"castle"},
+		"icons": {"kings":"kings","soldiers":"soldiers"}
+	},
+	"setup": {
+		"soldiers": [ ["rectangle",1001,1008,{"owner":2}], ["rectangle",8001,8008,{"owner":1}] ]
+	},
+	"startturn": {
+		"rungenerators": ["findforbiddenkingspots","findforbiddensoldierspots","findsoldierspaces","findkingspaces"]
+	},
+	"generators": {
+		"findforbiddenkingspots": {
+			"type": "nextto",
+			"starts": ["layeroverlap","edges","mysoldiers"],
+			"dirs": ["ifelse",["anyat","homerow",["contextpos","start"]],["dirs",[1,3,5,7]],["dirs",[1,5]]],
+			"draw": {
+				"target": {
+					"tolayer": "nokings"
+				}
+			}
+		},
+		"findforbiddensoldierspots": {
+			"type": "nextto",
+			"dirs": ["dirs",[1,3,5,7]],
+			"starts": ["allposinlayer","mykings"],
+			"condition": ["or",[
+				["anyat","homerow",["contextpos","target"]],
+				["and",[
+					["anyat","edges",["contextpos","start"]],
+					["anyat","edges",["contextpos","target"]]
+				]]
+			]],
+			"draw": {
+				"target": {
+					"tolayer": "nosoldiers"
+				}
+			}
+		},
+		"findsoldierspaces": {
+			"type": "filter",
+			"layer": "board",
+			"condition": ["and",[
+				["noneat","units",["contextpos","start"]],
+				["noneat","nosoldiers",["contextpos","start"]]
+			]],
+			"tolayer": "soldierspaces"
+		},
+		"findkingspaces": {
+			"type": "filter",
+			"layer": "board",
+			"condition": ["and",[
+				["noneat","units",["contextpos","start"]],
+				["noneat","nokings",["contextpos","start"]]
+			]],
+			"tolayer": "kingspaces"
+		},
+		"findkingwalktargets": {
+			"type": "walker",
+			"dirs": ["dirs",[1,2,3,4,5,6,7,8]],
+			"starts": ["markpos","selectking"],
+			"blocks": ["allposinlayer","units"],
+			"draw": {
+				"steps": {
+					"condition": ["anyat","kingspaces",["contextpos","target"]],
+					"tolayer": "kingwalk"
+				}
+			}
+		}
+	},
+	"marks": {
+		"selectkingdeploy": {
+			"condition": ["morethan",3,["contextval","turn"]],
+			"fromlayer": "kingspaces"
+		},
+		"selectking": {
+			"condition": ["morethan",["contextval","turn"],2],
+			"fromlayer": "mykings",
+			"notif": ["selectsoldier"],
+			"rungenerators": ["findkingwalktargets"],
+			"cleanse": ["kingwalk"],
+			"requiredby": ["selectkingtarget"]
+		},
+		"selectkingtarget": {
+			"requiredmarks": ["selectking"],
+			"fromlayer": "kingwalk"
+		},
+		"selectsoldier": {
+			"condition": ["morethan",["contextval","turn"],2],
+			"notif": ["selectking"],
+			"fromlayer": "mysoldiers",
+			"requiredby": ["selectsoldiertarget"]
+		},
+		"selectsoldiertarget": {
+			"requiredmarks": ["selectsoldier"],
+			"fromlayer": "soldierspaces"
+		}
+	},
+	"commands": {
+		"deployking": {
+			"neededmarks": ["selectkingdeploy"],
+			"effect": ["spawnunit",["markpos","selectkingdeploy"],"kings",{"owner":["contextval","currentplayer"]}]
+		},
+		"moveking": {
+			"neededmarks": ["selectkingtarget"],
+			"effect": ["moveunit",["idofunitat",["markpos","selectking"]],["markpos","selectkingtarget"]]
+		},
+		"movesoldier": {
+			"neededmarks": ["selectsoldiertarget"],
+			"effect": ["moveunit",["idofunitat",["markpos","selectsoldier"]],["markpos","selectsoldiertarget"]]
+		}
+	},
+	"endturn": {
+		"condition": ["truthy",["contextval","performedsteps"]],
+		"endgame": {}
+	}
+}

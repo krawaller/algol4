@@ -1,0 +1,9 @@
+module.exports = {
+    archers: I.fromJS(require("../games/archers.json")),
+    krieg: I.fromJS(require("../games/krieg.json")),
+    daggers: I.fromJS(require("../games/daggers.json")),
+    amazons: I.fromJS(require("../games/amazons.json")),
+    sombrero: I.fromJS(require("../games/sombrero.json")),
+    conquest: I.fromJS(require("../games/conquest.json")),
+    //gogol: I.fromJS(require("../games/gogol.json"))
+};

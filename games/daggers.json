@@ -1,10 +1,7 @@
 {
 	"name": "Daggers",
 	"source": "http://www.di.fc.ul.pt/~jpn/gv/daggers.htm",
-	"board": {
-		"height": 8,
-		"width": 8
-	},
+	"board": { "height": 8, "width": 8 },
 	"graphics": {
 		"tiles": { "bases": "grass" },
 		"icons": { "daggers": "dagger", "crowns": "crowns" }
@@ -39,19 +36,19 @@
 	},
 	"marks": {
 		"selectunit": {
-			"fromlayer": "myunits",
+			"from": "myunits",
 			"rungenerators": ["findcurrentmovetargets","findcurrentkilltargets"],
 			"cleanse": ["currentmovetargets","currentkilltargets"],
 			"requiredby": ["selectmovetarget","selectkilltarget"]
 		},
 		"selectmovetarget": {
-			"fromlayer": "currentmovetargets",
+			"from": "currentmovetargets",
 			"notwith": ["selectkilltarget"],
 			"requiredmarks": ["selectunit"]
 		},
 		"selectkilltarget": {
-			"fromlayer": "currentkilltargets",
-			"notith": ["selectmovetarget"],
+			"from": "currentkilltargets",
+			"notwith": ["selectmovetarget"],
 			"requiredmarks": ["selectunit"]
 		}
 	},
@@ -87,7 +84,7 @@
 		},
 		"findcrowntargets": {
 			"type": "nextto",
-			"starts": ["allposinlayer","mycrowns"],
+			"starts": "mycrowns",
 			"dirs": ["dirs",[1,2,3,4,5,6,7,8]],
 			"draw": {
 				"target": {
@@ -99,7 +96,7 @@
 		},
 		"findtargetsabovedagger": {
 			"type": "nextto",
-			"starts": ["allposinlayer","mydaggers"],
+			"starts": "mydaggers",
 			"dirs": ["dirs",[8,1,2]],
 			"draw": {
 				"target": {
@@ -117,9 +114,9 @@
 		},
 		"findtargetsbelowdagger": {
 			"type": "walker",
-			"starts": ["allposinlayer","mydaggers"],
+			"starts": "mydaggers",
 			"dirs": ["dirs",[4,5,6]],
-			"blocks": ["allposinlayer","units"],
+			"blocks": "units",
 			"draw": {
 				"steps": {
 					"tolayer": "movetarget",

@@ -32,9 +32,9 @@
 		},
 		"findarrows": {
 			"type": "walker",
-			"starts": ["allposinlayer","units"],
+			"starts": "units",
 			"dirs": ["relativedirs",["dirs",[1]],["lookup","units",["contextpos","start"],"dir"]],
-			"blocks": ["allposinlayer","units"],
+			"blocks": "units",
 			"max": 3,
 			"draw": {
 				"steps": {
@@ -62,7 +62,7 @@
 		"findfooting": {
 			"type": "nextto",
 			"neededmarks": ["selectunit"],
-			"starts": ["markpos","selectunit"],
+			"starts": "selectunit",
 			"dirs": ["relativedirs",["dirs",[1,5]],["lookup","units",["contextpos","start"],"dir"]],
 			"draw": {
 				"target": {
@@ -87,7 +87,7 @@
 	},
 	"marks": {
 		"selectunit": {
-			"fromlayer": "myunits",
+			"from": "myunits",
 			"cleanse": ["forwardfooting","backwardfooting","gonnadie"],
 			"rungenerators": ["findfooting","findkilltargets"]
 		}

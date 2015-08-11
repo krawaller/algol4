@@ -28,7 +28,21 @@ var positionlistmethods = {
 		return _.reduce( _.slice(arguments,2), function(mem,name){
 			return mem.merge( state.getIn(["layers",name]) || I.Map() );
 		},state.getIn(["layers",arguments[1]])||I.Map(),this).keySeq();
-	}
+	},
+	layeroverlap: function(state,layer1,layer2){
+		var l1 = (state.getIn(["layers",layer1])||I.Map()),
+			l2 = (state.getIn(["layers",layer2])||I.Map());
+		return l1.keySeq().reduce(function(mem,pos){
+			return l2.has(pos) ? mem.push(pos) : mem;
+		},I.List());
+	},
+	layerwithoutlayer: function(state,layer1,layer2){
+		var l1 = (state.getIn(["layers",layer1])||I.Map()),
+			l2 = (state.getIn(["layers",layer2])||I.Map());
+		return l1.keySeq().reduce(function(mem,pos){
+			return l2.has(pos) ? mem : mem.push(pos);
+		},I.List());
+	},
 };
 
 Algol.evaluatePositionList = function(state,def){
@@ -36,10 +50,42 @@ Algol.evaluatePositionList = function(state,def){
 		console.log("THE HECK POSLIST",state.toJS(),"def",def.toJS && def.toJS() || def)
 	}
 	var name = def.first(), rest = def.rest().toArray();
+	if (!positionlistmethods[name] && !positionmethods[name]){
+		console.log("THE HECK POSLIST strange!",state.toJS(),"def",def.toJS && def.toJS() || def)
+	}
 	return positionlistmethods[name] ?
 		positionlistmethods[name].apply(this,[state].concat(rest))
 		: I.List([positionmethods[name].apply(this,[state].concat(rest))]);
 };
+
+var positionsetmethods = {
+	ifelse: function(state,cond,val1,val2){ return this.evaluatePositionSet(state, this.evaluateBoolean(state,cond) ? val1 : val2); },
+	union: function(state,set1,set2){ return this.evaluatePositionSet(state,set1).union(this.evaluatePositionSet(state,set2)); },
+	intersect: function(state,set1,set2){ return this.evaluatePositionSet(state,set1).intersect(this.evaluatePositionSet(state,set2)); },
+	subtract: function(state,set1,set2){ return this.evaluatePositionSet(state,set1).subtract(this.evaluatePositionSet(state,set2)); }
+};
+
+Algol.evaluatePositionSet = function(state,def){
+	//console.log("POSITIONSET",def.toJS ? def.toJS() : def);
+	if (typeof def === "string") {
+		if (state.hasIn(["layers",def])){
+			return (state.getIn(["layers",def])||I.Map()).keySeq().toSet();
+		} else if (state.hasIn(["gamedef","marks",def])){
+			return I.Set.of(state.getIn(["marks",def]));
+		}
+		return I.Set();
+	} else {
+		var name = def.first(), rest = def.rest().toArray();
+		if (positionsetmethods[name]){
+			return positionsetmethods[name].apply(this,[state].concat(rest));
+		} else if (positionmethods[name]){
+			return I.Set.of(positionmethods[name].apply(this,[state].concat(rest)));
+		} else {
+			console.log("GAH!",def && def.toJS(),"STATE",state.toJS());
+			throw "UNKNOWN POSITION SET THINGY!";
+		}
+	}
+}
 
 var idmethods = {
 	idofunitat: function(state,position){ return state.getIn(["layers","units",this.evaluatePosition(state,position),0,"id"]); },

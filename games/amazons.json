@@ -10,7 +10,7 @@
 	"marks": {
 		"selectunit": {
 			"condition": ["falsy",["contextval","movedto"]],
-			"fromlayer": "mymovers",
+			"from": "mymovers",
 			"requiredby": ["selectmovetarget"],
 			"rungenerators": ["findmovetargets"],
 			"cleanse": ["movetarget"]
@@ -18,11 +18,11 @@
 		"selectmovetarget": {
 			"requiredmarks": ["selectunit"],
 			"condition": ["falsy",["contextval","movedto"]],
-			"fromlayer": "movetarget"
+			"from": "movetarget"
 		},
 		"selectfiretarget": {
 			"condition": ["truthy",["contextval","movedto"]],
-			"fromlayer": "firetarget"
+			"from": "firetarget"
 		}
 	},
 	"endturn": {
@@ -55,7 +55,7 @@
 	"generators": {
 		"findmymovers": {
 			"type": "nextto",
-			"starts": ["allposinlayer","myunits"],
+			"starts": "myunits",
 			"dirs": ["dirs",[1,2,3,4,5,6,7,8]],
 			"condition": ["noneat","units",["contextpos","target"]],
 			"draw": {
@@ -67,7 +67,7 @@
 		},
 		"findoppmovers": {
 			"type": "nextto",
-			"starts": ["allposinlayer","oppunits"],
+			"starts": "oppunits",
 			"dirs": ["dirs",[1,2,3,4,5,6,7,8]],
 			"condition": ["noneat","units",["contextpos","target"]],
 			"draw": {
@@ -79,9 +79,9 @@
 		},
 		"findmovetargets": {
 			"type": "walker",
-			"starts": ["markpos","selectunit"],
+			"starts": "selectunit",
 			"dirs": ["dirs",[1,2,3,4,5,6,7,8]],
-			"blocks": ["allposinlayer","units"],
+			"blocks": "units",
 			"draw": {
 				"steps": {
 					"tolayer": "movetarget"
@@ -92,7 +92,7 @@
 			"type": "walker",
 			"starts": ["contextpos","movedto"],
 			"dirs": ["dirs",[1,2,3,4,5,6,7,8]],
-			"blocks": ["allposinlayer","units"],
+			"blocks": "units",
 			"draw": {
 				"steps": {
 					"tolayer": "firetarget"
@@ -101,7 +101,7 @@
 		},
 		"findhindered": {
 			"type": "nextto",
-			"starts": ["markpos","selectfire"],
+			"starts": "selectfire",
 			"dirs": ["dirs",[1,2,3,4,5,6,7,8]],
 			"condition": ["anyat","movers",["contextpos","target"]],
 			"draw": {

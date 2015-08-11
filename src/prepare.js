@@ -113,6 +113,7 @@ Algol.prepareNewTurnState = function(state,newturnplayer){
 		//layers: baselayer,
 		context: state.get("basecontext").merge(I.fromJS({
 			currentplayer:newturnplayer,
+			turn: (state.get("turn")||0)+1,
 			performedsteps:0,
 			nextplayer:state.getIn(["passto",newturnplayer])||state.getIn(["passto",""+newturnplayer])
 		}))

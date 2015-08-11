@@ -11,14 +11,7 @@ var React = require('react'),
     Algol = require("../../src/index"),
     I = require("../../src/immutableextensions"),
     _ = require("lodash"),
-    games = {
-        archers: I.fromJS(require("../../games/archers.json")),
-        krieg: I.fromJS(require("../../games/krieg.json")),
-        daggers: I.fromJS(require("../../games/daggers.json")),
-        amazons: I.fromJS(require("../../games/amazons.json")),
-        sombrero: I.fromJS(require("../../games/sombrero.json")),
-        conquest: I.fromJS(require("../../games/conquest.json"))
-    };
+    games = require("../games");
 
 var SelectGame = React.createClass({
     render: function() {

@@ -26,14 +26,14 @@
 	},
 	"marks": {
 		"selectunit": {
-			"fromlayer": "mymovers",
+			"from": "mymovers",
 			"cleanse": ["currentmoves"],
 			"rungenerators": ["findcurrentmoves"],
 			"requiredby": ["selectmove"]
 		},
 		"selectmove": {
 			"neededmarks": ["selectunit"],
-			"fromlayer": "currentmoves"
+			"from": "currentmoves"
 		}
 	},
 	"startturn": {
@@ -71,7 +71,7 @@
 	"generators": {
 		"findoppmovers": {
 			"type": "nextto",
-			"starts": ["allposinlayer","oppnotfrozens"],
+			"starts": "oppnotfrozens",
 			"dirs": ["dirs",[1,2,3,4,5,6,7,8]],
 			"condition": ["noneat","units",["contextpos","target"]],
 			"draw": {
@@ -89,7 +89,7 @@
 		},
 		"findmovetargets": {
 			"type": "nextto",
-			"starts": ["allposinlayer","notfrozens"],
+			"starts": "notfrozens",
 			"condition": ["noneat","units",["contextpos","target"]],
 			"dirs": ["ifelse",
 				["anyat","southeast",["contextpos","start"]],

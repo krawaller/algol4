@@ -24,18 +24,18 @@
 	},
 	"marks": {
 		"selectking": {
-			"fromlayer": "mykings",
+			"from": "mykings",
 			"cleanse": ["movetarget","swaptarget"],
 			"rungenerators": ["findtargets","findsecondtargets"],
 			"requiredby": ["selectswap","selectmove"]
 		},
 		"selectswap": {
-			"fromlayer": "swaptarget",
+			"from": "swaptarget",
 			"notwith": ["selectmove"],
 			"requiredmarks": ["selectking"]
 		},
 		"selectmove": {
-			"fromlayer": "movetarget",
+			"from": "movetarget",
 			"notwith": ["selectswap"],
 			"cleanse": ["demoted"],
 			"rungenerators": ["finddemotees"],
@@ -87,7 +87,7 @@
 		"findsecondtargets": {
 			"type": "nextto",
 			"dirs": ["dirs",[1,2,3,4,5,6,7,8]],
-			"starts": ["allposinlayer","movetarget"],
+			"starts": "movetarget",
 			"condition": ["and",[
 				["same",["contextval","movesleft"],2],
 				["noneat","movetarget",["contextpos","target"]],
@@ -104,8 +104,8 @@
 			"type": "walker",
 			"dirs": ["dirs",[1,2,3,4,5,6,7,8]],
 			"starts": ["markpos","selectmove"],
-			"steps": ["allposinlayer","oppunits"],
-			"blocks": ["allposinlayer","mykings"],
+			"steps": "oppunits",
+			"blocks": "mykings",
 			"prioritizeblocksoversteps":true,
 			"draw": {
 				"steps": {
