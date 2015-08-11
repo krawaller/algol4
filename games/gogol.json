@@ -4,7 +4,7 @@
 	"board": {"height":8,"width":8},
 	"terrain": {
 		"homerow": [ ["rectangle",1001,1008,{"owner":2}], ["rectangle",8001,8008,{"owner":1}] ],
-		"edges": [ ["rectangle",1001,8001,{}], ["rectangle",1008,8008,{}], ["rectangle",1002,1007,{}], ["rectangle",8002,8007,{}] ]
+		"edges": [ ["rectangle",1001,8001], ["rectangle",1008,8008], ["rectangle",1002,1007], ["rectangle",8002,8007] ]
 	},
 	"graphics": {
 		"tiles": {"homerow":"castle"},
@@ -14,12 +14,12 @@
 		"soldiers": [ ["rectangle",1001,1008,{"owner":2}], ["rectangle",8001,8008,{"owner":1}] ]
 	},
 	"startturn": {
-		"rungenerators": ["findforbiddenkingspots","findforbiddensoldierspots","findsoldierspaces","findkingspaces"]
+		"rungenerators": ["findforbiddenkingspots","findforbiddensoldierspots"]
 	},
 	"generators": {
 		"findforbiddenkingspots": {
 			"type": "nextto",
-			"starts": ["layeroverlap","edges","mysoldiers"],
+			"starts": ["intersect","edges","mysoldiers"],
 			"dirs": ["ifelse",["anyat","homerow",["contextpos","start"]],["dirs",[1,3,5,7]],["dirs",[1,5]]],
 			"draw": {
 				"target": {
@@ -30,7 +30,7 @@
 		"findforbiddensoldierspots": {
 			"type": "nextto",
 			"dirs": ["dirs",[1,3,5,7]],
-			"starts": ["allposinlayer","mykings"],
+			"starts": "mykings",
 			"condition": ["or",[
 				["anyat","homerow",["contextpos","target"]],
 				["and",[
@@ -44,32 +44,14 @@
 				}
 			}
 		},
-		"findsoldierspaces": {
-			"type": "filter",
-			"layer": "board",
-			"condition": ["and",[
-				["noneat","units",["contextpos","start"]],
-				["noneat","nosoldiers",["contextpos","start"]]
-			]],
-			"tolayer": "soldierspaces"
-		},
-		"findkingspaces": {
-			"type": "filter",
-			"layer": "board",
-			"condition": ["and",[
-				["noneat","units",["contextpos","start"]],
-				["noneat","nokings",["contextpos","start"]]
-			]],
-			"tolayer": "kingspaces"
-		},
 		"findkingwalktargets": {
 			"type": "walker",
 			"dirs": ["dirs",[1,2,3,4,5,6,7,8]],
 			"starts": ["markpos","selectking"],
-			"blocks": ["allposinlayer","units"],
+			"blocks": "units",
 			"draw": {
 				"steps": {
-					"condition": ["anyat","kingspaces",["contextpos","target"]],
+					"condition": ["noneat","nokings",["contextpos","target"]],
 					"tolayer": "kingwalk"
 				}
 			}
@@ -78,29 +60,29 @@
 	"marks": {
 		"selectkingdeploy": {
 			"condition": ["morethan",3,["contextval","turn"]],
-			"fromlayer": "kingspaces"
+			"from": ["subtract","board",["union","units","nokings"]]
 		},
 		"selectking": {
 			"condition": ["morethan",["contextval","turn"],2],
-			"fromlayer": "mykings",
-			"notif": ["selectsoldier"],
+			"from": "mykings",
+			"notifhasmark": ["selectsoldier"],
 			"rungenerators": ["findkingwalktargets"],
 			"cleanse": ["kingwalk"],
 			"requiredby": ["selectkingtarget"]
 		},
 		"selectkingtarget": {
 			"requiredmarks": ["selectking"],
-			"fromlayer": "kingwalk"
+			"from": "kingwalk"
 		},
 		"selectsoldier": {
 			"condition": ["morethan",["contextval","turn"],2],
-			"notif": ["selectking"],
-			"fromlayer": "mysoldiers",
+			"notifhasmark": ["selectking"],
+			"from": "mysoldiers",
 			"requiredby": ["selectsoldiertarget"]
 		},
 		"selectsoldiertarget": {
 			"requiredmarks": ["selectsoldier"],
-			"fromlayer": "soldierspaces"
+			"from": ["subtract","board",["union","units","nosoldiers"]]
 		}
 	},
 	"commands": {
@@ -119,6 +101,7 @@
 	},
 	"endturn": {
 		"condition": ["truthy",["contextval","performedsteps"]],
+		"commandcap": true,
 		"endgame": {}
 	}
 }

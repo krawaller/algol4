@@ -55,7 +55,7 @@ Algol.isMarkAvailable = function(state,markname){
 		setmarks = state.get("marks"),
 		//fromlayer = state.getIn(["layers",markdef.get("fromlayer")]),
 		requiredmarks = markdef.get("requiredmarks"),
-		notif = markdef.get("notif");
+		notif = markdef.get("notifhasmark");
 	if (setmarks.has(markname)){
 		return "alreadyset";
 	} else if (cond && !this.evaluateBoolean(state,cond)){

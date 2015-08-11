@@ -57,7 +57,7 @@ Algol.addEntitiesFromDef = function(coll,def){
 				return mem.push(blueprint.set("pos",pos));
 			},coll);
 		} else { // [rectangle,topleft,bottomright,blueprint]
-			blueprint = def.get(3);
+			blueprint = def.get(3) || I.Map();
 			topleft = parseInt(def.get(1));
 			bottomright = parseInt(def.get(2));
 			return rect =  _.reduce(_.range(Math.floor(topleft/1000),Math.floor(bottomright/1000)+1),function(mem,r){

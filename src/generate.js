@@ -11,9 +11,10 @@ function augmentWithGenerateFunctions(Algol){
 Algol.generateNeighbourPods = function(state,def){
 	var cond = def.get("condition");
 	var ret = this.evaluatePositionSet(state,def.get("starts")).reduce(function(recorder,startpos){
-		var neighbours = this.evaluateDirList(state.setIn(["context","start"],startpos),def.get("dirs")).reduce(function(map,dir){
+		var startstate = state.setIn(["context","start"],startpos);
+		var neighbours = this.evaluateDirList(startstate,def.get("dirs")).reduce(function(map,dir){
 			var targetpos = state.getIn(["connections",startpos,dir])||state.getIn(["connections",startpos,dir+""]);
-			return targetpos && (!cond || this.evaluateBoolean(state.setIn(["context","target"],targetpos),cond)) ? map.set(dir,targetpos) : map;
+			return targetpos && (!cond || this.evaluateBoolean(startstate.setIn(["context","target"],targetpos),cond)) ? map.set(dir,targetpos) : map;
 		},I.Map(),this);
 		return neighbours.reduce(function(recorder,pos,dir){
 			return I.pushIn(recorder,["target",pos],I.Map({start:startpos,dir:dir,target:pos,neighbourcount:neighbours.size}));

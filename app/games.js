@@ -5,5 +5,5 @@ module.exports = {
     amazons: I.fromJS(require("../games/amazons.json")),
     sombrero: I.fromJS(require("../games/sombrero.json")),
     conquest: I.fromJS(require("../games/conquest.json")),
-    //gogol: I.fromJS(require("../games/gogol.json"))
+    gogol: I.fromJS(require("../games/gogol.json"))
 };
