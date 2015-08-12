@@ -114,15 +114,15 @@
 	},
 	"commands": {
 		"deployking": {
-			"neededmarks": ["selectkingdeploy"],
+			"requiredmarks": ["selectkingdeploy"],
 			"effect": ["spawnunit","selectkingdeploy","kings",{"owner":["contextval","currentplayer"]}]
 		},
 		"move": {
-			"neededmarks": ["selectunit","selectmovetarget"],
+			"requiredmarks": ["selectunit","selectmovetarget"],
 			"effect": ["moveunit",["idofunitat","selectunit"],"selectmovetarget"]
 		},
 		"jump": {
-			"neededmarks": ["selectunit","selectjumptarget"],
+			"requiredmarks": ["selectunit","selectjumptarget"],
 			"effect": ["multieffect",[
 				["killunit",["idofunitat",["firstposin","willdie"]]],
 				["moveunit",["idofunitat","selectunit"],"selectjumptarget"]

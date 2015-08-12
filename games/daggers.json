@@ -54,11 +54,11 @@
 	},
 	"commands": {
 		"move": {
-			"neededmarks": ["selectunit","selectmovetarget"],
+			"requiredmarks": ["selectunit","selectmovetarget"],
 			"effect": ["moveunit",["idofunitat",["markpos","selectunit"]],["markpos","selectmovetarget"]]
 		},
 		"kill": {
-			"neededmarks": ["selectunit","selectkilltarget"],
+			"requiredmarks": ["selectunit","selectkilltarget"],
 			"effect": ["multieffect",[
 				["killunit",["idofunitat",["markpos","selectkilltarget"]]],
 				["moveunit",["idofunitat",["markpos","selectunit"]],["markpos","selectkilltarget"]]

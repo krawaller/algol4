@@ -32,7 +32,7 @@
 			"requiredby": ["selectmove"]
 		},
 		"selectmove": {
-			"neededmarks": ["selectunit"],
+			"requiredmarks": ["selectunit"],
 			"from": "currentmoves"
 		}
 	},
@@ -56,7 +56,7 @@
 	},
 	"commands": {
 		"move": {
-			"neededmarks": ["selectunit","selectmove"],
+			"requiredmarks": ["selectunit","selectmove"],
 			"condition": ["notempty","currentmoves"],
 			"effect": ["multieffect",[
 				["forallin","myfrozens",

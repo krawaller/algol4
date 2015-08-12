@@ -37,7 +37,7 @@
 	},
 	"commands": {
 		"move": {
-			"neededmarks": ["selectunit","selectmovetarget"],
+			"requiredmarks": ["selectunit","selectmovetarget"],
 			"effect": ["multieffect",[
 				["moveunit",["idofunitat",["markpos","selectunit"]],["markpos","selectmovetarget"]],
 				["setcontextval","movedto",["markpos","selectmovetarget"]]
@@ -45,7 +45,7 @@
 			"rungenerators": ["findfiretargets"]
 		},
 		"fire": {
-			"neededmarks": ["selectfiretarget"],
+			"requiredmarks": ["selectfiretarget"],
 			"effect": ["multieffect",[
 				["spawnunit",["markpos","selectfiretarget"],"fires",{"owner":0}]
 			]],

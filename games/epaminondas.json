@@ -43,13 +43,13 @@
 	},
 	"commands": {
 		"move": {
-			"neededmarks": ["selecthead","selectmove"],
+			"requiredmarks": ["selecthead","selectmove"],
 			"effects": [
 				["moveunit",["idofunitat",["markpos","selecthead"]],["markpos","selectmove"]]
 			]
 		},
 		"march": {
-			"neededmarks": ["selecthead","selecttail","selectmarch"],
+			"requiredmarks": ["selecthead","selecttail","selectmarch"],
 			"effects": [
 				["forallin","phalanxmember",
 					["OFFSETUNIT",["loopid"],
@@ -60,7 +60,7 @@
 			]
 		},
 		"charge": {
-			"neededmarks": ["selecthead","selecttail","selectcharge"],
+			"requiredmarks": ["selecthead","selecttail","selectcharge"],
 			"effects": [
 				["forallin","phalanxmember",
 					["OFFSETUNIT",["loopid"],

@@ -1,10 +1,7 @@
 {
 	"name": "Castle",
 	"source": "http://www.di.fc.ul.pt/~jpn/gv/castle.htm",
-	"board": {
-		"width": 19,
-		"height": 19
-	},
+	"board": { "width": 19, "height": 19 },
 	"graphics": {
 		"tiles": {"walls":"castle","thrones":"grass"},
 		"icons": {"soldiers":"soldiers"}
@@ -78,11 +75,11 @@
 	},
 	"commands": {
 		"move": {
-			"neededmarks": ["selectunit","selectmovetarget"],
+			"requiredmarks": ["selectunit","selectmovetarget"],
 			"effect": ["moveunit",["idofunitat","selectunit"],"selectmovetarget"]
 		},
 		"kill": {
-			"neededmarks": ["selectunit","selectkilltarget"],
+			"requiredmarks": ["selectunit","selectkilltarget"],
 			"effect": ["multieffect",[
 				["killunit",["idofunitat","selectkilltarget"]],
 				["moveunit",["idofunitat","selectunit"],"selectkilltarget"]
@@ -98,8 +95,3 @@
 		}
 	}
 }
-
-
-
-
-

@@ -45,7 +45,7 @@
 	},
 	"commands": {
 		"move": {
-			"neededmarks": ["selectmovetarget"],
+			"requiredmarks": ["selectmovetarget"],
 			"effect": ["multieffect",[
 				["moveunit",["idofunitat",["markpos","selectunit"]],["markpos","selectmovetarget"]],
 				["setcontextval","movedto",["markpos","selectmovetarget"]]
@@ -53,7 +53,7 @@
 			"rungenerators": ["findexiletargets"]
 		},
 		"exile": {
-			"neededmarks": ["selectexiledestination"],
+			"requiredmarks": ["selectexiledestination"],
 			"condition": ["hasperformedcommand","move"],
 			"rungenerators": ["findexiletargets"],
 			"effect": ["moveunit",["idofunitat",["markpos","selectexiletarget"]],["markpos","selectexiledestination"]]

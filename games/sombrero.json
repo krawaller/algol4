@@ -44,7 +44,7 @@
 	},
 	"commands": {
 		"swap": {
-			"neededmarks": ["selectswap"],
+			"requiredmarks": ["selectswap"],
 			"effect": ["multieffect",[
 				["setunitdata",["idofunitat",["markpos","selectking"]],"group","soldiers"],
 				["setunitdata",["idofunitat",["markpos","selectswap"]],"group","kings"],
@@ -55,7 +55,7 @@
 			]]
 		},
 		"move": {
-			"neededmarks": ["selectmove"],
+			"requiredmarks": ["selectmove"],
 			"effect": ["multieffect",[
 				["moveunit",["idofunitat",["markpos","selectking"]],["markpos","selectmove"]],
 				["forallin","demoted",

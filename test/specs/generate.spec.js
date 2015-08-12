@@ -440,9 +440,9 @@ tester("the generate methods",Algol,{
 		}
 	},
 	"applyGenerator(state,gendef)": {
-		"when lacking neededmarks": {
+		"when lacking requiredmarks": {
 			state: {marks:{}},
-			gendef: {neededmarks:["foo"]},
+			gendef: {requiredmarks:["foo"]},
 			expected: {marks:{}}
 		},
 		"when running nextto which is applicable": {
@@ -453,7 +453,7 @@ tester("the generate methods",Algol,{
 				context:{blaj:"paj"}
 			},
 			gendef: {
-				neededmarks:["foo"],
+				requiredmarks:["foo"],
 				type:"nextto",
 				starts:["markpos","foo"],
 				dirs:["dirs",[1]],
@@ -482,7 +482,7 @@ tester("the generate methods",Algol,{
 				gamedef:{
 					generators:{
 						somegen:{
-							neededmarks:["foo"],
+							requiredmarks:["foo"],
 							type:"nextto",
 							starts:["markpos","foo"],
 							dirs:["dirs",[1]],
@@ -505,7 +505,7 @@ tester("the generate methods",Algol,{
 				gamedef:{
 					generators:{
 						somegen:{
-							neededmarks:["foo"],
+							requiredmarks:["foo"],
 							type:"nextto",
 							starts:["markpos","foo"],
 							dirs:["dirs",[1]],

@@ -63,7 +63,7 @@ Algol.applyEffect = function(state,def){
 Algol.canExecuteCommand = function(state,def){
 	return !(
 		(def.has("condition") && !this.evaluateBoolean(state,def.get("condition"))) || 
-		def.has("neededmarks") && def.get("neededmarks").some(function(markname){ return !state.get("marks").has(markname); })
+		def.has("requiredmarks") && def.get("requiredmarks").some(function(markname){ return !state.get("marks").has(markname); })
 	);
 };
 
@@ -71,7 +71,7 @@ Algol.canExecuteCommand = function(state,def){
 // TODO - obsolete?
 Algol.buildSaveEntryFromStep = function(state,stepentry){
 	var commanddef = state.getIn(["gamedef","commands",stepentry.get("command")]);
-	return commanddef.get("neededmarks").reduce(function(ret,markname){
+	return commanddef.get("requiredmarks").reduce(function(ret,markname){
 		return ret+"_"+stepentry.getIn(["marks",markname]);
 	},commanddef.get("id"));
 };
@@ -81,7 +81,7 @@ Algol.buildSaveEntryFromStep = function(state,stepentry){
 Algol.calculateStepData = function(state,commanddef){
 	return I.fromJS({
 		command: commanddef.get("name"),
-		marks: (commanddef.get("neededmarks")||I.List()).reduce(function(mem,mname){
+		marks: (commanddef.get("requiredmarks")||I.List()).reduce(function(mem,mname){
 			return mem.set(mname,state.getIn(["marks",mname]));
 		},I.Map())
 	});

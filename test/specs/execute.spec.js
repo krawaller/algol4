@@ -19,7 +19,7 @@ tester("The execute methods",Algol,{
 	"calculateStepData(state,stepdata)": {
 		"a normal call": {
 			state: {marks: {mark1:"foo",mark2:"bar"}},
-			stepdata: {name:"somecommand",neededmarks:["mark1"]},
+			stepdata: {name:"somecommand",requiredmarks:["mark1"]},
 			expected: {command:"somecommand",marks:{mark1:"foo"}}		
 		}
 	},
@@ -60,7 +60,7 @@ tester("The execute methods",Algol,{
 				}
 			},
 			newstate: {data:{c:666},steps:["foo"]},
-			commanddef: {name:"somecommand",neededmarks:["mark1"]},
+			commanddef: {name:"somecommand",requiredmarks:["mark1"]},
 			expected: ["newstep",{
 				data:{c:666},
 				steps:["foo","stepDATA"]
@@ -82,21 +82,21 @@ tester("The execute methods",Algol,{
 	},
 	"canExecuteCommand(state,commanddef)": {
 		"when condition is true and no needed marks": {
-			commanddef: {condition:["true"],neededmarks:[]},
+			commanddef: {condition:["true"],requiredmarks:[]},
 			expected: true
 		},
 		"when condition is false": {
-			commanddef: {condition:["false"],neededmarks:[]},
+			commanddef: {condition:["false"],requiredmarks:[]},
 			expected: false
 		},
 		"when condition is true and needed marks are set": {
 			state: {marks:{somemark:"xyz"}},
-			commanddef: {condition:["true"],neededmarks:["somemark"]},
+			commanddef: {condition:["true"],requiredmarks:["somemark"]},
 			expected: true
 		},
 		"when condition is true but needed marks aren't set": {
 			state: {marks:{someothermark:"xyz"}},
-			commanddef: {condition:["true"],neededmarks:["somemark"]},
+			commanddef: {condition:["true"],requiredmarks:["somemark"]},
 			expected: false
 		}
 	},

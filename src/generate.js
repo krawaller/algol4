@@ -97,7 +97,7 @@ Algol.applyFilter = function(state,def){
 };
 
 Algol.applyGenerator = function(state,def){
-	var type = def.get("type"), marklist = def.get("neededmarks"), marks = state.get("marks"), pods;
+	var type = def.get("type"), marklist = def.get("requiredmarks"), marks = state.get("marks"), pods;
 	if (!marklist || marklist.every(function(mark){return marks.has(mark);})){
 		if (type==="filter") {
 			return this.applyFilter(state,def);
