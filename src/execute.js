@@ -27,10 +27,10 @@ var effectmethods = {
 		var temp = state.getIn(["data","units",id1,"pos"]);
 		return state.setIn(["data","units",id1,"pos"],state.getIn(["data","units",id2,"pos"])).setIn(["data","units",id2,"pos"],temp);
 	},
-	forallin: function(state,layername,effect){
-		var layer = state.getIn(["layers",this.evaluateValue(state,layername)]) || I.Map();
+	forallin: function(state,positionset,effect){
+		var positionset = this.evaluatePositionSet(state,positionset);
 		return state.getIn(["data","units"]).reduce(function(state,unit,id){
-			return layer.has(unit.get("pos")) ? this.applyEffect(state.setIn(["context","loopid"],id),effect) : state;
+			return positionset.has(unit.get("pos")) ? this.applyEffect(state.setIn(["context","loopid"],id),effect) : state;
 		},state,this)[state.hasIn(["context","loopid"])?"setIn":"deleteIn"](["context","loopid"],state.getIn(["context","loopid"]));
 	},
 	multieffect: function(state,list){

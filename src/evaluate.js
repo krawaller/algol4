@@ -71,7 +71,8 @@ Algol.evaluatePositionSet = function(state,def){
 		if (state.hasIn(["layers",def])){
 			return (state.getIn(["layers",def])||I.Map()).keySeq().toSet();
 		} else if (state.hasIn(["gamedef","marks",def])){
-			return I.Set.of(state.getIn(["marks",def]));
+			var mark = state.getIn(["marks",def]);
+			return mark ? I.Set.of(state.getIn(["marks",def])) : I.Set();
 		}
 		return I.Set();
 	} else {
@@ -79,7 +80,8 @@ Algol.evaluatePositionSet = function(state,def){
 		if (positionsetmethods[name]){
 			return positionsetmethods[name].apply(this,[state].concat(rest));
 		} else if (positionmethods[name]){
-			return I.Set.of(positionmethods[name].apply(this,[state].concat(rest)));
+			var pos = positionmethods[name].apply(this,[state].concat(rest));
+			return pos ? I.Set.of(pos) : I.Set();
 		} else {
 			console.log("GAH!",def && def.toJS(),"STATE",state.toJS());
 			throw "UNKNOWN POSITION SET THINGY!";
@@ -114,25 +116,29 @@ var boolmethods = {
 	not: function(state,bool){ return !this.evaluateBoolean(state,bool); },
 	same: function(state,val1,val2){ return this.evaluateValue(state,val1) === this.evaluateValue(state,val2); },
 	different: function(state,val1,val2){ return this.evaluateValue(state,val1) !== this.evaluateValue(state,val2); },
-	anyat: function(state,layername,position){ return state.hasIn(["layers",layername,this.evaluatePosition(state,position)]); },
-	noneat: function(state,layername,position){ return !state.hasIn(["layers",layername,this.evaluatePosition(state,position)]); },
 	morethan: function(state,val1,val2){ return this.evaluateValue(state,val1) > this.evaluateValue(state,val2); },
-	isempty: function(state,layername){ return (state.getIn(["layers",layername])||I.Map()).isEmpty(); },
-	notempty: function(state,layername){ return !(state.getIn(["layers",layername])||I.Map()).isEmpty(); },
 	hasperformedcommand: function(state,command){ return !!state.getIn(["context","hasperformed"+command]); },
 	true: function(){ return true; },
 	false: function(){ return false; },
-	positionisinlist: function(state,pos,poslist){
-		return this.evaluatePositionList(state,poslist).contains(this.evaluatePosition(state,pos));
-	},
-	overlaps: function(state,layer1,layer2){
-		var otherlayer = state.getIn(["layers",layer2]);
-		return state.getIn(["layers",layer1]).some(function(entitylist,pos){
-			return otherlayer.has(pos);
-		});
-	},
 	truthy: function(state,def){ return !!this.evaluateValue(state,def); },
 	falsy: function(state,def){ return !this.evaluateValue(state,def); },
+	anyat: function(state,positionset,position){
+		var positionset = this.evaluatePositionSet(state,positionset),
+			position = this.evaluatePosition(state,position);
+		return positionset.has(position); // state.hasIn(["layers",layername,this.evaluatePosition(state,position)]);
+	},
+	noneat: function(state,positionset,position){
+		var positionset = this.evaluatePositionSet(state,positionset),
+			position = this.evaluatePosition(state,position);
+		return !positionset.has(position); //!state.hasIn(["layers",layername,this.evaluatePosition(state,position)]);
+	},
+	isempty: function(state,positionset){ return this.evaluatePositionSet(state,positionset).isEmpty(); }, //  (state.getIn(["layers",layername])||I.Map()).isEmpty(); },
+	notempty: function(state,positionset){ return !this.evaluatePositionSet(state,positionset).isEmpty(); },
+	overlaps: function(state,set1,set2){
+		var s1 = this.evaluatePositionSet(state,set1),
+			s2 = this.evaluatePositionSet(state,set2);
+		return !s1.intersect(s2).isEmpty();
+	}
 };
 
 Algol.evaluateBoolean = function(state,def){
@@ -188,6 +194,9 @@ var positionmethods = {
 };
 
 Algol.evaluatePosition = function(state,def){
+	if (state.hasIn(["gamedef","marks",def])){
+		return state.getIn(["marks",def]);
+	}
 	if (typeof def.first !== "function"){
 		console.log("THE HECK POS",state.toJS(),"def",def.toJS && def.toJS() || def)
 	}

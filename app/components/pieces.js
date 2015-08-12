@@ -3,36 +3,46 @@
 var React = require('react/addons'),
     ReactCSSTransitionGroup = React.addons.CSSTransitionGroup;
     Piece = require('./piece'),
-    I = require('../../src/immutableextensions');
+    I = require('../../src/immutableextensions'),
+    _ = require('lodash');
 
 var Pieces = React.createClass({
     render: function() {
         var state = this.props.state,
             graphics = state.getIn(["gamedef","graphics"]),
-            board = state.getIn(["layers","board"]);
+            board = state.getIn(["layers","board"]),
+            units;
+        units = graphics.get("icons").reduce(function(list,look,layer){
+            return list.concat((state.getIn(["layers",layer])||I.Map()).toList().reduce(function(list,arr,pos){
+                return list.concat(arr.map(function(u){
+                    return u.set("look",look).set("ident",u.get("id")||u.get("parentid")+u.get("suffix"));
+                }).toJS());
+            },[]));
+        },[]).sort(function(u1,u2){
+            return parseInt(u1.ident.replace(/unit/,'')) > parseInt(u2.ident.replace(/unit/,'')) ? 1 : -1;
+        });
+        var DOMS = _.map(units,function(entity){
+            var pos = entity.pos,
+                x = board.getIn([pos,0,"x"]),
+                y = board.getIn([pos,0,"y"]);
+            return <Piece
+                key = {entity.ident}
+                tileheight={this.props.tileheight} 
+                tilewidth={this.props.tilewidth}
+                x={x}
+                y={y}
+                icon={entity.look}
+                owner={entity.owner}
+                dir={entity.dir}
+            />;
+        },this);
         return (
             <div className="pieces">
                 <ReactCSSTransitionGroup transitionName="pieces">
-                    { graphics.get("icons").reduce(function(list,look,layer){
-                        return (state.getIn(["layers",layer])||I.Map()).reduce(function(list,arr,pos){
-                            var x = board.getIn([pos,0,"x"]), y = board.getIn([pos,0,"y"]);
-                            return arr.reduce(function(list,entity){
-                                return list.concat(<Piece
-                                    key = {entity.get("id") || entity.get("parentid")+entity.get("suffix")}
-                                    tileheight={this.props.tileheight} 
-                                    tilewidth={this.props.tilewidth}
-                                    x={x}
-                                    y={y}
-                                    icon={look}
-                                    owner={entity.get("owner")}
-                                    dir={entity.get("dir")}
-                                />);
-                            },list,this);
-                        },list,this);
-                    },[],this) }
+                    { DOMS }
                 </ReactCSSTransitionGroup>
             </div>
-        )
+        );
     }
 });
 

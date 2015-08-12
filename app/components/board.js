@@ -24,7 +24,7 @@ var Board = React.createClass({
     doCommand: function(cmnd){
         var newstate = Algol.performOption(this.state.state,cmnd);
         this.setState({"state":newstate});
-        console.log("NEW STATE",newstate.toJS());
+        //console.log("NEW STATE",newstate.toJS());
     },
     render: function() {
         var state = this.state.state;

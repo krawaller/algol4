@@ -47,12 +47,44 @@
 		"findkingwalktargets": {
 			"type": "walker",
 			"dirs": ["dirs",[1,2,3,4,5,6,7,8]],
-			"starts": ["markpos","selectking"],
+			"starts": ["union","mykings","selectunit"],
 			"blocks": "units",
 			"draw": {
 				"steps": {
 					"condition": ["noneat","nokings",["contextpos","target"]],
 					"tolayer": "kingwalk"
+				}
+			}
+		},
+		"findadjacentenemies": {
+			"type": "nextto",
+			"dirs": ["dirs",[1,2,3,4,5,6,7,8]],
+			"starts": "selectunit",
+			"condition": ["anyat","oppunits",["contextpos","target"]],
+			"draw": {
+				"target": {
+					"tolayer": "adjacentenemies",
+					"include": {
+						"dir": ["contextval","dir"]
+					}
+				}
+			}
+		},
+		"findjumptargets": {
+			"type": "nextto",
+			"starts": "adjacentenemies",
+			"dirs": ["relativedirs",["dirs",[1]],["lookup","adjacentenemies",["contextpos","start"],"dir"]],
+			"condition": ["noneat",["union","units",["ifelse",["anyat","mykings","selectunit"],"nokings","nosoldiers"]],["contextpos","target"]],
+			"draw": {
+				"start": {
+					"condition": ["truthy",["contextval","neighbourcount"]],
+					"tolayer": "willdie"
+				},
+				"target": {
+					"tolayer": "jumptargets",
+					"include": {
+						"dir": ["contextval","dir"]
+					}
 				}
 			}
 		}
@@ -62,46 +94,47 @@
 			"condition": ["morethan",3,["contextval","turn"]],
 			"from": ["subtract","board",["union","units","nokings"]]
 		},
-		"selectking": {
+		"selectunit": {
 			"condition": ["morethan",["contextval","turn"],2],
-			"from": "mykings",
-			"notifhasmark": ["selectsoldier"],
-			"rungenerators": ["findkingwalktargets"],
-			"cleanse": ["kingwalk"],
-			"requiredby": ["selectkingtarget"]
+			"from": "myunits",
+			"rungenerators": ["findkingwalktargets","findadjacentenemies","findjumptargets"],
+			"cleanse": ["kingwalk","adjacentenemies","jumptargets","willdie"],
+			"requiredby": ["selectmovetarget","selectjumptarget"]
 		},
-		"selectkingtarget": {
-			"requiredmarks": ["selectking"],
-			"from": "kingwalk"
+		"selectmovetarget": {
+			"requiredmarks": ["selectunit"],
+			"from": ["ifelse",["anyat","mykings","selectunit"],"kingwalk",["subtract","board",["union","units",["union","nosoldiers","jumptargets"]]]],
+			"notifhasmark": ["selectjumptarget"]
 		},
-		"selectsoldier": {
-			"condition": ["morethan",["contextval","turn"],2],
-			"notifhasmark": ["selectking"],
-			"from": "mysoldiers",
-			"requiredby": ["selectsoldiertarget"]
-		},
-		"selectsoldiertarget": {
-			"requiredmarks": ["selectsoldier"],
-			"from": ["subtract","board",["union","units","nosoldiers"]]
+		"selectjumptarget": {
+			"requiredmarks": ["selectunit"],
+			"from": "jumptargets",
+			"notifhasmark": ["selectmovetarget"]
 		}
 	},
 	"commands": {
 		"deployking": {
 			"neededmarks": ["selectkingdeploy"],
-			"effect": ["spawnunit",["markpos","selectkingdeploy"],"kings",{"owner":["contextval","currentplayer"]}]
+			"effect": ["spawnunit","selectkingdeploy","kings",{"owner":["contextval","currentplayer"]}]
 		},
-		"moveking": {
-			"neededmarks": ["selectkingtarget"],
-			"effect": ["moveunit",["idofunitat",["markpos","selectking"]],["markpos","selectkingtarget"]]
+		"move": {
+			"neededmarks": ["selectunit","selectmovetarget"],
+			"effect": ["moveunit",["idofunitat","selectunit"],"selectmovetarget"]
 		},
-		"movesoldier": {
-			"neededmarks": ["selectsoldiertarget"],
-			"effect": ["moveunit",["idofunitat",["markpos","selectsoldier"]],["markpos","selectsoldiertarget"]]
+		"jump": {
+			"neededmarks": ["selectunit","selectjumptarget"],
+			"effect": ["multieffect",[
+				["killunit",["idofunitat",["firstposin","willdie"]]],
+				["moveunit",["idofunitat","selectunit"],"selectjumptarget"]
+			]]
 		}
 	},
 	"endturn": {
 		"condition": ["truthy",["contextval","performedsteps"]],
 		"commandcap": true,
-		"endgame": {}
+		"endgame": {
+			"infiltration": { "condition": ["overlaps","mykings","opphomerow"], "result": "win" },
+			"kingkill": { "condition": ["notempty","oppdeadkings"], "result": "win" }
+		}
 	}
 }
