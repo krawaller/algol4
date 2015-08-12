@@ -1,8 +1,13 @@
 {
+	"name": "Castle",
 	"source": "http://www.di.fc.ul.pt/~jpn/gv/castle.htm",
 	"board": {
 		"width": 19,
 		"height": 19
+	},
+	"graphics": {
+		"tiles": {"walls":"castle","thrones":"grass"},
+		"icons": {"soldiers":"soldiers"}
 	},
 	"terrain": {
 		"walls": [
@@ -14,5 +19,87 @@
 			["rectangle",14009,14011],{"pos":18009},{"pos":18011}
 		],
 		"thrones": [{"pos":4010,"owner":1},{"pos":16010,"owner":2}]
+	},
+	"setup": {
+		"soldiers": [
+			["positions",[1006,1014,2008,2012,6008,6012,8003,8017],{"owner":1}],
+			["positions",[19006,19014,18008,18012,14008,14012,12003,12017],{"owner":2}]
+		]
+	},
+	"generators": {
+		"findhops": {
+			"type": "nextto",
+			"starts": "selectunit",
+			"dirs": ["dirs",[1,3,5,7]],
+			"condition": ["or",[
+				["and",[ ["anyat","walls",["contextpos","start"]],["noneat","walls",["contextpos","target"]] ]],
+				["and",[ ["noneat","walls",["contextpos","start"]],["anyat","walls",["contextpos","target"]] ]]
+			]],
+			"draw": {
+				"target": {
+					"tolayer": ["ifelse",["anyat","oppunits",["contextpos","target"]],"killtargets","movetargets"]
+				}
+			}
+		},
+		"findslides": {
+			"type": "walker",
+			"dirs": ["dirs",[1,3,5,7]],
+			"starts": "selectunit",
+			"steps": ["ifelse",["anyat","walls",["contextpos","start"]],"walls",["subtract","board",["union","walls","mythrones"]]],
+			"blocks": "units",
+			"draw": {
+				"steps": {
+					"tolayer": "movetargets"
+				},
+				"block": {
+					"condition": ["anyat","oppunits",["contextpos","target"]],
+					"tolayer": "killtargets"
+				}
+			}
+		}
+	},
+	"marks": {
+		"selectunit": {
+			"from": "myunits",
+			"rungenerators": ["findhops","findslides"],
+			"cleanse": ["movetargets","killtargets"],
+			"requiredby": ["selectmovetarget","selectkilltarget"]
+		},
+		"selectmovetarget": {
+			"requires": ["selectunit"],
+			"from": "movetargets",
+			"notifhasmark": ["selectkilltarget"]
+		},
+		"selectkilltarget": {
+			"requires": ["selectunit"],
+			"from": "killtargets",
+			"notifhasmark": ["selectmovetarget"]
+		}
+	},
+	"commands": {
+		"move": {
+			"neededmarks": ["selectunit","selectmovetarget"],
+			"effect": ["moveunit",["idofunitat","selectunit"],"selectmovetarget"]
+		},
+		"kill": {
+			"neededmarks": ["selectunit","selectkilltarget"],
+			"effect": ["multieffect",[
+				["killunit",["idofunitat","selectkilltarget"]],
+				["moveunit",["idofunitat","selectunit"],"selectkilltarget"]
+			]]
+		}
+	},
+	"endturn": {
+		"condition": ["truthy",["contextval","performedsteps"]],
+		"commandcap": true,
+		"endgame": {
+			"infiltration": { "condition": ["overlaps","myunits","oppthrones"], "result": "win" },
+			"genocide": { "condition": ["isempty","oppunits"], "result": "win" }
+		}
 	}
 }
+
+
+
+
+
