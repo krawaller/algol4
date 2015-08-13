@@ -1,8 +1,102 @@
 {
 	"name": "Pawnographic chess",
 	"board": { "height": 8, "width": 8 },
-	"setup": { "pawns":[ ["rectangle",2001,2008,{"owner":1,"dir":5}], ["rectangle",7001,7008,{"owner":2}] ] },
+	"graphics": {
+		"tiles": {"bases":"grass"}, "icons": {"pawns":"pawns"}
+	},
+	"setup": { "pawns":[ ["rectangle",2001,2008,{"owner":1,"dir":5}], ["rectangle",7001,7008,{"owner":2,"dir":1}] ] },
 	"terrain": {
-		"homerow": [ ["rectangle",2001,2008,{"owner":1}], ["rectangle",7001,7008,{"owner":2}] ]
+		"startrows": [ ["rectangle",2001,2008,{"owner":1}], ["rectangle",7001,7008,{"owner":2}] ],
+		"bases": [ ["rectangle",1001,1008,{"owner":1}], ["rectangle",8001,8008,{"owner":2}] ]
+	},
+	"startturn": {
+		"rungenerators": ["findoppshadows"],
+		"applyeffect": ["forallin","myunits",["removeunitdata",["loopid"],"turbo"]]
+	},
+	"endturn": {
+		"condition": ["truthy",["contextval","performedsteps"]],
+		"commandcap": true,
+		"endgame": {
+			"infiltration": {"condition": ["overlaps","myunits","oppbases"], "result": "win" },
+			"genocide": {"condition": ["isempty","oppunits"], "result": "win"}
+		}
+	},
+	"commands": {
+		"move": {
+			"requiredmarks": ["selectunit","selectmove"],
+			"effect": ["multieffect",[
+				["if",["same",2,["lookup","movetargets","selectmove","step"]],
+					["setunitdata",["idofunitat","selectunit"],"turbo",true]
+				],
+				["moveunit",["idofunitat","selectunit"],"selectmove"]
+			]]
+		},
+		"kill": {
+			"requiredmarks": ["selectunit","selectkill"],
+			"effect": ["multieffect",[
+				["ifelse",
+					["anyat","oppshadows","selectkill"],
+					["killunit",["id",["lookup","oppshadows","selectkill","id"]]],
+					["killunit",["idofunitat","selectkill"]]
+				],
+				["moveunit",["idofunitat","selectunit"],"selectkill"]
+			]]
+		}
+	},
+	"marks": {
+		"selectunit": {
+			"from": "myunits",
+			"rungenerators": ["findwalktargets","findkilltargets"],
+			"cleanse": ["movetargets","killtargets"],
+			"requiredby": ["selectmove","selectkill"]
+		},
+		"selectmove": {
+			"from": "movetargets",
+			"notifhasmark": ["selectkill"],
+			"requiredmarks": ["selectunit"]
+		},
+		"selectkill": {
+			"from": "killtargets",
+			"notifhasmark": ["selectmove"],
+			"requiredmarks": ["selectunit"]
+		}
+	},
+	"generators": {
+		"findwalktargets": {
+			"type": "walker",
+			"starts": "selectunit",
+			"max": ["ifelse",["anyat","startrows",["contextpos","start"]],2,1],
+			"blocks": "units",
+			"dirs": ["relativedirs",["dirs",[1]],["lookup","units",["contextpos","start"],"dir"]],
+			"draw": {
+				"steps": {
+					"tolayer": "movetargets",
+					"include": { "step": ["contextval","step"] }
+				}
+			}
+		},
+		"findoppshadows": {
+			"type": "nextto",
+			"starts": "oppunits",
+			"dirs": ["relativedirs",["dirs",[5]],["lookup","units",["contextpos","start"],"dir"]],
+			"condition": ["truthy",["lookup","oppunits",["contextpos","start"],"turbo"]],
+			"draw": {
+				"target": {
+					"tolayer": "oppshadows",
+					"include": {"id":["idofunitat",["contextpos","start"]]}	
+				}
+			}
+		},
+		"findkilltargets": {
+			"type": "nextto",
+			"starts": "selectunit",
+			"dirs": ["relativedirs",["dirs",[8,2]],["lookup","units",["contextpos","start"],"dir"]],
+			"condition": ["anyat",["union","oppunits","oppshadows"],["contextpos","target"]],
+			"draw": {
+				"target": {
+					"tolayer": "killtargets"
+				}
+			}
+		}
 	}
 }

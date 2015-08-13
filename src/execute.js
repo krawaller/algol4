@@ -21,6 +21,9 @@ var effectmethods = {
 	setunitdata: function(state,id,propname,val){
 		return state.setIn(["data","units",this.evaluateId(state,id),this.evaluateValue(state,propname)],this.evaluateValue(state,val));
 	},
+	removeunitdata: function(state,id,propname){
+		return state.deleteIn(["data","units",this.evaluateId(state,id),this.evaluateValue(state,propname)]);
+	},
 	swapunitpositions: function(state,id1,id2){
 		id1 = this.evaluateId(state,id1);
 		id2 = this.evaluateId(state,id2);
@@ -48,7 +51,13 @@ var effectmethods = {
 	addtocontextval: function(state,prop,val){
 		var propname = this.evaluateValue(state,prop);
 		return state.setIn(["context",propname],this.evaluateValue(state,val)+(state.getIn(["context",propname])||0));
-	} // TODO - add spawnunit
+	},
+	if: function(state,bool,effect){
+		return this.evaluateBoolean(state,bool) ? this.applyEffect(state,effect) : state;
+	},
+	ifelse: function(state,bool,e1,e2){
+		return this.applyEffect(state,this.evaluateBoolean(state,bool) ? e1 : e2);
+	}
 };
 
 // returns an updated state

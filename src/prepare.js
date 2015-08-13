@@ -49,13 +49,19 @@ Used in prepareNewGameState
 Algol.prepareBaseLayers = function(gamedef,nbrofplayers){
 	var parsedterrains = (gamedef.get("terrain")||I.Map()).map(this.prepareEntitiesFromList,this);
 	var base = this.prepareBoardLayersFromBoardDef(gamedef.get("board"));
+	// add noterrain
 	base = base.set("noterrain",parsedterrains.reduce(function(mem,layer,layername){
-		//console.log("nterraining",layername,"layer",layer.toJS());
 		return layer.reduce(function(mem,val,key){
-			//console.log("removing key",key,"val was",val);
 			return mem.delete(val.get("pos"));
 		},mem)
 	},base.get("board")));
+	// add nolayers
+	base = parsedterrains.reduce(function(mem,list,layername){
+		return mem.set("no"+layername,list.reduce(function(mem,val,key){
+			return mem.delete(val.get("pos"));
+		},base.get("board")))
+	},base);
+	// personalise and return
 	return _.reduce(_.range(1,nbrofplayers+1),function(mem,plr){
 		return mem.set(plr,this.addPersonalisedTerrainVersions(base,parsedterrains,plr));
 	},I.Map(),this);

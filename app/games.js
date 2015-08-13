@@ -7,4 +7,5 @@ module.exports = {
     conquest: I.fromJS(require("../games/conquest.json")),
     gogol: I.fromJS(require("../games/gogol.json")),
     castle: I.fromJS(require("../games/castle.json")),
+    pawnographic: I.fromJS(require("../games/pawnographic.json"))
 };

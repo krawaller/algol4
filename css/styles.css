@@ -28,9 +28,9 @@ a.square {
 
 .square {
 	position: absolute;
-	-webkit-transition: top 0.5s, left 0.5s;
-	-moz-transition: top 0.5s, left 0.5s;
-	transition: top 0.5s, left 0.5s;
+	-webkit-transition: top 0.35s, left 0.35s;
+	-moz-transition: top 0.35s, left 0.35s;
+	transition: top 0.35s, left 0.35s;
 }
 
 .square > div {

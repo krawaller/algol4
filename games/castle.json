@@ -42,7 +42,7 @@
 			"type": "walker",
 			"dirs": ["dirs",[1,3,5,7]],
 			"starts": "selectunit",
-			"steps": ["ifelse",["anyat","walls",["contextpos","start"]],"walls",["subtract","board",["union","walls","mythrones"]]],
+			"steps": ["ifelse",["anyat","walls",["contextpos","start"]],"walls",["subtract","nowalls","mythrones"]],
 			"blocks": "units",
 			"draw": {
 				"steps": {

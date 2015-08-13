@@ -24,8 +24,8 @@ Algol.generateNeighbourPods = function(state,def){
 	return ret;
 };
 
-function stopreason(state,def,dir,pos,length,blocks,steps,prioblocks){
-	if (def.get("max") && length === def.get("max")) {
+function stopreason(state,max,dir,pos,length,blocks,steps,prioblocks){
+	if (max && length === max) {
 		return "reachedmax";
 	} else {
 		var nextpos = (state.getIn(["connections",pos,dir])||state.getIn(["connections",pos,dir+""]));
@@ -46,8 +46,9 @@ Algol.generateWalkerPodsInDir = function(startstate,def,recorder,startpos,dir){
 		blocks = def.has("blocks") && this.evaluatePositionSet(startstate,def.get("blocks")),
 		steps = def.has("steps") && this.evaluatePositionSet(startstate,def.get("steps")),
 		tobecounted = def.has("count") && this.evaluatePositionSet(startstate,def.get("count")),
-		prevcounttotal = 0, counttrack = [];
-	while(!(reason=stopreason(startstate,def,dir,pos,walk.length,blocks,steps,def.get("prioritizeblocksoversteps")))){
+		prevcounttotal = 0, counttrack = [],
+		max = def.has("max") ? this.evaluateValue(startstate,def.get("max")) : undefined;
+	while(!(reason=stopreason(startstate,max,dir,pos,walk.length,blocks,steps,def.get("prioritizeblocksoversteps")))){
 		walk.push(pos = startstate.getIn(["connections",pos,dir])||startstate.getIn(["connections",pos,dir+""]));
 		if (tobecounted){
 			counttrack.push(prevcounttotal = (prevcounttotal + (tobecounted.contains(pos)?1:0)));

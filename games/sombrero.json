@@ -32,7 +32,9 @@
 		"selectswap": {
 			"from": "swaptarget",
 			"notwith": ["selectmove"],
-			"requiredmarks": ["selectking"]
+			"requiredmarks": ["selectking"],
+			"cleanse": ["demoted"],
+			"rungenerators": ["finddemotees"]
 		},
 		"selectmove": {
 			"from": "movetarget",
@@ -103,9 +105,9 @@
 		"finddemotees": {
 			"type": "walker",
 			"dirs": ["dirs",[1,2,3,4,5,6,7,8]],
-			"starts": ["markpos","selectmove"],
+			"starts": ["union","selectmove","selectswap"],
 			"steps": "oppunits",
-			"blocks": "mykings",
+			"blocks": ["subtract","mykings","selectking"],
 			"prioritizeblocksoversteps":true,
 			"draw": {
 				"steps": {
