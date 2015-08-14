@@ -57,6 +57,17 @@ var effectmethods = {
 	},
 	ifelse: function(state,bool,e1,e2){
 		return this.applyEffect(state,this.evaluateBoolean(state,bool) ? e1 : e2);
+	},
+	offsetunit: function(state,id,dir,dist){
+		id = this.evaluateId(state,id);
+		dir = this.evaluateValue(state,dir);
+		dist = this.evaluateValue(state,dist) || 1;
+		var pos = state.getIn(["data","units",id,"pos"]);
+		while(dist && state.hasIn(["connections",pos,dir])){
+			pos = state.getIn(["connections",pos,dir]);
+			dist--;
+		}
+		return state.setIn(["data","units",id,"pos"],pos);
 	}
 };
 

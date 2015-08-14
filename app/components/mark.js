@@ -6,7 +6,7 @@ var Mark = React.createClass({
     render: function() {
         var p = this.props, css = {
             height: p.tileheight+"%",
-            width: p.tileheight+"%",
+            width: p.tilewidth+"%",
             top: (p.y-1)*p.tileheight+"%",
             left: (p.x-1)*p.tilewidth+"%"
         };

@@ -1,103 +1,89 @@
 {
+	"name": "Epaminondas",
 	"source": "https://boardgamegeek.com/filepage/55902/epaminondas-rules-nestorgames",
-	"board": {
-		"shape": "square",
-		"height": 12,
-		"width": 14
-	},
-	"setup": [
-		["rectangle",[1001,2014],{"owner":1}],
-		["rectangle",[11012,12014],{"owner":2}]
-	],
-	"terrain": {
-		"bases": [
-			["rectangle",[1001,2014],{"owner":1}],
-			["rectangle",[11012,12014],{"owner":2}]
-		]
-	},
+	"board": { "height": 12, "width": 14 },
+	"graphics": { "tiles": {"bases":"grass"}, "icons": {"soldiers":"soldiers"} },
+	"setup": { "soldiers": [ ["rectangle",1001,2014,{"owner":1}], ["rectangle",11001,12014,{"owner":2}] ] },
+	"terrain": { "bases": [ ["rectangle",1001,1014,{"owner":1}], ["rectangle",12001,12014,{"owner":2}] ] },
 	"marks": {
 		"selecthead": {
 			"from": "myunits",
-			"hydration": ["findimmediatetargets","finddueltargets","findpotentialtails"],
-			"cleanse": ["movetarget","dueltarget","potentialtail"]
+			"rungenerators": ["findimmediatetargets","findpotentialtails"],
+			"requiredby": ["selecttail","selectmove","selectcharge","selectmarch"],
+			"cleanse": ["movetarget","potentialtail"],
+			"requiredby": ["selecttail","selectmove"]
 		},
 		"selecttail": {
 			"from": "potentialtail",
-			"hydration": ["findphalanxmembers","findmarchandchargetargets","findopposingphalanx"],
-			"cleanse": ["phalanxmember","phalanxend","chargetarget","opposingphalanx"]
+			"rungenerators": ["findphalanxmembers","findmarchandchargetargets","findopposingphalanx"],
+			"notifhasmark": ["selectmove"],
+			"cleanse": ["phalanxmember","phalanxend","marchtarget","chargetarget","opposingphalanx"],
+			"requiredmarks": ["selecthead"],
+			"requiredby": ["selectcharge","selectmarch"]
 		},
 		"selectmove": {
 			"from": "movetarget",
-			"notwith": ["selecttail","selectcharge","selectmarch","selectduel"]
+			"notifhasmark": ["selecttail"],
+			"requiredmarks": ["selecthead"]
 		},
 		"selectcharge": {
 			"from": "chargetarget",
-			"notwith": ["selectmarch","selectmove","selectduel"],
-			"hydration": ["findchargevictims"],
-			"cleanse": ["chargevictims"]
+			"notwith": ["selectmarch","selectmove"],
+			"rungenerators": ["findchargevictims"],
+			"cleanse": ["chargevictims"],
+			"requiredmarks": ["selecthead","selecttail"]
 		},
 		"selectmarch": {
 			"from": "marchtarget",
-			"notwith": ["selectcharge","selectmove","selectduel"]
+			"notifhasmark": ["selectcharge"],
+			"requiredmarks": ["selecthead","selecttail"]
 		}
 	},
 	"commands": {
 		"move": {
 			"requiredmarks": ["selecthead","selectmove"],
-			"effects": [
-				["moveunit",["idofunitat",["markpos","selecthead"]],["markpos","selectmove"]]
-			]
+			"effect": ["moveunit",["idofunitat","selecthead"],"selectmove"]
 		},
 		"march": {
 			"requiredmarks": ["selecthead","selecttail","selectmarch"],
-			"effects": [
-				["forallin","phalanxmember",
-					["OFFSETUNIT",["loopid"],
-						["lookup","marchtarget",["markpos","selectmarch"],"heading"],
-						["lookup","marchtarget",["markpos","selectmarch"],"strength",
-						0]]
-				]
+			"effect": ["forallin","phalanxmember",
+				["offsetunit",["loopid"],
+					["lookup","marchtarget",["markpos","selectmarch"],"heading"],
+					["lookup","marchtarget",["markpos","selectmarch"],"distance",
+					0]]
 			]
 		},
 		"charge": {
 			"requiredmarks": ["selecthead","selecttail","selectcharge"],
-			"effects": [
-				["forallin","phalanxmember",
-					["OFFSETUNIT",["loopid"],
-						["lookup","marchtarget",["markpos","selectcharge"],"heading"],
-						["lookup","marchtarget",["markpos","selectcharge"],"strength",
-						0]]
-				],
+			"effect": ["multieffect",[
 				["forallin","chargevictims",
 					["killunit",["loopid"]]
+				],
+				["forallin","phalanxmember",
+					["offsetunit",["loopid"],
+						["lookup","chargetarget",["markpos","selectcharge"],"heading"],
+						["lookup","chargetarget",["markpos","selectcharge"],"distance",
+						0]]
 				]
-			]	
+			]]
 		}
 	},
 	"startturn": {
-		"hydration": []
 	},
 	"endturn": {
-		"condition":["same",["contextval","performedsteps"],["val",2]],
+		"condition":["same",["contextval","performedsteps"],1],
 		"commandcap": true,
 		"endgame": {
 			"dominance": {
-				"hydration": ["findinfiltrators"],
 				"condition": ["morethan",
-					["positionsin","myinfiltrators"],
-					["positionsin","oppinfiltrators"]
-				]
+					["positionsin",["intersect","myunits","oppbases"]],
+					["positionsin",["intersect","oppunits","mybases"]]
+				],
+				"result": "win"
 			}
 		}
 	},
 	"generators": {
-		"findinfiltrators": {
-			"type": "filter",
-			"layer": "bases",
-			"condition": ["anyat","units",["contextpos","start"]],
-			"matching": {"owner":["isnt",["lookup","units",["contextpos","start"],"owner"]]},
-			"tolayer": ["ifelse",["anyat","myunits",["contextpos","start"]],"myinfiltrators","oppinfiltrators"]
-		},
 		"findchargevictims": {
 			"type": "filter",
 			"layer": "opposingphalanx",
@@ -105,9 +91,9 @@
 			"tolayer": "chargevictims"
 		},
 		"findimmediatetargets": {
-			"type": "neighbour",
+			"type": "nextto",
 			"dirs": ["dirs",[1,2,3,4,5,6,7,8]],
-			"starts": ["markpos","selecthead"],
+			"starts": "selecthead",
 			"draw": {
 				"target": {
 					"condition": ["noneat","units",["contextpos","target"]],
@@ -121,10 +107,10 @@
 		"findpotentialtails": {
 			"type": "walker",
 			"dirs": ["dirs",[1,2,3,4,5,6,7,8]],
-			"starts": ["markpos","selecthead"],
-			"steplayer": "myunits",
+			"starts": "selecthead",
+			"steps": "myunits",
 			"draw": {
-				"step": {
+				"steps": {
 					"tolayer": "potentialtail",
 					"include": {
 						"headdirection": ["contextval","dir"]
@@ -134,22 +120,22 @@
 		},
 		"findphalanxmembers": {
 			"type":"walker",
-			"dir": ["relativedir",["val",5],["lookup","potentialtail",["markpos","selecttail"],"headdirection"]],
-			"starts": ["markpos","selecttail"],
-			"stoplayer": "selecthead",
+			"dirs": ["relativedirs",["dirs",[5]],["lookup","potentialtail","selecttail","headdirection"]],
+			"starts": "selecttail",
+			"blocks": "selecthead",
 			"draw": {
 				"start": {
 					"tolayer": "phalanxend",
 					"include": {
-						"facing": ["lookup","potentialtail",["markpos","selecttail"],"headdirection"],
-						"strength": ["contextval","LENGTH"]
+						"facing": ["lookup","potentialtail","selecttail","headdirection"],
+						"strength": ["sum",1,["contextval","linelength"]]
 					}
 				},
-				"stop": {
+				"block": {
 					"tolayer": "phalanxend",
 					"include": {
 						"facing": ["contextval","dir"],
-						"strength": ["contextval","LENGTH"]
+						"strength": ["sum",1,["contextval","linelength"]]
 					}
 				},
 				"all": {
@@ -159,23 +145,25 @@
 		},
 		"findmarchandchargetargets": {
 			"type": "walker",
-			"starts": ["allposinlayer","phalanxend"],
-			"dir": ["lookup","phalanxend",["contextpos","start"],"facing"],
-			"stoplayer": "units",
-			"max": ["sum",["val",1],["lookup","phalanxend",["contextpos","start"],"strength"]],
+			"starts": "phalanxend",
+			"dirs": ["dir",["lookup","phalanxend",["contextpos","start"],"facing"]],
+			"blocks": "units",
+			"max": ["sum",1,["lookup","phalanxend",["contextpos","start"],"strength"]],
 			"draw": {
-				"step": {
+				"steps": {
 					"tolayer": "marchtarget",
 					"include": {
 						"strength": ["lookup","phalanxend",["contextpos","start"],"strength"],
+						"distance": ["contextval","step"],
 						"heading": ["contextval","dir"]
 					}
 				},
-				"stop": {
+				"block": {
 					"condition": ["anyat","oppunits",["contextpos","target"]],
 					"tolayer": "threatened",
 					"include": {
 						"strength": ["lookup","phalanxend",["contextpos","start"],"strength"],
+						"distance": ["sum",1,["contextval","linelength"]],
 						"heading": ["contextval","dir"]
 					}
 				}
@@ -183,15 +171,16 @@
 		},
 		"findopposingphalanx": {
 			"type": "walker",
-			"starts": ["allposinlayer","threatened"],
-			"dir": ["lookup","threatened",["contextpos","start"],"heading"],
-			"steplayer": "oppunits",
+			"starts": "threatened",
+			"dirs": ["dir",["lookup","threatened",["contextpos","start"],"heading"]],
+			"steps": "oppunits",
 			"draw": {
 				"start": {
-					"condition": ["morethan",["lookup","threatened",["contextpos","start"],"strength"],["contextval","LENGTH"]],
+					"condition": ["morethan",["lookup","threatened",["contextpos","start"],"strength"],["contextval","linelength"]],
 					"tolayer": "chargetarget",
 					"include": {
-						"heading": ["contextval","dir"]
+						"heading": ["contextval","dir"],
+						"distance": ["lookup","threatened",["contextpos","start"],"distance"]
 					}
 				},
 				"all": {

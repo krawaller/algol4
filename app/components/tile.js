@@ -6,7 +6,7 @@ var Tile = React.createClass({
     render: function() {
         var css = {
             height: this.props.tileheight+"%",
-            width: this.props.tileheight+"%",
+            width: this.props.tilewidth+"%",
             top: (this.props.y-1)*this.props.tileheight+"%",
             left: (this.props.x-1)*this.props.tilewidth+"%"
         };

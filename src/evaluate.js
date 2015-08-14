@@ -15,6 +15,9 @@ var dirlistmethods = {
 		return this.evaluateDirList(state,dirs).map(function(d){ return [1,2,3,4,5,6,7,8,1,2,3,4,5,6,7,8][rd-2+d]; });
 	},
 	ifelse: function(state,cond,val1,val2){ return this.evaluateDirList(state, this.evaluateBoolean(state,cond) ? val1 : val2); },
+	dir: function(state,dir){
+		return I.List([this.evaluateValue(state,dir)]);
+	}
 };
 
 Algol.evaluateDirList = function(state,def){
@@ -152,7 +155,7 @@ var valuemethods = {
 	val: function(state,raw){ return raw; },
 	layername: function(state,raw){ return raw; },
 	contextval: function(state,ctxvalname){ return state.getIn(["context",this.evaluateValue(state,ctxvalname)]); },
-	positionsin: function(state,layername){ return state.getIn(["layers",layername]).size; },
+	positionsin: function(state,positionset){ return this.evaluatePositionSet(state,positionset).size; },
 	ifelse: function(state,cond,val1,val2){ return this.evaluateValue(state, this.evaluateBoolean(state,cond) ? val1 : val2); },
 	lookup: function(state,layername,position,prop){ return state.getIn(["layers",layername,this.evaluatePosition(state,position),0,prop]); },
 	idofunitat: idmethods.idofunitat,

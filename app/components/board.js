@@ -32,15 +32,19 @@ var Board = React.createClass({
             height = state.getIn(["gamedef","board","height"]),
             width = state.getIn(["gamedef","board","width"]),
             tileheight = 100/height,
-            tilewidth = 100/width;
+            tilewidth = 100/width,
+            style = {
+                height: height*40+"px;",
+                width: width*40+"px;"
+            };
         return (
             <div>
                 <Status state={state} />
-                <div className="board">
+                <div className="board" style={style}>
                     <Terrain state={this.state.terrainstate} tileheight={tileheight} tilewidth={tilewidth} />
                     <Pieces state={state} tileheight={tileheight} tilewidth={tilewidth} />
                     <Marks state={state} tileheight={tileheight} tilewidth={tilewidth} broadcaster={this.doCommand} />
-                    <Controls state={state} top={tileheight*height} broadcaster={this.doCommand} />
+                    <Controls state={state} top={40*height+"px;"} broadcaster={this.doCommand} />
                 </div>
             </div>
         );

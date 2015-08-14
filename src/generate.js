@@ -167,7 +167,7 @@ Algol.paintSeedPod = function(state,painter,pod){
 // Pods is with named pods, names corresponding to (some of) the painter names
 Algol.paintSeedPods = function(state,draw,pods){
 	return draw.reduce(function(state,painter,name){
-		return pods.has(name) ? this.paintSeedPod(state,painter,pods.get(name)) : state;
+		return pods.get(name) ? this.paintSeedPod(state,painter,pods.get(name)) : state;
 	},state,this);
 };
 

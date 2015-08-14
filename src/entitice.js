@@ -61,7 +61,7 @@ Algol.addEntitiesFromDef = function(coll,def){
 			topleft = parseInt(def.get(1));
 			bottomright = parseInt(def.get(2));
 			return rect =  _.reduce(_.range(Math.floor(topleft/1000),Math.floor(bottomright/1000)+1),function(mem,r){
-				return _.reduce(_.range(topleft % 1000,bottomright % 1000+1),function(mem,c){
+				return _.reduce(_.range(topleft % 1000,(bottomright % 1000)+1),function(mem,c){
 					return mem.push(blueprint.set("pos",r*1000+c));
 				},mem);
 			},coll);
