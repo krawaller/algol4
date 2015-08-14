@@ -4,7 +4,7 @@
 	"board": {"height": 9,"width": 9},
 	"graphics": {
 		"tiles": {"plus":"castle","x":"castle","center":"grass"},
-		"icons": { "soldiers":"soldiers","kings":"kings" }
+		"icons": { "soldiers":"pawns","kings":"kings" }
 	},
 	"terrain": {
 		"center": [{"pos":5005}],

@@ -4,6 +4,22 @@ var React = require('react');
 
 var Piece = React.createClass({
     render: function() {
+        var fullicons = {
+            pawns: "♟",
+            knights: "♞",
+            bishops: "♝",
+            rooks: "♜",
+            queens: "♛",
+            kings: "♚"
+        };
+        var lineicons = {
+            pawns: "♙",
+            knights: "♘",
+            bishops: "♗",
+            rooks: "♖",
+            queens: "♕",
+            kings: "♔"
+        };
         var p = this.props, css = {
             height: p.tileheight+"%",
             width: p.tilewidth+"%",
@@ -11,7 +27,10 @@ var Piece = React.createClass({
             left: (p.x-1)*p.tilewidth+"%"
         };
         return ( <div style={css} className="square">
-        	<div className={"piece dir"+(p.dir||1)+" owner"+(p.owner||0)+" "+(p.icon==="projectiles"?"projectiles":"")}><span>{p.icon.substr(0,1).toUpperCase()}</span></div>
+        	<div className={"piece dir"+(p.dir||1)+" owner"+(p.owner||0)+" "+(p.icon==="projectiles"?"projectiles":"")}>
+                <span>{fullicons[p.icon]||''}</span>
+                <span className="background">{lineicons[p.icon]||''}</span>
+            </div>
         </div>);
     }
 });

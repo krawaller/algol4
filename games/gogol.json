@@ -8,7 +8,7 @@
 	},
 	"graphics": {
 		"tiles": {"homerow":"castle"},
-		"icons": {"kings":"kings","soldiers":"soldiers"}
+		"icons": {"kings":"kings","soldiers":"pawns"}
 	},
 	"setup": {
 		"soldiers": [ ["rectangle",1001,1008,{"owner":2}], ["rectangle",8001,8008,{"owner":1}] ]

@@ -2,7 +2,7 @@
 	"name": "Epaminondas",
 	"source": "https://boardgamegeek.com/filepage/55902/epaminondas-rules-nestorgames",
 	"board": { "height": 12, "width": 14 },
-	"graphics": { "tiles": {"bases":"grass"}, "icons": {"soldiers":"soldiers"} },
+	"graphics": { "tiles": {"bases":"grass"}, "icons": {"soldiers":"pawns"} },
 	"setup": { "soldiers": [ ["rectangle",1001,2014,{"owner":1}], ["rectangle",11001,12014,{"owner":2}] ] },
 	"terrain": { "bases": [ ["rectangle",1001,1014,{"owner":1}], ["rectangle",12001,12014,{"owner":2}] ] },
 	"marks": {
