@@ -2,7 +2,7 @@
 	"name": "Sombrero",
 	"source": "http://www.di.fc.ul.pt/~jpn/gv/sombrero.htm",
 	"graphics": {
-		"icons": {"soldiers":"soldiers","kings":"kings"},
+		"icons": {"soldiers":"pawns","kings":"kings"},
 		"turnvars": { "movesleft": "moves left" }
 	},
 	"board": { "height": 8, "width": 8 },
