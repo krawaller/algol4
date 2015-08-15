@@ -8,5 +8,11 @@
   </head>
   <body>
     <script type="text/javascript" src="app.js"></script>
+    <script type="text/javascript" src="./lib/fastclick.js"></script>
+    <script type="text/javascript">
+    window.addEventListener('load', function () {
+        FastClick.attach(document.body);
+    }, false);
+    </script>
   </body>
 </html>
