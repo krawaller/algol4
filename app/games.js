@@ -9,5 +9,6 @@ module.exports = {
     castle: I.fromJS(require("../games/castle.json")),
     pawnographic: I.fromJS(require("../games/pawnographic.json")),
     epaminondas: I.fromJS(require("../games/epaminondas.json")),
-    breakthru: I.fromJS(require("../games/breakthru.json"))
+    breakthru: I.fromJS(require("../games/breakthru.json")),
+    cannon: I.fromJS(require("../games/cannon.json"))
 };

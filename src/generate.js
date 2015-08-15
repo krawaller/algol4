@@ -113,6 +113,7 @@ Algol.applyGenerator = function(state,def){
 
 Algol.applyGeneratorList = function(state,list){
 	return list.reduce(function(state,generatorname){
+		//console.log("runnning generator",generatorname);
 		return this.applyGenerator(state,state.getIn(["gamedef","generators",generatorname]));
 	},state,this);
 };

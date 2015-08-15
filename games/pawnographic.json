@@ -1,5 +1,6 @@
 {
 	"name": "Pawnographic chess",
+	"source": "http://www.di.fc.ul.pt/~jpn/gv/pawnographic.htm",
 	"board": { "height": 8, "width": 8 },
 	"graphics": {
 		"tiles": {"bases":"grass"}, "icons": {"pawns":"pawns"}
