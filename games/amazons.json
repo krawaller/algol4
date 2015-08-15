@@ -2,7 +2,7 @@
 	"name": "Amazons",
 	"source": "http://www.chessvariants.org/other.dir/amazons.html",
 	"graphics": {
-		"icons": { "queens": "queens", "fires": "fires" }
+		"icons": { "queens": "queens", "fires": "fivestars" }
 	},
 	"board": { "height": 10, "width": 10 },
 	"setup": { "queens":[ ["positions",[1004,1007,4001,4010],{"owner":1}], ["positions",[10004,10007,7001,7010],{"owner":2}] ] },

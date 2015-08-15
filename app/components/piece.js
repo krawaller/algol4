@@ -10,7 +10,16 @@ var Piece = React.createClass({
             bishops: "♝",
             rooks: "♜",
             queens: "♛",
-            kings: "♚"
+            kings: "♚",
+            flags: "⚑",
+            flakes: "❄",
+            hearts: "♥",
+            diamonds: "♦",
+            triangles: "▲",
+            fourstars: "✦",
+            fivestars: "★",
+            circles: "●"
+
         };
         var lineicons = {
             pawns: "♙",
@@ -18,7 +27,14 @@ var Piece = React.createClass({
             bishops: "♗",
             rooks: "♖",
             queens: "♕",
-            kings: "♔"
+            kings: "♔",
+            flags: "⚐",
+            hearts: "♡",
+            diamonds: "♢",
+            triangles: "△",
+            fourstars: "✧",
+            fivestars: "☆",
+            circles: "○"
         };
         var p = this.props, css = {
             height: p.tileheight+"%",

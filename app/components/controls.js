@@ -6,14 +6,23 @@ var React = require('react'),
 
 var Controls = React.createClass({
     render: function() {
-        var state = this.props.state, style = {top:this.props.top+"%"}, cb = this.props.broadcaster;
+        var state = this.props.state, style = {top:this.props.top+"%"}, cb = this.props.broadcaster,
+            gamecomms = state.getIn(["gamedef","commands"]).keySeq().concat(I.List(["undo","endturn"])),
+            avail = state.get("availableCommands");
         return (
             <div style={style} className="controls">
-                { (state.get("availableCommands")||I.Map()).reduce(function(list,cmnd,name){
-                    return list.concat(<button
-                        key={name}
-                        onClick={function(){cb(cmnd)}}
-                    >{name}</button>);
+                { gamecomms.reduce(function(list,name){
+                    if (avail.has(name)){
+                        return list.concat(<button
+                            key={name}
+                            onClick={function(){cb(avail.get(name))}}
+                        >{name}</button>);
+                    } else {
+                        return list.concat(<button
+                            key={name}
+                            disabled={true}
+                        >{name}</button>);
+                    }
                 },[]) }
             </div>
         )

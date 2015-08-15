@@ -7,7 +7,7 @@
 	},
 	"graphics": {
 		"tiles": { "corners": "grass", "bases": "castle" },
-		"icons": { "notfrozens": "soldier", "frozens": "frozen" }
+		"icons": { "notfrozens": "knights", "frozens": "pawns" }
 	},
 	"terrain": {
 		"southeast": [ ["positions",[1001,3003],{}] ],

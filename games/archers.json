@@ -5,7 +5,8 @@
 	"graphics": {
 		"tiles": { "trees": "grass" },
 		"icons": { "archers": "pawns", "kings": "kings", "arrows": "projectiles" },
-		"turnvars": { "nonfiremoves": "moves left" }
+		"turnvars": { "nonfiremoves": "moves left" },
+		"rotatepieces": true
 	},
 	"terrain": {
 		"trees": [

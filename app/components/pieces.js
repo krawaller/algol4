@@ -24,7 +24,8 @@ var Pieces = React.createClass({
         var DOMS = _.map(units,function(entity){
             var pos = entity.pos,
                 x = board.getIn([pos,0,"x"]),
-                y = board.getIn([pos,0,"y"]);
+                y = board.getIn([pos,0,"y"]),
+                viewdir = graphics.get("rotatepieces") ? entity.dir || 1 : 1;
             return <Piece
                 key = {entity.ident}
                 tileheight={this.props.tileheight} 
@@ -33,7 +34,7 @@ var Pieces = React.createClass({
                 y={y}
                 icon={entity.look}
                 owner={entity.owner}
-                dir={entity.dir}
+                dir={viewdir}
             />;
         },this);
         return (

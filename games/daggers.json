@@ -4,7 +4,7 @@
 	"board": { "height": 8, "width": 8 },
 	"graphics": {
 		"tiles": { "bases": "grass" },
-		"icons": { "daggers": "dagger", "crowns": "crowns" }
+		"icons": { "daggers": "bishops", "crowns": "kings" }
 	},
 	"terrain": {
 		"bases": [
