@@ -39,7 +39,7 @@ var Pieces = React.createClass({
         },this);
         return (
             <div className="pieces">
-                <ReactCSSTransitionGroup transitionName="pieces">
+                <ReactCSSTransitionGroup transitionName="squares">
                     { DOMS }
                 </ReactCSSTransitionGroup>
             </div>

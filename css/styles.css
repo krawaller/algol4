@@ -164,18 +164,18 @@ a.square {
   opacity: 0.01;
 }
 
-.pieces-enter.pieces-enter-active {
+.squares-enter.squares-enter-active {
   opacity: 1;
-  transition: opacity .5s ease-in;
+  transition: opacity .25s ease-in;
 }
 
-.pieces-leave {
+.squares-leave {
   opacity: 1;
 }
 
-.pieces-leave.pieces-leave-active {
+.squares-leave.squares-leave-active {
   opacity: 0.01;
-  transition: opacity .5s ease-in;
+  transition: opacity .25s ease-in;
 }
 
 .status {
