@@ -52,6 +52,10 @@ a.square {
 	position: absolute;
 }
 
+.controls {
+	padding-bottom: 2em;
+}
+
 .square > .piece {
 	height: 80%;
 	width: 80%;
