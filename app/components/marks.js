@@ -1,7 +1,6 @@
 /** @jsx React.DOM */
 
-var React = require('react/addons'),
-    ReactCSSTransitionGroup = React.addons.CSSTransitionGroup;
+var React = require('react'),
     Mark = require('./mark'),
     I = require('../../src/immutableextensions');
 
