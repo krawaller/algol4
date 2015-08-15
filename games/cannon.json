@@ -7,7 +7,7 @@
 		["rectangle",2002,4002,{"owner":1,"dir":5}], ["rectangle",2004,4004,{"owner":1,"dir":5}], ["rectangle",2006,4006,{"owner":1,"dir":5}],
 		["rectangle",2008,4008,{"owner":1,"dir":5}], ["rectangle",2010,4010,{"owner":1,"dir":5}],
 		["rectangle",7001,9001,{"owner":2,"dir":1}], ["rectangle",7003,9003,{"owner":2,"dir":1}], ["rectangle",7005,9005,{"owner":2,"dir":1}],
-		["rectangle",7007,9007,{"owner":2,"dir":1}], ["rectangle",9007,9009,{"owner":2,"dir":1}]
+		["rectangle",7007,9007,{"owner":2,"dir":1}], ["rectangle",7009,9009,{"owner":2,"dir":1}]
 	 ] },
 	"terrain": { "townplaces": [ ["rectangle",1002,1009,{"owner":1}], ["rectangle",10002,10009,{"owner":2}] ] },
 	"marks": {
