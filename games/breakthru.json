@@ -1,0 +1,98 @@
+{
+	"name": "Breakthru",
+	"source": "https://boardgamegeek.com/thread/145672/rules-and-build-it-yourself-instructions",
+	"board": {"height":11,"width":11},
+	"setup": { "kings": [{"pos":6006,"owner":1}] },
+	"terrain": {
+		"center": [ ["rectangle",4004,8008] ],
+		"edges": [ ["rectangle",1001,11001],["rectangle",1001,1011],["rectangle",1011,11011],["rectangle",11001,11011] ]
+	},
+	"graphics": {
+		"icons": { "soldiers": "pawns", "kings": "kings" },
+		"tiles": { "edges": "grass", "center": "castle" }
+	},
+	"marks": {
+		"selectdeploy": {
+			"condition": ["morethan",3,["contextval","turn"]],
+			"from": ["ifelse",["same",["contextval","turn"],1],["subtract","center","units"],["subtract","nocenter","units"]]
+		},
+		"selectunit": {
+			"condition": ["morethan",["contextval","turn"],2],
+			"from": ["ifelse",["truthy",["contextval","performedsteps"]],["subtract","mysoldiers",["contextpos","movedto"]],"myunits"],
+			"rungenerators": ["findmovetargets","findkilltargets"],
+			"cleanse": ["movetargets","killtargets"],
+			"requiredby": ["selectmove","selectkill"]
+		},
+		"selectmove": {
+			"from": "movetargets",
+			"requiredmarks": ["selectunit"],
+			"notifhasmark": ["selectkill"]
+		},
+		"selectkill": {
+			"condition": ["not",["hasperformedcommand","move"]],
+			"from": "killtargets",
+			"requiredmarks": ["selectunit"],
+			"notifhasmark": ["selectmove"]
+		}
+	},
+	"generators": {
+		"findmovetargets": {
+			"type": "walker",
+			"dirs": ["dirs",[1,2,3,4,5,6,7,8]],
+			"starts": "selectunit",
+			"blocks": "units",
+			"draw": { "steps": { "tolayer": "movetargets" } }
+		},
+		"findkilltargets": {
+			"type": "nextto",
+			"dirs": ["dirs",[2,4,6,8]],
+			"starts": "selectunit",
+			"condition": ["anyat","oppunits",["contextpos","target"]],
+			"draw": { "target": { "tolayer": "killtargets" } }
+		}
+	},
+	"commands": {
+		"deploy": {
+			"requiredmarks": ["selectdeploy"],
+			"effect": ["spawnunit","selectdeploy","soldiers",["contextval","currentplayer"]]
+		},
+		"move": {
+			"requiredmarks": ["selectunit","selectmove"],
+			"effect": ["multieffect",[
+				["if",["anyat","mykings","selectunit"],["setcontextval","movedking",true]],
+				["moveunit",["idofunitat","selectunit"],"selectmove"],
+				["setcontextval","movedto",["markpos","selectmove"]]
+			]]
+		},
+		"kill": {
+			"requiredmarks": ["selectunit","selectkill"],
+			"effect": ["multieffect",[
+				["killunit",["idofunitat","selectkill"]],
+				["moveunit",["idofunitat","selectunit"],"selectkill"]
+			]]
+		}
+	},
+	"endturn": {
+		"condition": ["or",[
+			["and",[
+				["same",["contextval","turn"],1],
+				["same",["contextval","performedsteps"],12]
+			]],
+			["and",[
+				["same",["contextval","turn"],2],
+				["same",["contextval","performedsteps"],20]
+			]],
+			["hasperformedcommand","kill"],
+			["truthy",["contextval","movedking"]],
+			["and",[
+				["morethan",["contextval","turn"],2],
+				["same",["contextval","performedsteps"],2]
+			]]
+		]],
+		"commandcap": true,
+		"endgame": {
+			"escape": { "condition": ["overlaps","edges","kings"], "result":"win" },
+			"kingkill": { "condition": ["notempty","oppdeadkings"], "result":"win" }
+		}
+	}
+}

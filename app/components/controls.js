@@ -9,6 +9,9 @@ var Controls = React.createClass({
         var state = this.props.state, style = {top:this.props.top+"%"}, cb = this.props.broadcaster,
             gamecomms = state.getIn(["gamedef","commands"]).keySeq().concat(I.List(["undo","endturn"])),
             avail = state.get("availableCommands");
+        if (state.get("endedby")){
+            return <div></div>;
+        }
         return (
             <div style={style} className="controls">
                 { gamecomms.reduce(function(list,name){

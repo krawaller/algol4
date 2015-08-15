@@ -42,10 +42,10 @@ var effectmethods = {
 	setcontextval: function(state,prop,val){
 		return state.setIn(["context",this.evaluateValue(state,prop)],this.evaluateValue(state,val));
 	},
-	spawnunit: function(state,pos,group,obj){
+	spawnunit: function(state,pos,group,owner,obj){
 		var id = "unit"+(state.getIn(["data","units"]).size+1),
 			obj = (obj||I.Map()).reduce(function(o,def,key){ return o.set(key,this.evaluateValue(state,def)); },I.Map(),this),
-			newstate = state.setIn(["data","units",id],obj.set("id",id).set("group",group).set("pos",this.evaluatePosition(state,pos)));
+			newstate = state.setIn(["data","units",id],obj.set("id",id).set("group",group).set("owner",this.evaluateValue(state,owner)||0).set("pos",this.evaluatePosition(state,pos)));
 		return newstate;
 	},
 	addtocontextval: function(state,prop,val){

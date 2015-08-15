@@ -115,7 +115,7 @@
 	"commands": {
 		"deployking": {
 			"requiredmarks": ["selectkingdeploy"],
-			"effect": ["spawnunit","selectkingdeploy","kings",{"owner":["contextval","currentplayer"]}]
+			"effect": ["spawnunit","selectkingdeploy","kings",["contextval","currentplayer"]]
 		},
 		"move": {
 			"requiredmarks": ["selectunit","selectmovetarget"],
