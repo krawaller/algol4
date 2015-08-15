@@ -12,7 +12,7 @@ var Marks = React.createClass({
             cb = this.props.broadcaster;
         return (
             <div className="marks">
-                <ReactCSSTransitionGroup transitionName="squares">
+                
                     { (state.get("availableMarks")||I.Map()).merge(state.get("currentMarks")||I.Map()).reduce(function(list,cmnd,pos){
                         return list.concat(<Mark
                             key = {pos}
@@ -27,7 +27,7 @@ var Marks = React.createClass({
                             })}
                         />);
                     },[],this) }
-                </ReactCSSTransitionGroup>
+                
             </div>
         )
     }
