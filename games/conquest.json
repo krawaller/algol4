@@ -21,25 +21,21 @@
 	},
 	"marks": {
 		"selectunit": {
-			"from": "freetomove",
+			"from": "myunits",
 			"condition": ["not",["hasperformedcommand","move"]],
 			"rungenerators": ["findmovetargets"],
-			"cleanse": ["movetargets"],
 			"requiredby": ["selectmovetarget"]
 		},
 		"selectmovetarget": {
-			"requiredmarks": ["selectunit"],
 			"from": "movetargets"
 		},
 		"selectexiletarget": {
 			"from": "exiletargets",
 			"condition": ["hasperformedcommand","move"],
 			"rungenerators": ["findexiledestinations"],
-			"requiredby": ["selectexiledestination"],
-			"cleanse": ["exiledestinations"]
+			"requiredby": ["selectexiledestination"]
 		},
 		"selectexiledestination": {
-			"requiredmarks": ["selectexiletarget"],
 			"from": "exiledestinations"
 		}
 	},
@@ -58,9 +54,6 @@
 			"rungenerators": ["findexiletargets"],
 			"effect": ["moveunit",["idofunitat",["markpos","selectexiletarget"]],["markpos","selectexiledestination"]]
 		}
-	},
-	"startturn": {
-		"rungenerators": ["findmovers"]
 	},
 	"endturn": {
 		"condition": ["hasperformedcommand","move"],
@@ -98,29 +91,16 @@
 				}
 			}
 		},
-		"findmovers": {
+		"findmovetargets": {
 			"type": "nextto",
 			"dirs": ["dirs",[2,4,6,8]],
-			"starts": "myunits",
+			"starts": "selectunit",
 			"condition": ["noneat","units",["contextpos","target"]],
 			"draw": {
-				"start": {
-					"condition": ["truthy",["contextval","neighbourcount"]],
-					"tolayer": "freetomove"
-				},
 				"target": {
-					"tolayer": "potmovetargets",
-					"include": {
-						"moverid": ["idofunitat",["contextpos","start"]]
-					}
+					"tolayer": "movetargets"
 				}
 			}
-		},
-		"findmovetargets": {
-			"type": "filter",
-			"layer": "potmovetargets",
-			"matching": {"moverid":["is",["idofunitat",["markpos","selectunit"]]]},
-			"tolayer": "movetargets"
 		},
 		"findexiledestinations": {
 			"type": "filter",

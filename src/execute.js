@@ -36,6 +36,12 @@ var effectmethods = {
 			return positionset.has(unit.get("pos")) ? this.applyEffect(state.setIn(["context","loopid"],id),effect) : state;
 		},state,this)[state.hasIn(["context","loopid"])?"setIn":"deleteIn"](["context","loopid"],state.getIn(["context","loopid"]));
 	},
+	forallposin: function(state,positionset,effect){
+		var positionset = this.evaluatePositionSet(state,positionset);
+		return positionset.reduce(function(state,pos){
+			return this.applyEffect(state.setIn(["context","target"],pos),effect);
+		},state,this)[state.hasIn(["context","target"])?"setIn":"deleteIn"](["context","target"],state.getIn(["context","target"]));
+	},
 	multieffect: function(state,list){
 		return list.reduce(this.applyEffect.bind(this),state,this);
 	},
@@ -130,14 +136,29 @@ Algol.calculateCommandResult = function(state,newstate,commanddef,commandname){
 // returns an endturn option. this will either be win/draw/loseto or passto
 // Used in Algol.getAvailableCommands
 Algol.endTurnOption = function(state,endturndef){
-	return endturndef.get("endgame").reduce(function(mem,end,name){
+	if (state.has("diving")){
+		return I.List(["foobar"]);
+	}
+	var endgame = endturndef.get("endgame").reduce(function(mem,end,name){
 		if (!mem && this.evaluateBoolean(state,end.get("condition"))) {
 			var res = this.evaluateValue(state,end.get("result")),
 				who = (res==="loseto" && this.evaluateValue(state,end.get("who")));
 			return res==="loseto" ? I.List([res,name,who]) : I.List([res,name]);
 		}
 		return mem;
-	},undefined,this) || I.List(["passto",state.getIn(["passto",state.get("player")])]);
+	},undefined,this);
+	if (endgame){
+		return endgame;
+	} else {
+		var newturnstate = this.setOptions(this.prepareNewTurnState(state,state.getIn(["passto",state.get("player")])));
+		if (this.canReachTurnEnd(newturnstate)){
+			return I.List(["passto",newturnstate]);	
+		} else {
+			return I.List(["win","stalemate"]);
+		}
+		
+	}
+	//return endgame || I.List(["passto",state.getIn(["passto",state.get("player")])]);
 };
 
 // Returns an array of available commands
@@ -151,7 +172,8 @@ Algol.getAvailableCommands = function(state,gamedef){
 var optionmethods = {
 	backto: function(state,oldstate){ return oldstate; },
 	newstep: function(state,newstate,newmarks,generators){ return this.setOptions(this.prepareNewStepState(newstate,state,newmarks,generators)); },
-	passto: function(state,player){ return this.setOptions(this.prepareNewTurnState(state,player)); },
+	//passto: function(state,player){ return this.setOptions(this.prepareNewTurnState(state,player)); },
+	passto: function(state,newstate){ return this.removeDeadEnds(newstate); },
 	win: function(state,by){ return state.set("endedby",by).set("winner",state.get("player")).delete("availableMarks").delete("availableCommands"); },
 	draw: function(state,by){ return state.set("endedby",by).set("winner",0).delete("availableMarks").delete("availableCommands"); },
 	loseto: function(state,by,player){ return state.set("endedby",by).set("winner",player).delete("availableMarks").delete("availableCommands"); },
@@ -168,17 +190,40 @@ Algol.performOption = function(state,def){
 /*
 Usd in performOption newstep and passto methods
 */
+
 Algol.setOptions = function(state){
-	return state.has("endedby") ?
-		state.set("availableMarks",I.Map()).set("availableCommands",I.Map()).set("currentMarks",I.Map())
-		: state.get("canendturn") && state.getIn(["gamedef","endturn","commandcap"]) ? 
-		state.set("availableMarks",I.Map()).set("availableCommands",this.getAvailableCommands(state,state.get("gamedef"))).set("currentMarks",I.Map())
-		: state
+	if (state.has("endedby")){
+		return state.set("availableMarks",I.Map()).set("availableCommands",I.Map()).set("currentMarks",I.Map());
+	} else if (state.get("canendturn") && state.getIn(["gamedef","endturn","commandcap"])) {
+		return state
+		.set("availableMarks",I.Map())
+		.set("availableCommands",this.getAvailableCommands(state,state.get("gamedef")))
+		.set("currentMarks",I.Map());
+	} else {
+		return state
 		.set("availableMarks",this.getAvailableMarks(state))
 		.set("availableCommands",this.getAvailableCommands(state,state.get("gamedef")))
 		.set("currentMarks",this.getCurrentMarks(state));
+	}
 };
 
+Algol.removeDeadEnds = function(state,def){
+	return state.hasIn(["gamedef","endturn","canalwaysend"]) && this.evaluateBoolean(state,state.getIn(["gamedef","endturn","canalwaysend"])) ? state : state.set("availableMarks",state.get("availableMarks").filter(function(setmark,name){
+		return this.canReachTurnEnd(this.performOption(state,setmark));
+	},this)).set("availableCommands",state.get("availableCommands").filter(function(cmnd,name){
+		return this.canReachTurnEnd(this.performOption(state,cmnd));
+	},this));
+};
+
+
+Algol.canReachTurnEnd = function(state){
+	state = state.set("diving",true);
+	return state.get("canendturn") || (state.hasIn(["gamedef","endturn","canalwaysend"]) && this.evaluateBoolean(state,state.getIn(["gamedef","endturn","canalwaysend"]))) || state.get("availableCommands").some(function(cmnd,name){
+		return cmnd.first() === "newstep" && this.canReachTurnEnd(this.performOption(state,cmnd));
+	},this) || state.get("availableMarks").some(function(setmark,name){
+		return this.canReachTurnEnd(this.performOption(state,setmark));
+	},this);
+}
 
 // €€€€€€€€€€€€€€€€€€€€€€€€€ E X P O R T €€€€€€€€€€€€€€€€€€€€€€€€€
 

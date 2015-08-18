@@ -31,17 +31,13 @@
 		},
 		"selectswap": {
 			"from": "swaptarget",
-			"notwith": ["selectmove"],
-			"requiredmarks": ["selectking"],
-			"cleanse": ["demoted"],
+			"notifhasmark": ["selectmove"],
 			"rungenerators": ["finddemotees"]
 		},
 		"selectmove": {
 			"from": "movetarget",
-			"notwith": ["selectswap"],
-			"cleanse": ["demoted"],
-			"rungenerators": ["finddemotees"],
-			"requiredmarks": ["selectking"]
+			"notifhasmark": ["selectswap"],
+			"rungenerators": ["finddemotees"]
 		}
 	},
 	"commands": {
@@ -70,7 +66,6 @@
 	"generators": {
 		"findtargets": {
 			"type": "nextto",
-			"dirs": ["dirs",[1,2,3,4,5,6,7,8]],
 			"starts": ["markpos","selectking"],
 			"condition": ["and",[
 				["noneat","oppunits",["contextpos","target"]],
@@ -88,7 +83,6 @@
 		},
 		"findsecondtargets": {
 			"type": "nextto",
-			"dirs": ["dirs",[1,2,3,4,5,6,7,8]],
 			"starts": "movetarget",
 			"condition": ["and",[
 				["same",["contextval","movesleft"],2],
@@ -104,7 +98,6 @@
 		},
 		"finddemotees": {
 			"type": "walker",
-			"dirs": ["dirs",[1,2,3,4,5,6,7,8]],
 			"starts": ["union","selectmove","selectswap"],
 			"steps": "oppunits",
 			"blocks": ["subtract","mykings","selectking"],

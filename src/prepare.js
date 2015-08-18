@@ -100,7 +100,7 @@ Algol.prepareNewGameState = function(gamedef,nbrofplayers){
 			return mem.set(p,p===nbrofplayers?1:p+1);
 		},I.Map())
 	});
-	return this.performOption(state,I.List(["passto",1]));
+	return this.performOption(state,I.List(["passto",this.setOptions(this.prepareNewTurnState(state,1))]));
 };
 
 

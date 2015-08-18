@@ -20,19 +20,15 @@
 			"condition": ["morethan",["contextval","turn"],2],
 			"from": ["ifelse",["truthy",["contextval","performedsteps"]],["subtract","mysoldiers",["contextpos","movedto"]],"myunits"],
 			"rungenerators": ["findmovetargets","findkilltargets"],
-			"cleanse": ["movetargets","killtargets"],
 			"requiredby": ["selectmove","selectkill"]
 		},
 		"selectmove": {
 			"from": "movetargets",
-			"requiredmarks": ["selectunit"],
 			"notifhasmark": ["selectkill"]
 		},
 		"selectkill": {
 			"condition": ["not",["hasperformedcommand","move"]],
-			"from": "killtargets",
-			"requiredmarks": ["selectunit"],
-			"notifhasmark": ["selectmove"]
+			"from": "killtargets"
 		}
 	},
 	"generators": {
@@ -73,6 +69,7 @@
 		}
 	},
 	"endturn": {
+		"canalwaysend": ["morethan",["contextval","turn"],2],
 		"condition": ["or",[
 			["and",[
 				["same",["contextval","turn"],1],

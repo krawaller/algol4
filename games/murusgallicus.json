@@ -1,4 +1,88 @@
 {
 	"name": "Murus Gallicus",
-	"source": "https://boardgamegeek.com/filepage/46316/murus-gallicus-detailed-rules"
+	"source": "https://boardgamegeek.com/filepage/46316/murus-gallicus-detailed-rules",
+	"graphics": { "tiles": {"homerow":"grass"}, "icons": {"towers":"rooks","walls":"pawns"} },
+	"board": { "height": 7, "width": 8 },
+	"terrain": { "homerow": [ ["rectangle",1001,1008,{"owner":1}], ["rectangle",7001,7008,{"owner":2}] ] },
+	"setup": { "towers": [ ["rectangle",1001,1008,{"owner":1}], ["rectangle",7001,7008,{"owner":2}] ] },
+	"marks": {
+		"selecttower": {
+			"from": "mytowers",
+			"rungenerators": ["findmovetargets","findkilltargets"],
+			"requiredby": ["selectmove","selectkill"]
+		},
+		"selectmove": {
+			"from": "movetargets",
+			"notifhasmark": ["selectkill"],
+			"rungenerators": ["findmoveresults"]
+		},
+		"selectkill": {
+			"from": "killtargets"
+		}
+	},
+	"commands": {
+		"move": {
+			"requiredmarks": ["selecttower","selectmove"],
+			"effect": ["multieffect",[
+				["killunit",["idofunitat","selecttower"]],
+				["forallposin","madetowers",["setunitdata",["idofunitat",["contextpos","target"]],"group","towers"]],
+				["forallposin","madewalls",["spawnunit",["contextpos","target"],"walls",["contextval","currentplayer"]]]
+			]]
+		},
+		"kill": {
+			"requiredmarks": ["selecttower","selectkill"],
+			"effect": ["multieffect",[
+				["setunitdata",["idofunitat","selecttower"],"group","walls"],
+				["killunit",["idofunitat","selectkill"]]
+			]]
+		}
+	},
+	"generators": {
+		"findmovetargets": {
+			"type": "walker",
+			"blocks": ["union","oppunits","mytowers"],
+			"starts": "selecttower",
+			"max": 2,
+			"draw": {
+				"steps": {
+					"condition": ["and",[
+						["same",["contextval","linelength"],2],
+						["same",["contextval","step"],2]
+					]],
+					"tolayer": "movetargets",
+					"include": {"dir":["contextval","dir"]}
+				}
+			}
+		},
+		"findmoveresults": {
+			"type": "nextto",
+			"dirs": ["relativedirs",["dirs",[5]],["lookup","movetargets","selectmove","dir"]],
+			"starts": "selectmove",
+			"draw": {
+				"start": {
+					"tolayer": ["ifelse",["anyat","myunits","selectmove"],"madetowers","madewalls"]
+				},
+				"target": {
+					"tolayer": ["ifelse",["anyat","myunits",["contextpos","target"]],"madetowers","madewalls"]
+				}
+			}
+		},
+		"findkilltargets": {
+			"type": "nextto",
+			"starts": "selecttower",
+			"condition": ["anyat","oppwalls",["contextpos","target"]],
+			"draw": {
+				"target": {
+					"tolayer": "killtargets"
+				}
+			}
+		}
+	},
+	"endturn": {
+		"commandcap": true,
+		"condition": ["truthy",["contextval","performedsteps"]],
+		"endgame": {
+			"infiltration": {"condition":["overlaps","myunits","opphomerow"],"result":"win"}
+		}
+	}
 }

@@ -28,7 +28,7 @@ var Board = React.createClass({
     doCommand: function(cmnd){
         var newstate = Algol.performOption(this.state.state,cmnd),
             history = this.state.history;
-        if (cmnd.first()==="passto"){
+        if (cmnd.first()==="passto"){ // TODO ALSO win lose stuff! :)
             var newl = [], finalstate = toaddstate = this.state.state, previousstep, sinfo;
             while ((previousstep = toaddstate.get("previousstep"))) {
                 sinfo = toaddstate.get("steps").last();

@@ -11,11 +11,9 @@
 			"condition": ["falsy",["contextval","movedto"]],
 			"from": "myunits",
 			"requiredby": ["selectmovetarget"],
-			"rungenerators": ["findmovetargets"],
-			"cleanse": ["movetarget"]
+			"rungenerators": ["findmovetargets"]
 		},
 		"selectmovetarget": {
-			"requiredmarks": ["selectunit"],
 			"condition": ["falsy",["contextval","movedto"]],
 			"from": "movetarget"
 		},
@@ -26,13 +24,7 @@
 	},
 	"endturn": {
 		"condition":["same",["contextval","performedsteps"],2],
-		"commandcap": true,
-		"endgame": {
-			"blocked":{
-				"condition": ["isempty","oppmovers"],
-				"result": "win"
-			}
-		}
+		"commandcap": true
 	},
 	"commands": {
 		"move": {
@@ -45,27 +37,13 @@
 		},
 		"fire": {
 			"requiredmarks": ["selectfiretarget"],
-			"effect": ["spawnunit",["markpos","selectfiretarget"],"fires",0],
-			"rungenerators": ["findoppmovers"]
+			"effect": ["spawnunit",["markpos","selectfiretarget"],"fires",0]
 		}
 	},
 	"generators": {
-		"findoppmovers": {
-			"type": "nextto",
-			"starts": "oppunits",
-			"dirs": ["dirs",[1,2,3,4,5,6,7,8]],
-			"condition": ["noneat","units",["contextpos","target"]],
-			"draw": {
-				"start": {
-					"condition": ["truthy",["contextval","neighbourcount"]],
-					"tolayer": "oppmovers"
-				}
-			}
-		},
 		"findmovetargets": {
 			"type": "walker",
 			"starts": "selectunit",
-			"dirs": ["dirs",[1,2,3,4,5,6,7,8]],
 			"blocks": "units",
 			"draw": {
 				"steps": {
@@ -76,7 +54,6 @@
 		"findfiretargets": {
 			"type": "walker",
 			"starts": ["contextpos","movedto"],
-			"dirs": ["dirs",[1,2,3,4,5,6,7,8]],
 			"blocks": "units",
 			"draw": {
 				"steps": {

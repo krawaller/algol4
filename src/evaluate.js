@@ -163,6 +163,9 @@ var valuemethods = {
 		var state = _.first(arguments);
 		return _.reduce(_.tail(arguments),function(acc,val){ return acc + this.evaluateValue(state,val); },0,this);
 	},
+	mult: function(state,f1,f2){
+		return this.evaluateValue(state,f1)*this.evaluateValue(state,f2);
+	},
 	relativedir: function(state,dir,reldir){
 		return [1,2,3,4,5,6,7,8,1,2,3,4,5,6,7,8][this.evaluateValue(state,reldir)-2+this.evaluateValue(state,dir)];
 	},

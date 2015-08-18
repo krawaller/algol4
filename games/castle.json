@@ -59,18 +59,14 @@
 		"selectunit": {
 			"from": "myunits",
 			"rungenerators": ["findhops","findslides"],
-			"cleanse": ["movetargets","killtargets"],
 			"requiredby": ["selectmovetarget","selectkilltarget"]
 		},
 		"selectmovetarget": {
-			"requires": ["selectunit"],
 			"from": "movetargets",
 			"notifhasmark": ["selectkilltarget"]
 		},
 		"selectkilltarget": {
-			"requires": ["selectunit"],
-			"from": "killtargets",
-			"notifhasmark": ["selectmovetarget"]
+			"from": "killtargets"
 		}
 	},
 	"commands": {

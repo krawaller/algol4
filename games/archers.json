@@ -4,7 +4,7 @@
 	"board": { "height": 9, "width": 9 },
 	"graphics": {
 		"tiles": { "trees": "grass" },
-		"icons": { "archers": "pawns", "kings": "kings", "arrows": "projectiles" },
+		"icons": { "archers": "pawns", "kings": "kings", "arrows": "projectiles", "bullseyes": "projectiles" },
 		"turnvars": { "nonfiremoves": "moves left" },
 		"rotatepieces": true
 	},
@@ -54,33 +54,25 @@
 					],
 					"tolayer": "bullseyes",
 					"include": {
-						"suffix": ["contextval","step"],
-						"parentid": ["idofunitat",["contextpos","start"]]
+						"suffix": ["sum",1,["contextval","linelength"]],
+						"parentid": ["idofunitat",["contextpos","start"]],
+						"owner": ["lookup","units",["contextpos","start"],"owner"],
+						"dir": ["contextval","dir"]
 					}
 				}
 			}
 		},
 		"findfooting": {
-			"type": "nextto",
-			"requiredmarks": ["selectunit"],
+			"type": "walker",
 			"starts": "selectunit",
 			"dirs": ["relativedirs",["dirs",[1,5]],["lookup","units",["contextpos","start"],"dir"]],
+			"max": ["contextval","nonfiremoves"],
+			"blocks": ["union","units","opparrows"],
 			"draw": {
-				"target": {
-					"condition": ["and",[
-						["noneat","units",["contextpos","target"]],
-						["noneat","opparrows",["contextpos","target"]]
-					]],
-					"tolayer": ["ifelse",
-						["same",
-							["contextval","dir"],
-							["lookup","units",["contextpos","start"],"dir"]
-						],
-						"forwardfooting",
-						"backwardfooting"
-					],
+				"steps": {
+					"tolayer": "movetargets",
 					"include": {
-						"id": ["idofunitat",["contextpos","start"]]
+						"cost": ["contextval","step"]
 					}
 				}
 			}
@@ -89,14 +81,18 @@
 	"marks": {
 		"selectunit": {
 			"from": "myunits",
-			"cleanse": ["forwardfooting","backwardfooting","gonnadie"],
-			"rungenerators": ["findfooting","findkilltargets"]
+			"rungenerators": ["findfooting","findkilltargets"],
+			"requiredby": ["selectmove"]
+		},
+		"selectmove": {
+			"from": "movetargets"
 		}
 	},
 	"startturn": {
 		"applyeffect": ["setcontextval","nonfiremoves",2]
 	},
 	"endturn": {
+		"canalwaysend": true,
 		"condition":["falsy",["contextval","nonfiremoves"]],
 		"commandcap": true,
 		"passto": ["contextval","nextplayer"],
@@ -106,55 +102,40 @@
 		}
 	},
 	"commands": {
-		"stepforward": {
-			"requiredmarks": ["selectunit"],
-			"condition": ["notempty","forwardfooting"],
+		"move": {
+			"requiredmarks": ["selectunit","selectmove"],
 			"effect": ["multieffect",[
-				["setcontextval",["idofunitat",["markpos","selectunit"]],"hasmoved"],
-				["moveunit",["idofunitat",["markpos","selectunit"]],["firstposin","forwardfooting"]],
-				["addtocontextval","nonfiremoves",-1]
+				["setcontextval",["idofunitat","selectunit"],"hasmoved"],
+				["moveunit",["idofunitat","selectunit"],"selectmove"],
+				["addtocontextval","nonfiremoves",["mult",-1,["lookup","movetargets","selectmove","cost"]]]
 			]],
-			"setmarks": {
-				"selectunit": ["firstposin","forwardfooting"]
-			}
+			"setmarks": { "selectunit": "selectmove" }
 		},
-		"stepbackward": {
-			"requiredmarks": ["selectunit"],
-			"condition": ["notempty","backwardfooting"],
-			"effect": ["multieffect",[
-				["setcontextval",["idofunitat",["markpos","selectunit"]],"hasmoved"],
-				["moveunit",["idofunitat",["markpos","selectunit"]],["firstposin","backwardfooting"]],
-				["addtocontextval","nonfiremoves",-1]
-			]],
-			"setmarks": { "selectunit": ["firstposin","backwardfooting"] }
-		},
-		"turnleft": {
+		"left": {
 			"requiredmarks": ["selectunit"],
 			"effect": ["multieffect",[
-				["setcontextval",["idofunitat",["markpos","selectunit"]],"hasmoved"],
 				["turnunit",["idofunitat",["markpos","selectunit"]],-2],
 				["addtocontextval","nonfiremoves",-1]
 			]],
-			"setmarks": { "selectunit": ["markpos","selectunit"] }
+			"setmarks": { "selectunit": "selectunit" }
 		},
-		"turnright": {
+		"right": {
 			"requiredmarks": ["selectunit"],
 			"effect": ["multieffect",[
-				["setcontextval",["idofunitat",["markpos","selectunit"]],"hasmoved"],
 				["turnunit",["idofunitat",["markpos","selectunit"]],2],
 				["addtocontextval","nonfiremoves",-1]
 			]],
-			"setmarks": { "selectunit": ["markpos","selectunit"] }
+			"setmarks": { "selectunit": "selectunit" }
 		},
 		"fire": {
 			"requiredmarks": ["selectunit"],
 			"condition": ["and",[
+				["same",["contextval","nonfiremoves"],2],
 				["notempty","gonnadie"],
-				["falsy",["contextval",["idofunitat",["markpos","selectunit"]]]],
-				["same",["contextval","nonfiremoves"],2]
+				["falsy",["contextval",["idofunitat",["markpos","selectunit"]]]]
 			]],
 			"effect": ["multieffect",[
-				["setcontextval",["idofunitat",["markpos","selectunit"]],"hasmoved"],
+				["setcontextval",["idofunitat",["markpos","selectunit"]],"hasfired"],
 				["killunit",["idofunitat",["firstposin","gonnadie"]]]
 			]],
 			"setmarks": { "selectunit": ["markpos","selectunit"] }

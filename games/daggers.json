@@ -38,18 +38,15 @@
 		"selectunit": {
 			"from": "myunits",
 			"rungenerators": ["findcurrentmovetargets","findcurrentkilltargets"],
-			"cleanse": ["currentmovetargets","currentkilltargets"],
 			"requiredby": ["selectmovetarget","selectkilltarget"]
 		},
 		"selectmovetarget": {
 			"from": "currentmovetargets",
-			"notwith": ["selectkilltarget"],
-			"requiredmarks": ["selectunit"]
+			"notifhasmark": ["selectkilltarget"]
 		},
 		"selectkilltarget": {
 			"from": "currentkilltargets",
-			"notwith": ["selectmovetarget"],
-			"requiredmarks": ["selectunit"]
+			"notifhasmark": ["selectmovetarget"]
 		}
 	},
 	"commands": {
@@ -85,7 +82,6 @@
 		"findcrowntargets": {
 			"type": "nextto",
 			"starts": "mycrowns",
-			"dirs": ["dirs",[1,2,3,4,5,6,7,8]],
 			"draw": {
 				"target": {
 					"condition": ["noneat","myunits",["contextpos","target"]],

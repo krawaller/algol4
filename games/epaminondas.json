@@ -9,34 +9,24 @@
 		"selecthead": {
 			"from": "myunits",
 			"rungenerators": ["findimmediatetargets","findpotentialtails"],
-			"requiredby": ["selecttail","selectmove","selectcharge","selectmarch"],
-			"cleanse": ["movetarget","potentialtail"],
-			"requiredby": ["selecttail","selectmove"]
+			"requiredby": ["selecttail","selectmove","selectcharge","selectmarch"]
 		},
 		"selecttail": {
 			"from": "potentialtail",
 			"rungenerators": ["findphalanxmembers","findmarchandchargetargets","findopposingphalanx"],
 			"notifhasmark": ["selectmove"],
-			"cleanse": ["phalanxmember","phalanxend","marchtarget","chargetarget","opposingphalanx"],
-			"requiredmarks": ["selecthead"],
 			"requiredby": ["selectcharge","selectmarch"]
 		},
 		"selectmove": {
-			"from": "movetarget",
-			"notifhasmark": ["selecttail"],
-			"requiredmarks": ["selecthead"]
+			"from": "movetarget"
 		},
 		"selectcharge": {
 			"from": "chargetarget",
-			"notwith": ["selectmarch","selectmove"],
-			"rungenerators": ["findchargevictims"],
-			"cleanse": ["chargevictims"],
-			"requiredmarks": ["selecthead","selecttail"]
+			"notifhasmark": ["selectmarch"],
+			"rungenerators": ["findchargevictims"]
 		},
 		"selectmarch": {
-			"from": "marchtarget",
-			"notifhasmark": ["selectcharge"],
-			"requiredmarks": ["selecthead","selecttail"]
+			"from": "marchtarget"
 		}
 	},
 	"commands": {
@@ -92,7 +82,6 @@
 		},
 		"findimmediatetargets": {
 			"type": "nextto",
-			"dirs": ["dirs",[1,2,3,4,5,6,7,8]],
 			"starts": "selecthead",
 			"draw": {
 				"target": {
@@ -106,7 +95,6 @@
 		},
 		"findpotentialtails": {
 			"type": "walker",
-			"dirs": ["dirs",[1,2,3,4,5,6,7,8]],
 			"starts": "selecthead",
 			"steps": "myunits",
 			"draw": {

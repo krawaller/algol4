@@ -46,7 +46,6 @@
 		},
 		"findkingwalktargets": {
 			"type": "walker",
-			"dirs": ["dirs",[1,2,3,4,5,6,7,8]],
 			"starts": ["union","mykings","selectunit"],
 			"blocks": "units",
 			"draw": {
@@ -58,7 +57,6 @@
 		},
 		"findadjacentenemies": {
 			"type": "nextto",
-			"dirs": ["dirs",[1,2,3,4,5,6,7,8]],
 			"starts": "selectunit",
 			"condition": ["anyat","oppunits",["contextpos","target"]],
 			"draw": {
@@ -70,6 +68,14 @@
 				}
 			}
 		},
+		"findsplashed": {
+			"type": "filter",
+			"layer": "willdie",
+			"matching": {
+				"dir": ["is",["lookup","jumptargets","selectjumptarget","dir"]]
+			},
+			"tolayer": "splashed"
+		},
 		"findjumptargets": {
 			"type": "nextto",
 			"starts": "adjacentenemies",
@@ -78,7 +84,10 @@
 			"draw": {
 				"start": {
 					"condition": ["truthy",["contextval","neighbourcount"]],
-					"tolayer": "willdie"
+					"tolayer": "willdie",
+					"include": {
+						"dir": ["contextval","dir"]
+					}
 				},
 				"target": {
 					"tolayer": "jumptargets",
@@ -98,18 +107,15 @@
 			"condition": ["morethan",["contextval","turn"],2],
 			"from": "myunits",
 			"rungenerators": ["findkingwalktargets","findadjacentenemies","findjumptargets"],
-			"cleanse": ["kingwalk","adjacentenemies","jumptargets","willdie"],
 			"requiredby": ["selectmovetarget","selectjumptarget"]
 		},
 		"selectmovetarget": {
-			"requiredmarks": ["selectunit"],
 			"from": ["ifelse",["anyat","mykings","selectunit"],"kingwalk",["subtract","board",["union","units",["union","nosoldiers","jumptargets"]]]],
 			"notifhasmark": ["selectjumptarget"]
 		},
 		"selectjumptarget": {
-			"requiredmarks": ["selectunit"],
 			"from": "jumptargets",
-			"notifhasmark": ["selectmovetarget"]
+			"rungenerators": ["findsplashed"]
 		}
 	},
 	"commands": {
