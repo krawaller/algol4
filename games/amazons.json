@@ -6,11 +6,10 @@
 	},
 	"board": { "height": 10, "width": 10 },
 	"setup": { "queens":[ ["positions",[1004,1007,4001,4010],{"owner":1}], ["positions",[10004,10007,7001,7010],{"owner":2}] ] },
-	"startturn": { "rungenerators": ["findmymovers"] },
 	"marks": {
 		"selectunit": {
 			"condition": ["falsy",["contextval","movedto"]],
-			"from": "mymovers",
+			"from": "myunits",
 			"requiredby": ["selectmovetarget"],
 			"rungenerators": ["findmovetargets"],
 			"cleanse": ["movetarget"]
@@ -46,25 +45,11 @@
 		},
 		"fire": {
 			"requiredmarks": ["selectfiretarget"],
-			"effect": ["multieffect",[
-				["spawnunit",["markpos","selectfiretarget"],"fires",0]
-			]],
+			"effect": ["spawnunit",["markpos","selectfiretarget"],"fires",0],
 			"rungenerators": ["findoppmovers"]
 		}
 	},
 	"generators": {
-		"findmymovers": {
-			"type": "nextto",
-			"starts": "myunits",
-			"dirs": ["dirs",[1,2,3,4,5,6,7,8]],
-			"condition": ["noneat","units",["contextpos","target"]],
-			"draw": {
-				"start": {
-					"condition": ["truthy",["contextval","neighbourcount"]],
-					"tolayer": "mymovers"
-				}
-			}
-		},
 		"findoppmovers": {
 			"type": "nextto",
 			"starts": "oppunits",
@@ -96,17 +81,6 @@
 			"draw": {
 				"steps": {
 					"tolayer": "firetarget"
-				}
-			}
-		},
-		"findhindered": {
-			"type": "nextto",
-			"starts": "selectfire",
-			"dirs": ["dirs",[1,2,3,4,5,6,7,8]],
-			"condition": ["anyat","movers",["contextpos","target"]],
-			"draw": {
-				"target": {
-					"tolayer": "hindered"
 				}
 			}
 		}

@@ -6,7 +6,7 @@ input, textarea, button, select, a {
 .board {
 	height: 510px;
 	width: 510px;
-	margin-top: 3em;
+	left: 120px;
 	position: relative;
 }
 
@@ -48,12 +48,20 @@ a.square {
 	z-index: 19;
 }
 
-.terrain, .pieces, .marks, .controls {
+.terrain, .pieces, .marks {
 	position: absolute;
 }
 
-.controls {
-	padding-bottom: 2em;
+.controls, .history {
+	width: 100px;
+	padding: 1em;
+	float: left;
+}
+
+.controls button {
+	display: block;
+	width: 80px;
+	margin: 3px;
 }
 
 .square > .piece {
@@ -95,12 +103,21 @@ a.square {
 .projectiles.owner1:after { color: red; background-color: darkred; }
 .projectiles.owner2:after { color: blue; background-color: darkblue; }
 
-.piece.owner0 { color: grey; }
-.piece.owner1 { color: red; }
-.piece.owner2 { color: blue; }
+.piece.owner0, .historyplr0 { color: grey; }
+.piece.owner1, .historyplr1 { color: red; }
+.piece.owner2, .historyplr2 { color: blue; }
 .piece.owner0 .background { color: darkgrey; }
 .piece.owner1 .background  { color: darkred; }
 .piece.owner2 .background  { color: darkblue; }
+
+.history {
+	list-style-type: none;
+}
+
+.currententry {
+	font-weight: bold;
+	text-decoration: underline;
+}
 
 .background {
 	position: absolute;
@@ -157,7 +174,9 @@ a.square {
 .dir8 { transform: rotate(315deg); -webkit-transform: rotate(315deg);}
 
 
-
+.controls button.commandundo {
+	margin-top: 2em;
+}
 
 
 .pieces-enter {

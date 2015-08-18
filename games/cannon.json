@@ -21,7 +21,7 @@
 			"rungenerators": ["findmovetargets","findkilltargets","findfleetargets","findpotentialtails"],
 			"requiredby": ["selecttail","selectmove","selectfire","selectmarch"],
 			"cleanse": ["movetarget","potentialtail","killtarget","fleetarget"],
-			"requiredby": ["selecttail","selectmove"]
+			"requiredby": ["selecttail","selectmove","selectkill"]
 		},
 		"selecttail": {
 			"from": "potentialtail",

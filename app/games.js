@@ -1,14 +1,27 @@
-module.exports = {
-    amazons: I.fromJS(require("../games/amazons.json")),
-    archers: I.fromJS(require("../games/archers.json")),
-    breakthru: I.fromJS(require("../games/breakthru.json")),
-    cannon: I.fromJS(require("../games/cannon.json")),
-    castle: I.fromJS(require("../games/castle.json")),
-    conquest: I.fromJS(require("../games/conquest.json")),
-    daggers: I.fromJS(require("../games/daggers.json")),
-    epaminondas: I.fromJS(require("../games/epaminondas.json")),
-    gogol: I.fromJS(require("../games/gogol.json")),
-    krieg: I.fromJS(require("../games/krieg.json")),
-    pawnographic: I.fromJS(require("../games/pawnographic.json")),
-    sombrero: I.fromJS(require("../games/sombrero.json"))
-};
+var _ = require('lodash'),
+    I = require("../src/immutableextensions"),
+    games = {
+        amazons: require("../games/amazons.json"),
+        archers: require("../games/archers.json"),
+        breakthru: require("../games/breakthru.json"),
+        cannon: require("../games/cannon.json"),
+        castle: require("../games/castle.json"),
+        conquest: require("../games/conquest.json"),
+        daggers: require("../games/daggers.json"),
+        epaminondas: require("../games/epaminondas.json"),
+        gogol: require("../games/gogol.json"),
+        krieg: require("../games/krieg.json"),
+        pawnographic: require("../games/pawnographic.json"),
+        sombrero: require("../games/sombrero.json")
+    };
+
+module.exports = _.reduce(games,function(mem,def,name){
+    mem[name] = defaultify(I.fromJS(def));
+    return mem;
+},{},this);
+
+function defaultify(def){
+    return def.set("commands",def.get("commands").map(function(commanddef,commandname){
+        return commanddef.set("name",commandname);
+    }));
+}
