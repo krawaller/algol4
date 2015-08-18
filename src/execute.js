@@ -178,7 +178,7 @@ var optionmethods = {
 	draw: function(state,by){ return state.set("endedby",by).set("winner",0).delete("availableMarks").delete("availableCommands"); },
 	loseto: function(state,by,player){ return state.set("endedby",by).set("winner",player).delete("availableMarks").delete("availableCommands"); },
 	setmark: function(state,mark,pos){ return this.setOptions(this.setMark(state,mark,pos)); },
-	removemark: function(state,mark){ return this.setOptions(this.removeMark(state,mark)); }
+	removemark: function(state,mark){ return this.removeDeadEnds(this.setOptions(this.removeMark(state,mark))); }
 };
 
 Algol.performOption = function(state,def){
