@@ -1,0 +1,173 @@
+{
+	"name": "Crossings",
+	"source": "https://boardgamegeek.com/thread/862890/quicker-more-tactical-mini-8x8-version-epaminondas",
+	"board": { "height": 8, "width": 8 },
+	"graphics": { "tiles": {"bases":"grass"}, "icons": {"soldiers":"pawns", "towers":"rooks"} },
+	"setup": { "soldiers": [ ["rectangle",1001,1008,{"owner":1}], ["rectangle",8001,8008,{"owner":2}] ] },
+	"terrain": { "bases": [ ["rectangle",1001,1008,{"owner":1}], ["rectangle",8001,8008,{"owner":2}] ] },
+	"marks": {
+		"selecthead": {
+			"from": "mysoldiers",
+			"rungenerators": ["findimmediatetargets","findpotentialtails"],
+			"requiredby": ["selecttail","selectmove","selectcharge","selectmarch"]
+		},
+		"selecttail": {
+			"from": "potentialtail",
+			"rungenerators": ["findphalanxmembers","findmarchandchargetargets","findopposingphalanx"],
+			"notifhasmark": ["selectmove"],
+			"requiredby": ["selectcharge","selectmarch"]
+		},
+		"selectmove": {
+			"from": "movetarget"
+		},
+		"selectcharge": {
+			"from": "chargetarget",
+			"notifhasmark": ["selectmarch"]
+		},
+		"selectmarch": {
+			"from": "marchtarget"
+		}
+	},
+	"commands": {
+		"move": {
+			"requiredmarks": ["selecthead","selectmove"],
+			"effect": ["multieffect",[
+				["moveunit",["idofunitat","selecthead"],"selectmove"],
+				["forallin",["intersect","selectmove","oppbases"],["setunitdata",["loopid"],"group","towers"]]
+			]]
+		},
+		"march": {
+			"requiredmarks": ["selecthead","selecttail","selectmarch"],
+			"effect": ["multieffect",[
+				["forallin","phalanxmember",
+					["offsetunit",["loopid"],
+						["lookup","marchtarget",["markpos","selectmarch"],"heading"],
+						["lookup","marchtarget",["markpos","selectmarch"],"distance",
+						0]]
+				],
+				["forallin",["intersect","selectmarch","oppbases"],["setunitdata",["loopid"],"group","towers"]]
+			]]
+		},
+		"charge": {
+			"requiredmarks": ["selecthead","selecttail","selectcharge"],
+			"effect": ["multieffect",[
+				["killunit",["idofunitat","selectcharge"]],
+				["forallin","phalanxmember",
+					["offsetunit",["loopid"],
+						["lookup","chargetarget",["markpos","selectcharge"],"heading"],
+						["lookup","chargetarget",["markpos","selectcharge"],"distance",
+						0]]
+				],
+				["forallin",["intersect","selectcharge","oppbases"],["setunitdata",["loopid"],"group","towers"]]
+			]]
+		}
+	},
+	"endturn": {
+		"condition":["same",["contextval","performedsteps"],1],
+		"commandcap": true,
+		"endgame": {
+			"dominance": {
+				"condition": ["morethan",
+					["positionsin","opptowers"],
+					["positionsin","mytowers"]
+				],
+				"result": "loseto",
+				"who": ["contextval","nextplayer"]
+			}
+		}
+	},
+	"generators": {
+		"findimmediatetargets": {
+			"type": "nextto",
+			"starts": "selecthead",
+			"draw": {
+				"target": {
+					"condition": ["noneat","units",["contextpos","target"]],
+					"tolayer":  "movetarget",
+					"include": {
+						"singledir": ["contextval","dir"]
+					}
+				}
+			}
+		},
+		"findpotentialtails": {
+			"type": "walker",
+			"starts": "selecthead",
+			"steps": "mysoldiers",
+			"draw": {
+				"steps": {
+					"tolayer": "potentialtail",
+					"include": {
+						"headdirection": ["contextval","dir"]
+					}
+				}
+			}
+		},
+		"findphalanxmembers": {
+			"type":"walker",
+			"dirs": ["relativedirs",["dirs",[5]],["lookup","potentialtail","selecttail","headdirection"]],
+			"starts": "selecttail",
+			"blocks": "selecthead",
+			"draw": {
+				"start": {
+					"tolayer": "phalanxend",
+					"include": {
+						"facing": ["lookup","potentialtail","selecttail","headdirection"],
+						"strength": ["sum",1,["contextval","linelength"]]
+					}
+				},
+				"block": {
+					"tolayer": "phalanxend",
+					"include": {
+						"facing": ["contextval","dir"],
+						"strength": ["sum",1,["contextval","linelength"]]
+					}
+				},
+				"all": {
+					"tolayer": "phalanxmember"
+				}
+			}
+		},
+		"findmarchandchargetargets": {
+			"type": "walker",
+			"starts": "phalanxend",
+			"dirs": ["dir",["lookup","phalanxend",["contextpos","start"],"facing"]],
+			"blocks": "units",
+			"max": ["sum",1,["lookup","phalanxend",["contextpos","start"],"strength"]],
+			"draw": {
+				"steps": {
+					"tolayer": "marchtarget",
+					"include": {
+						"distance": ["contextval","step"],
+						"heading": ["contextval","dir"]
+					}
+				},
+				"block": {
+					"condition": ["anyat","oppsoldiers",["contextpos","target"]],
+					"tolayer": "threatened",
+					"include": {
+						"strength": ["lookup","phalanxend",["contextpos","start"],"strength"],
+						"distance": ["sum",1,["contextval","linelength"]],
+						"heading": ["contextval","dir"]
+					}
+				}
+			}
+		},
+		"findopposingphalanx": {
+			"type": "walker",
+			"starts": "threatened",
+			"dirs": ["dir",["lookup","threatened",["contextpos","start"],"heading"]],
+			"steps": "oppsoldiers",
+			"draw": {
+				"start": {
+					"condition": ["morethan",["lookup","threatened",["contextpos","start"],"strength"],["contextval","linelength"]],
+					"tolayer": "chargetarget",
+					"include": {
+						"heading": ["contextval","dir"],
+						"distance": ["lookup","threatened",["contextpos","start"],"distance"]
+					}
+				}
+			}
+		}
+	}
+}

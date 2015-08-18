@@ -1,4 +1,78 @@
 {
 	"name": "Trespass",
-	"source": "http://www.di.fc.ul.pt/~jpn/gv/trespass.htm"
+	"source": "http://www.di.fc.ul.pt/~jpn/gv/trespass.htm",
+	"board": {"height":7,"width":11},
+	"graphics": {
+		"tiles": {"bases":"grass"},
+		"icons": {"attackers":"pawns","defenders":"queens","strikers":"kings" }
+	},
+	"setup": {
+		"attackers": [ ["rectangle",7001,7011,{"owner":1}] ],
+		"defenders": [ ["positions",[2004,2005,2007,2008],{"owner":2}] ],
+		"strikers": [ {"pos":2006,"owner":2} ]
+	},
+	"terrain": {
+		"bases": [ ["rectangle",7001,7011,{"owner":1}], ["rectangle",1001,1011,{"owner":2}] ],
+		"goals": [ ["rectangle",1001,1011,{"owner":2}] ]
+	},
+	"endturn": {
+		"commandcap": true,
+		"condition":["same",["contextval","performedsteps"],1],
+		"endgame": {
+			"infiltration": { "condition": ["overlaps","attackers","goals"], "result": "win" },
+			"genocide": { "condition": ["isempty","oppunits"], "result": "win" }
+		}
+	},
+	"marks": {
+		"selectunit": {
+			"from": "myunits",
+			"rungenerators": ["findtargets"],
+			"requiredby": ["selectmove","selectkill"]
+		},
+		"selectmove": {
+			"from": "movetargets",
+			"notifhasmark": ["selectkill"]
+		},
+		"selectkill": {
+			"from": "killtargets"
+		}
+	},
+	"commands": {
+		"move": {
+			"requiredmarks": ["selectunit","selectmove"],
+			"effect": ["moveunit",["idofunitat","selectunit"],"selectmove"]
+		},
+		"kill": {
+			"requiredmarks": ["selectunit","selectkill"],
+			"effect": ["multieffect",[
+				["killunit",["idofunitat","selectkill"]],
+				["moveunit",["idofunitat","selectunit"],"selectkill"]		
+			]]
+		}
+	},
+	"generators": {
+		"findtargets": {
+			"type": "walker",
+			"starts": "selectunit",
+			"dirs": ["ifelse",["anyat","attackers","selectunit"],["dirs",[1]],["dirs",[1,2,3,4,5,6,7,8]]],
+			"blocks": "units",
+			"max": ["ifelse",["anyat","defenders","selectunit"],11,1],
+			"draw": {
+				"steps": {
+					"condition": ["or",[
+						["anyat","attackers","selectunit"],
+						["noneat","bases",["contextpos","target"]]
+					]],
+					"tolayer": "movetargets"
+				},
+				"block": {
+					"condition": ["and",[
+						["anyat","strikers","selectunit"],
+						["anyat","oppunits",["contextpos","target"]]
+					]],
+					"tolayer": "killtargets"
+				}
+			}
+		}
+	}
 }

@@ -155,6 +155,7 @@ var valuemethods = {
 	val: function(state,raw){ return raw; },
 	layername: function(state,raw){ return raw; },
 	contextval: function(state,ctxvalname){ return state.getIn(["context",this.evaluateValue(state,ctxvalname)]); },
+	battleval: function(state,battlevalname){ return state.getIn(["data",this.evaluateValue(state,battlevalname)]); },
 	positionsin: function(state,positionset){ return this.evaluatePositionSet(state,positionset).size; },
 	ifelse: function(state,cond,val1,val2){ return this.evaluateValue(state, this.evaluateBoolean(state,cond) ? val1 : val2); },
 	lookup: function(state,layername,position,prop){ return state.getIn(["layers",layername,this.evaluatePosition(state,position),0,prop]); },

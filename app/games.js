@@ -7,6 +7,7 @@ var _ = require('lodash'),
         cannon: require("../games/cannon.json"),
         castle: require("../games/castle.json"),
         conquest: require("../games/conquest.json"),
+        crossings: require("../games/crossings.json"),
         daggers: require("../games/daggers.json"),
         epaminondas: require("../games/epaminondas.json"),
         gogol: require("../games/gogol.json"),
@@ -15,6 +16,7 @@ var _ = require('lodash'),
         murusgallicusadvanced: require("../games/murusgallicusadvanced.json"),
         pawnographic: require("../games/pawnographic.json"),
         sombrero: require("../games/sombrero.json"),
+        trespass: require("../games/trespass.json"),
     };
 
 module.exports = _.reduce(games,function(mem,def,name){

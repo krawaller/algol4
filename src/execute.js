@@ -48,6 +48,9 @@ var effectmethods = {
 	setcontextval: function(state,prop,val){
 		return state.setIn(["context",this.evaluateValue(state,prop)],this.evaluateValue(state,val));
 	},
+	setbattleval: function(state,prop,val){
+		return state.setIn(["data",this.evaluateValue(state,prop)],this.evaluateValue(state,val));
+	},
 	spawnunit: function(state,pos,group,owner,obj){
 		var id = "unit"+(state.getIn(["data","units"]).size+1),
 			obj = (obj||I.Map()).reduce(function(o,def,key){ return o.set(key,this.evaluateValue(state,def)); },I.Map(),this),
