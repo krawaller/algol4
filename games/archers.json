@@ -92,7 +92,7 @@
 		"applyeffect": ["setcontextval","nonfiremoves",2]
 	},
 	"endturn": {
-		"canalwaysend": true,
+		"canalwaysend": ["true"],
 		"condition":["falsy",["contextval","nonfiremoves"]],
 		"commandcap": true,
 		"passto": ["contextval","nextplayer"],

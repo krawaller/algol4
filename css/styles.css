@@ -160,6 +160,10 @@ a.square {
 	background-color: #7F7F7F;
 }
 
+.water {
+	background-color: #66CCFF;
+}
+
 .dark {
 	z-index: 2;
 	background-color: rgba(0,0,0,0.07);

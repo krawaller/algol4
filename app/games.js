@@ -12,6 +12,7 @@ var _ = require('lodash'),
         epaminondas: require("../games/epaminondas.json"),
         gogol: require("../games/gogol.json"),
         krieg: require("../games/krieg.json"),
+        momentum: require("../games/momentum.json"),
         murusgallicus: require("../games/murusgallicus.json"),
         murusgallicusadvanced: require("../games/murusgallicusadvanced.json"),
         pawnographic: require("../games/pawnographic.json"),
@@ -40,6 +41,9 @@ function gatherLayerNames(l){
 };
 
 function defaultify(def){
+    // fix setup (empty default)
+    def = def.set("setup",def.get("setup")||I.Map());
+    // Fix commands (add names)
     def = def.set("commands",def.get("commands").map(function(commanddef,commandname){
         return commanddef.set("name",commandname);
     }));
