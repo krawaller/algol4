@@ -1,0 +1,83 @@
+{
+	"name": "Tablut",
+	"source": "https://boardgamegeek.com/thread/346976/another-tafl-lesson",
+	"graphics": {"tiles":{"throne":"castle","corners":"grass"},"icons":{"soldiers":"pawns","kings":"kings"}},
+	"board": {"height":9,"width":9},
+	"terrain": {"corners": [["positions",[1001,1009,9001,9009]]], "throne": [{"pos":5005}]},
+	"setup": {
+		"soldiers": [
+			["positions",[1004,1005,1006,2005,4001,5001,6001,5002,4009,5009,6009,5008,9004,9005,9006,8005],{"owner":2}],
+			["positions",[3005,4005,6005,7005,5003,5004,5006,5007],{"owner":1}]
+		],
+		"kings": [{"pos":5005,"owner":1}]
+	},
+	"marks": {
+		"selectunit": {
+			"from": "myunits",
+			"rungenerators": ["findmovetargets"],
+			"requiredby": ["selectmove"]
+		},
+		"selectmove": {
+			"from": "movetargets",
+			"rungenerators": ["findkilltargets","finddeadkings"]
+		}
+	},
+	"generators": {
+		"findmovetargets": {
+			"type": "walker",
+			"starts": "selectunit",
+			"dirs": ["dirs",[1,3,5,7]],
+			"blocks": ["union","units",["ifelse",["anyat","mykings",["contextpos","start"]],"throne","terrain"]],
+			"draw": {
+				"steps": {
+					"tolayer": "movetargets"
+				}
+			}
+		},
+		"findkilltargets": {
+			"type": "walker",
+			"starts": "selectmove",
+			"dirs": ["dirs",[1,3,5,7]],
+			"steps": "oppunits",
+			"blocks": ["union","myunits",["subtract","terrain","oppkings"]],
+			"max": 2,
+			"prioritizeblocksoversteps": true,
+			"draw": {
+				"steps": {
+					"condition": ["and",[
+						["same",["contextval","stopreason"],"hitblock"]
+					]],
+					"tolayer": ["ifelse",["anyat","oppkings",["contextpos","target"]],"threatenedking","willdie"]
+				}
+			}
+		},
+		"finddeadkings": {
+			"type": "nextto",
+			"starts": "threatenedking",
+			"dirs": ["dirs",[1,3,5,7]],
+			"condition": ["noneat",["union","myunits","terrain"],["contextpos","target"]],
+			"draw": {
+				"start": {
+					"condition": ["same",["contextval","neighbourcount"],1],
+					"tolayer": "willdie"
+				}
+			}
+		}
+	},
+	"commands": {
+		"move": {
+			"requiredmarks": ["selectunit","selectmove"],
+			"effect": ["multieffect",[
+				["forallin","willdie",["killunit",["loopid"]]],
+				["moveunit",["idofunitat","selectunit"],"selectmove"]
+			]]
+		}
+	},
+	"endturn":{
+		"condition": ["truthy",["contextval","performedsteps"]],
+		"endgame": {
+			"kingkill": {"condition":["notempty","oppdeadkings"],"result":"win"},
+			"escape": {"condition":["overlaps","corners","mykings"],"result":"win"}
+		}
+	}
+}

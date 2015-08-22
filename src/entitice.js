@@ -52,7 +52,7 @@ Algol.addEntitiesFromDef = function(coll,def){
 	var blueprint, topleft, bottomright;
 	if (I.List.isList(def)){ 
 		if (def.first()==="positions"){ // [positions,<list>,<blueprint>]
-			blueprint = def.get(2);
+			blueprint = def.get(2) || I.Map();
 			return def.get(1).reduce(function(mem,pos){
 				return mem.push(blueprint.set("pos",pos));
 			},coll);

@@ -1,0 +1,63 @@
+{
+	"name": "Retsami",
+	"board": {"height":9,"width":9},
+	"graphics": {"tiles": {"east":"grass","west":"grass","north":"castle","south":"castle","goal":"water"},"icons":{"soldiers":"pawns"}},
+	"terrain": {
+		"east": [
+			["rectangle",9001,9008,0,{"s":1,"dir":3}],["rectangle",8001,8007,0,{"s":5,"dir":3}],["rectangle",7002,7006,0,{"s":9,"dir":3}],["rectangle",6003,6005,0,{"s":13,"dir":3}], {"pos":5004,"s":17,"dir":3}
+		],
+		"north": [
+			["rectangle",2009,9009,0,{"s":2,"dir":1}], ["rectangle",3008,8008,0,{"s":6,"dir":1}], ["rectangle",4007,7007,0,{"s":10,"dir":1}], ["rectangle",5006,6006,0,{"s":14,"dir":1}]
+		],
+		"west": [
+			["rectangle",1002,1009,0,{"s":3,"dir":7}], ["rectangle",2003,2008,0,{"s":7,"dir":7}], ["rectangle",3004,3007,0,{"s":11,"dir":7}], ["rectangle",4005,4006,0,{"s":15,"dir":7}]
+		],
+		"south": [
+			["rectangle",1001,7001,0,{"s":4,"dir":5}], ["rectangle",2002,6002,0,{"s":8,"dir":5}], ["rectangle",3003,5003,0,{"s":12,"dir":5}], {"pos":4004,"s":16,"dir":5}
+		],
+		"start": [ ["rectangle",9001,9008] ],
+		"goal": [{"pos":5005}]
+	},
+	"setup": {
+		"soldiers": [ ["positions",[9002,9004,9006,9008],{"owner":1}],["positions",[9001,9003,9005,9007],{"owner":2}] ]
+	},
+	"marks": {
+		"selectunit": {
+			"from": "myunits",
+			"rungenerators": ["findforbidden","findadvance1","findadvance2","findkilltargets"]
+		}
+	},
+	"commands": {},
+	"generators": {
+		"findforbidden": {
+			"type": "walker",
+			"dirs": ["relativedir",5,["lookup","terrain",["contextpos","start"],"dir"]],
+			"blocks": "oppunits",
+			"draw": {
+				"block": {
+					"tolayer": "forbidden"
+				}
+			}
+		},
+		"findkilltargets": {
+			"type": "walker",
+			"blocks": "oppunits",
+			"draw": {
+				"blocks": {
+					"condition": ["and",[
+						["noneat","forbidden",["contextpos","target"]],
+						["not",["morethan",["lookup","terrain",["contextpos","start"],"s"],["lookup","terrain",["contextpos","target"],"s"]]]
+					]],
+					"tolayer": "killtargets"
+				}
+			}
+		},
+		"findadvance1": {
+			"dirs": ["relativedir",5,["lookup","terrain",["contextpos","start"],"dir"]]
+		},
+		"findadvance2": {
+
+		}
+	},
+	"endturn": {}
+}

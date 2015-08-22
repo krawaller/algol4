@@ -43,7 +43,7 @@ var Board = React.createClass({
             history = history.concat(newl);
         }
         this.setState({"state":newstate,"history":history});
-        //console.log("NEW STATE",newstate.toJS());
+        //console.log("LAYERS IN NEW STATE",newstate.get("layers").toJS());
         //console.log("Command",cmnd.toJS());
     },
     changeIndex: function(i){

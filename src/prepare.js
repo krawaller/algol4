@@ -55,6 +55,12 @@ Algol.prepareBaseLayers = function(gamedef,nbrofplayers){
 			return mem.delete(val.get("pos"));
 		},mem)
 	},base.get("board")));
+	// add terrain
+	base = base.set("terrain",parsedterrains.reduce(function(mem,layer,layername){
+		return layer.reduce(function(mem,val,key){
+			return I.pushIn(mem,[val.get("pos")],val);
+		},mem)
+	},I.Map()));
 	// add nolayers
 	base = parsedterrains.reduce(function(mem,list,layername){
 		return mem.set("no"+layername,list.reduce(function(mem,val,key){

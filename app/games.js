@@ -16,7 +16,9 @@ var _ = require('lodash'),
         murusgallicus: require("../games/murusgallicus.json"),
         murusgallicusadvanced: require("../games/murusgallicusadvanced.json"),
         pawnographic: require("../games/pawnographic.json"),
+        //retsami: require("../games/retsami.json"),
         sombrero: require("../games/sombrero.json"),
+        tablut: require("../games/tablut.json"),
         trespass: require("../games/trespass.json"),
     };
 
