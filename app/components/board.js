@@ -16,7 +16,7 @@ var React = require('react'),
 var Board = React.createClass({
     mixins: [Router.State],
     getInitialState: function(){
-        var game = Algol.prepareNewGameState(games[this.getParams().gamename],2);
+        var game = Algol.newGame(games[this.getParams().gamename],2);
         return {
             state: game,
             terrainstate: game,

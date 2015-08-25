@@ -1,7 +1,7 @@
 var _ = require('lodash'),
     I = require("../src/immutableextensions"),
     games = {
-        amazons: require("../games/amazons.json"),
+        amazons: require("../games/amazons.json") /*,
         archers: require("../games/archers.json"),
         breakthru: require("../games/breakthru.json"),
         cannon: require("../games/cannon.json"),
@@ -19,7 +19,7 @@ var _ = require('lodash'),
         //retsami: require("../games/retsami.json"),
         sombrero: require("../games/sombrero.json"),
         tablut: require("../games/tablut.json"),
-        trespass: require("../games/trespass.json"),
+        trespass: require("../games/trespass.json"),*/
     };
 
 module.exports = _.reduce(games,function(mem,def,name){
@@ -69,23 +69,6 @@ function defaultify(def){
     def = def.set("marks",def.get("marks").reduce(function(mem,mdef,mname){
         mdef = mem.get(mname);
         mem = mem.set(mname,mdef.set("name",mname));
-        mem = (mdef.get("requiredby")||I.List()).reduce(function(m,slave){
-            return I.pushIn(m,[slave,"requiredmarks"],mname);
-        },mem);
-        if (mdef.has("rungenerators")){
-            mem = mem.set(mname,mdef.get("rungenerators").reduce(function(m,gname){
-                return m.set("cleanse", ((m.get("cleanse")||I.List()).concat( def.getIn(["generators",gname,"drawsto"]) )).toSet().toList() )
-            },mdef));
-            //console.log("now",mname,"cleanses",mdef.get("cleanse").toJS());
-        }
-        if (mdef.has("notifhasmark")){
-            //console.log("So",mname,"is allergic to",mdef.get("notifhasmark").toJS().join(","));
-            mem = mdef.get("notifhasmark").reduce(function(m,allergicto){
-                m = I.pushInIfNew(m,[allergicto,"notifhasmark"],mname);
-                //console.log("Now reversed in",allergicto,m.getIn([allergicto,"notifhasmark"]).toJS().join(","));
-                return m;
-            },mem);
-        }
         return mem;
     },def.get("marks"),this))
     return def;

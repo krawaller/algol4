@@ -1,43 +1,42 @@
 {
-	"name": "Amazons",
-	"source": "http://www.chessvariants.org/other.dir/amazons.html",
+	"meta": {
+		"name": "Amazons",
+		"source": "http://www.chessvariants.org/other.dir/amazons.html"
+	},
 	"graphics": {
 		"icons": { "queens": "queens", "fires": "fivestars" }
 	},
 	"board": { "height": 10, "width": 10 },
 	"setup": { "queens":[ ["positions",[1004,1007,4001,4010],{"owner":1}], ["positions",[10004,10007,7001,7010],{"owner":2}] ] },
+	"startturn": {
+		"allowMarks": ["selectunit"]
+	},
 	"marks": {
 		"selectunit": {
-			"condition": ["falsy",["contextval","movedto"]],
 			"from": "myunits",
-			"requiredby": ["selectmovetarget"],
-			"rungenerators": ["findmovetargets"]
+			"runGenerators": ["findmovetargets"],
+			"allowMarks": ["selectmovetarget"]
 		},
 		"selectmovetarget": {
-			"condition": ["falsy",["contextval","movedto"]],
-			"from": "movetarget"
+			"from": "movetarget",
+			"allowCommands": ["move"]
 		},
 		"selectfiretarget": {
-			"condition": ["truthy",["contextval","movedto"]],
-			"from": "firetarget"
+			"from": "firetarget",
+			"allowCommands": ["fire"]
 		}
-	},
-	"endturn": {
-		"condition":["same",["contextval","performedsteps"],2],
-		"commandcap": true
 	},
 	"commands": {
 		"move": {
-			"requiredmarks": ["selectunit","selectmovetarget"],
-			"effect": ["multieffect",[
+			"applyEffects": [
 				["moveunit",["idofunitat",["markpos","selectunit"]],["markpos","selectmovetarget"]],
 				["setcontextval","movedto",["markpos","selectmovetarget"]]
-			]],
-			"rungenerators": ["findfiretargets"]
+			],
+			"runGenerators": ["findfiretargets"],
+			"allowMarks": ["selectfiretarget"]
 		},
 		"fire": {
-			"requiredmarks": ["selectfiretarget"],
-			"effect": ["spawnunit",["markpos","selectfiretarget"],"fires",0]
+			"applyEffects": [ ["spawnunit",["markpos","selectfiretarget"],"fires",0] ]
 		}
 	},
 	"generators": {
