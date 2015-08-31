@@ -1,89 +1,72 @@
 {
-	"name": "Cannon",
-	"source": "http://www.iggamecenter.com/info/en/cannon.html",
+	"meta": {
+		"name": "Cannon",
+		"source": "http://www.iggamecenter.com/info/en/cannon.html"
+	},
 	"board": { "height": 10, "width": 10 },
-	"graphics": { "icons": {"soldiers":"pawns","flags":"flags"} },
+	"graphics": { "icons": {"soldiers":"pawns","flags":"kings"} },
 	"setup": { "soldiers": [
-		["rectangle",2002,4002,{"owner":1,"dir":5}], ["rectangle",2004,4004,{"owner":1,"dir":5}], ["rectangle",2006,4006,{"owner":1,"dir":5}],
-		["rectangle",2008,4008,{"owner":1,"dir":5}], ["rectangle",2010,4010,{"owner":1,"dir":5}],
-		["rectangle",7001,9001,{"owner":2,"dir":1}], ["rectangle",7003,9003,{"owner":2,"dir":1}], ["rectangle",7005,9005,{"owner":2,"dir":1}],
-		["rectangle",7007,9007,{"owner":2,"dir":1}], ["rectangle",7009,9009,{"owner":2,"dir":1}]
+		["rectangle",2002,4002,1,{"dir":5}], ["rectangle",2004,4004,1,{"dir":5}], ["rectangle",2006,4006,1,{"dir":5}],
+		["rectangle",2008,4008,1,{"dir":5}], ["rectangle",2010,4010,1,{"dir":5}],
+		["rectangle",7001,9001,2,{"dir":1}], ["rectangle",7003,9003,2,{"dir":1}], ["rectangle",7005,9005,2,{"dir":1}],
+		["rectangle",7007,9007,2,{"dir":1}], ["rectangle",7009,9009,2,{"dir":1}]
 	 ] },
-	"terrain": { "townplaces": [ ["rectangle",1002,1009,{"owner":1}], ["rectangle",10002,10009,{"owner":2}] ] },
+	"terrain": { "townplaces": [ ["rectangle",1002,1009,1], ["rectangle",10002,10009,2] ] },
 	"marks": {
 		"selectdeploy": {
 			"from": "mytownplaces",
-			"condition": ["morethan",3,["contextval","turn"]]
+			"allow": [ ["command","deploy"] ]
 		},
 		"selecthead": {
 			"from": "mysoldiers",
-			"condition": ["morethan",["contextval","turn"],2],
-			"rungenerators": ["findmovetargets","findkilltargets","findfleetargets","findpotentialtails"],
-			"requiredby": ["selecttail","selectmove","selectfire","selectmarch"],
-			"cleanse": ["movetarget","potentialtail","killtarget","fleetarget"],
-			"requiredby": ["selecttail","selectmove","selectkill"]
+			"runGenerators": ["findmovetargets","findkilltargets","findfleetargets","findpotentialtails"],
+			"allow": [ ["mark","selecttail"], ["mark","selectmove"] ]
 		},
 		"selecttail": {
 			"from": "potentialtail",
-			"rungenerators": ["findphalanxmembers","findmarchandfiretargets"],
-			"notifhasmark": ["selectmove"],
-			"cleanse": ["phalanxmember","phalanxend","marchtarget","firetarget"],
-			"requiredmarks": ["selecthead"],
-			"requiredby": ["selectfire","selectmarch"]
+			"runGenerators": ["findphalanxmembers","findmarchandfiretargets"],
+			"allow": [ ["mark","selectfire"], ["mark","selectmarch"] ]
 		},
 		"selectmove": {
-			"from": "movetarget",
-			"notifhasmark": ["selecttail","selectkill"],
-			"requiredmarks": ["selecthead"]
-		},
-		"selectkill": {
-			"from": "killtarget",
-			"notifhasmark": ["selecttail","selectmove"],
-			"requiredmarks": ["selecthead"]
+			"from": ["union","movetarget","killtarget"],
+			"allow": [ ["command","move"] ]
 		},
 		"selectfire": {
 			"from": "firetarget",
-			"notwith": ["selectmarch","selectmove"],
-			"cleanse": ["firevictims"],
-			"requiredmarks": ["selecthead","selecttail"]
+			"allow": [ ["command","fire"] ]
 		},
 		"selectmarch": {
 			"from": "marchtarget",
-			"notifhasmark": ["selectfire"],
-			"requiredmarks": ["selecthead","selecttail"]
+			"allow": [ ["command","march"] ]
 		}
 	},
 	"commands": {
 		"deploy": {
-			"requiredmarks": ["selectdeploy"],
-			"effect": ["spawnunit","selectdeploy","flags",["contextval","currentplayer"]]
+			"applyEffects": [ ["spawnunit","selectdeploy","flags",["contextval","currentplayer"]] ]
 		},
 		"move": {
-			"requiredmarks": ["selecthead","selectmove"],
-			"effect": ["moveunit",["idofunitat","selecthead"],"selectmove"]
-		},
-		"kill": {
-			"requiredmarks": ["selecthead","selectkill"],
-			"effect": ["multieffect",[
-				["killunit",["idofunitat","selectkill"]],
-				["moveunit",["idofunitat","selecthead"],"selectkill"]
-			]]
-		},
-		"march": {
-			"requiredmarks": ["selecthead","selecttail","selectmarch"],
-			"effect": ["forallin","phalanxmember",
-				["offsetunit",["loopid"],["lookup","marchtarget",["markpos","selectmarch"],"heading"],1,0]
+			"applyEffects": [
+				["forallin","selectmove",["killunit",["loopid"]]],
+				["moveunit",["idofunitat","selecthead"],"selectmove"]
 			]
 		},
+		"march": {
+			"applyEffects": [ ["forallin","phalanxmember",
+				["offsetunit",["loopid"],["lookup","marchtarget",["markpos","selectmarch"],"heading"],1,0]
+			] ]
+		},
 		"fire": {
-			"requiredmarks": ["selecthead","selectfire"],
-			"effect": ["killunit",["idofunitat","selectfire"]]
+			"applyEffects": [ ["killunit",["idofunitat","selectfire"]] ]
 		}
 	},
-	"startturn": { "rungenerators": ["findscared"] },
+	"startturn": {
+		"runGenerators": ["findscared"],
+		"allow": [ ["ifelse",["morethan",3,["contextval","turn"]], ["mark","selectdeploy"], ["mark","selecthead"] ] ]
+	},
+	"afterstep": {
+		"allow": [ ["endturn"] ]
+	},
 	"endturn": {
-		"condition":["same",["contextval","performedsteps"],1],
-		"commandcap": true,
 		"endgame": {
 			"flagkill": {"condition":["notempty","oppdeadflags"],"result":"win"}
 		}

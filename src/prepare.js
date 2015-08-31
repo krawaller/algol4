@@ -47,7 +47,9 @@ Algol.prepareBoardLayersFromBoardDef = function(boarddef){
 Used in prepareNewGameState
 */
 Algol.prepareBaseLayers = function(gamedef,nbrofplayers){
-	var parsedterrains = (gamedef.get("terrain")||I.Map()).map(this.prepareEntitiesFromList,this);
+	var parsedterrains = (gamedef.get("terrain")||I.Map()).map(function(terdef){
+		return this.prepareEntitiesFromList(terdef,gamedef.get("board"));
+	},this);
 	var base = this.prepareBoardLayersFromBoardDef(gamedef.get("board"));
 	// add noterrain
 	base = base.set("noterrain",parsedterrains.reduce(function(mem,layer,layername){
@@ -96,7 +98,7 @@ Algol.prepareNewGameState = function(gamedef,nbrofplayers){
 		},I.Map())),
 		commandsinorder: commandslist,
 		connections: this.prepareConnectionsFromBoardDef(gamedef.get("board")),
-		data: I.Map().set("units",this.prepareInitialUnitDataFromSetup(gamedef.get("setup"))),
+		data: I.Map().set("units",this.prepareInitialUnitForGame(gamedef)),
 		baselayers: this.prepareBaseLayers(gamedef,nbrofplayers),
 		basecontext: {
 			nbrofplayers: nbrofplayers

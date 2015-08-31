@@ -1,6 +1,8 @@
 {
-	"name": "Archers",
-	"source": "http://www.di.fc.ul.pt/~jpn/gv/Archers.pdf",
+	"meta": {
+		"name": "Archers",
+		"source": "http://www.di.fc.ul.pt/~jpn/gv/Archers.pdf"
+	},
 	"board": { "height": 9, "width": 9 },
 	"graphics": {
 		"tiles": { "trees": "grass" },
@@ -10,19 +12,16 @@
 	},
 	"terrain": {
 		"trees": [
-			["rectangle",2002,4004,{"owner":1}],
-			["rectangle",6006,8008,{"owner":2}]
+			["rectangle",2002,4004,1],
+			["rectangle",6006,8008,2]
 		]
 	},
 	"setup": {
 		"archers": [
-			["positions",[2002,2003,2004,3002,3004,4002,4003,4004],{"owner":1,"dir":5}],
-			["positions",[6006,6007,6008,7006,7008,8006,8007,8008],{"owner":2,"dir":1}]
+			["positions",[2002,2003,2004,3002,3004,4002,4003,4004],1,{"dir":5}],
+			["positions",[6006,6007,6008,7006,7008,8006,8007,8008],2,{"dir":1}]
 		],
 		"kings": [{"pos":3003,"dir":5,"owner":1},{"pos":7007,"dir":1,"owner":2}]
-	},
-	"startstep": {
-		"rungenerators": ["findarrows"]
 	},
 	"generators": {
 		"findkilltargets": {
@@ -81,21 +80,34 @@
 	"marks": {
 		"selectunit": {
 			"from": "myunits",
-			"rungenerators": ["findfooting","findkilltargets"],
-			"requiredby": ["selectmove"]
+			"runGenerators": ["findfooting","findkilltargets"],
+			"allow": [
+				["mark","selectmove"],
+				["command","left"],
+				["command","right"],
+				["if",["and",[
+					["same",["contextval","nonfiremoves"],2],
+					["notempty","gonnadie"],
+					["falsy",["contextval",["idofunitat",["markpos","selectunit"]]]]
+				]],["command","fire"]]
+			]
 		},
 		"selectmove": {
-			"from": "movetargets"
+			"from": "movetargets",
+			"allow": [["command","move"]]
 		}
 	},
 	"startturn": {
-		"applyeffect": ["setcontextval","nonfiremoves",2]
+		"applyEffects": [["setcontextval","nonfiremoves",2]],
+		"runGenerators": ["findarrows"],
+		"allow": [["mark","selectunit"]]
+	},
+	"afterstep": {
+		"runGenerators": ["findarrows"],
+		"allow": [["ifelse",["truthy",["contextval","nonfiremoves"]],["mark","selectunit"],["endturn"]]]
 	},
 	"endturn": {
-		"canalwaysend": ["true"],
-		"condition":["falsy",["contextval","nonfiremoves"]],
-		"commandcap": true,
-		"passto": ["contextval","nextplayer"],
+		"canalwaysreachend": true,
 		"endgame": {
 			"infiltration": {"condition":["overlaps","myunits","opptrees"],"result":"win"},
 			"kingkill": {"condition":["notempty","oppdeadkings"],"result":"win"}
@@ -103,42 +115,33 @@
 	},
 	"commands": {
 		"move": {
-			"requiredmarks": ["selectunit","selectmove"],
-			"effect": ["multieffect",[
+			"applyEffects": [
 				["setcontextval",["idofunitat","selectunit"],"hasmoved"],
 				["moveunit",["idofunitat","selectunit"],"selectmove"],
 				["addtocontextval","nonfiremoves",["mult",-1,["lookup","movetargets","selectmove","cost"]]]
-			]],
-			"setmarks": { "selectunit": "selectmove" }
+			],
+			"setMarks": { "selectunit": "selectmove" }
 		},
 		"left": {
-			"requiredmarks": ["selectunit"],
-			"effect": ["multieffect",[
+			"applyEffects": [
 				["turnunit",["idofunitat",["markpos","selectunit"]],-2],
 				["addtocontextval","nonfiremoves",-1]
-			]],
-			"setmarks": { "selectunit": "selectunit" }
+			],
+			"setMarks": { "selectunit": "selectunit" }
 		},
 		"right": {
-			"requiredmarks": ["selectunit"],
-			"effect": ["multieffect",[
+			"applyEffects": [
 				["turnunit",["idofunitat",["markpos","selectunit"]],2],
 				["addtocontextval","nonfiremoves",-1]
-			]],
-			"setmarks": { "selectunit": "selectunit" }
+			],
+			"setMarks": { "selectunit": "selectunit" }
 		},
 		"fire": {
-			"requiredmarks": ["selectunit"],
-			"condition": ["and",[
-				["same",["contextval","nonfiremoves"],2],
-				["notempty","gonnadie"],
-				["falsy",["contextval",["idofunitat",["markpos","selectunit"]]]]
-			]],
-			"effect": ["multieffect",[
+			"applyEffects": [
 				["setcontextval",["idofunitat",["markpos","selectunit"]],"hasfired"],
 				["killunit",["idofunitat",["firstposin","gonnadie"]]]
-			]],
-			"setmarks": { "selectunit": ["markpos","selectunit"] }
+			],
+			"setMarks": { "selectunit": "selectunit" }
 		}
 	}
 }

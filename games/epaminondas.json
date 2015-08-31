@@ -1,51 +1,51 @@
 {
-	"name": "Epaminondas",
-	"source": "https://boardgamegeek.com/filepage/55902/epaminondas-rules-nestorgames",
+	"meta": {
+		"name": "Epaminondas",
+		"source": "https://boardgamegeek.com/filepage/55902/epaminondas-rules-nestorgames"
+	},
 	"board": { "height": 12, "width": 14 },
 	"graphics": { "tiles": {"bases":"grass"}, "icons": {"soldiers":"pawns"} },
-	"setup": { "soldiers": [ ["rectangle",1001,2014,{"owner":1}], ["rectangle",11001,12014,{"owner":2}] ] },
-	"terrain": { "bases": [ ["rectangle",1001,1014,{"owner":1}], ["rectangle",12001,12014,{"owner":2}] ] },
+	"setup": { "soldiers": [ ["rectangle",1001,2014,1], ["rectangle",11001,12014,2] ] },
+	"terrain": { "bases": [ ["rectangle",1001,1014,1], ["rectangle",12001,12014,2] ] },
 	"marks": {
 		"selecthead": {
 			"from": "myunits",
-			"rungenerators": ["findimmediatetargets","findpotentialtails"],
-			"requiredby": ["selecttail","selectmove","selectcharge","selectmarch"]
+			"runGenerators": ["findimmediatetargets","findpotentialtails"],
+			"allow": [ ["mark","selecttail"], ["mark","selectmove"] ]
 		},
 		"selecttail": {
 			"from": "potentialtail",
-			"rungenerators": ["findphalanxmembers","findmarchandchargetargets","findopposingphalanx"],
-			"notifhasmark": ["selectmove"],
-			"requiredby": ["selectcharge","selectmarch"]
+			"runGenerators": ["findphalanxmembers","findmarchandchargetargets","findopposingphalanx"],
+			"allow": [ ["mark","selectcharge"], ["mark","selectmarch"] ]
 		},
 		"selectmove": {
-			"from": "movetarget"
+			"from": "movetarget",
+			"allow": [["command","move"]]
 		},
 		"selectcharge": {
 			"from": "chargetarget",
-			"notifhasmark": ["selectmarch"],
-			"rungenerators": ["findchargevictims"]
+			"runGenerators": ["findchargevictims"],
+			"allow": [["command","charge"]]
 		},
 		"selectmarch": {
-			"from": "marchtarget"
+			"from": "marchtarget",
+			"allow": [["command","march"]]
 		}
 	},
 	"commands": {
 		"move": {
-			"requiredmarks": ["selecthead","selectmove"],
-			"effect": ["moveunit",["idofunitat","selecthead"],"selectmove"]
+			"applyEffects": [["moveunit",["idofunitat","selecthead"],"selectmove"]]
 		},
 		"march": {
-			"requiredmarks": ["selecthead","selecttail","selectmarch"],
-			"effect": ["forallin","phalanxmember",
+			"applyEffects": [["forallin","phalanxmember",
 				["offsetunit",["loopid"],
 					["lookup","marchtarget",["markpos","selectmarch"],"heading"],
 					["lookup","marchtarget",["markpos","selectmarch"],"distance",
 					0]]
-			]
+			]]
 		},
 		"charge": {
-			"requiredmarks": ["selecthead","selecttail","selectcharge"],
-			"effect": ["multieffect",[
+			"applyEffects": [
 				["forallin","chargevictims",
 					["killunit",["loopid"]]
 				],
@@ -55,14 +55,16 @@
 						["lookup","chargetarget",["markpos","selectcharge"],"distance",
 						0]]
 				]
-			]]
+			]
 		}
 	},
 	"startturn": {
+		"allow": [["mark","selecthead"]]
+	},
+	"afterstep": {
+		"allow": [["endturn"]]
 	},
 	"endturn": {
-		"condition":["same",["contextval","performedsteps"],1],
-		"commandcap": true,
 		"endgame": {
 			"dominance": {
 				"condition": ["morethan",

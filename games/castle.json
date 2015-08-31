@@ -1,6 +1,8 @@
 {
-	"name": "Castle",
-	"source": "http://www.di.fc.ul.pt/~jpn/gv/castle.htm",
+	"meta": {
+		"name": "Castle",
+		"source": "http://www.di.fc.ul.pt/~jpn/gv/castle.htm"
+	},
 	"board": { "width": 19, "height": 19 },
 	"graphics": {
 		"tiles": {"walls":"castle","thrones":"grass"},
@@ -19,8 +21,8 @@
 	},
 	"setup": {
 		"soldiers": [
-			["positions",[1006,1014,2008,2012,6008,6012,8003,8017],{"owner":1}],
-			["positions",[19006,19014,18008,18012,14008,14012,12003,12017],{"owner":2}]
+			["positions",[1006,1014,2008,2012,6008,6012,8003,8017],1],
+			["positions",[19006,19014,18008,18012,14008,14012,12003,12017],2]
 		]
 	},
 	"generators": {
@@ -34,7 +36,8 @@
 			]],
 			"draw": {
 				"target": {
-					"tolayer": ["ifelse",["anyat","oppunits",["contextpos","target"]],"killtargets","movetargets"]
+					"condition": ["noneat","myunits",["contextpos","target"]],
+					"tolayer": "movetargets"
 				}
 			}
 		},
@@ -50,41 +53,35 @@
 				},
 				"block": {
 					"condition": ["anyat","oppunits",["contextpos","target"]],
-					"tolayer": "killtargets"
+					"tolayer": "movetargets"
 				}
 			}
 		}
 	},
+	"startturn": {
+		"allow": [["mark","selectunit"]]
+	},
 	"marks": {
 		"selectunit": {
 			"from": "myunits",
-			"rungenerators": ["findhops","findslides"],
-			"requiredby": ["selectmovetarget","selectkilltarget"]
+			"runGenerators": ["findhops","findslides"],
+			"allow": [["mark","selectmovetarget"]]
 		},
 		"selectmovetarget": {
 			"from": "movetargets",
-			"notifhasmark": ["selectkilltarget"]
-		},
-		"selectkilltarget": {
-			"from": "killtargets"
+			"allow": [["command","move"]]
 		}
 	},
 	"commands": {
 		"move": {
-			"requiredmarks": ["selectunit","selectmovetarget"],
-			"effect": ["moveunit",["idofunitat","selectunit"],"selectmovetarget"]
-		},
-		"kill": {
-			"requiredmarks": ["selectunit","selectkilltarget"],
-			"effect": ["multieffect",[
-				["killunit",["idofunitat","selectkilltarget"]],
-				["moveunit",["idofunitat","selectunit"],"selectkilltarget"]
-			]]
+			"applyEffects": [
+				["forallin","selectmovetarget",["killunit",["loopid"]]],
+				["moveunit",["idofunitat","selectunit"],"selectmovetarget"]
+			],
+			"allow": [["endturn"]]
 		}
 	},
 	"endturn": {
-		"condition": ["truthy",["contextval","performedsteps"]],
-		"commandcap": true,
 		"endgame": {
 			"infiltration": { "condition": ["overlaps","myunits","oppthrones"], "result": "win" },
 			"genocide": { "condition": ["isempty","oppunits"], "result": "win" }

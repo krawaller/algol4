@@ -1,66 +1,67 @@
 {
-	"name": "Murus Gallicus Advanced",
-	"source": "https://boardgamegeek.com/thread/844020/advanced-murus-gallicus",
+	"meta": {
+		"name": "Murus Gallicus Advanced",
+		"source": "https://boardgamegeek.com/thread/844020/advanced-murus-gallicus"
+	},
 	"graphics": { "tiles": {"homerow":"grass"}, "icons": {"towers":"rooks","walls":"pawns","catapults":"queens"} },
 	"board": { "height": 7, "width": 8 },
-	"terrain": { "homerow": [ ["rectangle",1001,1008,{"owner":1}], ["rectangle",7001,7008,{"owner":2}] ] },
-	"setup": { "towers": [ ["rectangle",1001,1008,{"owner":1}], ["rectangle",7001,7008,{"owner":2}] ] },
+	"terrain": { "homerow": [ ["rectangle",1001,1008,1], ["rectangle",7001,7008,2] ] },
+	"setup": { "towers": [ ["rectangle",1001,1008,1], ["rectangle",7001,7008,2] ] },
 	"marks": {
 		"selecttower": {
 			"from": "mytowers",
-			"rungenerators": ["findmovetargets","findkilltargets"],
-			"requiredby": ["selectmove","selectkill"]
+			"runGenerators": ["findmovetargets","findkilltargets"],
+			"allow": [ ["mark","selectmove"], ["mark","selectkill"] ]
 		},
 		"selectmove": {
 			"from": "movetargets",
-			"notifhasmark": ["selectkill"],
-			"rungenerators": ["findmoveresults"]
+			"runGenerators": ["findmoveresults"],
+			"allow": [["command","move"]]
 		},
 		"selectkill": {
-			"from": "killtargets"
+			"from": "killtargets",
+			"allow": [
+				["command","kill"],
+				["if",["anyat","oppcatapults","selectkill"],["command","sacrifice"]]
+			]
 		},
 		"selectcatapult": {
 			"from": "mycatapults",
-			"rungenerators": ["findfiretargets"],
-			"requiredby": ["selectfire"],
-			"notifhasmark": ["selecttower"]
+			"runGenerators": ["findfiretargets"],
+			"allow": [["mark","selectfire"]]
 		},
 		"selectfire": {
-			"from": "firetargets"
+			"from": "firetargets",
+			"allow": [["command","fire"]]
 		}
 	},
 	"commands": {
 		"move": {
-			"requiredmarks": ["selecttower","selectmove"],
-			"effect": ["multieffect",[
+			"applyEffects": [
 				["killunit",["idofunitat","selecttower"]],
 				["forallposin","madecatapults",["setunitdata",["idofunitat",["contextpos","target"]],"group","catapults"]],
 				["forallposin","madetowers",["setunitdata",["idofunitat",["contextpos","target"]],"group","towers"]],
 				["forallposin","madewalls",["spawnunit",["contextpos","target"],"walls",["contextval","currentplayer"]]]
-			]]
+			]
 		},
 		"kill": {
-			"requiredmarks": ["selecttower","selectkill"],
-			"effect": ["multieffect",[
+			"applyEffects": [
 				["setunitdata",["idofunitat","selecttower"],"group","walls"],
 				["ifelse",
 					["anyat","oppcatapults","selectkill"],
 					["setunitdata",["idofunitat","selectkill"],"group","towers"],
 					["killunit",["idofunitat","selectkill"]]
 				]
-			]]
+			]
 		},
 		"sacrifice": {
-			"requiredmarks": ["selecttower","selectkill"],
-			"condition": ["anyat","oppcatapults","selectkill"],
-			"effect": ["multieffect",[
+			"applyEffects": [
 				["setunitdata",["idofunitat","selectkill"],"group","walls"],
 				["killunit",["idofunitat","selecttower"]]
-			]]
+			]
 		},
 		"fire": {
-			"requiredmarks": ["selectcatapult","selectfire"],
-			"effect": ["multieffect",[
+			"applyEffects": [
 				["ifelse",
 					["anyat","oppwalls","selectfire"],
 					["killunit",["idofunitat","selectfire"]],
@@ -71,7 +72,7 @@
 					]
 				],
 				["setunitdata",["idofunitat","selectcatapult"],"group","towers"]
-			]]
+			]
 		}
 	},
 	"generators": {
@@ -130,9 +131,13 @@
 			}
 		}
 	},
+	"startturn": {
+		"allow": [["mark","selecttower"],["mark","selectcatapult"]]
+	},
+	"afterstep": {
+		"allow": [["endturn"]]
+	},
 	"endturn": {
-		"commandcap": true,
-		"condition": ["truthy",["contextval","performedsteps"]],
 		"endgame": {
 			"infiltration": {"condition":["overlaps","myunits","opphomerow"],"result":"win"}
 		}

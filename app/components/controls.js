@@ -6,9 +6,15 @@ var React = require('react'),
 
 var Controls = React.createClass({
     render: function() {
-        var state = this.props.state, cb = this.props.broadcaster,
+        var state = this.props.state, cb = this.props.makeCommand,
             gamecomms = state.getIn(["gamedef","commands"]).keySeq().concat(I.List(["undo","endturn"])),
             avail = state.get("availableCommands");
+        if (state.get("canendturnnow")){
+            avail = avail.set("endturn",true);
+        } 
+        if (state.has("undo")){
+            avail = avail.set("undo",true);
+        }
         if (state.get("endedby")){
             return <div></div>;
         }
@@ -19,7 +25,7 @@ var Controls = React.createClass({
                         return list.concat(<button
                             className={"command"+name}
                             key={name}
-                            onClick={function(){cb(avail.get(name))}}
+                            onClick={function(){cb(name)}}
                         >{name}</button>);
                     } else {
                         return list.concat(<button

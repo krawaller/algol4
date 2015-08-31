@@ -13,8 +13,8 @@ var Status = React.createClass({
                 return ""+str+": "+s.getIn(["context",name])+"  ";
             },"");
         return <div className="status">
-            Playing a game of {s.getIn(["gamedef","name"])}&nbsp;(
-            <a href={s.getIn(["gamedef","source"])}>rules</a>
+            Playing a game of {s.getIn(["gamedef","meta","name"])}&nbsp;(
+            <a href={s.getIn(["gamedef","meta","source"])}>rules</a>
             ). &nbsp;
             { turn+". "+desc+" "+vars }
         </div>

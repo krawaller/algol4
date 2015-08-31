@@ -4,39 +4,42 @@
 		"source": "http://www.chessvariants.org/other.dir/amazons.html"
 	},
 	"graphics": {
-		"icons": { "queens": "queens", "fires": "fivestars" }
+		"icons": { "queens": "queens", "fires": "pawns" }
 	},
 	"board": { "height": 10, "width": 10 },
-	"setup": { "queens":[ ["positions",[1004,1007,4001,4010],{"owner":1}], ["positions",[10004,10007,7001,7010],{"owner":2}] ] },
+	"setup": {
+		"queens":[["positions",[1004,1007,4001,4010],1],["positions",[10004,10007,7001,7010],2]]
+	},
 	"startturn": {
-		"allowMarks": ["selectunit"]
+		"allow": [["mark","selectunit"]]
 	},
 	"marks": {
 		"selectunit": {
 			"from": "myunits",
 			"runGenerators": ["findmovetargets"],
-			"allowMarks": ["selectmovetarget"]
+			"allow": [["mark","selectmovetarget"]]
 		},
 		"selectmovetarget": {
 			"from": "movetarget",
-			"allowCommands": ["move"]
+			"allow": [ ["command","move"] ]
 		},
 		"selectfiretarget": {
 			"from": "firetarget",
-			"allowCommands": ["fire"]
+			"allow": [ ["command","fire"] ]
 		}
 	},
 	"commands": {
 		"move": {
 			"applyEffects": [
-				["moveunit",["idofunitat",["markpos","selectunit"]],["markpos","selectmovetarget"]],
+				["moveunit",["idofunitat","selectunit"],"selectmovetarget"],
 				["setcontextval","movedto",["markpos","selectmovetarget"]]
 			],
 			"runGenerators": ["findfiretargets"],
-			"allowMarks": ["selectfiretarget"]
+			"allow": [ ["mark","selectfiretarget"] ]
 		},
 		"fire": {
-			"applyEffects": [ ["spawnunit",["markpos","selectfiretarget"],"fires",0] ]
+			"applyEffects": [ ["spawnunit",["markpos","selectfiretarget"],"fires",0] ],
+			"allow": [ ["endturn"] ]
 		}
 	},
 	"generators": {

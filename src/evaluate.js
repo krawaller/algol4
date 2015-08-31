@@ -220,7 +220,7 @@ Algol.evaluatePosition = function(state,def){
 	if (typeof def.first !== "function"){
 		console.log("THE HECK POS",state.toJS(),"def",def.toJS && def.toJS() || def)
 	}
-	return positionmethods[def.first()].apply(this,[state].concat(def.rest().toArray()));	
+	return positionmethods[def.first()].apply(this,[state].concat(def.rest().toArray()));
 };
 
 /*

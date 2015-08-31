@@ -99,14 +99,14 @@ a.square {
 	margin-top: 17px;
 }
 
-.projectiles.owner0:after { color: grey; background-color: darkgrey; }
+.projectiles.owner0:after { color: gold; background-color: darkgoldenrod; }
 .projectiles.owner1:after { color: red; background-color: darkred; }
 .projectiles.owner2:after { color: blue; background-color: darkblue; }
 
-.piece.owner0, .historyplr0 { color: grey; }
+.piece.owner0, .historyplr0 { color: gold; }
 .piece.owner1, .historyplr1 { color: red; }
 .piece.owner2, .historyplr2 { color: blue; }
-.piece.owner0 .background { color: darkgrey; }
+.piece.owner0 .background { color: darkgoldenrod; }
 .piece.owner1 .background  { color: darkred; }
 .piece.owner2 .background  { color: darkblue; }
 
@@ -203,4 +203,8 @@ a.square {
 
 .status {
 	height: 30px;
+}
+
+button:disabled {
+    text-decoration: line-through;
 }

@@ -11,7 +11,10 @@ var effectmethods = {
 		return state.setIn(["data","units",this.evaluateId(state,id),"dead"],true);
 	},
 	moveunit: function(state,id,pos){
-		return state.setIn(["data","units",this.evaluateId(state,id),"pos"],this.evaluatePosition(state,pos));
+		var calcid = this.evaluateId(state,id),
+			calcpos = this.evaluatePosition(state,pos);
+		//console.log("MOVING id",id.toJS(),calcid,"pos",pos && pos.toJS &&  pos.toJS() || pos,calcpos,"state",state.toJS());
+		return state.setIn(["data","units",calcid,"pos"],calcpos);
 	},
 	turnunit: function(state,id,mod){
 		id = this.evaluateId(state,id);
@@ -85,6 +88,7 @@ var effectmethods = {
 // Called from Algol.prepareNewTurnState
 
 Algol.applyEffect = function(state,def){
+	//console.log("Applying effect",def.toJS());
 	return effectmethods[def.first()].apply(this,[state].concat(def.rest().toArray()));
 };
 

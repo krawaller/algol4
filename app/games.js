@@ -1,25 +1,25 @@
 var _ = require('lodash'),
     I = require("../src/immutableextensions"),
     games = {
-        amazons: require("../games/amazons.json") /*,
+        amazons: require("../games/amazons.json"),
         archers: require("../games/archers.json"),
-        breakthru: require("../games/breakthru.json"),
+        //breakthru: require("../games/breakthru.json"),
         cannon: require("../games/cannon.json"),
         castle: require("../games/castle.json"),
-        conquest: require("../games/conquest.json"),
+        //conquest: require("../games/conquest.json"),
         crossings: require("../games/crossings.json"),
         daggers: require("../games/daggers.json"),
         epaminondas: require("../games/epaminondas.json"),
-        gogol: require("../games/gogol.json"),
-        krieg: require("../games/krieg.json"),
-        momentum: require("../games/momentum.json"),
+        //gogol: require("../games/gogol.json"),
+        //krieg: require("../games/krieg.json"),
+        //momentum: require("../games/momentum.json"),
         murusgallicus: require("../games/murusgallicus.json"),
         murusgallicusadvanced: require("../games/murusgallicusadvanced.json"),
         pawnographic: require("../games/pawnographic.json"),
         //retsami: require("../games/retsami.json"),
-        sombrero: require("../games/sombrero.json"),
+        //sombrero: require("../games/sombrero.json"),
         tablut: require("../games/tablut.json"),
-        trespass: require("../games/trespass.json"),*/
+        //trespass: require("../games/trespass.json"),
     };
 
 module.exports = _.reduce(games,function(mem,def,name){

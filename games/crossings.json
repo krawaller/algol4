@@ -1,44 +1,45 @@
 {
-	"name": "Crossings",
-	"source": "https://boardgamegeek.com/thread/862890/quicker-more-tactical-mini-8x8-version-epaminondas",
+	"meta": {
+		"name": "Crossings",
+		"source": "https://boardgamegeek.com/thread/862890/quicker-more-tactical-mini-8x8-version-epaminondas"
+	},
 	"board": { "height": 8, "width": 8 },
 	"graphics": { "tiles": {"bases":"grass"}, "icons": {"soldiers":"pawns", "towers":"rooks"} },
-	"setup": { "soldiers": [ ["rectangle",1001,1008,{"owner":1}], ["rectangle",8001,8008,{"owner":2}] ] },
-	"terrain": { "bases": [ ["rectangle",1001,1008,{"owner":1}], ["rectangle",8001,8008,{"owner":2}] ] },
+	"setup": { "soldiers": [ ["rectangle",1001,1008,1], ["rectangle",8001,8008,2] ] },
+	"terrain": { "bases": [ ["rectangle",1001,1008,1], ["rectangle",8001,8008,2] ] },
 	"marks": {
 		"selecthead": {
 			"from": "mysoldiers",
-			"rungenerators": ["findimmediatetargets","findpotentialtails"],
-			"requiredby": ["selecttail","selectmove","selectcharge","selectmarch"]
+			"runGenerators": ["findimmediatetargets","findpotentialtails"],
+			"allow": [ ["mark","selecttail"], ["mark","selectmove"] ]
 		},
 		"selecttail": {
 			"from": "potentialtail",
-			"rungenerators": ["findphalanxmembers","findmarchandchargetargets","findopposingphalanx"],
-			"notifhasmark": ["selectmove"],
-			"requiredby": ["selectcharge","selectmarch"]
+			"runGenerators": ["findphalanxmembers","findmarchandchargetargets","findopposingphalanx"],
+			"allow": [ ["mark","selectmarch"], ["mark","selectcharge"] ]
 		},
 		"selectmove": {
-			"from": "movetarget"
+			"from": "movetarget",
+			"allow": [["command","move"]]
 		},
 		"selectcharge": {
 			"from": "chargetarget",
-			"notifhasmark": ["selectmarch"]
+			"allow": [["command","charge"]]
 		},
 		"selectmarch": {
-			"from": "marchtarget"
+			"from": "marchtarget",
+			"allow": [["command","march"]]
 		}
 	},
 	"commands": {
 		"move": {
-			"requiredmarks": ["selecthead","selectmove"],
-			"effect": ["multieffect",[
+			"applyEffects": [
 				["moveunit",["idofunitat","selecthead"],"selectmove"],
 				["forallin",["intersect","selectmove","oppbases"],["setunitdata",["loopid"],"group","towers"]]
-			]]
+			]
 		},
 		"march": {
-			"requiredmarks": ["selecthead","selecttail","selectmarch"],
-			"effect": ["multieffect",[
+			"applyEffects": [
 				["forallin","phalanxmember",
 					["offsetunit",["loopid"],
 						["lookup","marchtarget",["markpos","selectmarch"],"heading"],
@@ -46,11 +47,10 @@
 						0]]
 				],
 				["forallin",["intersect","selectmarch","oppbases"],["setunitdata",["loopid"],"group","towers"]]
-			]]
+			]
 		},
 		"charge": {
-			"requiredmarks": ["selecthead","selecttail","selectcharge"],
-			"effect": ["multieffect",[
+			"applyEffects": [
 				["killunit",["idofunitat","selectcharge"]],
 				["forallin","phalanxmember",
 					["offsetunit",["loopid"],
@@ -59,12 +59,16 @@
 						0]]
 				],
 				["forallin",["intersect","selectcharge","oppbases"],["setunitdata",["loopid"],"group","towers"]]
-			]]
+			]
 		}
 	},
+	"startturn": {
+		"allow": [["mark","selecthead"]]
+	},
+	"afterstep": {
+		"allow": [["endturn"]]
+	},
 	"endturn": {
-		"condition":["same",["contextval","performedsteps"],1],
-		"commandcap": true,
 		"endgame": {
 			"dominance": {
 				"condition": ["morethan",

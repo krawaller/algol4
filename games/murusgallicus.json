@@ -1,40 +1,41 @@
 {
-	"name": "Murus Gallicus",
-	"source": "https://boardgamegeek.com/filepage/46316/murus-gallicus-detailed-rules",
+	"meta": {
+		"name": "Murus Gallicus",
+		"source": "https://boardgamegeek.com/filepage/46316/murus-gallicus-detailed-rules"
+	},
 	"graphics": { "tiles": {"homerow":"grass"}, "icons": {"towers":"rooks","walls":"pawns"} },
 	"board": { "height": 7, "width": 8 },
-	"terrain": { "homerow": [ ["rectangle",1001,1008,{"owner":1}], ["rectangle",7001,7008,{"owner":2}] ] },
-	"setup": { "towers": [ ["rectangle",1001,1008,{"owner":1}], ["rectangle",7001,7008,{"owner":2}] ] },
+	"terrain": { "homerow": [ ["rectangle",1001,1008,1], ["rectangle",7001,7008,2] ] },
+	"setup": { "towers": [ ["rectangle",1001,1008,1], ["rectangle",7001,7008,2] ] },
 	"marks": {
 		"selecttower": {
 			"from": "mytowers",
-			"rungenerators": ["findmovetargets","findkilltargets"],
-			"requiredby": ["selectmove","selectkill"]
+			"runGenerators": ["findmovetargets","findkilltargets"],
+			"allow": [ ["mark","selectmove"], ["mark","selectkill"] ]
 		},
 		"selectmove": {
 			"from": "movetargets",
-			"notifhasmark": ["selectkill"],
-			"rungenerators": ["findmoveresults"]
+			"runGenerators": ["findmoveresults"],
+			"allow": [["command","move"]]
 		},
 		"selectkill": {
-			"from": "killtargets"
+			"from": "killtargets",
+			"allow": [["command","kill"]]
 		}
 	},
 	"commands": {
 		"move": {
-			"requiredmarks": ["selecttower","selectmove"],
-			"effect": ["multieffect",[
+			"applyEffects": [
 				["killunit",["idofunitat","selecttower"]],
 				["forallposin","madetowers",["setunitdata",["idofunitat",["contextpos","target"]],"group","towers"]],
 				["forallposin","madewalls",["spawnunit",["contextpos","target"],"walls",["contextval","currentplayer"]]]
-			]]
+			]
 		},
 		"kill": {
-			"requiredmarks": ["selecttower","selectkill"],
-			"effect": ["multieffect",[
+			"applyEffects": [
 				["setunitdata",["idofunitat","selecttower"],"group","walls"],
 				["killunit",["idofunitat","selectkill"]]
-			]]
+			]
 		}
 	},
 	"generators": {
@@ -78,9 +79,13 @@
 			}
 		}
 	},
+	"startturn": {
+		"allow": [["mark","selecttower"]]
+	},
+	"afterstep": {
+		"allow": [["endturn"]]
+	},
 	"endturn": {
-		"commandcap": true,
-		"condition": ["truthy",["contextval","performedsteps"]],
 		"endgame": {
 			"infiltration": {"condition":["overlaps","myunits","opphomerow"],"result":"win"}
 		}

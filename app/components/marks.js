@@ -7,12 +7,14 @@ var React = require('react'),
 var Marks = React.createClass({
     render: function() {
         var state = this.props.state,
-            board = state.getIn(["layers","board"]),
-            cb = this.props.broadcaster;
+            add = this.props.addMark,
+            remove = this.props.removeMark,
+            board = state.getIn(["layers","board"]);
         return (
             <div className="marks">
                 
                     { (state.get("marks")||I.Map()).reduce(function(list,pos,markname){
+                        //console.log("existing mark",markname,"at pos",pos);
                         return list.concat(<Mark
                             key = {pos}
                             tileheight={this.props.tileheight} 
@@ -22,26 +24,26 @@ var Marks = React.createClass({
                             isset={true}
                             cb={(function(e){
                                 e && e.preventDefault() && e.stopPropagation();
-                                cb( state.getIn(["removeMarks",markname]) );
+                                //console.log("Clicked removemark for",markname);
+                                remove(markname); // cb( state.getIn(["removeMarks",markname]) );
                             })}
                         />);
                     },[],this) }
                     
-                    { (state.get("availableMarks")||I.Map()).reduce(function(list,posobj,markname){
-                        return posobj.reduce(function(newstateid,pos){
-                            return list.concat(<Mark
-                                key = {pos}
-                                tileheight={this.props.tileheight} 
-                                tilewidth={this.props.tilewidth}
-                                x={board.getIn([pos,0,"x"])}
-                                y={board.getIn([pos,0,"y"])}
-                                isset={false}
-                                cb={(function(e){
-                                    e && e.preventDefault() && e.stopPropagation();
-                                    cb( newstateid );
-                                })}
-                            />);
-                        },list,this);
+                    { (state.get("availableMarks")||I.Map()).reduce(function(list,markname,pos){
+                        return list.concat(<Mark
+                            key = {pos}
+                            tileheight={this.props.tileheight} 
+                            tilewidth={this.props.tilewidth}
+                            x={board.getIn([pos,0,"x"])}
+                            y={board.getIn([pos,0,"y"])}
+                            isset={false}
+                            cb={(function(e){
+                                e && e.preventDefault() && e.stopPropagation();
+                                add(markname,pos);
+                                //cb( newstateid );
+                            })}
+                        />);
                     },[],this) }
 
             </div>

@@ -1,6 +1,8 @@
 {
-	"name": "Daggers",
-	"source": "http://www.di.fc.ul.pt/~jpn/gv/daggers.htm",
+	"meta": {
+		"name": "Daggers",
+		"source": "http://www.di.fc.ul.pt/~jpn/gv/daggers.htm"
+	},
 	"board": { "height": 8, "width": 8 },
 	"graphics": {
 		"tiles": { "bases": "grass" },
@@ -8,91 +10,64 @@
 	},
 	"terrain": {
 		"bases": [
-			["rectangle",1001,1008,{"owner":1}],
-			["rectangle",8001,8008,{"owner":2}]
+			["rectangle",1001,1008,1],
+			["rectangle",8001,8008,2]
 		]
 	},
 	"setup": {
 		"crowns": [
-			["positions",[1004,1005],{"owner":1}],
-			["positions",[8003,8006],{"owner":2}]
+			["positions",[1004,1005],1],
+			["positions",[8003,8006],2]
 		],
 		"daggers": [
-			["rectange",2003,2006,{"owner":1}],
-			["positions",[6003,6006],{"owner":2}],
-			["rectangle",7002,7007,{"owner":2}]
+			["rectange",2003,2006,1],
+			["positions",[6003,6006],2],
+			["rectangle",7002,7007,2]
 		]
 	},
 	"endturn": {
-		"condition":["truthy",["contextval","performedsteps"]],
-		"commandcap": true,
 		"endgame": {
 			"infiltration":{ "condition": ["overlaps","mycrowns","oppbases"], "result": "win" },
 			"kingkill": { "condition": ["notempty","oppdeadcrowns"], "result": "win" }
 		}
 	},
 	"startturn": {
-		"rungenerators": ["findcrowntargets","findtargetsabovedagger","findtargetsbelowdagger"]
+		"allow": [ ["mark","selectunit"] ]
 	},
 	"marks": {
 		"selectunit": {
 			"from": "myunits",
-			"rungenerators": ["findcurrentmovetargets","findcurrentkilltargets"],
-			"requiredby": ["selectmovetarget","selectkilltarget"]
+			"runGenerators": ["findcrowntargets","findtargetsabovedagger","findtargetsbelowdagger"],
+			"allow": [ ["mark","selectmovetarget"] ]
 		},
 		"selectmovetarget": {
-			"from": "currentmovetargets",
-			"notifhasmark": ["selectkilltarget"]
-		},
-		"selectkilltarget": {
-			"from": "currentkilltargets",
-			"notifhasmark": ["selectmovetarget"]
+			"from": "movetarget",
+			"allow": [ ["command","move"] ]
 		}
 	},
 	"commands": {
 		"move": {
-			"requiredmarks": ["selectunit","selectmovetarget"],
-			"effect": ["moveunit",["idofunitat",["markpos","selectunit"]],["markpos","selectmovetarget"]]
-		},
-		"kill": {
-			"requiredmarks": ["selectunit","selectkilltarget"],
-			"effect": ["multieffect",[
-				["killunit",["idofunitat",["markpos","selectkilltarget"]]],
-				["moveunit",["idofunitat",["markpos","selectunit"]],["markpos","selectkilltarget"]]
-			]]
+			"applyEffects": [
+				["forallin","selectmovetarget",["killunit",["loopid"]]],
+				["moveunit",["idofunitat","selectunit"],"selectmovetarget"]
+			],
+			"allow": [["endturn"]]
 		}
 	},
 	"generators": {
-		"findcurrentmovetargets": {
-			"type": "filter",
-			"layer": "movetarget",
-			"matching": {
-				"id": ["is",["idofunitat",["markpos","selectunit"]]]
-			},
-			"tolayer": "currentmovetargets"
-		},
-		"findcurrentkilltargets": {
-			"type": "filter",
-			"layer": "killtarget",
-			"matching": {
-				"id": ["is",["idofunitat",["markpos","selectunit"]]]
-			},
-			"tolayer": "currentkilltargets"
-		},
 		"findcrowntargets": {
 			"type": "nextto",
-			"starts": "mycrowns",
+			"starts": ["intersect","selectunit","mycrowns"],
 			"draw": {
 				"target": {
 					"condition": ["noneat","myunits",["contextpos","target"]],
-					"tolayer": ["ifelse",["anyat","oppunits",["contextpos","target"]],"killtarget","movetarget"],
-					"include": { "id": ["idofunitat",["contextpos","start"]] }
+					"tolayer": ["ifelse",["anyat","oppunits",["contextpos","target"]],"killtarget","movetarget"]
 				}
 			}
 		},
 		"findtargetsabovedagger": {
 			"type": "nextto",
-			"starts": "mydaggers",
+			"starts": ["intersect","selectunit","mydaggers"],
 			"dirs": ["dirs",[8,1,2]],
 			"draw": {
 				"target": {
@@ -103,20 +78,18 @@
 							["anyat","oppdaggers",["contextpos","target"]]
 						]]]
 					]],
-					"tolayer": ["ifelse",["anyat","units",["contextpos","target"]],"killtarget","movetarget"],
-					"include": { "id": ["idofunitat",["contextpos","start"]] }
+					"tolayer": "movetarget"
 				}
 			}
 		},
 		"findtargetsbelowdagger": {
 			"type": "walker",
-			"starts": "mydaggers",
+			"starts": ["intersect","selectunit","mydaggers"],
 			"dirs": ["dirs",[4,5,6]],
 			"blocks": "units",
 			"draw": {
 				"steps": {
-					"tolayer": "movetarget",
-					"include": { "id": ["idofunitat",["contextpos","start"]] }
+					"tolayer": "movetarget"
 				},
 				"block": {
 					"condition": ["and",[
@@ -126,8 +99,7 @@
 							["anyat","oppdaggers",["contextpos","target"]]
 						]]]
 					]],
-					"tolayer": ["ifelse",["anyat","units",["contextpos","target"]],"killtarget","movetarget"],
-					"include": { "id": ["idofunitat",["contextpos","start"]] }
+					"tolayer": "movetarget"
 				}
 			}
 		}

@@ -1,25 +1,28 @@
 {
-	"name": "Tablut",
-	"source": "https://boardgamegeek.com/thread/346976/another-tafl-lesson",
+	"meta": {
+		"name": "Tablut",
+		"source": "https://boardgamegeek.com/thread/346976/another-tafl-lesson"
+	},
 	"graphics": {"tiles":{"throne":"castle","corners":"grass"},"icons":{"soldiers":"pawns","kings":"kings"}},
 	"board": {"height":9,"width":9},
 	"terrain": {"corners": [["positions",[1001,1009,9001,9009]]], "throne": [{"pos":5005}]},
 	"setup": {
 		"soldiers": [
-			["positions",[1004,1005,1006,2005,4001,5001,6001,5002,4009,5009,6009,5008,9004,9005,9006,8005],{"owner":2}],
-			["positions",[3005,4005,6005,7005,5003,5004,5006,5007],{"owner":1}]
+			["positions",[1004,1005,1006,2005,4001,5001,6001,5002,4009,5009,6009,5008,9004,9005,9006,8005],2],
+			["positions",[3005,4005,6005,7005,5003,5004,5006,5007],1]
 		],
 		"kings": [{"pos":5005,"owner":1}]
 	},
 	"marks": {
 		"selectunit": {
 			"from": "myunits",
-			"rungenerators": ["findmovetargets"],
-			"requiredby": ["selectmove"]
+			"runGenerators": ["findmovetargets"],
+			"allow": [["mark","selectmove"]]
 		},
 		"selectmove": {
 			"from": "movetargets",
-			"rungenerators": ["findkilltargets","finddeadkings"]
+			"runGenerators": ["findkilltargets","finddeadkings"],
+			"allow": [["command","move"]]
 		}
 	},
 	"generators": {
@@ -66,15 +69,17 @@
 	},
 	"commands": {
 		"move": {
-			"requiredmarks": ["selectunit","selectmove"],
-			"effect": ["multieffect",[
+			"applyEffects": [
 				["forallin","willdie",["killunit",["loopid"]]],
 				["moveunit",["idofunitat","selectunit"],"selectmove"]
-			]]
+			],
+			"allow": [["endturn"]]
 		}
 	},
+	"startturn": {
+		"allow": [["mark","selectunit"]]
+	},
 	"endturn":{
-		"condition": ["truthy",["contextval","performedsteps"]],
 		"endgame": {
 			"kingkill": {"condition":["notempty","oppdeadkings"],"result":"win"},
 			"escape": {"condition":["overlaps","corners","mykings"],"result":"win"}

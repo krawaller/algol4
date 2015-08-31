@@ -35,29 +35,37 @@ Algol.addUnitLayersFromData = function(layers,unitsdata,plr){
 /*
 Used in prepareState
 */
-Algol.prepareInitialUnitDataFromSetup = function(setup){
+Algol.prepareInitialUnitsForGame = function(gamedef){
 	var n = 0;
-	return setup.reduce(function(data,list,groupname){
-		return this.prepareEntitiesFromList(list).reduce(function(data,unit){
+	return gamedef.get("setup").reduce(function(data,list,groupname){
+		return this.prepareEntitiesFromList(list,gamedef.get("board")).reduce(function(data,unit){
 			var id = "unit"+(++n);
 			return data.set(id,unit.set("id",id).set("group",groupname));
 		},data,this);
 	},I.Map(),this);
 };
 
+Algol.ykxToA1 = function(ykx,board){
+	var cols = ["a","b","c","d","e","f","g","i","j","k","l","m","n","o","p","q","r","s","t","u"];
+};
+
+Algol.A1Toykx = function(a1,board){
+	var cols = ["a","b","c","d","e","f","g","i","j","k","l","m","n","o","p","q","r","s","t","u"];	
+}
+
 /*
 Helper function used only in prepareEntitiesFromList
 */
-Algol.addEntitiesFromDef = function(coll,def){
+Algol.addEntitiesFromDef = function(coll,def,board){
 	var blueprint, topleft, bottomright;
 	if (I.List.isList(def)){ 
-		if (def.first()==="positions"){ // [positions,<list>,<blueprint>]
-			blueprint = def.get(2) || I.Map();
+		if (def.first()==="positions"){ // [positions,<list>,<owner>,<blueprint>]
+			blueprint = (def.get(3) || I.Map()).set("owner",def.get(2)||0);
 			return def.get(1).reduce(function(mem,pos){
 				return mem.push(blueprint.set("pos",pos));
 			},coll);
-		} else { // [rectangle,topleft,bottomright,blueprint]
-			blueprint = def.get(3) || I.Map();
+		} else { // [rectangle,topleft,bottomright,owner,blueprint]
+			blueprint = (def.get(4) || I.Map()).set("owner",def.get(3)||0);
 			topleft = parseInt(def.get(1));
 			bottomright = parseInt(def.get(2));
 			return rect =  _.reduce(_.range(Math.floor(topleft/1000),Math.floor(bottomright/1000)+1),function(mem,r){
@@ -74,7 +82,7 @@ Algol.addEntitiesFromDef = function(coll,def){
 /*
 Used in prepareInitialUnitDataFromSetup and prepareTerrainLayerFromEntityList
 */
-Algol.prepareEntitiesFromList = function(deflist,group){
+Algol.prepareEntitiesFromList = function(deflist,board){
 	return deflist.reduce(this.addEntitiesFromDef,I.List());
 }
 

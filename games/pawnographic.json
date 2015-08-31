@@ -1,22 +1,26 @@
 {
-	"name": "Pawnographic chess",
-	"source": "http://www.di.fc.ul.pt/~jpn/gv/pawnographic.htm",
+	"meta": {
+		"name": "Pawnographic chess",
+		"source": "http://www.di.fc.ul.pt/~jpn/gv/pawnographic.htm"
+	},
 	"board": { "height": 8, "width": 8 },
 	"graphics": {
 		"tiles": {"bases":"grass"}, "icons": {"pawns":"pawns"}
 	},
-	"setup": { "pawns":[ ["rectangle",2001,2008,{"owner":1,"dir":5}], ["rectangle",7001,7008,{"owner":2,"dir":1}] ] },
+	"setup": { "pawns":[ ["rectangle",2001,2008,1,{"dir":5}], ["rectangle",7001,7008,2,{"dir":1}] ] },
 	"terrain": {
-		"startrows": [ ["rectangle",2001,2008,{"owner":1}], ["rectangle",7001,7008,{"owner":2}] ],
-		"bases": [ ["rectangle",1001,1008,{"owner":1}], ["rectangle",8001,8008,{"owner":2}] ]
+		"startrows": [ ["rectangle",2001,2008,1], ["rectangle",7001,7008,2] ],
+		"bases": [ ["rectangle",1001,1008,1], ["rectangle",8001,8008,2] ]
 	},
 	"startturn": {
-		"rungenerators": ["findoppshadows"],
-		"applyeffect": ["forallin","myunits",["removeunitdata",["loopid"],"turbo"]]
+		"runGenerators": ["findoppshadows"],
+		"applyEffects": [["forallin","myunits",["removeunitdata",["loopid"],"turbo"]]],
+		"allow": [["mark","selectunit"]]
+	},
+	"afterstep": {
+		"allow": [["endturn"]]
 	},
 	"endturn": {
-		"condition": ["truthy",["contextval","performedsteps"]],
-		"commandcap": true,
 		"endgame": {
 			"infiltration": {"condition": ["overlaps","myunits","oppbases"], "result": "win" },
 			"genocide": {"condition": ["isempty","oppunits"], "result": "win"}
@@ -24,42 +28,37 @@
 	},
 	"commands": {
 		"move": {
-			"requiredmarks": ["selectunit","selectmove"],
-			"effect": ["multieffect",[
+			"applyEffects": [
 				["if",["same",2,["lookup","movetargets","selectmove","step"]],
 					["setunitdata",["idofunitat","selectunit"],"turbo",true]
 				],
 				["moveunit",["idofunitat","selectunit"],"selectmove"]
-			]]
+			]
 		},
 		"kill": {
-			"requiredmarks": ["selectunit","selectkill"],
-			"effect": ["multieffect",[
+			"applyEffects": [
 				["ifelse",
 					["anyat","oppshadows","selectkill"],
 					["killunit",["id",["lookup","oppshadows","selectkill","id"]]],
 					["killunit",["idofunitat","selectkill"]]
 				],
 				["moveunit",["idofunitat","selectunit"],"selectkill"]
-			]]
+			]
 		}
 	},
 	"marks": {
 		"selectunit": {
 			"from": "myunits",
-			"rungenerators": ["findwalktargets","findkilltargets"],
-			"cleanse": ["movetargets","killtargets"],
-			"requiredby": ["selectmove","selectkill"]
+			"runGenerators": ["findwalktargets","findkilltargets"],
+			"allow": [["mark","selectmove"],["mark","selectkill"]]
 		},
 		"selectmove": {
 			"from": "movetargets",
-			"notifhasmark": ["selectkill"],
-			"requiredmarks": ["selectunit"]
+			"allow": [["command","move"]]
 		},
 		"selectkill": {
 			"from": "killtargets",
-			"notifhasmark": ["selectmove"],
-			"requiredmarks": ["selectunit"]
+			"allow": [["command","kill"]]
 		}
 	},
 	"generators": {
