@@ -71,7 +71,7 @@
 		"move": {
 			"applyEffects": [
 				["forallin","willdie",["killunit",["loopid"]]],
-				["moveunit",["idofunitat","selectunit"],"selectmove"]
+				["move","selectunit","selectmove"]
 			],
 			"allow": [["endturn"]]
 		}

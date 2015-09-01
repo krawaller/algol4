@@ -47,16 +47,16 @@
 		"move": {
 			"applyEffects": [
 				["forallin","selectmove",["killunit",["loopid"]]],
-				["moveunit",["idofunitat","selecthead"],"selectmove"]
+				["move","selecthead","selectmove"]
 			]
 		},
 		"march": {
 			"applyEffects": [ ["forallin","phalanxmember",
-				["offsetunit",["loopid"],["lookup","marchtarget",["markpos","selectmarch"],"heading"],1,0]
+				["offsetunit",["loopid"],["lookup","marchtarget","selectmarch","heading"],1,0]
 			] ]
 		},
 		"fire": {
-			"applyEffects": [ ["killunit",["idofunitat","selectfire"]] ]
+			"applyEffects": [ ["kill","selectfire"] ]
 		}
 	},
 	"startturn": {

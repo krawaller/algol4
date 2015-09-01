@@ -17,9 +17,6 @@
 		"applyEffects": [["forallin","myunits",["removeunitdata",["loopid"],"turbo"]]],
 		"allow": [["mark","selectunit"]]
 	},
-	"afterstep": {
-		"allow": [["endturn"]]
-	},
 	"endturn": {
 		"endgame": {
 			"infiltration": {"condition": ["overlaps","myunits","oppbases"], "result": "win" },
@@ -32,33 +29,22 @@
 				["if",["same",2,["lookup","movetargets","selectmove","step"]],
 					["setunitdata",["idofunitat","selectunit"],"turbo",true]
 				],
-				["moveunit",["idofunitat","selectunit"],"selectmove"]
-			]
-		},
-		"kill": {
-			"applyEffects": [
-				["ifelse",
-					["anyat","oppshadows","selectkill"],
-					["killunit",["id",["lookup","oppshadows","selectkill","id"]]],
-					["killunit",["idofunitat","selectkill"]]
-				],
-				["moveunit",["idofunitat","selectunit"],"selectkill"]
-			]
+				["kill","selectmove"],
+				["if",["anyat","oppshadows","selectmove"],["killunit",["id",["lookup","oppshadows","selectmove","id"]]]],
+				["move","selectunit","selectmove"]
+			],
+			"allow": [["endturn"]]
 		}
 	},
 	"marks": {
 		"selectunit": {
 			"from": "myunits",
 			"runGenerators": ["findwalktargets","findkilltargets"],
-			"allow": [["mark","selectmove"],["mark","selectkill"]]
+			"allow": [["mark","selectmove"]]
 		},
 		"selectmove": {
 			"from": "movetargets",
 			"allow": [["command","move"]]
-		},
-		"selectkill": {
-			"from": "killtargets",
-			"allow": [["command","kill"]]
 		}
 	},
 	"generators": {
@@ -94,7 +80,7 @@
 			"condition": ["anyat",["union","oppunits","oppshadows"],["contextpos","target"]],
 			"draw": {
 				"target": {
-					"tolayer": "killtargets"
+					"tolayer": "movetargets"
 				}
 			}
 		}

@@ -58,7 +58,7 @@
 		},
 		"move": {
 			"applyEffects": [
-				["moveunit",["idofunitat","selectking"],"selectmove"],
+				["move","selectking","selectmove"],
 				["forallin","demoted",
 					["setunitdata",["loopid"],"group","soldiers"]
 				],

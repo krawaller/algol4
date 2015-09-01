@@ -117,7 +117,7 @@
 		"move": {
 			"applyEffects": [
 				["setcontextval",["idofunitat","selectunit"],"hasmoved"],
-				["moveunit",["idofunitat","selectunit"],"selectmove"],
+				["move","selectunit","selectmove"],
 				["addtocontextval","nonfiremoves",["mult",-1,["lookup","movetargets","selectmove","cost"]]]
 			],
 			"setMarks": { "selectunit": "selectmove" }
@@ -139,7 +139,7 @@
 		"fire": {
 			"applyEffects": [
 				["setcontextval",["idofunitat",["markpos","selectunit"]],"hasfired"],
-				["killunit",["idofunitat",["firstposin","gonnadie"]]]
+				["kill",["firstposin","gonnadie"]]
 			],
 			"setMarks": { "selectunit": "selectunit" }
 		}
