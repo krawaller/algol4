@@ -1,6 +1,8 @@
 {
-	"name": "Sombrero",
-	"source": "http://www.di.fc.ul.pt/~jpn/gv/sombrero.htm",
+	"meta": {
+		"name": "Sombrero",
+		"source": "http://www.di.fc.ul.pt/~jpn/gv/sombrero.htm"
+	},
 	"graphics": {
 		"icons": {"soldiers":"pawns","kings":"kings"},
 		"turnvars": { "movesleft": "moves left" }
@@ -8,14 +10,18 @@
 	"board": { "height": 8, "width": 8 },
 	"setup": {
 		"kings": [
-			["positions",[1001,1002,1003,1004,8005,8006,8007,8008],{"owner":1}],
-			["positions",[1005,1006,1007,1008,8001,8002,8003,8004],{"owner":2}]
+			["positions",[1001,1002,1003,1004,8005,8006,8007,8008],1],
+			["positions",[1005,1006,1007,1008,8001,8002,8003,8004],2]
 		]
 	},
-	"startturn": { "applyeffect": ["setcontextval","movesleft",2] },
+	"startturn": {
+		"applyEffects": [["setcontextval","movesleft",2]],
+		"allow": [["mark","selectking"]]
+	},
+	"afterstep": {
+		"allow": [ ["ifelse",["falsy",["contextval","movesleft"]],["endturn"],["mark","selectking"]] ]
+	},
 	"endturn": {
-		"condition":["falsy",["contextval","movesleft"]],
-		"commandcap": true,
 		"endgame": {
 			"kingkill": {
 				"condition": ["morethan",2,["positionsin","oppkings"]],"result":"win"
@@ -25,58 +31,52 @@
 	"marks": {
 		"selectking": {
 			"from": "mykings",
-			"cleanse": ["movetarget","swaptarget"],
-			"rungenerators": ["findtargets","findsecondtargets"],
-			"requiredby": ["selectswap","selectmove"]
+			"runGenerators": ["findtargets","findsecondtargets"],
+			"allow": [["mark","selectswap"],["mark","selectmove"]]
 		},
 		"selectswap": {
 			"from": "swaptarget",
-			"notifhasmark": ["selectmove"],
-			"rungenerators": ["finddemotees"]
+			"runGenerators": ["finddemotees"],
+			"allow": [["command","swap"]]
 		},
 		"selectmove": {
 			"from": "movetarget",
-			"notifhasmark": ["selectswap"],
-			"rungenerators": ["finddemotees"]
+			"runGenerators": ["finddemotees"],
+			"allow": [["command","move"]]
 		}
 	},
 	"commands": {
 		"swap": {
-			"requiredmarks": ["selectswap"],
-			"effect": ["multieffect",[
-				["setunitdata",["idofunitat",["markpos","selectking"]],"group","soldiers"],
-				["setunitdata",["idofunitat",["markpos","selectswap"]],"group","kings"],
+			"applyEffects": [
+				["setunitdata",["idofunitat","selectking"],"group","soldiers"],
+				["setunitdata",["idofunitat","selectswap"],"group","kings"],
 				["forallin","demoted",
 					["setunitdata",["loopid"],"group","soldiers"]
 				],
 				["addtocontextval","movesleft",-1]
-			]]
+			]
 		},
 		"move": {
-			"requiredmarks": ["selectmove"],
-			"effect": ["multieffect",[
-				["moveunit",["idofunitat",["markpos","selectking"]],["markpos","selectmove"]],
+			"applyEffects": [
+				["moveunit",["idofunitat","selectking"],"selectmove"],
 				["forallin","demoted",
 					["setunitdata",["loopid"],"group","soldiers"]
 				],
-				["addtocontextval","movesleft",["lookup","movetarget",["markpos","selectmove"],"cost"]]
-			]]
+				["addtocontextval","movesleft",["lookup","movetarget","selectmove","cost"]]
+			]
 		}
 	},
 	"generators": {
 		"findtargets": {
 			"type": "nextto",
-			"starts": ["markpos","selectking"],
+			"starts": "selectking",
 			"condition": ["and",[
 				["noneat","oppunits",["contextpos","target"]],
 				["noneat","mykings",["contextpos","target"]]
 			]],
 			"draw": {
 				"target": {
-					"tolayer": ["ifelse",
-						["anyat","mysoldiers",["contextpos","target"]],
-						"swaptarget","movetarget"
-					],
+					"tolayer": ["ifelse",["anyat","mysoldiers",["contextpos","target"]],"swaptarget","movetarget"],
 					"include": { "cost": -1 }
 				}
 			}

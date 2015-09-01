@@ -207,4 +207,5 @@ a.square {
 
 button:disabled {
     text-decoration: line-through;
+    color: #ccc;
 }

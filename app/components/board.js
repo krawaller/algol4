@@ -57,7 +57,7 @@ var Board = React.createClass({
         this.setState({"index":i});
     },
     render: function() {
-        //console.log("RENDER",this.state.state.toJS());
+        //console.log("RENDER",this.state.state.get("layers").toJS(),"context",this.state.state.get("context").toJS());
         var me = this, s = this.state,
             playing = s.playing,
             state = playing ? s.state : s.history[s.index][1] ;

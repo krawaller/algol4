@@ -1,9 +1,11 @@
 {
-	"name": "Gogol",
-	"source": "http://www.di.fc.ul.pt/~jpn/gv/gogol.htm",
+	"meta": {
+		"name": "Gogol",
+		"source": "http://www.di.fc.ul.pt/~jpn/gv/gogol.htm"
+	},
 	"board": {"height":8,"width":8},
 	"terrain": {
-		"homerow": [ ["rectangle",1001,1008,{"owner":2}], ["rectangle",8001,8008,{"owner":1}] ],
+		"homerow": [ ["rectangle",1001,1008,2], ["rectangle",8001,8008,1] ],
 		"edges": [ ["rectangle",1001,8001], ["rectangle",1008,8008], ["rectangle",1002,1007], ["rectangle",8002,8007] ]
 	},
 	"graphics": {
@@ -11,10 +13,7 @@
 		"icons": {"kings":"kings","soldiers":"pawns"}
 	},
 	"setup": {
-		"soldiers": [ ["rectangle",1001,1008,{"owner":2}], ["rectangle",8001,8008,{"owner":1}] ]
-	},
-	"startturn": {
-		"rungenerators": ["findforbiddenkingspots","findforbiddensoldierspots"]
+		"soldiers": [ ["rectangle",1001,1008,2], ["rectangle",8001,8008,1] ]
 	},
 	"generators": {
 		"findforbiddenkingspots": {
@@ -100,44 +99,46 @@
 	},
 	"marks": {
 		"selectkingdeploy": {
-			"condition": ["morethan",3,["contextval","turn"]],
-			"from": ["subtract","board",["union","units","nokings"]]
+			"from": ["subtract","board",["union","units","nokings"]],
+			"allow": [["command","deploy"]]
 		},
 		"selectunit": {
-			"condition": ["morethan",["contextval","turn"],2],
 			"from": "myunits",
-			"rungenerators": ["findkingwalktargets","findadjacentenemies","findjumptargets"],
-			"requiredby": ["selectmovetarget","selectjumptarget"]
+			"runGenerators": ["findkingwalktargets","findadjacentenemies","findjumptargets"],
+			"allow": [["mark","selectmovetarget"],["mark","selectjumptarget"]]
 		},
 		"selectmovetarget": {
 			"from": ["ifelse",["anyat","mykings","selectunit"],"kingwalk",["subtract","board",["union","units",["union","nosoldiers","jumptargets"]]]],
-			"notifhasmark": ["selectjumptarget"]
+			"allow": [["command","move"]]
 		},
 		"selectjumptarget": {
 			"from": "jumptargets",
-			"rungenerators": ["findsplashed"]
+			"runGenerators": ["findsplashed"],
+			"allow": [["command","jump"]]
 		}
 	},
 	"commands": {
-		"deployking": {
-			"requiredmarks": ["selectkingdeploy"],
-			"effect": ["spawnunit","selectkingdeploy","kings",["contextval","currentplayer"]]
+		"deploy": {
+			"applyEffects": [["spawnunit","selectkingdeploy","kings",["contextval","currentplayer"]]]
 		},
 		"move": {
-			"requiredmarks": ["selectunit","selectmovetarget"],
-			"effect": ["moveunit",["idofunitat","selectunit"],"selectmovetarget"]
+			"applyEffects": [["moveunit",["idofunitat","selectunit"],"selectmovetarget"]]
 		},
 		"jump": {
-			"requiredmarks": ["selectunit","selectjumptarget"],
-			"effect": ["multieffect",[
+			"applyEffects": [
 				["killunit",["idofunitat",["firstposin","willdie"]]],
 				["moveunit",["idofunitat","selectunit"],"selectjumptarget"]
-			]]
+			]
 		}
 	},
+	"startturn": {
+		"runGenerators": ["findforbiddenkingspots","findforbiddensoldierspots"],
+		"allow": [ ["ifelse",["morethan",3,["contextval","turn"]],["mark","selectkingdeploy"],["mark","selectunit"]] ]
+	},
+	"afterstep": {
+		"allow": [["endturn"]]
+	},
 	"endturn": {
-		"condition": ["truthy",["contextval","performedsteps"]],
-		"commandcap": true,
 		"endgame": {
 			"infiltration": { "condition": ["overlaps","mykings","opphomerow"], "result": "win" },
 			"kingkill": { "condition": ["notempty","oppdeadkings"], "result": "win" }

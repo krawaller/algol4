@@ -75,8 +75,8 @@
 	"commands": {
 		"move": {
 			"applyEffects": [
-				["forallin","selectmovetarget",["killunit",["loopid"]]],
-				["moveunit",["idofunitat","selectunit"],"selectmovetarget"]
+				["kill","selectmovetarget"],
+				["move","selectunit","selectmovetarget"]
 			],
 			"allow": [["endturn"]]
 		}

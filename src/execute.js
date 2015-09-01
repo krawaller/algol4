@@ -16,6 +16,19 @@ var effectmethods = {
 		//console.log("MOVING id",id.toJS(),calcid,"pos",pos && pos.toJS &&  pos.toJS() || pos,calcpos,"state",state.toJS());
 		return state.setIn(["data","units",calcid,"pos"],calcpos);
 	},
+	move: function(state,from,to){
+		from = this.evaluatePosition(state,from);
+		to = this.evaluatePosition(state,to);
+		return (state.getIn(["layers","units",from])||I.List()).reduce(function(s,unit){
+			return state.setIn(["data","units",unit.get("id"),"pos"],to);
+		},state,this);
+	},
+	kill: function(state,pos){
+		pos = this.evaluatePosition(state,pos);
+		return (state.getIn(["layers","units",pos])||I.List()).reduce(function(s,unit){
+			return state.setIn(["data","units",unit.get("id"),"dead"],true);
+		},state,this);
+	},
 	turnunit: function(state,id,mod){
 		id = this.evaluateId(state,id);
 		var newdir = state.getIn(["data","units",id,"dir"])+this.evaluateValue(state,mod);

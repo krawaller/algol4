@@ -53,7 +53,7 @@ Algol.removeMark = function(state,markname){
 Algol.makeMark = function(state,markname,pos,nodive){
 	var oldid = state.get("id"), newid = oldid+","+pos;
 	if (state.hasIn(["cache",newid])){
-		return state.getIn(["cache",newid]);
+		return nodive ? state.getIn(["cache",newid]) : this.pruneOptions( state.getIn(["cache",newid]) );
 	}
 	var newstate = state
 		.setIn(["removeMarks",markname],oldid)

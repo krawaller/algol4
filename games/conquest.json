@@ -1,6 +1,8 @@
 {
-	"name": "Conquest",
-	"source": "http://www.di.fc.ul.pt/~jpn/gv/conquest.htm",
+	"meta": {
+		"name": "Conquest",
+		"source": "http://www.di.fc.ul.pt/~jpn/gv/conquest.htm"
+	},
 	"board": {"height": 9,"width": 9},
 	"graphics": {
 		"tiles": {"plus":"castle","x":"castle","center":"grass"},
@@ -8,56 +10,56 @@
 	},
 	"terrain": {
 		"center": [{"pos":5005}],
-		"plus": [ ["positions",[4005,5004,5006,6005],{}] ],
-		"x": [ ["positions",[4004,4006,6004,6006],{}] ],
-		"fortress": [ ["rectangle",4004,6006,{}] ]
+		"plus": [ ["positions",[4005,5004,5006,6005]] ],
+		"x": [ ["positions",[4004,4006,6004,6006]] ],
+		"fortress": [ ["rectangle",4004,6006] ]
 	},
 	"setup": {
 		"soldiers": [
-			["positions",[1001,1002,1003,2001,2003,3001,3002,3003],{"owner":1}],
-			["positions",[7007,7008,7009,8007,8009,9007,9008,9009],{"owner":2}]
+			["positions",[1001,1002,1003,2001,2003,3001,3002,3003],1],
+			["positions",[7007,7008,7009,8007,8009,9007,9008,9009],2]
 		],
 		"kings": [{"pos":2002,"owner":1},{"pos":8008,"owner":2}]
 	},
 	"marks": {
 		"selectunit": {
 			"from": "myunits",
-			"condition": ["not",["hasperformedcommand","move"]],
-			"rungenerators": ["findmovetargets"],
-			"requiredby": ["selectmovetarget"]
+			"runGenerators": ["findmovetargets"],
+			"allow": [["mark","selectmovetarget"]]
 		},
 		"selectmovetarget": {
-			"from": "movetargets"
+			"from": "movetargets",
+			"allow": [["command","move"]]
 		},
 		"selectexiletarget": {
 			"from": "exiletargets",
-			"condition": ["hasperformedcommand","move"],
-			"rungenerators": ["findexiledestinations"],
-			"requiredby": ["selectexiledestination"]
+			"runGenerators": ["findexiledestinations"],
+			"allow": [["mark","selectexiledestination"]]
 		},
 		"selectexiledestination": {
-			"from": "exiledestinations"
+			"from": "exiledestinations",
+			"allow": [["command","exile"]]
 		}
 	},
 	"commands": {
 		"move": {
-			"requiredmarks": ["selectmovetarget"],
-			"effect": ["multieffect",[
-				["moveunit",["idofunitat",["markpos","selectunit"]],["markpos","selectmovetarget"]],
+			"applyEffects": [
+				["moveunit",["idofunitat","selectunit"],"selectmovetarget"],
 				["setcontextval","movedto",["markpos","selectmovetarget"]]
-			]],
-			"rungenerators": ["findexiletargets"]
+			]
 		},
 		"exile": {
-			"requiredmarks": ["selectexiledestination"],
-			"condition": ["hasperformedcommand","move"],
-			"rungenerators": ["findexiletargets"],
-			"effect": ["moveunit",["idofunitat",["markpos","selectexiletarget"]],["markpos","selectexiledestination"]]
+			"applyEffects": [["moveunit",["idofunitat","selectexiletarget"],"selectexiledestination"]]
 		}
 	},
+	"startturn": {
+		"allow": [["mark","selectunit"]]
+	},
+	"afterstep": {
+		"runGenerators": ["findexiletargets"],
+		"allow": [["endturn"],["mark","selectexiletarget"]]
+	},
 	"endturn": {
-		"condition": ["hasperformedcommand","move"],
-		"commandcap": false,
 		"endgame": {
 			"madeplus": {
 				"condition": ["and",[

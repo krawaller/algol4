@@ -1,95 +1,68 @@
 {
-	"name": "Krieg",
-	"source": "http://www.di.fc.ul.pt/~jpn/gv/krieg.htm",
-	"board": {
-		"width": 4,
-		"height": 4
+	"meta": {
+		"name": "Krieg",
+		"source": "http://www.di.fc.ul.pt/~jpn/gv/krieg.htm"
 	},
+	"board": { "width": 4, "height": 4 },
 	"graphics": {
 		"tiles": { "corners": "grass", "bases": "castle" },
-		"icons": { "notfrozens": "knights", "frozens": "pawns" }
+		"icons": { "notfrozens": "knights", "frozens": "rooks" }
 	},
 	"terrain": {
-		"southeast": [ ["positions",[1001,3003],{}] ],
-		"northwest": [ ["positions",[2002,4004],{}] ],
+		"southeast": [ ["positions",[1001,3003]] ],
+		"northwest": [ ["positions",[2002,4004]] ],
 		"corners": [ {"owner":1,"pos":1001}, {"owner":2,"pos":4004} ],
 		"bases": [
-			["positions",[1002,2001,2002],{"owner":1}],
-			["positions",[3003,3004,4003],{"owner":2}]
+			["positions",[1002,2001,2002],1],
+			["positions",[3003,3004,4003],2]
 		]
 	},
 	"setup": {
 		"notfrozens": [
-			["rectangle",1001,2002,{"owner":1}],
-			["rectangle",3003,4004,{"owner":2}]
+			["rectangle",1001,2002,1],
+			["rectangle",3003,4004,2]
 		]
 	},
 	"marks": {
 		"selectunit": {
-			"from": "mymovers",
-			"cleanse": ["currentmoves"],
-			"rungenerators": ["findcurrentmoves"],
-			"requiredby": ["selectmove"]
+			"from": "mynotfrozens",
+			"runGenerators": ["findmovetargets"],
+			"allow": [["mark","selectmove"]]
 		},
 		"selectmove": {
-			"requiredmarks": ["selectunit"],
-			"from": "currentmoves"
+			"from": "movetargets",
+			"allow": [["command","move"]]
 		}
 	},
 	"startturn": {
-		"rungenerators": ["findmovetargets"]
+		"allow": [["mark","selectunit"]]
 	},
 	"endturn": {
-		"condition": ["same",["contextval","performedsteps"],1],
-		"commandcap": true,
 		"endgame": {
 			"cornerinfiltration": {
 				"condition": ["overlaps","myunits","oppcorners"], "result": "win"
 			},
 			"occupation": {
 				"condition": ["same",["overlapsize","myunits","oppbases"],2], "result": "win"
-			},
-			"oppcantmove": {
-				"condition": ["isempty","oppmovers"], "result": "win"
 			}
 		}
 	},
 	"commands": {
 		"move": {
-			"requiredmarks": ["selectunit","selectmove"],
-			"condition": ["notempty","currentmoves"],
-			"effect": ["multieffect",[
+			"applyEffects": [
 				["forallin","myfrozens",
 					["setunitdata",["loopid"],"group","notfrozens"]
 				],
-				["moveunit",["idofunitat",["markpos","selectunit"]],["markpos","selectmove"]],
-				["setunitdata",["idofunitat",["markpos","selectunit"]],"group","frozens"]
-			]],
-			"rungenerators": ["findoppmovers"]
+				["moveunit",["idofunitat","selectunit"],"selectmove"],
+				["setunitdata",["idofunitat","selectunit"],"group","frozens"]
+			],
+			"allow": [["endturn"]]
 		}
 	},
 	"generators": {
-		"findoppmovers": {
-			"type": "nextto",
-			"starts": "oppnotfrozens",
-			"dirs": ["dirs",[1,2,3,4,5,6,7,8]],
-			"condition": ["noneat","units",["contextpos","target"]],
-			"draw": {
-				"start": {
-					"condition": ["truthy",["contextval","neighbourcount"]],
-					"tolayer": "oppmovers"
-				}
-			}
-		},
-		"findcurrentmoves": {
-			"type": "filter",
-			"layer": "mymovetargets",
-			"matching": {"moverid":["is",["idofunitat",["markpos","selectunit"]]]},
-			"tolayer": "currentmoves"
-		},
 		"findmovetargets": {
 			"type": "nextto",
-			"starts": "notfrozens",
+			"starts": "selectunit",
 			"condition": ["noneat","units",["contextpos","target"]],
 			"dirs": ["ifelse",
 				["anyat","southeast",["contextpos","start"]],

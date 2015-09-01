@@ -1,23 +1,26 @@
 {
-	"name": "Trespass",
-	"source": "http://www.di.fc.ul.pt/~jpn/gv/trespass.htm",
+	"meta": {
+		"name": "Trespass",
+		"source": "http://www.di.fc.ul.pt/~jpn/gv/trespass.htm"
+	},
 	"board": {"height":7,"width":11},
 	"graphics": {
 		"tiles": {"bases":"grass"},
 		"icons": {"attackers":"pawns","defenders":"queens","strikers":"kings" }
 	},
 	"setup": {
-		"attackers": [ ["rectangle",7001,7011,{"owner":1}] ],
-		"defenders": [ ["positions",[2004,2005,2007,2008],{"owner":2}] ],
+		"attackers": [ ["rectangle",7001,7011,1] ],
+		"defenders": [ ["positions",[2004,2005,2007,2008],2] ],
 		"strikers": [ {"pos":2006,"owner":2} ]
 	},
 	"terrain": {
-		"bases": [ ["rectangle",7001,7011,{"owner":1}], ["rectangle",1001,1011,{"owner":2}] ],
-		"goals": [ ["rectangle",1001,1011,{"owner":2}] ]
+		"bases": [ ["rectangle",7001,7011,1], ["rectangle",1001,1011,2] ],
+		"goals": [ ["rectangle",1001,1011,2] ]
+	},
+	"startturn": {
+		"allow": [["mark","selectunit"]]
 	},
 	"endturn": {
-		"commandcap": true,
-		"condition":["same",["contextval","performedsteps"],1],
 		"endgame": {
 			"infiltration": { "condition": ["overlaps","attackers","goals"], "result": "win" },
 			"genocide": { "condition": ["isempty","oppunits"], "result": "win" }
@@ -26,28 +29,21 @@
 	"marks": {
 		"selectunit": {
 			"from": "myunits",
-			"rungenerators": ["findtargets"],
-			"requiredby": ["selectmove","selectkill"]
+			"runGenerators": ["findtargets"],
+			"allow": [["mark","selectmove"]]
 		},
 		"selectmove": {
 			"from": "movetargets",
-			"notifhasmark": ["selectkill"]
-		},
-		"selectkill": {
-			"from": "killtargets"
+			"allow": [["command","move"]]
 		}
 	},
 	"commands": {
 		"move": {
-			"requiredmarks": ["selectunit","selectmove"],
-			"effect": ["moveunit",["idofunitat","selectunit"],"selectmove"]
-		},
-		"kill": {
-			"requiredmarks": ["selectunit","selectkill"],
-			"effect": ["multieffect",[
-				["killunit",["idofunitat","selectkill"]],
-				["moveunit",["idofunitat","selectunit"],"selectkill"]		
-			]]
+			"applyEffects": [
+				["kill","selectmove"],
+				["move","selectunit","selectmove"]
+			],
+			"allow": [["endturn"]]
 		}
 	},
 	"generators": {
@@ -70,7 +66,7 @@
 						["anyat","strikers","selectunit"],
 						["anyat","oppunits",["contextpos","target"]]
 					]],
-					"tolayer": "killtargets"
+					"tolayer": "movetargets"
 				}
 			}
 		}
