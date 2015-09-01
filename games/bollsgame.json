@@ -1,0 +1,77 @@
+{
+	"meta": {
+		"name": "Boll's game",
+		"source": "http://www.di.fc.ul.pt/~jpn/gv/bollsgame.htm"
+	},
+	"graphics": {
+		"icons": {"soldiers":"rooks"}
+	},
+	"board": { "height": 5, "width": 5 },
+	"setup": { "soldiers": [ ["rectangle",1001,1005,1], ["rectangle",5001,5005,2] ] },
+	"startturn": {
+		"allow": [["mark","selectunit"]]
+	},
+	"endturn": {
+		"endgame": {
+			"selferadicate": { "condition": ["isempty","myunits"], "result": "loseto", "who": ["contextval","nextplayer"] },
+			"opperadicate": { "condition": ["isempty","oppunits"], "result": "win" }
+		}
+	},
+	"marks": {
+		"selectunit": {
+			"from": ["union","mysoldiers","neutralsoldiers"],
+			"runGenerators": ["findmovetargets"],
+			"allow": [["mark","selectmovetarget"]]
+		},
+		"selectmovetarget": {
+			"from": "movetargets",
+			"runGenerators": ["findtransformations"],
+			"allow": [["command","move"]]
+		}
+	},
+	"commands": {
+		"move": {
+			"applyEffects": [
+				["move","selectunit","selectmovetarget"],
+				["if",["notempty","transform"],["forallin",["union","transform","selectmovetarget"],
+					["setunitdata",["loopid"],"owner",["lookup","transform",["firstposin","transform"],"transformto"]]
+				]]
+			],
+			"allow": [["endturn"]]
+		}
+	},
+	"generators": {
+		"findmovetargets": {
+			"type": "walker",
+			"starts": "selectunit",
+			"dirs": ["dirs",[1,3,5,7]],
+			"blocks": "units",
+			"draw": {
+				"steps": {
+					"tolayer": "movetargets"
+				}
+			}
+		},
+		"findtransformations": {
+			"type": "nextto",
+			"starts": "selectmovetarget",
+			"dirs": ["dirs",[1,3,5,7]],
+			"condition": ["and",[
+				["different",["contextpos","target"],["markpos","selectunit"]],
+				["anyat","units",["contextpos","target"]],
+				["different",["lookup","units",["contextpos","start"],"owner"],["lookup","units",["contextpos","target"],"owner"]]
+			]],
+			"draw": {
+				"target": {
+					"condition": ["same",["contextval","neighbourcount"],1],
+					"tolayer": "transform",
+					"include": {
+						"transformto": ["ifelse",["anyat","oppunits",["contextpos","target"]],
+							["ifelse",["anyat","myunits","selectunit"],0,["contextval","currentplayer"]],
+							["contextval","nextplayer"]]
+					}
+				}
+			}
+		}
+	}
+}
