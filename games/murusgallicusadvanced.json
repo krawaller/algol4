@@ -38,9 +38,9 @@
 	"commands": {
 		"move": {
 			"applyEffects": [
-				["killunit",["idofunitat","selecttower"]],
-				["forallposin","madecatapults",["setunitdata",["idofunitat",["contextpos","target"]],"group","catapults"]],
-				["forallposin","madetowers",["setunitdata",["idofunitat",["contextpos","target"]],"group","towers"]],
+				["kill","selecttower"],
+				["forallin","madecatapults",["setunitdata",["loopid"],"group","catapults"]],
+				["forallin","madetowers",["setunitdata",["loopid"],"group","towers"]],
 				["forallposin","madewalls",["spawnunit",["contextpos","target"],"walls",["contextval","currentplayer"]]]
 			]
 		},
@@ -50,21 +50,21 @@
 				["ifelse",
 					["anyat","oppcatapults","selectkill"],
 					["setunitdata",["idofunitat","selectkill"],"group","towers"],
-					["killunit",["idofunitat","selectkill"]]
+					["kill","selectkill"]
 				]
 			]
 		},
 		"sacrifice": {
 			"applyEffects": [
 				["setunitdata",["idofunitat","selectkill"],"group","walls"],
-				["killunit",["idofunitat","selecttower"]]
+				["kill","selecttower"]
 			]
 		},
 		"fire": {
 			"applyEffects": [
 				["ifelse",
 					["anyat","oppwalls","selectfire"],
-					["killunit",["idofunitat","selectfire"]],
+					["kill","selectfire"],
 					["ifelse",
 						["anyat","oppunits","selectfire"],
 						["setunitdata",["idofunitat","selectfire"],"group",["ifelse",["anyat","oppcatapults","selectfire"],"towers","walls"]],

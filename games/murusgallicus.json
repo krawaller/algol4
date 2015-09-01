@@ -26,15 +26,15 @@
 	"commands": {
 		"move": {
 			"applyEffects": [
-				["killunit",["idofunitat","selecttower"]],
-				["forallposin","madetowers",["setunitdata",["idofunitat",["contextpos","target"]],"group","towers"]],
+				["kill","selecttower"],
+				["forallin","madetowers",["setunitdata",["loopid"],"group","towers"]],
 				["forallposin","madewalls",["spawnunit",["contextpos","target"],"walls",["contextval","currentplayer"]]]
 			]
 		},
 		"kill": {
 			"applyEffects": [
 				["setunitdata",["idofunitat","selecttower"],"group","walls"],
-				["killunit",["idofunitat","selectkill"]]
+				["kill","selectkill"]
 			]
 		}
 	},
