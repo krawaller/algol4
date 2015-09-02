@@ -16,8 +16,8 @@ var dirlistmethods = {
 	},
 	relativedir: function(state,dir,reldir){
 		var dir = this.evaluateValue(state,dir),
-			rd = this.evaluateValue(state,rd);
-		return I.List([1,2,3,4,5,6,7,8,1,2,3,4,5,6,7,8][rd-2+dir]);
+			rd = this.evaluateValue(state,reldir);
+		return I.List([[1,2,3,4,5,6,7,8,1,2,3,4,5,6,7,8][rd-2+dir]]);
 	},
 	ifelse: function(state,cond,val1,val2){ return this.evaluateDirList(state, this.evaluateBoolean(state,cond) ? val1 : val2); },
 	dir: function(state,dir){
@@ -69,7 +69,9 @@ Algol.evaluatePositionList = function(state,def){
 var positionsetmethods = {
 	ifelse: function(state,cond,val1,val2){ return this.evaluatePositionSet(state, this.evaluateBoolean(state,cond) ? val1 : val2); },
 	union: function(state,set1,set2){ return this.evaluatePositionSet(state,set1).union(this.evaluatePositionSet(state,set2)); },
-	intersect: function(state,set1,set2){ return this.evaluatePositionSet(state,set1).intersect(this.evaluatePositionSet(state,set2)); },
+	intersect: function(state,set1,set2){
+		return this.evaluatePositionSet(state,set1).intersect(this.evaluatePositionSet(state,set2));
+	},
 	subtract: function(state,set1,set2){ return this.evaluatePositionSet(state,set1).subtract(this.evaluatePositionSet(state,set2)); }
 };
 
@@ -164,7 +166,9 @@ var valuemethods = {
 	battleval: function(state,battlevalname){ return state.getIn(["data",this.evaluateValue(state,battlevalname)]); },
 	positionsin: function(state,positionset){ return this.evaluatePositionSet(state,positionset).size; },
 	ifelse: function(state,cond,val1,val2){ return this.evaluateValue(state, this.evaluateBoolean(state,cond) ? val1 : val2); },
-	lookup: function(state,layername,position,prop){ return state.getIn(["layers",layername,this.evaluatePosition(state,position),0,prop]); },
+	lookup: function(state,layername,position,prop){
+		return state.getIn(["layers",layername,this.evaluatePosition(state,position),0,prop]);
+	},
 	idofunitat: idmethods.idofunitat,
 	sum: function(){
 		var state = _.first(arguments);
@@ -208,7 +212,7 @@ Algol.evaluateValue = function(state,def){
 
 var positionmethods = {
 	markpos: function(state,markname){ return state.getIn(["marks",markname]); },
-	firstposin: function(state,layername){ return I.Iterable(state.getIn(["layers",layername]).keys()).first(); },
+	firstposin: function(state,layername){ return I.Iterable(this.evaluatePositionSet(state,layername)).first(); },
 	contextpos: function(state,ctxposname){ return state.getIn(["context",ctxposname]); },
 	pos: function(state,pos){ return this.evaluateValue(state,pos); }
 };

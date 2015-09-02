@@ -12,6 +12,7 @@ Algol.generateNeighbourPods = function(state,def){
 	var cond = def.get("condition");
 	var ret = this.evaluatePositionSet(state,def.get("starts")).reduce(function(recorder,startpos){
 		var startstate = state.setIn(["context","start"],startpos);
+		//console.log("From here");
 		var neighbours = this.evaluateDirList(startstate,def.get("dirs")).reduce(function(map,dir){
 			var targetpos = state.getIn(["connections",startpos,dir])||state.getIn(["connections",startpos,dir+""]);
 			return targetpos && (!cond || this.evaluateBoolean(startstate.setIn(["context","target"],targetpos),cond)) ? map.set(dir,targetpos) : map;

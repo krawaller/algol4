@@ -35,6 +35,7 @@ var effectmethods = {
 		return state.setIn(["data","units",id,"dir"],newdir>8?newdir-8:0>newdir?newdir+8:newdir);
 	},
 	setunitdata: function(state,id,propname,val){
+		//console.log("SET unit",this.evaluateId(state,id),"prop",this.evaluateValue(state,propname),"to",this.evaluateValue(state,val))
 		return state.setIn(["data","units",this.evaluateId(state,id),this.evaluateValue(state,propname)],this.evaluateValue(state,val));
 	},
 	removeunitdata: function(state,id,propname){
@@ -48,7 +49,14 @@ var effectmethods = {
 	},
 	forallin: function(state,positionset,effect){
 		var positionset = this.evaluatePositionSet(state,positionset);
+		//console.log("FOR ALL IN",positionset.toJS());
+		/*return positionset.reduce(function(state,pos){
+			return (state.getIn(["layers","units",pos])||I.List()).reduce(function(unit){
+				return this.applyEffect(state.setIn(["context","loopid"],unit.get("id")),effect);
+			},state,this);
+		},state,this)[state.hasIn(["context","loopid"])?"setIn":"deleteIn"](["context","loopid"],state.getIn(["context","loopid"]));*/
 		return state.getIn(["data","units"]).reduce(function(state,unit,id){
+			//console.log("checking unit",id,positionset.has(unit.get("pos")));
 			return positionset.has(unit.get("pos")) ? this.applyEffect(state.setIn(["context","loopid"],id),effect) : state;
 		},state,this)[state.hasIn(["context","loopid"])?"setIn":"deleteIn"](["context","loopid"],state.getIn(["context","loopid"]));
 	},
