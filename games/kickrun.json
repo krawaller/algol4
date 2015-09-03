@@ -41,7 +41,7 @@
 	"generators": {
 		"findmovetargets": {
 			"type": "walker",
-			"dirs": ["relativedirs",["ifelse",["anyat","myrunners","selectunit"],["dirs",[8,1,2]],["dirs",[7,1,3]]],["lookup","units","selectunit","dir"]],
+			"dirs": ["relativedirs",["ifelse",["anyat","myrunners","selectunit"],["dirs",[8,1,2]],["dirs",[7,8,2,3]]],["lookup","units","selectunit","dir"]],
 			"starts": "selectunit",
 			"max": ["ifelse",["anyat","myrunners","selectunit"],4,1],
 			"blocks": "units",
@@ -55,9 +55,11 @@
 				},
 				"block": {
 					"condition": ["and",[
-						["anyat","mysidekickers","selectunit"],
 						["anyat","oppunits",["contextpos","target"]],
-						["different",["contextval","dir"],["lookup","units","selectunit","dir"]]
+						["or",[
+							["same",["contextval","dir"],8],
+							["same",["contextval","dir"],4]
+						]]
 					]],
 					"tolayer": "movetargets"
 				}
