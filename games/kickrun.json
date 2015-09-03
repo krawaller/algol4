@@ -1,0 +1,67 @@
+{
+	"meta": {
+		"name": "Kick & run",
+		"source": "http://www.di.fc.ul.pt/~jpn/gv/kickrun.htm"
+	},
+	"graphics": {"tiles":{"corners":"grass"},"icons":{"runners":"bishops","sidekickers":"pawns"}},
+	"board": {"height":5,"width":5},
+	"terrain": { "corners": [{"pos":5001,"owner":2},{"pos":1005,"owner":1}] },
+	"setup": {
+		"runners": [["positions",[1004,2005],1,{"dir":6}],["positions",[4001,5002],2,{"dir":2}]],
+		"sidekickers": [["positions",[1003,1005,3005],1,{"dir":6}],["positions",[3001,5001,5003],2,{"dir":2}]]
+	},
+	"startturn": {
+		"allow": [["mark","selectunit"]]
+	},
+	"marks": {
+		"selectunit": {
+			"from": "myunits",
+			"runGenerators": ["findmovetargets"],
+			"allow": [["mark","selectmovetarget"]]
+		},
+		"selectmovetarget": {
+			"from": "movetargets",
+			"allow": [["command","move"]]
+		}
+	},
+	"commands": {
+		"move": {
+			"applyEffects": [
+				["kill","selectmovetarget"],
+				["move","selectunit","selectmovetarget"]
+			],
+			"allow": [["endturn"]]
+		}
+	},
+	"endturn": {
+		"endgame": {
+			"infiltration": {"condition":["overlaps","myrunners","oppcorners"],"result":"win"}
+		}
+	},
+	"generators": {
+		"findmovetargets": {
+			"type": "walker",
+			"dirs": ["relativedirs",["ifelse",["anyat","myrunners","selectunit"],["dirs",[8,1,2]],["dirs",[7,1,3]]],["lookup","units","selectunit","dir"]],
+			"starts": "selectunit",
+			"max": ["ifelse",["anyat","myrunners","selectunit"],4,1],
+			"blocks": "units",
+			"draw": {
+				"steps": {
+					"condition": ["and",[
+						["different",["contextval","dir"],8],
+						["different",["contextval","dir"],4]
+					]],
+					"tolayer": "movetargets"
+				},
+				"block": {
+					"condition": ["and",[
+						["anyat","mysidekickers","selectunit"],
+						["anyat","oppunits",["contextpos","target"]],
+						["different",["contextval","dir"],["lookup","units","selectunit","dir"]]
+					]],
+					"tolayer": "movetargets"
+				}
+			}
+		}
+	}
+}
