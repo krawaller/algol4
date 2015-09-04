@@ -145,6 +145,13 @@ Algol.allowCommand = function(state,cmndname){
 
 Algol.endTurn = function(state){
 	var endturndef = state.getIn(["gamedef","endturn"]);
+	// perform eventual afterturn effects
+	if (endturndef.has("applyEffects")){
+		state = endturndef.get("applyEffects").reduce(function(s,effect){
+			return this.applyEffect(s,effect);
+		},state,this);
+		state = this.prepareBasicUnitLayers(state);
+	}
 	// end game if reached sth
 	var endgame = endturndef.get("endgame").reduce(function(mem,end,name){
 		if (!mem && this.evaluateBoolean(state,end.get("condition"))) {

@@ -57,7 +57,7 @@ var effectmethods = {
 		},state,this)[state.hasIn(["context","loopid"])?"setIn":"deleteIn"](["context","loopid"],state.getIn(["context","loopid"]));*/
 		return state.getIn(["data","units"]).reduce(function(state,unit,id){
 			//console.log("checking unit",id,positionset.has(unit.get("pos")));
-			return positionset.has(unit.get("pos")) ? this.applyEffect(state.setIn(["context","loopid"],id),effect) : state;
+			return positionset.has(unit.get("pos")) ? this.applyEffect(state.setIn(["context","loopid"],id).setIn(["context","target"],unit.get("pos")),effect) : state;
 		},state,this)[state.hasIn(["context","loopid"])?"setIn":"deleteIn"](["context","loopid"],state.getIn(["context","loopid"]));
 	},
 	forallposin: function(state,positionset,effect){
@@ -94,7 +94,7 @@ var effectmethods = {
 	offsetunit: function(state,id,dir,dist){
 		id = this.evaluateId(state,id);
 		dir = this.evaluateValue(state,dir);
-		dist = this.evaluateValue(state,dist) || 1;
+		dist = this.evaluateValue(state,dist) || 0;
 		var pos = state.getIn(["data","units",id,"pos"]);
 		while(dist && state.hasIn(["connections",pos,dir])){
 			pos = state.getIn(["connections",pos,dir]);

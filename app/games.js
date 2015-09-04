@@ -1,6 +1,7 @@
 var _ = require('lodash'),
     I = require("../src/immutableextensions"),
     games = {
+        "90grad": require("../games/90grad.json"),
         amazons: require("../games/amazons.json"),
         archers: require("../games/archers.json"),
         //breakthru: require("../games/breakthru.json"),

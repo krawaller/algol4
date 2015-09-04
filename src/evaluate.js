@@ -162,6 +162,11 @@ Algol.evaluateBoolean = function(state,def){
 };
 
 var valuemethods = {
+	max: function(state,v1,v2){
+		v1 = this.evaluateValue(state,v1);
+		v2 = this.evaluateValue(state,v2);
+		return v1 > v2 ? v1 : v2;
+	},
 	val: function(state,raw){ return raw; },
 	layername: function(state,raw){ return raw; },
 	contextval: function(state,ctxvalname){ return state.getIn(["context",this.evaluateValue(state,ctxvalname)]); },
@@ -175,6 +180,9 @@ var valuemethods = {
 	sum: function(){
 		var state = _.first(arguments);
 		return _.reduce(_.tail(arguments),function(acc,val){ return acc + this.evaluateValue(state,val); },0,this);
+	},
+	minus: function(state,v1,v2){
+		return this.evaluateValue(state,v1)-this.evaluateValue(state,v2);
 	},
 	mult: function(state,f1,f2){
 		return this.evaluateValue(state,f1)*this.evaluateValue(state,f2);

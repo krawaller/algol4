@@ -1,46 +1,125 @@
 {
-	"source": "http://www.di.fc.ul.pt/~jpn/gv/90grad.htm",
+	"meta": {
+		"name": "90 grad",
+		"source": "http://www.di.fc.ul.pt/~jpn/gv/90grad.htm"
+	},
+	"graphics": {
+		"tiles": {"lava":"water","goal":"grass"},
+		"icons": {"soldiers":"pawns","balls":"kings"}
+	},
+	"board": { "height": 9, "width": 9 },
 	"terrain": {
-		"goal": [{"pos":5005}],
 		"leftcolumn": [["rectangle",2001,8001]],
 		"toprow": [["rectangle",1002,1008]],
-		"lava": [["rectangle",1001,1009,{}],["rectangle",9001,9009,{}],["rectangle",2001,8001,{}],["rectangle",2009,8009,{}]]
+		"goal": [{"pos":5005}],
+		"lava": [["rectangle",1001,1009],["rectangle",9001,9009],["rectangle",2001,8001],["rectangle",2009,8009]]
 	},
-	"setup": [
-		["rectangle",2003,2005,{"owner":1,"group":"soldiers"}],
-		["rectangle",3002,5002,{"owner":1,"group":"soldiers"}],
-		["rectangle",8005,8007,{"owner":2,"group":"soldiers"}],
-		["rectangle",5008,7008,{"owner":1,"group":"soldiers"}],
-		{"pos":2002,"owner":1,"group":"balls"},
-		{"pos":8008,"owner":2,"group":"balls"}
-	],
+	"setup": {
+		"soldiers": [["rectangle",2003,2005,1],["rectangle",3002,5002,1],["rectangle",8005,8007,2],["rectangle",5008,7008,2]],
+		"balls": [{"pos":2002,"owner":1},{"pos":8008,"owner":2}]
+	},
+	"startturn": {
+		"runGenerators": ["findverticaldistances","findhorisontaldistances"],
+		"allow": [["mark","selectunit"]]
+	},
+	"marks": {
+		"selectunit": {
+			"from": "myunits",
+			"runGenerators": ["findmovetargets"],
+			"allow": [["mark","selectmovetarget"]]
+		},
+		"selectmovetarget": {
+			"from": "movetargets",
+			"runGenerators": ["findpushresults"],
+			"allow": [["command","move"]]
+		}
+	},
+	"commands": {
+		"move": {
+			"applyEffects": [
+				["forallin","pushresults",
+					["offsetunit",["loopid"],
+						["lookup","pushresults",["contextpos","target"],"dir"],
+						["lookup","pushresults",["contextpos","target"],"push",
+						0]]
+				],
+				["move","selectunit","selectmovetarget"]
+			],
+			"allow": [["endturn"]]
+		}
+	},
+	"endturn": {
+		"applyEffects": [["forallin","lava",["killunit",["loopid"]]]],
+		"endgame": {
+			"goal": {"condition":["overlaps","goal","myballs"],"result":"win"},
+			"bothout": {"condition": ["same",["layerobjectcount","deadballs"],2],"result":"draw"},
+			"oppballout": {"condition": ["notempty","oppdeadballs"], "result": "win" },
+			"myballout": {"condition": ["notempty","mydeadballs"], "result": "loseto", "who": ["contextval","nextplayer"]}
+		}
+	},
 	"generators": {
-		"findverticaldistances": {
+		"findpushresults": {
 			"type": "walker",
-			"starts": ["allposinlayer","leftcolumn"],
-			"dirs": ["dirs",[3]],
-			"count": ["allposinlayer","units"],
+			"starts": "selectunit",
+			"dirs": ["dir",["lookup","movetargets","selectmovetarget","dir"]],
+			"count": "units",
 			"draw": {
 				"steps": {
-					"condition": ["anyat","units",["contextpos","target"]],
-					"tolayer": "verticaldistances",
+					"tolayer": "pushresults",
 					"include": {
-						"distance": ["contextpos","counttotal"]
+						"dir": ["contextval","dir"],
+						"push": ["max",["minus",["lookup","movetargets","selectmovetarget","moved"],["minus",["contextval","step"],["contextval","countsofar"]]],0]
+					}
+				}
+			}
+		},
+		"findmovetargets": {
+			"type": "walker",
+			"starts": "selectunit",
+			"dirs": ["dirs",[1,3,5,7]],
+			"max": ["ifelse",
+				["or",[["same",["contextval","dir"],1],["same",["contextval","dir"],5]]],
+				["lookup","vertical","selectunit","distance"],
+				["lookup","horisontal","selectunit","distance"]
+			],
+			"draw": {
+				"steps": {
+					"tolayer": "movetargets",
+					"include": {
+						"moved": ["contextval","step"],
+						"dir": ["contextval","dir"]
+					}
+				}
+			}
+		},
+		"findverticaldistances": {
+			"type": "walker",
+			"starts": "leftcolumn",
+			"max": 7,
+			"dirs": ["dir",3],
+			"count": "units",
+			"draw": {
+				"steps": {
+					"condition": ["anyat","myunits",["contextpos","target"]],
+					"tolayer": "vertical",
+					"include": {
+						"distance": ["contextval","counttotal"]
 					}
 				}
 			}
 		},
 		"findhorisontaldistances": {
 			"type": "walker",
-			"starts": ["allposinlayer","toprow"],
-			"dirs": ["dirs",[5]],
-			"count": ["allposinlayer","units"],
+			"starts": "toprow",
+			"max": 7,
+			"dirs": ["dir",5],
+			"count": "units",
 			"draw": {
 				"steps": {
-					"condition": ["anyat","units",["contextpos","target"]],
-					"tolayer": "horisontaldistances",
+					"condition": ["anyat","myunits",["contextpos","target"]],
+					"tolayer": "horisontal",
 					"include": {
-						"distance": ["contextpos","counttotal"]
+						"distance": ["contextval","counttotal"]
 					}
 				}
 			}
