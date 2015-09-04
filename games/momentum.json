@@ -1,7 +1,8 @@
 {
 	"meta": {
 		"source": "https://boardgamegeek.com/boardgame/73091/momentum",
-		"name": "Momentum"
+		"name": "Momentum",
+		"tags": ["push","deploy"]
 	},
 	"board": {"height":9,"width":9},
 	"terrain": {"edge":[{"pos":5005},["rectangle",1001,1009],["rectangle",1001,9001],["rectangle",9001,9009],["rectangle",1009,9009]]},

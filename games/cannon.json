@@ -1,7 +1,8 @@
 {
 	"meta": {
 		"name": "Cannon",
-		"source": "http://www.iggamecenter.com/info/en/cannon.html"
+		"source": "http://www.iggamecenter.com/info/en/cannon.html",
+		"tags": ["formation","chooseaction","kingkill","shoot"]
 	},
 	"board": { "height": 10, "width": 10 },
 	"graphics": { "icons": {"soldiers":"pawns","flags":"kings"} },

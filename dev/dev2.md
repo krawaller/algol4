@@ -1,7 +1,6 @@
 TAGS
 
 commonunits
-pattern
 deploy
 chooseaction
 changeunit
@@ -9,8 +8,14 @@ differentunits
 changeowners
 asymmetric
 multiplegoals
-
-
+multiplesteps
+infiltrate
+kingkill
+push
+formation
+shoot
+directions
+custodian
 
 
 

@@ -1,7 +1,8 @@
 {
 	"meta": {
 		"name": "Archers",
-		"source": "http://www.di.fc.ul.pt/~jpn/gv/Archers.pdf"
+		"source": "http://www.di.fc.ul.pt/~jpn/gv/Archers.pdf",
+		"tags": ["differentunits","multiplesteps","multiplegoals","infiltrate","killking","chooseaction","shoot","directions"]
 	},
 	"board": { "height": 9, "width": 9 },
 	"graphics": {

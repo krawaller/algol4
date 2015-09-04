@@ -1,7 +1,8 @@
 {
 	"meta": {
 		"name": "Castle",
-		"source": "http://www.di.fc.ul.pt/~jpn/gv/castle.htm"
+		"source": "http://www.di.fc.ul.pt/~jpn/gv/castle.htm",
+		"tags": ["infiltrate"]
 	},
 	"board": { "width": 19, "height": 19 },
 	"graphics": {

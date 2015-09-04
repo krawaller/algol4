@@ -2,7 +2,7 @@
 	"meta": {
 		"name": "Sombrero",
 		"source": "http://www.di.fc.ul.pt/~jpn/gv/sombrero.htm",
-		"tags": ["changeunit","differentunits"]
+		"tags": ["changeunit","differentunits","multiplesteps","chooseaction"]
 	},
 	"graphics": {
 		"icons": {"soldiers":"pawns","kings":"kings"},

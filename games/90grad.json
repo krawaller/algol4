@@ -1,7 +1,8 @@
 {
 	"meta": {
 		"name": "90 grad",
-		"source": "http://www.di.fc.ul.pt/~jpn/gv/90grad.htm"
+		"source": "http://www.di.fc.ul.pt/~jpn/gv/90grad.htm",
+		"tags": ["push","multiplegoals","infiltrate","kingkill"]
 	},
 	"graphics": {
 		"tiles": {"lava":"water","goal":"grass"},

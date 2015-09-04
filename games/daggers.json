@@ -2,7 +2,7 @@
 	"meta": {
 		"name": "Daggers",
 		"source": "http://www.di.fc.ul.pt/~jpn/gv/daggers.htm",
-		"tags": ["differentunits","asymmetric","multiplegoals"]
+		"tags": ["differentunits","asymmetric","multiplegoals","infiltrate","killking"]
 	},
 	"board": { "height": 8, "width": 8 },
 	"graphics": {

@@ -2,7 +2,7 @@
 	"meta": {
 		"name": "Semaphor",
 		"source": "http://www.di.fc.ul.pt/~jpn/gv/semaphor.htm",
-		"tags": ["commonunits","pattern","deploy","chooseaction","changeunit"]
+		"tags": ["commonunits","formation","deploy","chooseaction","changeunit"]
 	},
 	"graphics": {"icons":{"kings":"kings","pawns":"pawns","bishops":"bishops"}},
 	"board": {"width":4,"height":3},

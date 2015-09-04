@@ -1,7 +1,8 @@
 {
 	"meta": {
 		"name": "Krieg",
-		"source": "http://www.di.fc.ul.pt/~jpn/gv/krieg.htm"
+		"source": "http://www.di.fc.ul.pt/~jpn/gv/krieg.htm",
+		"tags": ["infiltrate","multiplegoals"]
 	},
 	"board": { "width": 4, "height": 4 },
 	"graphics": {

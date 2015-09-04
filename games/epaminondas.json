@@ -1,7 +1,8 @@
 {
 	"meta": {
 		"name": "Epaminondas",
-		"source": "https://boardgamegeek.com/filepage/55902/epaminondas-rules-nestorgames"
+		"source": "https://boardgamegeek.com/filepage/55902/epaminondas-rules-nestorgames",
+		"tags": ["infiltrate","formation"]
 	},
 	"board": { "height": 12, "width": 14 },
 	"graphics": { "tiles": {"bases":"grass"}, "icons": {"soldiers":"pawns"} },

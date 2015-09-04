@@ -1,7 +1,8 @@
 {
 	"meta": {
 		"name": "Pawnographic chess",
-		"source": "http://www.di.fc.ul.pt/~jpn/gv/pawnographic.htm"
+		"source": "http://www.di.fc.ul.pt/~jpn/gv/pawnographic.htm",
+		"tags": ["infiltrate"]
 	},
 	"board": { "height": 8, "width": 8 },
 	"graphics": {

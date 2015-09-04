@@ -1,7 +1,8 @@
 {
 	"meta": {
 		"name": "Murus Gallicus Advanced",
-		"source": "https://boardgamegeek.com/thread/844020/advanced-murus-gallicus"
+		"source": "https://boardgamegeek.com/thread/844020/advanced-murus-gallicus",
+		"tags": ["differentunits","infiltrate","shoot"]
 	},
 	"graphics": { "tiles": {"homerow":"grass"}, "icons": {"towers":"rooks","walls":"pawns","catapults":"queens"} },
 	"board": { "height": 7, "width": 8 },

@@ -1,7 +1,8 @@
 {
 	"meta": {
 		"name": "Trespass",
-		"source": "http://www.di.fc.ul.pt/~jpn/gv/trespass.htm"
+		"source": "http://www.di.fc.ul.pt/~jpn/gv/trespass.htm",
+		"tags": ["asymmetric","differentunits","infiltrate"]
 	},
 	"board": {"height":7,"width":11},
 	"graphics": {
