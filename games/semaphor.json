@@ -1,0 +1,53 @@
+{
+	"meta": {
+		"name": "Semaphor",
+		"source": "http://www.di.fc.ul.pt/~jpn/gv/semaphor.htm",
+		"tags": ["commonunits","pattern","deploy","chooseaction","changeunit"]
+	},
+	"graphics": {"icons":{"kings":"kings","pawns":"pawns","bishops":"bishops"}},
+	"board": {"width":4,"height":3},
+	"startturn": {
+		"allow": [["mark","selectdeploytarget"],["mark","selectunit"]]
+	},
+	"afterstep": {
+		"runGenerators": ["findlines"],
+		"allow": [["endturn"]]
+	},
+	"endturn": {
+		"endgame": {
+			"madeline": {"condition":["notempty","line"],"result":"win"}
+		}
+	},
+	"marks": {
+		"selectdeploytarget": {
+			"from": ["subtract","board","units"],
+			"allow": [["command","deploy"]]
+		},
+		"selectunit": {
+			"from": ["union","pawns","bishops"],
+			"allow": [["command","promote"]]
+		}
+	},
+	"commands": {
+		"deploy": {
+			"applyEffects": [["spawnunit","selectdeploytarget","pawns",0]]
+		},
+		"promote": {
+			"applyEffects": [["setunitdata",["idofunitat","selectunit"],"group",["ifelse",["anyat","pawns","selectunit"],"bishops","kings"]]]
+		}
+	},
+	"generators": {
+		"findlines": {
+			"type": "walker",
+			"dirs": ["dirs",[1,2,3,4]],
+			"starts": "units",
+			"steps": ["layer",["lookup","units",["contextpos","start"],"group"]],
+			"draw": {
+				"steps": {
+					"condition": ["morethan",["contextval","linelength"],1],
+					"tolayer": "line"
+				}
+			}
+		}
+	}
+}

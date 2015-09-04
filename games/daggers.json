@@ -1,7 +1,8 @@
 {
 	"meta": {
 		"name": "Daggers",
-		"source": "http://www.di.fc.ul.pt/~jpn/gv/daggers.htm"
+		"source": "http://www.di.fc.ul.pt/~jpn/gv/daggers.htm",
+		"tags": ["differentunits","asymmetric","multiplegoals"]
 	},
 	"board": { "height": 8, "width": 8 },
 	"graphics": {

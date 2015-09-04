@@ -1,3 +1,26 @@
+TAGS
+
+commonunits
+pattern
+deploy
+chooseaction
+changeunit
+differentunits
+changeowners
+asymmetric
+multiplegoals
+
+
+
+
+
+
+
+
+
+
+
+
 TODO 
 
 [ ] update board notation
@@ -29,3 +52,6 @@ TODO
 [ ] make resetLayers into a function
 
 [x] change so marks to set as commandresults are passed to prepareNewStep!
+
+
+

@@ -1,7 +1,8 @@
 {
 	"meta": {
 		"name": "Boll's game",
-		"source": "http://www.di.fc.ul.pt/~jpn/gv/bollsgame.htm"
+		"source": "http://www.di.fc.ul.pt/~jpn/gv/bollsgame.htm",
+		"tags": ["commonunits","changeowners"]
 	},
 	"graphics": {
 		"icons": {"soldiers":"rooks"}

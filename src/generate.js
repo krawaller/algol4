@@ -43,7 +43,7 @@ function stopreason(state,max,dir,pos,length,blocks,steps,prioblocks){
 }
 
 Algol.generateWalkerPodsInDir = function(startstate,def,recorder,startpos,dir){
-	startstate = startstate.setIn(["context","dir"],dir);
+	startstate = startstate.setIn(["context","dir"],dir).setIn(["context","start"],startpos);
 	var pos=startpos, walk = [], reason, blockpos,
 		blocks = def.has("blocks") && this.evaluatePositionSet(startstate,def.get("blocks")),
 		steps = def.has("steps") && this.evaluatePositionSet(startstate,def.get("steps")),
