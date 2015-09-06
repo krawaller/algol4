@@ -273,14 +273,6 @@ Algol.pruneOptions = function(state){
 	return state;
 };
 
-Algol.prepareInitialPlayerVarsForGame = function(gamedef){
-	return (gamedef.get("playervars")||I.Map()).reduce(function(mem,values,name){
-		return mem.set(name,values.reduce(function(mem,startvalue,player){
-			return mem.set(parseInt(player),startvalue);
-		},I.Map()));
-	},I.Map());
-};
-
 Algol.newGame = function(gamedef,nbrofplayers){
 	var commandslist = gamedef.get("commands").keySeq().sort();
 	var state = I.fromJS({

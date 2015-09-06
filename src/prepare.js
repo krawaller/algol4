@@ -147,6 +147,15 @@ Algol.prepareNewTurnState = function(state,newturnplayer){
 	return this.prepareFirstStepInTurn(state);
 };
 
+
+Algol.prepareInitialPlayerVarsForGame = function(gamedef){
+	return (gamedef.get("playervars")||I.Map()).reduce(function(mem,values,name){
+		return mem.set(name,values.reduce(function(mem,startvalue,n){
+			return mem.set(n+1,startvalue);
+		},I.Map()));
+	},I.Map());
+};
+
 /*
 Used in prepareNewStepState, prepareFirstStepInTurn, calculateCommandResult
 */

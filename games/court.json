@@ -13,9 +13,9 @@
 		"pawns": [["rectangle",2002,3007,1,{"dir":5}],["rectangle",6002,7007,2,{"dir":1}]]
 	},
 	"playervars": {
-		"rubies": {"1":2,"2":2},
-		"sapphires": {"1":2,"2":2},
-		"stones": {"1":2,"2":2}
+		"clerics": [2,2],
+		"nobles": [2,2],
+		"bankers": [2,2]
 	},
 	"startturn": {
 		"allow": [["mark","selectunit"]]
@@ -40,9 +40,9 @@
 			],
 			"allow": [
 				["mark","selectmovetarget"],
-				["if",["and",[["anyat","mypawns","selectunit"],["truthy",["playervar","sapphires",["contextval","currentplayer"]]]]],["command","makenoble"]],
-				["if",["and",[["anyat","mypawns","selectunit"],["truthy",["playervar","rubies",["contextval","currentplayer"]]]]],["command","makecleric"]],
-				["if",["and",[["anyat","mypawns","selectunit"],["truthy",["playervar","stones",["contextval","currentplayer"]]]]],["command","makebanker"]]
+				["if",["and",[["anyat","mypawns","selectunit"],["truthy",["playervar","nobles",["contextval","currentplayer"]]]]],["command","makenoble"]],
+				["if",["and",[["anyat","mypawns","selectunit"],["truthy",["playervar","clerics",["contextval","currentplayer"]]]]],["command","makecleric"]],
+				["if",["and",[["anyat","mypawns","selectunit"],["truthy",["playervar","bankers",["contextval","currentplayer"]]]]],["command","makebanker"]]
 			]
 		},
 		"selectmovetarget": {
@@ -53,8 +53,8 @@
 	"commands": {
 		"move": {
 			"applyEffects": [
-				["if",["anyat","oppknights","selectmovetarget"],["addtoplayervar","sapphires",["contextval","currentplayer"],1]],
-				["if",["anyat","oppbishops","selectmovetarget"],["addtoplayervar","rubies",["contextval","currentplayer"],1]],
+				["if",["anyat","oppknights","selectmovetarget"],["addtoplayervar","nobles",["contextval","currentplayer"],1]],
+				["if",["anyat","oppbishops","selectmovetarget"],["addtoplayervar","clerics",["contextval","currentplayer"],1]],
 				["forallin","selectmovetarget",["killunit",["loopid"]]],
 				["move","selectunit","selectmovetarget"]
 			]
@@ -62,19 +62,19 @@
 		"makenoble": {
 			"applyEffects": [
 				["setunitdata",["idofunitat","selectunit"],"group","knights"],
-				["addtoplayervar","sapphires",["contextval","currentplayer"],-1]
+				["addtoplayervar","nobles",["contextval","currentplayer"],-1]
 			]
 		},
 		"makecleric": {
 			"applyEffects": [
 				["setunitdata",["idofunitat","selectunit"],"group","bishops"],
-				["addtoplayervar","rubies",["contextval","currentplayer"],-1]
+				["addtoplayervar","clerics",["contextval","currentplayer"],-1]
 			]
 		},
 		"makebanker": {
 			"applyEffects": [
 				["setunitdata",["idofunitat","selectunit"],"group","rooks"],
-				["addtoplayervar","stones",["contextval","currentplayer"],-1]
+				["addtoplayervar","bankers",["contextval","currentplayer"],-1]
 			]
 		}
 	},
