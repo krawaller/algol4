@@ -66,24 +66,51 @@ Algol.addEntitiesFromDef = function(coll,def,board){
 			},coll);
 		} else { // [rectangle,topleft,bottomright,owner,blueprint]
 			blueprint = (def.get(4) || I.Map()).set("owner",def.get(3)||0);
-			topleft = parseInt(def.get(1));
-			bottomright = parseInt(def.get(2));
-			return rect =  _.reduce(_.range(Math.floor(topleft/1000),Math.floor(bottomright/1000)+1),function(mem,r){
+			topleft = this.posNameToObj(def.get(1),board);  //parseInt(def.get(1));
+			bottomright = this.posNameToObj(def.get(2),board); //parseInt(def.get(2));
+			return rect =  _.reduce(_.range(topleft.y,bottomright.y+1),function(mem,r){
+				return _.reduce(_.range(topleft.x,bottomright.x+1),function(mem,c){
+					return mem.push(blueprint.set("pos",this.posObjToName({x:c,y:r},board)));
+				},mem,this);
+			},coll,this);
+			/*return rect =  _.reduce(_.range(Math.floor(topleft/1000),Math.floor(bottomright/1000)+1),function(mem,r){
 				return _.reduce(_.range(topleft % 1000,(bottomright % 1000)+1),function(mem,c){
 					return mem.push(blueprint.set("pos",r*1000+c));
 				},mem);
-			},coll);
+			},coll);*/
 		}
 	} else { // single definition
 		return coll.push(def);
 	}
 }
 
+Algol.offsetPosName = function(name,dir,forward,right,board){ // topleft is 1,1
+	var forwardmods = [[0,-1],[1,-1],[1,0],[1,1],[0,1],[-1,1],[-1,0],[-1,-1]], // x,y
+		rightmods =   [[1,0],[1,1],[0,1],[-1,1],[-1,0],[-1,-1],[0,-1],[1,-1]],
+		obj = this.posNameToObj(name,board),
+		n = dir-1,
+		newx = obj.x + forwardmods[n][0]*forward + rightmods[n][0]*right,
+		newy = obj.y + forwardmods[n][1]*forward + rightmods[n][1]*right;
+	return newx>0 && newx<=board.get("width") && newy>0 && newy<=board.get("height") && this.posObjToName({x:newx,y:newy},board);
+};
+
+Algol.posNameToObj = function(name,board){
+	var int = parseInt(name);
+	return {x: (int % 1000), y: Math.floor(int/1000) };
+};
+
+Algol.posObjToName = function(obj,board){
+	return obj.y*1000+obj.x;
+};
+
+
 /*
 Used in prepareInitialUnitDataFromSetup and prepareTerrainLayerFromEntityList
 */
 Algol.prepareEntitiesFromList = function(deflist,board){
-	return deflist.reduce(this.addEntitiesFromDef,I.List());
+	return deflist.reduce(function(coll,entitydef){
+		return this.addEntitiesFromDef(coll,entitydef,board);
+	},I.List(),this);  // this.addEntitiesFromDef,I.List());
 }
 
 

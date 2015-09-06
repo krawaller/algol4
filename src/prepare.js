@@ -20,12 +20,17 @@ Algol.prepareConnectionsFromBoardDef = function(boarddef){
 	var height = boarddef.get("height"), width = boarddef.get("width");
 	return I.Range(1,width+1).reduce(function(mem,x){
 		return I.Range(1,height+1).reduce(function(mem,y){
-			return mem.set(y*1000+x,_.reduce([[0,-1],[1,-1],[1,0],[1,1],[0,1],[-1,1],[-1,0],[-1,-1]],function(map,mods,n){
+			var name = this.posObjToName({x:x,y:y},boarddef);
+			return mem.set(name,_.reduce([1,2,3,4,5,6,7,8],function(map,dir){
+				var newpos = this.offsetPosName(name,dir,1,0,boarddef);
+				return newpos ? map.set(dir,newpos) : map;
+			},I.Map(),this));
+			/*return mem.set(this.posObjToName({x:x,y:y},boarddef),_.reduce([[0,-1],[1,-1],[1,0],[1,1],[0,1],[-1,1],[-1,0],[-1,-1]],function(map,mods,n){
 				var newx = x+mods[0], newy = y+mods[1];
-				return newx>0 && newx<=width && newy>0 && newy<=height ? map.set(n+1,newy*1000+newx) : map;
-			},I.Map()));
-		},mem);
-	},I.Map());
+				return newx>0 && newx<=width && newy>0 && newy<=height ? map.set(n+1,this.posObjToName({x:newx,y:newy},boarddef)) : map;
+			},I.Map(),this));*/
+		},mem,this);
+	},I.Map(),this);
 };
 
 /*
@@ -35,12 +40,12 @@ Algol.prepareBoardLayersFromBoardDef = function(boarddef){
 	var height = boarddef.get("height"), width = boarddef.get("width");
 	return I.Range(1,width+1).reduce(function(mem,x){
 		return I.Range(1,height+1).reduce(function(mem,y){
-			var pos = y*1000+x, clr = ["light","dark"][(x+(y%2))%2], obj = I.Map({
+			var pos = this.posObjToName({x:x,y:y},boarddef), clr = ["light","dark"][(x+(y%2))%2], obj = I.Map({
 				x: x, y: y, pos: pos, colour: clr
 			})
 			return mem.setIn(["board",pos],I.List([obj])).setIn([clr,pos],I.List([obj]));
-		},mem);
-	},I.Map());
+		},mem,this);
+	},I.Map(),this);
 };
 
 /*

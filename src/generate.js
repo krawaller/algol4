@@ -8,6 +8,35 @@ function augmentWithGenerateFunctions(Algol){
 
 
 // Called in Algol.applyGenerator
+Algol.generateOffsetPods = function(state,def){
+	var cond = def.get("condition"),
+		offsets = def.get("offsets"),
+		board = state.getIn(["gamedef","board"]);
+	var ret = this.evaluatePositionSet(state,def.get("starts")).reduce(function(recorder,startpos){
+		var startstate = state.setIn(["context","start"],startpos);
+		//console.log("From here");
+		var targets = this.evaluateDirList(startstate,def.get("dirs")).reduce(function(map,dir){
+			return offsets.reduce(function(map,offset){ // offset is [forward,right]
+				var forward = offset.get(0),
+					right = offset.get(1),
+					newpos = this.offsetPosName(startpos,dir,offset.get(0),offset.get(1),board);
+				return newpos && (!cond || this.evaluateBoolean(startstate.setIn(["context","target"],newpos),cond)) ? map.set(newpos,I.fromJS({
+					start:startpos,
+					target:newpos,
+					forward:forward,
+					right:right,
+					dir:dir
+				})) : map;
+			},map,this);
+		},I.Map(),this);
+		return targets.reduce(function(recorder,info,pos){
+			return I.pushIn(recorder,["target",pos],info.set("offsetcount",targets.size));
+		},I.pushIn(recorder,["start",startpos],I.Map({start:startpos,offsetcount:targets.size})),this);
+	},I.fromJS({start:{},target:{}}),this);
+	return ret;
+}
+
+// Called in Algol.applyGenerator
 Algol.generateNeighbourPods = function(state,def){
 	var cond = def.get("condition");
 	var ret = this.evaluatePositionSet(state,def.get("starts")).reduce(function(recorder,startpos){
@@ -105,7 +134,7 @@ Algol.applyGenerator = function(state,def){
 		if (type==="filter") {
 			return this.applyFilter(state,def);
 		} else {
-			pods = this[{walker:"generateWalkerPods",nextto:"generateNeighbourPods"}[type]](state,def);
+			pods = this[{walker:"generateWalkerPods",nextto:"generateNeighbourPods",offset:"generateOffsetPods"}[type]](state,def);
 			return this.paintSeedPods(state,def.get("draw"),pods);
 		}
 	} else {

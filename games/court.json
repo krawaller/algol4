@@ -1,0 +1,49 @@
+{
+	"meta": {
+		"name": "Court",
+		"source": "http://www.di.fc.ul.pt/~jpn/gv/court.htm"
+	},
+	"graphics": {
+		"icons": {"knights":"knights"}
+	},
+	"board": {
+		"height": 8, "width": 8
+	},
+	"setup": {
+		"knights": [{"pos":2002,"owner":1},{"pos":3004,"owner":2}]
+	},
+	"startturn": {
+		"allow": [["mark","selectunit"]]
+	},
+	"marks": {
+		"selectunit": {
+			"from": "myunits",
+			"runGenerators": ["findmovetargets"],
+			"allow": [["mark","selectmovetarget"]]
+		},
+		"selectmovetarget": {
+			"from": "movetargets",
+			"allow": [["command","move"]]
+		}
+	},
+	"commands": {
+		"move": {
+			"applyEffects": [["move","selectunit","selectmovetarget"]],
+			"allow": [["endturn"]]
+		}
+	},
+	"generators": {
+		"findmovetargets": {
+			"type": "offset",
+			"starts": "selectunit",
+			"offsets": [[2,1],[2,-1]],
+			"dirs": ["dirs",[1,3,5,7]],
+			"condition": ["noneat","units",["contextpos","target"]],
+			"draw": {
+				"target": {
+					"tolayer": "movetargets"
+				}
+			}
+		}
+	}
+}
