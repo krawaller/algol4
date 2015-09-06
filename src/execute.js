@@ -72,6 +72,9 @@ var effectmethods = {
 	setcontextval: function(state,prop,val){
 		return state.setIn(["context",this.evaluateValue(state,prop)],this.evaluateValue(state,val));
 	},
+	setcontextpos: function(state,prop,pos){
+		return state.setIn(["context",this.evaluateValue(state,prop)],this.evaluatePosition(state,pos));
+	},
 	setbattleval: function(state,prop,val){
 		return state.setIn(["data",this.evaluateValue(state,prop)],this.evaluateValue(state,val));
 	},

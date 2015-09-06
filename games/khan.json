@@ -1,0 +1,154 @@
+{
+	"meta": {
+		"name": "Khan",
+		"source": "http://www.di.fc.ul.pt/~jpn/gv/khan.htm"
+	},
+	"graphics": {
+		"tiles": {"base":"grass"},
+		"icons": {"soldiers":"pawns","kings":"kings"}
+	},
+	"board": {"height":10,"width":10},
+	"setup": {
+		"soldiers": [["rectangle",1001,1010,1],["rectangle",3001,3010,1],["rectangle",8001,8010,2],["rectangle",10001,10010,2]],
+		"kings": [["positions",[2001,2003,2005,2006,2008,2010],1],["positions",[9001,9003,9005,9006,9008,9010],2]]
+	},
+	"terrain": {
+		"base": [["rectangle",1001,1010,1],["rectangle",10001,10010,2]]
+	},
+	"startturn": {
+		"allow": [["mark","selectunit"]]
+	},
+	"endturn": {
+		"endgame": {
+			"killallenemysoldiers": {"condition":["isempty","oppsoldiers"],"result":"win"},
+			"infiltration": {"condition":["overlaps","oppbase","mysoldiers"],"result":"win"}
+		}
+	},
+	"marks": {
+		"selectunit": {
+			"from": "myunits",
+			"runGenerators": ["findmoveandnearbysoldiers","findjumptargets"],
+			"allow": [
+				["mark","selectmovetarget"],
+				["mark","selectnearbysoldier"],
+				["if",["anyat","mykings","selectunit"],["mark","selectjumptarget"]]
+			]
+		},
+		"selectjumptarget": {
+			"from": "jumptargets",
+			"allow": [["command","jump"]]
+		},
+		"selectsupportdestination": {
+			"from": "movetargets",
+			"allow": [["command","support"]]
+		},
+		"selectmovetarget": {
+			"from": "movetargets",
+			"allow": [["command","move"]]
+		},
+		"selectnearbysoldier": {
+			"from": "nearbysoldiers",
+			"runGenerators": ["findpushresults"],
+			"allow": [
+				["mark","selectsupportdestination"],
+				["if",["notempty","pushee"],["command","push"]]
+			]
+		},
+		"selectnextking": {
+			"from": "nextkings",
+			"runGenerators": ["findmoveandnearbysoldiers"],
+			"allow": [["mark","selectsupportdestination"]]
+		}
+	},
+	"commands": {
+		"jump": {
+			"applyEffects": [
+				["move",["firstposin",["union","selectunit",["contextpos","jumpedto"]]],"selectjumptarget"],
+				["setcontextval","jumpedto",["markpos","selectjumptarget"]]
+			],
+			"runGenerators": ["findjumptargets"],
+			"allow": [["endturn"],["mark","selectjumptarget"]]
+		},
+		"move": {
+			"applyEffects": [["move","selectunit","selectmovetarget"]],
+			"allow": [["endturn"]]
+		},
+		"push": {
+			"applyEffects": [
+				["forallin","squish",["killunit",["loopid"]]],
+				["forallin","pushee",["offsetunit",["loopid"],["lookup","pushee",["contextpos","target"],"dir"],1]],
+				["move","selectunit","selectnearbysoldier"]
+			],
+			"allow": [["endturn"]]
+		},
+		"support": {
+			"applyEffects": [
+				["move",["firstposin",["union","selectnearbysoldier",["contextpos","supportedto"]]],"selectsupportdestination"],
+				["setcontextval","supportedto",["markpos","selectsupportdestination"]]
+			],
+			"runGenerators": ["findnextkings"],
+			"allow": [["endturn"],["mark","selectnextking"]]
+		}
+	},
+	"generators": {
+		"findjumptargets": {
+			"type": "walker",
+			"starts": ["union","selectunit",["contextpos","jumpedto"]],
+			"prioritizeblocksoversteps": true,
+			"steps": "units",
+			"blocks": ["subtract","board","myunits"],
+			"max": 2,
+			"draw": {
+				"block": {
+					"condition": ["and",[
+						["same",["contextval","stopreason"],"hitblock"],
+						["same",["contextval","linelength"],1]
+						
+					]],
+					"tolayer": "jumptargets"
+				}
+			}
+		},
+		"findpushresults": {
+			"type": "walker",
+			"starts": "selectunit",
+			"dirs": ["dir",["lookup","nearbysoldiers","selectnearbysoldier","dir"]],
+			"prioritizeblocksoversteps": true,
+			"steps": "mysoldiers",
+			"blocks": ["subtract","board","myunits"],
+			"draw": {
+				"steps": {
+					"condition": ["same",["contextval","stopreason"],"hitblock"],
+					"tolayer": "pushee",
+					"include": {"dir":["contextval","dir"]}
+				},
+				"block": {
+					"tolayer": "squish"
+				}
+			}
+		},
+		"findnextkings": {
+			"type": "nextto",
+			"starts": ["contextpos","supportedto"],
+			"condition": ["and",[
+				["anyat","mykings",["contextpos","target"]]
+				
+			]],
+			"draw": {"target": {"tolayer":"nextkings"}}
+		},
+		"findmoveandnearbysoldiers": {
+			"type": "nextto",
+			"starts": ["union","selectunit","selectnextking"],
+			"condition": ["noneat",["ifelse",["anyat","mykings",["contextpos","start"]],"oppunits","units"],["contextpos","target"]],
+			"draw": {
+				"target": {
+					"condition": ["noneat","mykings",["contextpos","target"]],
+					"tolayer": ["ifelse",["anyat","units",["contextpos","target"]],"nearbysoldiers","movetargets"],
+					"include": {
+						"dir": ["contextval","dir"]
+					}
+				}
+			}
+		}
+	}
+}

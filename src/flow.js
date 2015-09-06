@@ -62,6 +62,7 @@ Algol.makeMark = function(state,markname,pos,nodive){
 		.set("availableCommands",I.Map())
 		.set("reversalCommands",I.Map())
 		.set("id",newid)
+		.set("canendturnnow",false)
 		.setIn(["marks",markname],pos);
 	newstate = this.obeyInstructions(newstate,newstate.getIn(["gamedef","marks",markname]));
 	return nodive ? newstate : this.pruneOptions(newstate);
@@ -109,6 +110,7 @@ Algol.performCommand = function(state,cdef){
 		.set("marks",I.Map())
 		.set("removeMarks",I.Map())
 		.setIn(["context","hasperformed"+cmndname],true)
+		.set("canendturnnow",false)
 		.setIn(["context","performedsteps"],state.getIn(["context","performedsteps"])+1);
 	newstate = I.pushIn(newstate,["steps"],I.fromJS({
 		command: cmndname,
@@ -248,7 +250,7 @@ Algol.pruneOptions = function(state){
 	// fix markings
 	state = state.get("availableMarks").reduce(function(s,markname,pos){
 		var newstate = this.makeMark(s,markname,pos,true);
-		if (this.canReachEndTurn(newstate)){
+		if (state.hasIn(["gamedef","marks",markname,"canalwaysreachturnend"]) || this.canReachEndTurn(newstate)){
 			debug && console.log("state",s.get("id"),"can reach end by mark",markname,"at pos",pos,"so keeping that")
 			return s.set("canreachendturn",true).setIn(["cache",newstate.get("id")],newstate); 
 		} else {

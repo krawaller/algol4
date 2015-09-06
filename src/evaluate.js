@@ -213,6 +213,9 @@ var valuemethods = {
 				return this.evaluateValue(state,pair.first()) === val;
 			},this);
 		return this.evaluateValue(state,find?find.second():defaultval);
+	},
+	position: function(state,pos){
+		return this.evaluatePosition(state,pos);
 	}
 };
 

@@ -17,15 +17,16 @@
 	"marks": {
 		"selectunit": {
 			"from": "myunits",
-			"runGenerators": ["findmovetargets"],
+			"runGenerators": ["findtargets"],
 			"allow": [["mark","selectmovetarget"]]
 		},
 		"selectmovetarget": {
-			"from": "movetarget",
+			"canalwaysreachturnend": true,
+			"from": "targets",
 			"allow": [ ["command","move"] ]
 		},
 		"selectfiretarget": {
-			"from": "firetarget",
+			"from": "targets",
 			"allow": [ ["command","fire"] ]
 		}
 	},
@@ -35,7 +36,7 @@
 				["moveunit",["idofunitat","selectunit"],"selectmovetarget"],
 				["setcontextval","movedto",["markpos","selectmovetarget"]]
 			],
-			"runGenerators": ["findfiretargets"],
+			"runGenerators": ["findtargets"],
 			"allow": [ ["mark","selectfiretarget"] ]
 		},
 		"fire": {
@@ -44,23 +45,13 @@
 		}
 	},
 	"generators": {
-		"findmovetargets": {
+		"findtargets": {
 			"type": "walker",
-			"starts": "selectunit",
+			"starts": ["union","selectunit",["contextpos","movedto"]],
 			"blocks": "units",
 			"draw": {
 				"steps": {
-					"tolayer": "movetarget"
-				}
-			}
-		},
-		"findfiretargets": {
-			"type": "walker",
-			"starts": ["contextpos","movedto"],
-			"blocks": "units",
-			"draw": {
-				"steps": {
-					"tolayer": "firetarget"
+					"tolayer": "targets"
 				}
 			}
 		}
