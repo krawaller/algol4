@@ -43,7 +43,9 @@ Algol.generateNeighbourPods = function(state,def){
 		var startstate = state.setIn(["context","start"],startpos);
 		//console.log("From here");
 		var neighbours = this.evaluateDirList(startstate,def.get("dirs")).reduce(function(map,dir){
+			startstate = startstate.setIn(["context","dir"],dir);
 			var targetpos = state.getIn(["connections",startpos,dir])||state.getIn(["connections",startpos,dir+""]);
+			//console.log("neighbour",startpos,dir,targetpos, targetpos && this.evaluateBoolean(startstate.setIn(["context","target"],targetpos),cond));
 			return targetpos && (!cond || this.evaluateBoolean(startstate.setIn(["context","target"],targetpos),cond)) ? map.set(dir,targetpos) : map;
 		},I.Map(),this);
 		return neighbours.reduce(function(recorder,pos,dir){
@@ -145,7 +147,12 @@ Algol.applyGenerator = function(state,def){
 Algol.applyGeneratorList = function(state,list){
 	return list.reduce(function(state,generatorname){
 		//console.log("runnning generator",generatorname);
-		return this.applyGenerator(state,state.getIn(["gamedef","generators",generatorname]));
+		if (I.List.isList(generatorname) && generatorname.first() === "if"){ // [if,cond,name]
+			//console.log("Will we actually run",generatorname.get(2),"cond is",generatorname.get(1).toJS(),"evaluated to",this.evaluateBoolean(state,generatorname.get(1)));
+			return this.evaluateBoolean(state,generatorname.get(1)) ? this.applyGenerator(state,state.getIn(["gamedef","generators",generatorname.get(2)])) : state;
+		} else {
+			return this.applyGenerator(state,state.getIn(["gamedef","generators",generatorname]));
+		}
 	},state,this);
 };
 

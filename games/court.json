@@ -4,22 +4,46 @@
 		"source": "http://www.di.fc.ul.pt/~jpn/gv/court.htm"
 	},
 	"graphics": {
-		"icons": {"knights":"knights"}
+		"icons": {"knights":"knights","pawns":"pawns","bishops":"bishops","rooks":"rooks"}
 	},
 	"board": {
 		"height": 8, "width": 8
 	},
 	"setup": {
-		"knights": [{"pos":2002,"owner":1},{"pos":3004,"owner":2}]
+		"pawns": [["rectangle",2002,3007,1,{"dir":5}],["rectangle",6002,7007,2,{"dir":1}]]
+	},
+	"playervars": {
+		"rubies": {"1":2,"2":2},
+		"sapphires": {"1":2,"2":2},
+		"stones": {"1":2,"2":2}
 	},
 	"startturn": {
 		"allow": [["mark","selectunit"]]
 	},
+	"afterstep": {
+		"allow": [["endturn"]]
+	},
+	"endturn": {
+		"endgame": {
+			"noenemypeasants": {"condition":["isempty","opppawns"],"result":"win"},
+			"noownpeasants": {"condition":["isempty","mypawns"],"result":"loseto","who":["contextval","nextplayer"]}
+		}
+	},
 	"marks": {
 		"selectunit": {
 			"from": "myunits",
-			"runGenerators": ["findmovetargets"],
-			"allow": [["mark","selectmovetarget"]]
+			"runGenerators": [
+				["if",["anyat","myknights","selectunit"],"findknighttargets"],
+				["if",["anyat","mypawns","selectunit"],"findpawntargets"],
+				["if",["anyat","mybishops","selectunit"],"findlinetargets"],
+				["if",["anyat","myrooks","selectunit"],"findlinetargets"]
+			],
+			"allow": [
+				["mark","selectmovetarget"],
+				["if",["and",[["anyat","mypawns","selectunit"],["truthy",["playervar","sapphires",["contextval","currentplayer"]]]]],["command","makenoble"]],
+				["if",["and",[["anyat","mypawns","selectunit"],["truthy",["playervar","rubies",["contextval","currentplayer"]]]]],["command","makecleric"]],
+				["if",["and",[["anyat","mypawns","selectunit"],["truthy",["playervar","stones",["contextval","currentplayer"]]]]],["command","makebanker"]]
+			]
 		},
 		"selectmovetarget": {
 			"from": "movetargets",
@@ -28,17 +52,68 @@
 	},
 	"commands": {
 		"move": {
-			"applyEffects": [["move","selectunit","selectmovetarget"]],
-			"allow": [["endturn"]]
+			"applyEffects": [
+				["if",["anyat","oppknights","selectmovetarget"],["addtoplayervar","sapphires",["contextval","currentplayer"],1]],
+				["if",["anyat","oppbishops","selectmovetarget"],["addtoplayervar","rubies",["contextval","currentplayer"],1]],
+				["forallin","selectmovetarget",["killunit",["loopid"]]],
+				["move","selectunit","selectmovetarget"]
+			]
+		},
+		"makenoble": {
+			"applyEffects": [
+				["setunitdata",["idofunitat","selectunit"],"group","knights"],
+				["addtoplayervar","sapphires",["contextval","currentplayer"],-1]
+			]
+		},
+		"makecleric": {
+			"applyEffects": [
+				["setunitdata",["idofunitat","selectunit"],"group","bishops"],
+				["addtoplayervar","rubies",["contextval","currentplayer"],-1]
+			]
+		},
+		"makebanker": {
+			"applyEffects": [
+				["setunitdata",["idofunitat","selectunit"],"group","rooks"],
+				["addtoplayervar","stones",["contextval","currentplayer"],-1]
+			]
 		}
 	},
 	"generators": {
-		"findmovetargets": {
+		"findlinetargets": {
+			"type": "walker",
+			"starts": "selectunit",
+			"dirs": ["ifelse",["anyat","mybishops","selectunit"],["dirs",[2,4,6,8]],["dirs",[1,3,5,7]]],
+			"blocks": "units",
+			"draw": {
+				"steps": { "tolayer": "movetargets" },
+				"block": {
+					"condition": ["noneat","myunits",["contextpos","target"]],
+					"tolayer": "movetargets"
+				}
+			}
+		},
+		"findpawntargets": {
+			"type": "nextto",
+			"starts": "selectunit",
+			"dirs": ["relativedirs",["dirs",[8,1,2]],["lookup","units","selectunit","dir"]],
+			"condition": ["or",[
+				["and",[
+					["valinlist",["contextval","dir"],[1,5]],
+					["noneat","units",["contextpos","target"]]
+				]],
+				["and",[
+					["not",["valinlist",["contextval","dir"],[1,5]]],
+					["anyat","oppunits",["contextpos","target"]]
+				]]
+			]],
+			"draw": { "target": {"tolayer":"movetargets"} }
+		},
+		"findknighttargets": {
 			"type": "offset",
 			"starts": "selectunit",
 			"offsets": [[2,1],[2,-1]],
 			"dirs": ["dirs",[1,3,5,7]],
-			"condition": ["noneat","units",["contextpos","target"]],
+			"condition": ["noneat","myunits",["contextpos","target"]],
 			"draw": {
 				"target": {
 					"tolayer": "movetargets"

@@ -96,7 +96,7 @@
 					"condition": ["and",[
 						["noneat","myunits",["contextpos","target"]],
 						["not",["and",[
-							["same",["contextval","dir"],["val",5]],
+							["same",["contextval","dir"],5],
 							["anyat","oppdaggers",["contextpos","target"]]
 						]]]
 					]],

@@ -88,6 +88,15 @@ var effectmethods = {
 		var propname = this.evaluateValue(state,prop);
 		return state.setIn(["context",propname],this.evaluateValue(state,val)+(state.getIn(["context",propname])||0));
 	},
+	setplayervar: function(state,name,player,val){
+		return state.setIn(["data","playervars",this.evaluateValue(state,name),this.evaluateValue(state,player)],this.evaluateValue(state,val));
+	},
+	addtoplayervar: function(state,name,player,val){
+		name = this.evaluateValue(state,name);
+		player = this.evaluateValue(state,player);
+		val = this.evaluateValue(state,val);
+		return state.setIn(["data","playervars",name,player],state.getIn(["data","playervars",name,player])+val);
+	},
 	if: function(state,bool,effect){
 		return this.evaluateBoolean(state,bool) ? this.applyEffect(state,effect) : state;
 	},

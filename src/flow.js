@@ -273,6 +273,13 @@ Algol.pruneOptions = function(state){
 	return state;
 };
 
+Algol.prepareInitialPlayerVarsForGame = function(gamedef){
+	return (gamedef.get("playervars")||I.Map()).reduce(function(mem,values,name){
+		return mem.set(name,values.reduce(function(mem,startvalue,player){
+			return mem.set(parseInt(player),startvalue);
+		},I.Map()));
+	},I.Map());
+};
 
 Algol.newGame = function(gamedef,nbrofplayers){
 	var commandslist = gamedef.get("commands").keySeq().sort();
@@ -282,7 +289,10 @@ Algol.newGame = function(gamedef,nbrofplayers){
 		},I.Map())),
 		commandsinorder: commandslist,
 		connections: this.prepareConnectionsFromBoardDef(gamedef.get("board")),
-		data: I.Map().set("units",this.prepareInitialUnitsForGame(gamedef)),
+		data: {
+			units: this.prepareInitialUnitsForGame(gamedef),
+			playervars: this.prepareInitialPlayerVarsForGame(gamedef),
+		},
 		baselayers: this.prepareBaseLayers(gamedef,nbrofplayers),
 		basecontext: {
 			nbrofplayers: nbrofplayers

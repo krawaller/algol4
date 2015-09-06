@@ -154,6 +154,14 @@ var boolmethods = {
 		var s1 = this.evaluatePositionSet(state,set1),
 			s2 = this.evaluatePositionSet(state,set2);
 		return !s1.intersect(s2).isEmpty();
+	},
+	valinlist: function(state,val,list){
+		val = this.evaluateValue(state,val);
+		//console.log("...Looking for",val);
+		return list.some(function(l){
+			//console.log(".......comparing it to",this.evaluateValue(state,l));
+			return val === this.evaluateValue(state,l);
+		},this);
 	}
 };
 
@@ -216,6 +224,9 @@ var valuemethods = {
 	},
 	position: function(state,pos){
 		return this.evaluatePosition(state,pos);
+	},
+	playervar: function(state,name,player){
+		return state.getIn(["data","playervars",this.evaluateValue(state,name),this.evaluateValue(state,player)]);
 	}
 };
 
