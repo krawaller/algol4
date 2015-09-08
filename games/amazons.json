@@ -33,7 +33,7 @@
 	"commands": {
 		"move": {
 			"applyEffects": [
-				["moveunit",["idofunitat","selectunit"],"selectmovetarget"],
+				["move","selectunit","selectmovetarget"],
 				["setcontextval","movedto",["markpos","selectmovetarget"]]
 			],
 			"runGenerators": ["findtargets"],

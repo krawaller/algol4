@@ -57,13 +57,24 @@ Algol.A1Toykx = function(a1,board){
 Helper function used only in prepareEntitiesFromList
 */
 Algol.addEntitiesFromDef = function(coll,def,board){
-	var blueprint, topleft, bottomright;
+	var blueprint, topleft, bottomright,holes;
 	if (I.List.isList(def)){ 
 		if (def.first()==="positions"){ // [positions,<list>,<owner>,<blueprint>]
 			blueprint = (def.get(3) || I.Map()).set("owner",def.get(2)||0);
 			return def.get(1).reduce(function(mem,pos){
 				return mem.push(blueprint.set("pos",pos));
 			},coll);
+		} else if (def.first()==="holedrectangle") { // [holedrectangle,topleft,bottomright,holes,owner,blueprint]
+			blueprint = (def.get(5) || I.Map()).set("owner",def.get(4)||0);
+			topleft = this.posNameToObj(def.get(1),board);  //parseInt(def.get(1));
+			bottomright = this.posNameToObj(def.get(2),board); //parseInt(def.get(2));
+			holes = def.get(3);
+			return rect =  _.reduce(_.range(topleft.y,bottomright.y+1),function(mem,r){
+				return _.reduce(_.range(topleft.x,bottomright.x+1),function(mem,c){
+					var name = this.posObjToName({x:c,y:r},board);
+					return holes.contains(name) ? mem : mem.push(blueprint.set("pos",name));
+				},mem,this);
+			},coll,this);
 		} else { // [rectangle,topleft,bottomright,owner,blueprint]
 			blueprint = (def.get(4) || I.Map()).set("owner",def.get(3)||0);
 			topleft = this.posNameToObj(def.get(1),board);  //parseInt(def.get(1));

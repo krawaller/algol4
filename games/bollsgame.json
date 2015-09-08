@@ -14,8 +14,8 @@
 	},
 	"endturn": {
 		"endgame": {
-			"selferadicate": { "condition": ["isempty","myunits"], "result": "loseto", "who": ["contextval","nextplayer"] },
-			"opperadicate": { "condition": ["isempty","oppunits"], "result": "win" }
+			"selferadicate": { "condition": ["isempty","myunits"], "who": ["contextval","nextplayer"] },
+			"opperadicate": { "condition": ["isempty","oppunits"] }
 		}
 	},
 	"marks": {

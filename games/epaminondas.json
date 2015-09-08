@@ -71,8 +71,7 @@
 				"condition": ["morethan",
 					["positionsin",["intersect","myunits","oppbases"]],
 					["positionsin",["intersect","oppunits","mybases"]]
-				],
-				"result": "win"
+				]
 			}
 		}
 	},

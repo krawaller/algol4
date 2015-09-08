@@ -140,7 +140,7 @@
 	},
 	"endturn": {
 		"endgame": {
-			"infiltration": {"condition":["overlaps","myunits","opphomerow"],"result":"win"}
+			"infiltration": {"condition":["overlaps","myunits","opphomerow"]}
 		}
 	}
 }

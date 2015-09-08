@@ -57,7 +57,6 @@ var Board = React.createClass({
         this.setState({"index":i});
     },
     render: function() {
-        //console.log("RENDER",this.state.state.get("layers").toJS(),"context",this.state.state.get("context").toJS(),this.state.state.getIn(["data","units"]).toJS());
         var me = this, s = this.state,
             playing = s.playing,
             state = playing ? s.state : s.history[s.index][1] ;
@@ -70,6 +69,7 @@ var Board = React.createClass({
                 height: height*40+"px;",
                 width: width*40+"px;"
             };
+        //console.log("RENDER",s.state.get("layers").toJS(),"context",s.state.get("context").toJS(),s.state.getIn(["data","units"]).toJS(),s.state.get("save").toJS(),s.state.get("path").toJS());
         return (
             <div>
                 <p><button onClick={function(){me.setState({playing:!me.state.playing})}}>{playing ? "Switch to history" : "Switch to playing"}</button></p>

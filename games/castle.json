@@ -84,8 +84,8 @@
 	},
 	"endturn": {
 		"endgame": {
-			"infiltration": { "condition": ["overlaps","myunits","oppthrones"], "result": "win" },
-			"genocide": { "condition": ["isempty","oppunits"], "result": "win" }
+			"infiltration": { "condition": ["overlaps","myunits","oppthrones"] },
+			"genocide": { "condition": ["isempty","oppunits"] }
 		}
 	}
 }

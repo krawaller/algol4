@@ -20,8 +20,8 @@
 	},
 	"endturn": {
 		"endgame": {
-			"infiltration": {"condition": ["overlaps","myunits","oppbases"], "result": "win" },
-			"genocide": {"condition": ["isempty","oppunits"], "result": "win"}
+			"infiltration": {"condition": ["overlaps","myunits","oppbases"]},
+			"genocide": {"condition": ["isempty","oppunits"]}
 		}
 	},
 	"commands": {

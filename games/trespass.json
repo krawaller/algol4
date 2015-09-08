@@ -23,8 +23,8 @@
 	},
 	"endturn": {
 		"endgame": {
-			"infiltration": { "condition": ["overlaps","attackers","goals"], "result": "win" },
-			"genocide": { "condition": ["isempty","oppunits"], "result": "win" }
+			"infiltration": { "condition": ["overlaps","attackers","goals"] },
+			"genocide": { "condition": ["isempty","oppunits"] }
 		}
 	},
 	"marks": {

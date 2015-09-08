@@ -15,7 +15,7 @@
 	},
 	"endturn": {
 		"endgame": {
-			"madeline": {"condition":["notempty","line"],"result":"win"}
+			"madeline": {"condition":["notempty","line"]}
 		}
 	},
 	"marks": {

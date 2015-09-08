@@ -40,12 +40,8 @@
 	},
 	"endturn": {
 		"endgame": {
-			"cornerinfiltration": {
-				"condition": ["overlaps","myunits","oppcorners"], "result": "win"
-			},
-			"occupation": {
-				"condition": ["same",["overlapsize","myunits","oppbases"],2], "result": "win"
-			}
+			"cornerinfiltration": {"condition": ["overlaps","myunits","oppcorners"]},
+			"occupation": {"condition": ["same",["overlapsize","myunits","oppbases"],2]}
 		}
 	},
 	"commands": {

@@ -103,7 +103,9 @@ Algol.generateWalkerPodsInDir = function(startstate,def,recorder,startpos,dir){
 		}
 		recorder = I.pushIn(recorder,["steps",step],ctx);
 	});
-	//console.log("WALKER",startpos,"DIR",dir,"RESULT",recorder.toJS());
+	/*if (tobecounted){
+		console.log("WALKER",startpos,"DIR",dir,"RESULT",recorder.toJS());
+	}*/
 	return recorder;
 };
 

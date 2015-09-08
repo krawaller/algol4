@@ -18,10 +18,7 @@
 		]
 	},
 	"setup": {
-		"archers": [
-			["positions",[2002,2003,2004,3002,3004,4002,4003,4004],1,{"dir":5}],
-			["positions",[6006,6007,6008,7006,7008,8006,8007,8008],2,{"dir":1}]
-		],
+		"archers": [["holedrectangle",2002,4004,[3003],1,{"dir":5}],["holedrectangle",6006,8008,[7007],2,{"dir":1}]],
 		"kings": [{"pos":3003,"dir":5,"owner":1},{"pos":7007,"dir":1,"owner":2}]
 	},
 	"generators": {
@@ -110,8 +107,8 @@
 	"endturn": {
 		"canalwaysreachend": true,
 		"endgame": {
-			"infiltration": {"condition":["overlaps","myunits","opptrees"],"result":"win"},
-			"kingkill": {"condition":["notempty","oppdeadkings"],"result":"win"}
+			"infiltration": {"condition":["overlaps","myunits","opptrees"]},
+			"kingkill": {"condition":["notempty","oppdeadkings"]}
 		}
 	},
 	"commands": {

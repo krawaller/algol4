@@ -75,7 +75,6 @@
 					["positionsin","opptowers"],
 					["positionsin","mytowers"]
 				],
-				"result": "loseto",
 				"who": ["contextval","nextplayer"]
 			}
 		}

@@ -63,6 +63,7 @@ Algol.makeMark = function(state,markname,pos,nodive){
 		.set("reversalCommands",I.Map())
 		.set("id",newid)
 		.set("canendturnnow",false)
+		.set("path",state.get("path").push(pos))
 		.setIn(["marks",markname],pos);
 	newstate = this.obeyInstructions(newstate,newstate.getIn(["gamedef","marks",markname]));
 	return nodive ? newstate : this.pruneOptions(newstate);
@@ -111,12 +112,14 @@ Algol.performCommand = function(state,cdef){
 		.set("removeMarks",I.Map())
 		.setIn(["context","hasperformed"+cmndname],true)
 		.set("canendturnnow",false)
+		.set("path",state.get("path").push(cmndname))
 		.setIn(["context","performedsteps"],state.getIn(["context","performedsteps"])+1);
 	newstate = I.pushIn(newstate,["steps"],I.fromJS({
 		command: cmndname,
 		marks: state.get("marks")
 	}));
-	return this.prepareBasicUnitLayers(newstate);
+	newstate = this.prepareBasicUnitLayers(newstate);
+	return newstate;
 };
 
 Algol.allowCommand = function(state,cmndname){
@@ -133,7 +136,7 @@ Algol.allowCommand = function(state,cmndname){
 			return state.setIn(["reversalCommands",cmndname],tocheck.get("id"));
 		}
 	};
-	// command causes new state! we add its instructions
+	// command causes new state! we add its instructions (and generators)
 	newstate = this.obeyInstructions(newstate,cdef);
 	var afterstep = gamedef.get("afterstep");
 	if (afterstep){
@@ -157,8 +160,8 @@ Algol.endTurn = function(state){
 	// end game if reached sth
 	var endgame = endturndef.get("endgame").reduce(function(mem,end,name){
 		if (!mem && this.evaluateBoolean(state,end.get("condition"))) {
-			var res = this.evaluateValue(state,end.get("result")),
-				who = (res==="loseto" && this.evaluateValue(state,end.get("who")) || res==="draw" || 0 || state.get("player") );
+			var //res = this.evaluateValue(state,end.get("result")),
+				who = end.has("who") && this.evaluateValue(state,end.get("who")) || state.get("player");  //(res==="loseto" && this.evaluateValue(state,end.get("who")) || res==="draw" || 0 || state.get("player") );
 			return state
 				.set("endedby",name)
 				.set("winner",who);
@@ -200,6 +203,7 @@ Algol.newTurn = function(state,newturnplayer){
 		turn: (state.get("turn")||0)+1,
 		baselayer: baselayer,
 		id: "root",
+		path: [],
 		cache: {},
 		marks: {},
 		availableCommands: {},
@@ -207,6 +211,7 @@ Algol.newTurn = function(state,newturnplayer){
 		reversalCommands: {},
 		removeMarks: {},
 		steps: [],
+		save: state.get("turn") ? state.get("save").push(state.get("path")) : I.List(),
 		context: state.get("basecontext").merge(I.fromJS({
 			currentplayer:newturnplayer,
 			turn: (state.get("turn")||0)+1,

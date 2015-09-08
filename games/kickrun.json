@@ -36,7 +36,7 @@
 	},
 	"endturn": {
 		"endgame": {
-			"infiltration": {"condition":["overlaps","myrunners","oppcorners"],"result":"win"}
+			"infiltration": {"condition":["overlaps","myrunners","oppcorners"]}
 		}
 	},
 	"generators": {

@@ -52,10 +52,10 @@
 	"endturn": {
 		"applyEffects": [["forallin","lava",["killunit",["loopid"]]]],
 		"endgame": {
-			"goal": {"condition":["overlaps","goal","myballs"],"result":"win"},
-			"bothout": {"condition": ["same",["layerobjectcount","deadballs"],2],"result":"draw"},
-			"oppballout": {"condition": ["notempty","oppdeadballs"], "result": "win" },
-			"myballout": {"condition": ["notempty","mydeadballs"], "result": "loseto", "who": ["contextval","nextplayer"]}
+			"goal": {"condition":["overlaps","goal","myballs"]},
+			"bothout": {"condition": ["same",["layerobjectcount","deadballs"],2],"who":0},
+			"oppballout": {"condition": ["notempty","oppdeadballs"]},
+			"myballout": {"condition": ["notempty","mydeadballs"],"who": ["contextval","nextplayer"]}
 		}
 	},
 	"generators": {

@@ -82,8 +82,8 @@
 	},
 	"endturn":{
 		"endgame": {
-			"kingkill": {"condition":["notempty","oppdeadkings"],"result":"win"},
-			"escape": {"condition":["overlaps","corners","mykings"],"result":"win"}
+			"kingkill": {"condition":["notempty","oppdeadkings"]},
+			"escape": {"condition":["overlaps","corners","mykings"]}
 		}
 	}
 }

@@ -28,8 +28,8 @@
 	},
 	"endturn": {
 		"endgame": {
-			"infiltration":{ "condition": ["overlaps","mycrowns","oppbases"], "result": "win" },
-			"kingkill": { "condition": ["notempty","oppdeadcrowns"], "result": "win" }
+			"infiltration":{ "condition": ["overlaps","mycrowns","oppbases"] },
+			"kingkill": { "condition": ["notempty","oppdeadcrowns"] }
 		}
 	},
 	"startturn": {

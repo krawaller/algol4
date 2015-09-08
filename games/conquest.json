@@ -16,10 +16,7 @@
 		"fortress": [ ["rectangle",4004,6006] ]
 	},
 	"setup": {
-		"soldiers": [
-			["positions",[1001,1002,1003,2001,2003,3001,3002,3003],1],
-			["positions",[7007,7008,7009,8007,8009,9007,9008,9009],2]
-		],
+		"soldiers": [["holedrectangle",1001,3003,[2002],1],["holedrectangle",7007,9009,[8008],2]],
 		"kings": [{"pos":2002,"owner":1},{"pos":8008,"owner":2}]
 	},
 	"marks": {
@@ -66,15 +63,13 @@
 				"condition": ["and",[
 					["overlaps","mykings","center"],
 					["same",["overlapsize","myunits","plus"],4]
-				]],
-				"result": "win"
+				]]
 			},
 			"madex": {
 				"condition": ["and",[
 					["overlaps","mykings","center"],
 					["same",["overlapsize","myunits","x"],4]
-				]],
-				"result": "win"
+				]]
 			}
 		}
 	},

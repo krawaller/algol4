@@ -141,8 +141,8 @@
 	},
 	"endturn": {
 		"endgame": {
-			"infiltration": { "condition": ["overlaps","mykings","opphomerow"], "result": "win" },
-			"kingkill": { "condition": ["notempty","oppdeadkings"], "result": "win" }
+			"infiltration": { "condition": ["overlaps","mykings","opphomerow"] },
+			"kingkill": { "condition": ["notempty","oppdeadkings"] }
 		}
 	}
 }

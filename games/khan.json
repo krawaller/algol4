@@ -10,7 +10,7 @@
 	"board": {"height":10,"width":10},
 	"setup": {
 		"soldiers": [["rectangle",1001,1010,1],["rectangle",3001,3010,1],["rectangle",8001,8010,2],["rectangle",10001,10010,2]],
-		"kings": [["positions",[2001,2003,2005,2006,2008,2010],1],["positions",[9001,9003,9005,9006,9008,9010],2]]
+		"kings": [["positions",[2001,2003,2005,2006,2008,2010,5001,5004],1],["positions",[9001,9003,9005,9006,9008,9010,6003],2]]
 	},
 	"terrain": {
 		"base": [["rectangle",1001,1010,1],["rectangle",10001,10010,2]]
@@ -20,8 +20,8 @@
 	},
 	"endturn": {
 		"endgame": {
-			"killallenemysoldiers": {"condition":["isempty","oppsoldiers"],"result":"win"},
-			"infiltration": {"condition":["overlaps","oppbase","mysoldiers"],"result":"win"}
+			"killallenemysoldiers": {"condition":["isempty","oppsoldiers"]},
+			"infiltration": {"condition":["overlaps","oppbase","mysoldiers"]}
 		}
 	},
 	"marks": {
@@ -36,7 +36,8 @@
 		},
 		"selectjumptarget": {
 			"from": "jumptargets",
-			"allow": [["command","jump"]]
+			"allow": [["command","jump"]],
+			"runGenerators": ["findcustodianvictims"]
 		},
 		"selectsupportdestination": {
 			"from": "movetargets",
@@ -44,11 +45,12 @@
 		},
 		"selectmovetarget": {
 			"from": "movetargets",
-			"allow": [["command","move"]]
+			"allow": [["command","move"]],
+			"runGenerators": [["if",["anyat","mykings","selectunit"],"findcustodianvictims"]]
 		},
 		"selectnearbysoldier": {
 			"from": "nearbysoldiers",
-			"runGenerators": ["findpushresults"],
+			"runGenerators": ["findpushresults","findcustodianvictims"],
 			"allow": [
 				["mark","selectsupportdestination"],
 				["if",["notempty","pushee"],["command","push"]]
@@ -63,6 +65,7 @@
 	"commands": {
 		"jump": {
 			"applyEffects": [
+				["forallin","custodianvictims",["killunit",["loopid"]]],
 				["move",["firstposin",["union","selectunit",["contextpos","jumpedto"]]],"selectjumptarget"],
 				["setcontextval","jumpedto",["markpos","selectjumptarget"]]
 			],
@@ -70,11 +73,15 @@
 			"allow": [["endturn"],["mark","selectjumptarget"]]
 		},
 		"move": {
-			"applyEffects": [["move","selectunit","selectmovetarget"]],
+			"applyEffects": [
+				["forallin","custodianvictims",["killunit",["loopid"]]],
+				["move","selectunit","selectmovetarget"]
+			],
 			"allow": [["endturn"]]
 		},
 		"push": {
 			"applyEffects": [
+				["forallin","custodianvictims",["killunit",["loopid"]]],
 				["forallin","squish",["killunit",["loopid"]]],
 				["forallin","pushee",["offsetunit",["loopid"],["lookup","pushee",["contextpos","target"],"dir"],1]],
 				["move","selectunit","selectnearbysoldier"]
@@ -91,19 +98,32 @@
 		}
 	},
 	"generators": {
+		"findcustodianvictims": {
+			"type": "walker",
+			"starts": ["union","selectmovetarget",["union","selectjumptarget","selectnearbysoldier"]],
+			"blocks": ["subtract","mykings",["union","selectunit",["contextpos","jumpedto"]]],
+			"steps": "oppunits",
+			"prioritizeblocksoversteps": true,
+			"max": 2,
+			"draw": {
+				"steps": {
+					"condition": ["same",["contextval","stopreason"],"hitblock"],
+					"tolayer": "custodianvictims"
+				}
+			}
+		},
 		"findjumptargets": {
 			"type": "walker",
 			"starts": ["union","selectunit",["contextpos","jumpedto"]],
 			"prioritizeblocksoversteps": true,
 			"steps": "units",
-			"blocks": ["subtract","board","myunits"],
+			"blocks": ["subtract","board","units"],
 			"max": 2,
 			"draw": {
 				"block": {
 					"condition": ["and",[
 						["same",["contextval","stopreason"],"hitblock"],
 						["same",["contextval","linelength"],1]
-						
 					]],
 					"tolayer": "jumptargets"
 				}

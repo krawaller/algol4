@@ -69,7 +69,7 @@
 	},
 	"endturn": {
 		"endgame": {
-			"flagkill": {"condition":["notempty","oppdeadflags"],"result":"win"}
+			"flagkill": {"condition":["notempty","oppdeadflags"]}
 		}
 	},
 	"generators": {

@@ -20,6 +20,7 @@ var _ = require('lodash'),
         momentum: require("../games/momentum.json"),
         murusgallicus: require("../games/murusgallicus.json"),
         murusgallicusadvanced: require("../games/murusgallicusadvanced.json"),
+        threemusketeers: require("../games/threemusketeers.json"),
         pawnographic: require("../games/pawnographic.json"),
         royalcarpet: require("../games/royalcarpet.json"),
         //retsami: require("../games/retsami.json"),
@@ -77,6 +78,9 @@ function defaultify(def){
         mdef = mem.get(mname);
         mem = mem.set(mname,mdef.set("name",mname));
         return mem;
-    },def.get("marks"),this))
+    },def.get("marks"),this));
+    // done
     return def;
 }
+
+

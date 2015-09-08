@@ -24,9 +24,7 @@
 	},
 	"endturn": {
 		"endgame": {
-			"kingkill": {
-				"condition": ["morethan",2,["positionsin","oppkings"]],"result":"win"
-			}
+			"kingkill": { "condition": ["morethan",2,["positionsin","oppkings"]] }
 		}
 	},
 	"marks": {

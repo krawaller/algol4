@@ -45,7 +45,7 @@
 	},
 	"endturn": {
 		"endgame": {
-			"deployedall": {"condition":["same",["positionsin",["intersect","myunits","noedge"]],12],"result":"win"}
+			"deployedall": {"condition":["same",["positionsin",["intersect","myunits","noedge"]],12]}
 		}
 	}
 }

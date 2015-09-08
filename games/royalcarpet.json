@@ -23,7 +23,7 @@
 	},
 	"endturn": {
 		"endgame": {
-			"doublejump": {"condition":["same",["positionsin","mytowers"]],"result":"win"}
+			"doublejump": {"condition":["same",["positionsin","mytowers"]]}
 		}
 	},
 	"marks": {

@@ -25,8 +25,8 @@
 	},
 	"endturn": {
 		"endgame": {
-			"noenemypeasants": {"condition":["isempty","opppawns"],"result":"win"},
-			"noownpeasants": {"condition":["isempty","mypawns"],"result":"loseto","who":["contextval","nextplayer"]}
+			"noenemypeasants": {"condition":["isempty","opppawns"]},
+			"noownpeasants": {"condition":["isempty","mypawns"],"who":["contextval","nextplayer"]}
 		}
 	},
 	"marks": {

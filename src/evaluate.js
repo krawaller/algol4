@@ -126,6 +126,7 @@ Algol.evaluateObjectMatch = function(state,def,map){
 };
 
 var boolmethods = {
+	ifelse: function(state,bool,b1,b2){ return this.evaluateBoolean(state,this.evaluateBoolean(state,bool) ? b1 : b2); },
 	and: function(state,list){ return list.every(this.evaluateBoolean.bind(this,state)); },
 	or: function(state,list){ return list.some(this.evaluateBoolean.bind(this,state)); },
 	not: function(state,bool){ return !this.evaluateBoolean(state,bool); },
