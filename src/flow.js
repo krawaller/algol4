@@ -164,7 +164,8 @@ Algol.endTurn = function(state){
 				who = end.has("who") && this.evaluateValue(state,end.get("who")) || state.get("player");  //(res==="loseto" && this.evaluateValue(state,end.get("who")) || res==="draw" || 0 || state.get("player") );
 			return state
 				.set("endedby",name)
-				.set("winner",who);
+				.set("winner",who)
+				.set("save",state.get("save").push(state.get("path")));
 		}
 		return mem;
 	},undefined,this);

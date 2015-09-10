@@ -83,9 +83,11 @@
 				["lookup","vertical","selectunit","distance"],
 				["lookup","horisontal","selectunit","distance"]
 			],
+			"blocks": "lava",
 			"draw": {
 				"steps": {
 					"tolayer": "movetargets",
+					"condition": ["same",["contextval","step"],["contextval","max"]],
 					"include": {
 						"moved": ["contextval","step"],
 						"dir": ["contextval","dir"]

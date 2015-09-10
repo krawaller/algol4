@@ -16,11 +16,24 @@ var React = require('react'),
 var Board = React.createClass({
     mixins: [Router.State],
     getInitialState: function(){
-        var game = Algol.newGame(games[this.getParams().gamename],2);
+        var params = this.getParams(),
+            game = Algol.newGame(games[params.gamename],2),
+            battledata = JSON.parse(window.localStorage.getItem(params.battleid)),
+            history = [[{player:0,command:"start"},game.delete("availableMarks")]];
+        //console.log("Gonna load",battledata.save);
+        _.each(battledata.save||[],function(steps){
+            _.each(steps,function(step){
+                var markname = game.getIn(["availableMarks",step]);
+                //console.log("Ok, step is",step,"markname is",markname,"game is",game,"in JS it is",game);
+                game = (markname ? Algol.makeMark(game,markname,step) : Algol.makeCommand(game,step));
+            });
+            history = this.addTurnToHistory(game,history);
+            game = Algol.makeCommand(game,"endturn");
+        },this);
         return {
             state: game,
             terrainstate: game,
-            history: [[{player:0,command:"start"},game.delete("availableMarks")]],
+            history: history,
             playing: true,
             index: 0
         };
@@ -32,11 +45,27 @@ var Board = React.createClass({
     addMark: function(markname,pos){
         this.setState({ state: Algol.makeMark(this.state.state,markname,pos) });
     },
+    addTurnToHistory: function(state,history){
+        var newl = [], finalstate = toaddstate = state, previousstep, sinfo;
+        while (toaddstate.has("undo")) {
+            previousstep = toaddstate.getIn(["cache",toaddstate.get("undo")]);
+            sinfo = toaddstate.get("steps").last();
+            newl = [[{
+                player:previousstep.get("player"),
+                command:sinfo.get("command"),
+                marks: sinfo.get("marks"),
+                id: finalstate.get("turn")+(finalstate.get("steps").size > 1 ? ":"+toaddstate.get("steps").size : '')
+            },toaddstate.set("marks",previousstep.get("marks"))]].concat(newl);
+            toaddstate = previousstep;
+        }
+        return history.concat(newl);
+    },
     makeCommand: function(cmnd){
         var newstate = Algol.makeCommand(this.state.state,cmnd),
             history = this.state.history;
         if (cmnd==="endturn"){
-            var newl = [], finalstate = toaddstate = this.state.state, previousstep, sinfo;
+            history = this.addTurnToHistory(this.state.state,history);
+            /*var newl = [], finalstate = toaddstate = this.state.state, previousstep, sinfo;
             while (toaddstate.has("undo")) {
                 previousstep = toaddstate.getIn(["cache",toaddstate.get("undo")]);
                 sinfo = toaddstate.get("steps").last();
@@ -48,8 +77,25 @@ var Board = React.createClass({
                 },toaddstate.set("marks",previousstep.get("marks"))]].concat(newl);
                 toaddstate = previousstep;
             }
-            history = history.concat(newl);
+            history = history.concat(newl);*/
             //console.log("Woohoo")
+
+            // update battle
+            var battleid = this.getParams().battleid,
+                battledata = JSON.parse(window.localStorage.getItem(battleid));
+            battledata.save = newstate.get("save").toJS();
+            battledata.status = newstate.get("endedby") || "ongoing";
+            battledata.who = newstate.get("player") || newstate.get("winner");
+            battledata.turn = newstate.get("turn");
+            window.localStorage.setItem(battleid,JSON.stringify(battledata));
+
+            // update list
+            var gamename = this.getParams().gamename,
+                list = JSON.parse(window.localStorage.getItem(gamename+"-battles")||"{}");
+            delete battledata.save;
+            list[battleid] = battledata;
+            window.localStorage.setItem(gamename+"-battles",JSON.stringify( list ));
+
         }
         this.setState({ state: newstate, history: history });
     },

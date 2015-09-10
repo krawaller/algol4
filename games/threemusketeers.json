@@ -1,7 +1,7 @@
 {
 	"meta": {
 		"name": "Three Musketeers",
-		"source": "A gamut of games"
+		"source": "http://www.di.fc.ul.pt/~jpn/gv/3musketeers.htm"
 	},
 	"graphics": { "icons": {"pawns":"pawns","kings":"kings"}},
 	"board": { "height": 5, "width": 5 },

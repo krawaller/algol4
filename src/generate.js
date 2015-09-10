@@ -81,13 +81,14 @@ Algol.generateWalkerPodsInDir = function(startstate,def,recorder,startpos,dir){
 		tobecounted = def.has("count") && this.evaluatePositionSet(startstate,def.get("count")),
 		prevcounttotal = 0, counttrack = [],
 		max = def.has("max") ? this.evaluateValue(startstate,def.get("max")) : undefined;
+	startstate = startstate.setIn(["context","max"],max);
 	while(!(reason=stopreason(startstate,max,dir,pos,walk.length,blocks,steps,def.get("prioritizeblocksoversteps")))){
 		walk.push(pos = startstate.getIn(["connections",pos,dir])||startstate.getIn(["connections",pos,dir+""]));
 		if (tobecounted){
 			counttrack.push(prevcounttotal = (prevcounttotal + (tobecounted.contains(pos)?1:0)));
 		}
 	}
-	var context = I.Map({start:startpos,dir:dir,linelength:walk.length,stopreason:reason});
+	var context = I.Map({start:startpos,dir:dir,linelength:walk.length,stopreason:reason,max:max});
 	if (tobecounted){
 		context = context.set("counttotal",prevcounttotal);
 	}
@@ -103,7 +104,7 @@ Algol.generateWalkerPodsInDir = function(startstate,def,recorder,startpos,dir){
 		}
 		recorder = I.pushIn(recorder,["steps",step],ctx);
 	});
-	/*if (tobecounted){
+	/*if (max){
 		console.log("WALKER",startpos,"DIR",dir,"RESULT",recorder.toJS());
 	}*/
 	return recorder;
