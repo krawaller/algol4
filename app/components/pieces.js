@@ -8,12 +8,12 @@ var React = require('react/addons'),
 
 var Pieces = React.createClass({
     render: function() {
-        var state = this.props.state,
-            graphics = state.getIn(["gamedef","graphics"]),
-            board = state.getIn(["layers","board"]),
+        var battle = this.props.state,
+            graphics = battle.getIn(["gamedef","graphics"]),
+            board = battle.getIn(["layers","board"]),
             units;
         units = graphics.get("icons").reduce(function(list,look,layer){
-            return list.concat((state.getIn(["layers",layer])||I.Map()).toList().reduce(function(list,arr,pos){
+            return list.concat((battle.getIn(["layers",layer])||I.Map()).toList().reduce(function(list,arr,pos){
                 return list.concat(arr.map(function(u){
                     return u.set("look",look).set("ident",u.get("id")||u.get("parentid")+u.get("suffix"));
                 }).toJS());

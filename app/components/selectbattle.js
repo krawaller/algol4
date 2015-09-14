@@ -4,7 +4,8 @@ var React = require('react'),
     Router = require('react-router'),
     _ = require("lodash"),
     Link = Router.Link,
-    games = require("../games");
+    games = require("../games"),
+    listactions = require("../actions/listactions");
 
 var SelectBattle = React.createClass({
     mixins: [Router.Navigation,Router.State],
@@ -27,22 +28,37 @@ var SelectBattle = React.createClass({
     },
     render: function() {
         var gamename = this.getParams().gamename,
-            list = JSON.parse(window.localStorage.getItem(gamename+"-battles")||"{}");
+            list = JSON.parse(window.localStorage.getItem("algol-"+gamename+"-currentlocalbattles")||"{}"),
+            list2 = JSON.parse(window.localStorage.getItem("algol-"+gamename+"-finishedlocalbattles")||"{}");
         return (
             <div>
-                <p>Choose battle:</p>
+                <p>
+                    <button onClick={listactions.newBattle}>New battle</button>
+                </p>
+                <p>Current local battles:</p>
                 <ul>
                 { _.reduce(list,function(ret,battle,id){
-                    var description = id+"   turn: "+battle.turn+"   status: "+battle.status+"   player: "+battle.who;
+                    var description = id+"   turn: "+battle.turn+"   player: "+battle.who;
                     return ret.concat(
                         <li key={id}>
-                            <Link key={id} to="battle" params={{gamename:gamename,battleid:id}}>{description}</Link>
+                            <Link key={id} to="battleplay" params={{gamename:gamename,battleid:id}}>{description}</Link>
                         </li>
 
                     );
                 },[],this) }
                 </ul>
-                <button onClick={this.newBattle}>New battle</button>
+                <p>Finished local battles:</p>
+                <ul>
+                { _.reduce(list2,function(ret,battle,id){
+                    var description = id+"   turn: "+battle.turn+"   winner: "+battle.who;
+                    return ret.concat(
+                        <li key={id}>
+                            <Link key={id} to="battleplay" params={{gamename:gamename,battleid:id}}>{description}</Link>
+                        </li>
+
+                    );
+                },[],this) }
+                </ul>
             </div>
         );
     }

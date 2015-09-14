@@ -65,20 +65,6 @@ var Board = React.createClass({
             history = this.state.history;
         if (cmnd==="endturn"){
             history = this.addTurnToHistory(this.state.state,history);
-            /*var newl = [], finalstate = toaddstate = this.state.state, previousstep, sinfo;
-            while (toaddstate.has("undo")) {
-                previousstep = toaddstate.getIn(["cache",toaddstate.get("undo")]);
-                sinfo = toaddstate.get("steps").last();
-                newl = [[{
-                    player:previousstep.get("player"),
-                    command:sinfo.get("command"),
-                    marks: sinfo.get("marks"),
-                    id: finalstate.get("turn")+(finalstate.get("steps").size > 1 ? ":"+toaddstate.get("steps").size : '')
-                },toaddstate.set("marks",previousstep.get("marks"))]].concat(newl);
-                toaddstate = previousstep;
-            }
-            history = history.concat(newl);*/
-            //console.log("Woohoo")
 
             // update battle
             var battleid = this.getParams().battleid,

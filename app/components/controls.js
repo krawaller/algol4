@@ -2,20 +2,21 @@
 
 var React = require('react'),
     Tile = require('./tile'),
-    I = require('../../src/immutableextensions');
+    I = require('../../src/immutableextensions'),
+    battleactions = require("../actions/battleactions");
 
 var Controls = React.createClass({
     render: function() {
-        var state = this.props.state, cb = this.props.makeCommand,
-            gamecomms = state.getIn(["gamedef","commands"]).keySeq().concat(I.List(["undo","endturn"])),
-            avail = state.get("availableCommands");
-        if (state.get("canendturnnow")){
+        var battle = this.props.battle,
+            gamecomms = battle.getIn(["gamedef","commands"]).keySeq().concat(I.List(["undo","endturn"])),
+            avail = battle.get("availableCommands");
+        if (battle.get("canendturnnow")){
             avail = avail.set("endturn",true);
         } 
-        if (state.has("undo")){
+        if (battle.has("undo")){
             avail = avail.set("undo",true);
         }
-        if (state.get("endedby")){
+        if (battle.get("endedby")){
             return <div></div>;
         }
         return (
@@ -25,7 +26,7 @@ var Controls = React.createClass({
                         return list.concat(<button
                             className={"command"+name}
                             key={name}
-                            onClick={function(){cb(name)}}
+                            onClick={function(){battleactions.makeCommand(name)}}
                         >{name}</button>);
                     } else {
                         return list.concat(<button

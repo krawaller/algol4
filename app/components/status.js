@@ -5,7 +5,7 @@ var React = require('react'),
 
 var Status = React.createClass({
     render: function() {
-        var s = this.props.state,
+        var s = this.props.battle,
             turn = "Turn "+s.get("turn"),
             desc = s.has("endedby") ? "Ended by "+s.get("endedby")+", winner is player"+s.get("winner")+"!"
                 : "Player"+s.get("player")+" is playing.", //, has made "+(s.get("steps").size)+" step(s).",

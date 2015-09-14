@@ -1,12 +1,23 @@
+ul.nav {
+	list-style-type: none;
+}
+
+ul.nav li {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+ul.nav a.active {
+	font-weight: bold;
+	background-color: lightgoldenrodyellow;
+}
+
 input, textarea, button, select, a {
 	-webkit-tap-highlight-color: rgba(0,0,0,0);
 	outline: none;
 }
 
 .board {
-	height: 510px;
-	width: 510px;
-	left: 120px;
 	position: relative;
 }
 
@@ -103,9 +114,9 @@ a.square {
 .projectiles.owner1:after { color: red; background-color: darkred; }
 .projectiles.owner2:after { color: blue; background-color: darkblue; }
 
-.piece.owner0, .historyplr0 { color: gold; }
-.piece.owner1, .historyplr1 { color: red; }
-.piece.owner2, .historyplr2 { color: blue; }
+.piece.owner0, .historyplr0 > a { color: gold; }
+.piece.owner1, .historyplr1 > a { color: red; }
+.piece.owner2, .historyplr2 > a { color: blue; }
 .piece.owner0 .background { color: darkgoldenrod; }
 .piece.owner1 .background  { color: darkred; }
 .piece.owner2 .background  { color: darkblue; }
