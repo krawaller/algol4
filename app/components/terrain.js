@@ -1,7 +1,7 @@
 /** @jsx React.DOM */
 
 var React = require('react'),
-    Tile = require('./tile'),
+    Square = require('./square'),
     I = require('../../src/immutableextensions');
 
 var Terrain = React.createClass({
@@ -13,14 +13,14 @@ var Terrain = React.createClass({
             <div className={(graphics.get("background")||"wood")+" terrain"}>
                 { (graphics.get("tiles")||I.Map()).set("dark","dark").reduce(function(list,look,layer){
                     return state.getIn(["layers",layer]).reduce(function(list,arr,pos){
-                        return list.concat(<Tile
+                        return list.concat(<Square
                             key = {look+pos}
                             tileheight={this.props.tileheight} 
                             tilewidth={this.props.tilewidth}
                             x={board.getIn([pos,0,"x"])}
-                            y={board.getIn([pos,0,"y"])}
-                            look={look}
-                        />);
+                            y={board.getIn([pos,0,"y"])}>
+                                <div className={"tile "+look}></div>
+                            </Square>);
                     },list,this);
                 },[],this) }
             </div>

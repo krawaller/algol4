@@ -8,7 +8,7 @@ var React = require('react'),
 var History = React.createClass({
     mixins: [Router.State,Router.Navigation],
     render: function() {
-        var history = this.props.history, index = parseInt(this.getParams().historyindex),
+        var history = this.props.history, index = parseInt(this.getParams().historyindex) || 0,
             params = this.getParams(),
             basepath = "/game/"+params.gamename+"/battle/"+params.battleid+"/history/";
         return (

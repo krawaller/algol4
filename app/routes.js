@@ -10,16 +10,20 @@ var React = require('react'),
     Wrapper = require('./components/wrapper'),
     GameInfo = require("./components/gameinfo"),
     SelectBattle = require("./components/selectbattle"),
+    Multiroute = require("./components/multiroute"),
     Playing = require("./components/playing"),
     History = require("./components/history");
 
 module.exports = (
     <Route handler={Wrapper}>
-        <Route handler={Game} path="/game">
-            <Route name="gameinfo" path="/game/:gamename/info" handler={GameInfo} />
-            <Route name="gamebattleslocal" path="/game/:gamename/local" handler={SelectBattle} />
-            <Route name="battleplay" path="/game/:gamename/battle/:battleid/play" handler={Playing} />
-            <Route name="battlehistory" path="/game/:gamename/battle/:battleid/history/:historyindex" handler={History} />
+        <Route handler={Game} path="/game/:gamename">
+            <Route name="gameinfo" path="info" handler={GameInfo} />
+            <Route name="gamebattleslocal" path="local" handler={SelectBattle} />
+            <Route name="battleplay" path="battle/:battleid/play" handler={Playing} />
+            <Route name="battlehistory" path="/game/:gamename/battle/:battleid/history/" handler={Multiroute}>
+                <Route name="battlehistoryat" path=":historyindex" handler={History} />
+                <DefaultRoute name="battlehistory0" handler={History} />
+            </Route>
         </Route>
         <Route name="selectgame" path="/games" handler={SelectGame} />
         <DefaultRoute name="home" handler={Home} />

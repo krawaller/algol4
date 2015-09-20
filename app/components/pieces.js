@@ -3,6 +3,7 @@
 var React = require('react/addons'),
     ReactCSSTransitionGroup = React.addons.CSSTransitionGroup;
     Piece = require('./piece'),
+    Square = require('./square'),
     I = require('../../src/immutableextensions'),
     _ = require('lodash');
 
@@ -26,16 +27,14 @@ var Pieces = React.createClass({
                 x = board.getIn([pos,0,"x"]),
                 y = board.getIn([pos,0,"y"]),
                 viewdir = graphics.get("rotatepieces") ? entity.dir || 1 : 1;
-            return <Piece
+            return <Square
                 key = {entity.ident}
                 tileheight={this.props.tileheight} 
                 tilewidth={this.props.tilewidth}
                 x={x}
-                y={y}
-                icon={entity.look}
-                owner={entity.owner}
-                dir={viewdir}
-            />;
+                y={y}>
+                    <Piece icon={entity.look} owner={entity.owner} dir={viewdir}/>
+                </Square>;
         },this);
         return (
             <div className="pieces">

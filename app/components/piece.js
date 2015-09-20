@@ -36,18 +36,13 @@ var Piece = React.createClass({
             fivestars: "☆",
             circles: "○"
         };
-        var p = this.props, css = {
-            height: p.tileheight+"%",
-            width: p.tilewidth+"%",
-            top: (p.y-1)*p.tileheight+"%",
-            left: (p.x-1)*p.tilewidth+"%"
-        };
-        return ( <div style={css} className="square">
-        	<div className={"piece dir"+(p.dir||1)+" owner"+(p.owner||0)+" "+(p.icon==="projectiles"?"projectiles":"")}>
+        var p = this.props;
+        return (
+            <div className={"piece dir"+(p.dir||1)+" owner"+(p.owner||0)+" "+(p.icon==="projectiles"?"projectiles":"")}>
                 <span>{fullicons[p.icon]||''}</span>
                 <span className="background">{lineicons[p.icon]||''}</span>
             </div>
-        </div>);
+        );
     }
 });
 

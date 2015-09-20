@@ -10,21 +10,11 @@
 		"icons": { "daggers": "bishops", "crowns": "kings" }
 	},
 	"terrain": {
-		"bases": [
-			["rectangle",1001,1008,1],
-			["rectangle",8001,8008,2]
-		]
+		"bases": [["rectangle",1001,1008,1],["rectangle",8001,8008,2]]
 	},
 	"setup": {
-		"crowns": [
-			["positions",[1004,1005],1],
-			["positions",[8003,8006],2]
-		],
-		"daggers": [
-			["rectange",2003,2006,1],
-			["positions",[6003,6006],2],
-			["rectangle",7002,7007,2]
-		]
+		"crowns": [["positions",[1004,1005],1],["positions",[8003,8006],2]],
+		"daggers": [["rectange",2003,2006,1],["positions",[6003,6006],2],["rectangle",7002,7007,2]]
 	},
 	"endturn": {
 		"endgame": {
@@ -38,7 +28,7 @@
 	"marks": {
 		"selectunit": {
 			"from": "myunits",
-			"runGenerators": ["findcrowntargets","findtargetsabovedagger","findtargetsbelowdagger"],
+			"runGenerators": [["ifelse",["anyat","mycrowns","selectunit"],"findcrowntargets","finddaggertargets"]],
 			"allow": [ ["mark","selectmovetarget"] ]
 		},
 		"selectmovetarget": {
@@ -58,7 +48,7 @@
 	"generators": {
 		"findcrowntargets": {
 			"type": "nextto",
-			"starts": ["intersect","selectunit","mycrowns"],
+			"starts": "selectunit",
 			"draw": {
 				"target": {
 					"condition": ["noneat","myunits",["contextpos","target"]],
@@ -66,28 +56,12 @@
 				}
 			}
 		},
-		"findtargetsabovedagger": {
-			"type": "nextto",
-			"starts": ["intersect","selectunit","mydaggers"],
-			"dirs": ["dirs",[8,1,2]],
-			"draw": {
-				"target": {
-					"condition": ["and",[
-						["noneat","myunits",["contextpos","target"]],
-						["not",["and",[
-							["same",["contextval","dir"],1],
-							["anyat","oppdaggers",["contextpos","target"]]
-						]]]
-					]],
-					"tolayer": "movetarget"
-				}
-			}
-		},
-		"findtargetsbelowdagger": {
+		"finddaggertargets": {
 			"type": "walker",
-			"starts": ["intersect","selectunit","mydaggers"],
-			"dirs": ["dirs",[4,5,6]],
+			"starts": "selectunit",
+			"dirs": ["dirs",[8,1,2,4,5,6]],
 			"blocks": "units",
+			"max": ["ifelse",["valinlist",["contextval","dir"],[8,1,2]],1,8],
 			"draw": {
 				"steps": {
 					"tolayer": "movetarget"
@@ -96,7 +70,7 @@
 					"condition": ["and",[
 						["noneat","myunits",["contextpos","target"]],
 						["not",["and",[
-							["same",["contextval","dir"],5],
+							["valinlist",["contextval","dir"],[1,5]],
 							["anyat","oppdaggers",["contextpos","target"]]
 						]]]
 					]],

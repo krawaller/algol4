@@ -33,7 +33,7 @@ input, textarea, button, select, a {
 	text-decoration: none;
 }
 
-a.square {
+a.square, .square a {
 	outline: none;
 	text-decoration: none;
 }
@@ -49,9 +49,10 @@ a.square {
 	transition: top 0.5s, left 0.5s;
 }
 
-.square > div {
+.square > div, .square > a {
 	width: 100%;
 	height: 100%;
+	display: block;
 }
 
 

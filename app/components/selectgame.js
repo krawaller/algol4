@@ -22,7 +22,7 @@ var SelectGame = React.createClass({
                 { _.reduce(games,function(ret,def,name){
                     return ret.concat(
                         <li key={name}>
-                            <Link key={name} to="gameinfo" params={{gamename:name}}>{games[name].getIn(["meta","name"])}</Link>
+                            <Link key={name} to={"/game/"+name+"/info"}>{games[name].getIn(["meta","name"])}</Link>
                             {' '}(<a href={games[name].getIn(["meta","source"])}>rules</a>)
                         </li>
                     );

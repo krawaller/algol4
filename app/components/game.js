@@ -176,7 +176,7 @@ var Game = React.createClass({
                     <li><Link to={"/game/"+gamename+"/info"}>Info</Link></li>
                     <li><Link to={"/game/"+gamename+"/local"}>Battles</Link></li>
                     {battleid && <li><Link to={"/game/"+gamename+"/battle/"+battleid+"/play"}>Play</Link></li>}
-                    {battleid && <li><Link to={"/game/"+gamename+"/battle/"+battleid+"/history/0"}>History</Link></li>}
+                    {battleid && <li><Link to={"/game/"+gamename+"/battle/"+battleid+"/history"}>History</Link></li>}
                 </ul>
                 <div className="side">
                     <RouteHandler battle={battle} history={this.state.history}/>

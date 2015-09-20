@@ -1,7 +1,6 @@
 /** @jsx React.DOM */
 
 var React = require('react'),
-    Tile = require('./tile'),
     I = require('../../src/immutableextensions'),
     battleactions = require("../actions/battleactions");
 

@@ -1,8 +1,9 @@
 /** @jsx React.DOM */
 
-var React = require('react');
+var React = require('react'),
+    Router = require('react-router');
 
-var Tile = React.createClass({
+var Square = React.createClass({
     render: function() {
         var css = {
             height: this.props.tileheight+"%",
@@ -11,9 +12,9 @@ var Tile = React.createClass({
             left: (this.props.x-1)*this.props.tilewidth+"%"
         };
         return ( <div style={css} className="square">
-        	<div className={"tile "+this.props.look}></div>
+        	{this.props.children}
         </div>);
     }
 });
 
-module.exports = Tile;
+module.exports = Square;
