@@ -16,29 +16,25 @@
 	"marks": {
 		"selectdeploy": {
 			"from": "mytownplaces",
-			"allow": [ ["command","deploy"] ]
+			"allow": ["deploy"]
 		},
-		"selecthead": {
+		"selectunit": {
 			"from": "mysoldiers",
-			"runGenerators": ["findmovetargets","findkilltargets","findfleetargets","findpotentialtails"],
-			"allow": [ ["mark","selecttail"], ["mark","selectmove"] ]
-		},
-		"selecttail": {
-			"from": "potentialtail",
-			"runGenerators": ["findphalanxmembers","findmarchandfiretargets"],
-			"allow": [ ["mark","selectfire"], ["mark","selectmarch"] ]
+			"runGenerators": ["findmovetargets","findkilltargets","findfleetargets","findpotentialtails","findmarchtargets", "findfiretargets" ],
+			"allow": [ "selectmove", "selectmarch", "selectfire" ]
 		},
 		"selectmove": {
-			"from": ["union","movetarget","killtarget"],
-			"allow": [ ["command","move"] ]
+			"from": ["union","movetargets","killtargets"],
+			"allow": [ "move" ]
 		},
 		"selectfire": {
-			"from": "firetarget",
-			"allow": [ ["command","fire"] ]
+			"from": "firetargets",
+			"allow": [ "fire" ]
 		},
 		"selectmarch": {
-			"from": "marchtarget",
-			"allow": [ ["command","march"] ]
+			"from": "marchtargets",
+			"runGenerators": ["findphalanxmembers"],
+			"allow": [ "march" ]
 		}
 	},
 	"commands": {
@@ -48,12 +44,12 @@
 		"move": {
 			"applyEffects": [
 				["forallin","selectmove",["killunit",["loopid"]]],
-				["move","selecthead","selectmove"]
+				["move","selectunit","selectmove"]
 			]
 		},
 		"march": {
-			"applyEffects": [ ["forallin","phalanxmember",
-				["offsetunit",["loopid"],["lookup","marchtarget","selectmarch","heading"],1,0]
+			"applyEffects": [ ["forallin","phalanx",
+				["offsetunit",["loopid"],["lookup","marchtargets","selectmarch","dir"],1,0]
 			] ]
 		},
 		"fire": {
@@ -62,10 +58,10 @@
 	},
 	"startturn": {
 		"runGenerators": ["findscared"],
-		"allow": [ ["ifelse",["morethan",3,["contextval","turn"]], ["mark","selectdeploy"], ["mark","selecthead"] ] ]
+		"allow": [ ["ifelse",["morethan",3,["contextval","turn"]], "selectdeploy", "selectunit" ] ]
 	},
 	"afterstep": {
-		"allow": [ ["endturn"] ]
+		"allow": [ "endturn" ]
 	},
 	"endturn": {
 		"endgame": {
@@ -86,94 +82,99 @@
 		},
 		"findfleetargets": {
 			"type": "walker",
-			"starts": ["intersect","scared","selecthead"],
+			"starts": ["intersect","scared","selectunit"],
 			"dirs": ["relativedirs",["dirs",[4,6]],["lookup","units",["contextpos","start"],"dir"]],
 			"max": 2,
 			"blocks": "units",
 			"draw": {
 				"steps": {
 					"condition": ["same",["contextval","step"],2],
-					"tolayer": "movetarget"
+					"tolayer": "movetargets"
 				}
 			}
 		},
 		"findmovetargets": {
 			"type": "nextto",
 			"dirs": ["relativedirs",["dirs",[8,1,2]],["lookup","units",["contextpos","start"],"dir"]],
-			"starts": "selecthead",
+			"starts": "selectunit",
 			"condition": ["noneat","units",["contextpos","target"]],
 			"draw": {
 				"target": {
-					"tolayer":  "movetarget"
+					"tolayer":  "movetargets"
 				}
 			}
 		},
 		"findkilltargets": {
 			"type": "nextto",
 			"dirs": ["relativedirs",["dirs",[7,8,1,2,3]],["lookup","units",["contextpos","start"],"dir"]],
-			"starts": "selecthead",
+			"starts": "selectunit",
 			"condition": ["anyat","oppunits",["contextpos","target"]],
 			"draw": {
 				"target": {
-					"tolayer":  "killtarget"
+					"tolayer": "killtargets"
 				}
 			}
 		},
 		"findpotentialtails": {
-			"type": "walker",
-			"starts": "selecthead",
-			"steps": "mysoldiers",
-			"max": 2,
+			"type": "nextto",
+			"starts": "selectunit",
+			"condition": ["anyat","mysoldiers",["contextpos","target"]],
 			"draw": {
-				"steps": {
-					"condition": ["same",["contextval","step"],2],
-					"tolayer": "potentialtail",
+				"target": {
+					"tolayer": "potentialtails",
 					"include": {
-						"headdirection": ["contextval","dir"]
+						"dir": ["contextval","dir"]
+					}
+				}
+			}
+		},
+		"findmarchtargets": {
+			"type": "walker",
+			"starts": "potentialtails",
+			"dirs": ["relativedir",5,["lookup","potentialtails",["contextpos","start"],"dir"]],
+			"steps": "mysoldiers",
+			"blocks": ["subtract","board","units"],
+			"prioritizeblocksoversteps": true,
+			"max": 3,
+			"draw": {
+				"all": {
+					"tolayer": "potentialphalanx",
+					"condition": ["and",[
+						["same",["contextval","linelength"],2],
+						["same",["contextval","stopreason"],"hitblock"]
+					]],
+					"include": {
+						"line": ["dirline",["contextval","dir"]]
+					}
+				},
+				"block": {
+					"condition": ["same",["contextval","linelength"],2],
+					"tolayer": "marchtargets",
+					"include": {
+						"line": ["dirline",["contextval","dir"]],
+						"dir": ["contextval","dir"]
 					}
 				}
 			}
 		},
 		"findphalanxmembers": {
-			"type":"walker",
-			"dirs": ["relativedirs",["dirs",[5]],["lookup","potentialtail","selecttail","headdirection"]],
-			"starts": "selecttail",
-			"blocks": "selecthead",
-			"draw": {
-				"start": {
-					"tolayer": "phalanxend",
-					"include": {
-						"facing": ["lookup","potentialtail","selecttail","headdirection"]
-					}
-				},
-				"block": {
-					"tolayer": "phalanxend",
-					"include": {
-						"facing": ["contextval","dir"]
-					}
-				},
-				"all": {
-					"tolayer": "phalanxmember"
-				}
-			}
+			"type": "filter",
+			"layer": "potentialphalanx",
+			"matching": {
+				"line": ["is",["lookup","marchtargets","selectmarch","line"]]
+			},
+			"tolayer": "phalanx"
 		},
-		"findmarchandfiretargets": {
+		"findfiretargets": {
 			"type": "walker",
-			"starts": "phalanxend",
-			"dirs": ["dir",["lookup","phalanxend",["contextpos","start"],"facing"]],
+			"starts": "marchtargets",
+			"dirs": ["dir",["lookup","marchtargets",["contextpos","start"],"dir"]],
 			"blocks": "units",
-			"max": 3,
+			"max": 2,
 			"draw": {
-				"steps": {
-					"condition": ["same",["contextval","step"],1],
-					"tolayer": "marchtarget",
-					"include": {
-						"heading": ["contextval","dir"]
-					}
-				},
 				"block": {
 					"condition": ["anyat","oppunits",["contextpos","target"]],
-					"tolayer": "firetarget"
+					"tolayer": "firetargets"
 				}
 			}
 		}

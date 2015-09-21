@@ -9,14 +9,14 @@ var Controls = React.createClass({
         var battle = this.props.battle,
             gamecomms = battle.getIn(["gamedef","commands"]).keySeq().concat(I.List(["undo","endturn"])),
             avail = battle.get("availableCommands");
+        if (battle.get("endedby")){
+            return <div></div>;
+        }
         if (battle.get("canendturnnow")){
             avail = avail.set("endturn",true);
         } 
         if (battle.has("undo")){
             avail = avail.set("undo",true);
-        }
-        if (battle.get("endedby")){
-            return <div></div>;
         }
         return (
             <div className="controls">

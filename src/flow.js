@@ -248,6 +248,8 @@ Algol.canReachEndTurn = function(state){ // TODO - cache the checked states?
 };
 
 Algol.pruneOptions = function(state){
+	return state;
+
 	if (state.hasIn(["gamedef","endturn","canalwaysreachend"])){
 		return state;
 	}
@@ -318,6 +320,16 @@ var allowmethods = {
 
 Algol.allow = function(state,def){
 	//console.log("ALLOW",def && def.toJS && def.toJS() || def);
+	if (state.hasIn(["gamedef","marks",def])){
+		return this.allowMark(state,def);
+	} else if (state.hasIn(["gamedef","commands",def])){
+		return this.allowCommand(state,def);
+	} else if (def === "endturn"){
+		return this.allowEndTurn(state);
+	}
+	if (!def.first){
+		console.log("ALARM",def);
+	}
 	return allowmethods[def.first()].apply(this,[state].concat(def.rest().toArray()));
 };
 

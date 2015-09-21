@@ -21,18 +21,18 @@
 	},
 	"startturn": {
 		"runGenerators": ["findverticaldistances","findhorisontaldistances"],
-		"allow": [["mark","selectunit"]]
+		"allow": ["selectunit"]
 	},
 	"marks": {
 		"selectunit": {
 			"from": "myunits",
 			"runGenerators": ["findmovetargets"],
-			"allow": [["mark","selectmovetarget"]]
+			"allow": ["selectmovetarget"]
 		},
 		"selectmovetarget": {
 			"from": "movetargets",
 			"runGenerators": ["findpushresults"],
-			"allow": [["command","move"]]
+			"allow": ["move"]
 		}
 	},
 	"commands": {
@@ -46,7 +46,7 @@
 				],
 				["move","selectunit","selectmovetarget"]
 			],
-			"allow": [["endturn"]]
+			"allow": ["endturn"]
 		}
 	},
 	"endturn": {

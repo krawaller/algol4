@@ -228,6 +228,11 @@ var valuemethods = {
 	},
 	playervar: function(state,name,player){
 		return state.getIn(["data","playervars",this.evaluateValue(state,name),this.evaluateValue(state,player)]);
+	},
+	dirline: function(state,dir){
+		return {
+			1: "vertical", 5: "vertical", 2: "uphill", 6: "uphill", 3: "horisontal", 7: "horisontal", 4: "downhill", 8: "downhill"
+		}[this.evaluateValue(state,dir)] || "unknown"
 	}
 };
 

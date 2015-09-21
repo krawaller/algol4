@@ -24,10 +24,10 @@ var Marks = React.createClass({
                             y={board.getIn([pos,0,"y"])}>
                                 <a className="mark setmark" onClick={
                                     (function(e){
+                                        e && e.preventDefault() && e.stopPropagation();
                                         if (!playing){
                                             return;
                                         }
-                                        e && e.preventDefault() && e.stopPropagation();
                                         battleactions.removeMark(markname);
                                     })
                                 }>&nbsp;</a>

@@ -18,10 +18,10 @@
 		"bankers": [2,2]
 	},
 	"startturn": {
-		"allow": [["mark","selectunit"]]
+		"allow": ["selectunit"]
 	},
 	"afterstep": {
-		"allow": [["endturn"]]
+		"allow": ["endturn"]
 	},
 	"endturn": {
 		"endgame": {
@@ -39,15 +39,15 @@
 				["if",["anyat","myrooks","selectunit"],"findlinetargets"]
 			],
 			"allow": [
-				["mark","selectmovetarget"],
-				["if",["and",[["anyat","mypawns","selectunit"],["truthy",["playervar","nobles",["contextval","currentplayer"]]]]],["command","makenoble"]],
-				["if",["and",[["anyat","mypawns","selectunit"],["truthy",["playervar","clerics",["contextval","currentplayer"]]]]],["command","makecleric"]],
-				["if",["and",[["anyat","mypawns","selectunit"],["truthy",["playervar","bankers",["contextval","currentplayer"]]]]],["command","makebanker"]]
+				"selectmovetarget",
+				["if",["and",[["anyat","mypawns","selectunit"],["truthy",["playervar","nobles",["contextval","currentplayer"]]]]],"makenoble"],
+				["if",["and",[["anyat","mypawns","selectunit"],["truthy",["playervar","clerics",["contextval","currentplayer"]]]]],"makecleric"],
+				["if",["and",[["anyat","mypawns","selectunit"],["truthy",["playervar","bankers",["contextval","currentplayer"]]]]],"makebanker"]
 			]
 		},
 		"selectmovetarget": {
 			"from": "movetargets",
-			"allow": [["command","move"]]
+			"allow": ["move"]
 		}
 	},
 	"commands": {

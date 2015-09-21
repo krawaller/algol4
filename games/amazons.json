@@ -12,22 +12,22 @@
 		"queens":[["positions",[1004,1007,4001,4010],1],["positions",[10004,10007,7001,7010],2]]
 	},
 	"startturn": {
-		"allow": [["mark","selectunit"]]
+		"allow": ["selectunit"]
 	},
 	"marks": {
 		"selectunit": {
 			"from": "myunits",
 			"runGenerators": ["findtargets"],
-			"allow": [["mark","selectmovetarget"]]
+			"allow": ["selectmovetarget"]
 		},
 		"selectmovetarget": {
 			"canalwaysreachturnend": true,
 			"from": "targets",
-			"allow": [ ["command","move"] ]
+			"allow": ["move"]
 		},
 		"selectfiretarget": {
 			"from": "targets",
-			"allow": [ ["command","fire"] ]
+			"allow": ["fire"]
 		}
 	},
 	"commands": {
@@ -37,11 +37,11 @@
 				["setcontextval","movedto",["markpos","selectmovetarget"]]
 			],
 			"runGenerators": ["findtargets"],
-			"allow": [ ["mark","selectfiretarget"] ]
+			"allow": ["selectfiretarget"]
 		},
 		"fire": {
 			"applyEffects": [ ["spawnunit",["markpos","selectfiretarget"],"fires",0] ],
-			"allow": [ ["endturn"] ]
+			"allow": ["endturn"]
 		}
 	},
 	"generators": {
