@@ -7,7 +7,7 @@ var _ = require('lodash'),
         //breakthru: require("../games/breakthru.json"),
         bollsgame: require("../games/bollsgame.json"),
         cannon: require("../games/cannon.json"),
-        castle: require("../games/castle.json"),
+        //castle: require("../games/castle.json"),
         conquest: require("../games/conquest.json"),
         court: require("../games/court.json"),
         crossings: require("../games/crossings.json"),
@@ -15,8 +15,8 @@ var _ = require('lodash'),
         epaminondas: require("../games/epaminondas.json"),
         gogol: require("../games/gogol.json"),
         khan: require("../games/khan.json"),
-        kickrun: require("../games/kickrun.json"),
-        krieg: require("../games/krieg.json"),
+        //kickrun: require("../games/kickrun.json"),
+        //krieg: require("../games/krieg.json"),
         momentum: require("../games/momentum.json"),
         murusgallicus: require("../games/murusgallicus.json"),
         murusgallicusadvanced: require("../games/murusgallicusadvanced.json"),
@@ -26,7 +26,7 @@ var _ = require('lodash'),
         //retsami: require("../games/retsami.json"),
         semaphor: require("../games/semaphor.json"),
         sombrero: require("../games/sombrero.json"),
-        tablut: require("../games/tablut.json"),
+        //tablut: require("../games/tablut.json"),
         trespass: require("../games/trespass.json"),
     };
 
@@ -52,10 +52,29 @@ function gatherLayerNames(l){
 
 function defaultify(def){
     // fix setup (empty default)
-    def = def.set("setup",def.get("setup")||I.Map());
+    def = def.set("setup",(def.get("setup")||I.Map()).map(function(sdef,name){
+        if (I.List.isList(sdef)){
+            return I.Map().set(0,sdef);
+        } else {
+            return sdef;
+        }
+    }));
+
+    // fix terrain (empty default)
+    def = def.set("terrain",(def.get("terrain")||I.Map()).map(function(tdef,name){
+        if (I.List.isList(tdef)){
+            return I.Map().set(0,tdef);
+        } else {
+            return tdef;
+        }
+    }));
+
     // Fix commands (add names)
-    def = def.set("commands",def.get("commands").map(function(commanddef,commandname){
-        return commanddef.set("name",commandname);
+    def = def.set("commands",def.get("commands").map(function(cdef,commandname){
+        if (cdef.has("allow") && !I.List.isList(cdef.get("allow"))){
+            cdef = cdef.set(I.List(cdef.get("allow")));
+        }
+        return cdef.set("name",commandname);
     }));
     def = def.setIn(["endturn","endgame"],def.getIn(["endturn","endgame"])||I.Map());
     // Fix generators
@@ -76,6 +95,9 @@ function defaultify(def){
     // Fix marks
     def = def.set("marks",def.get("marks").reduce(function(mem,mdef,mname){
         mdef = mem.get(mname);
+        if (mdef.has("allow") && !I.List.isList(mdef.get("allow"))){
+            mdef = mdef.set(I.List(mdef.get("allow")));
+        }
         mem = mem.set(mname,mdef.set("name",mname));
         return mem;
     },def.get("marks"),this));

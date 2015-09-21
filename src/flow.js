@@ -248,7 +248,7 @@ Algol.canReachEndTurn = function(state){ // TODO - cache the checked states?
 };
 
 Algol.pruneOptions = function(state){
-	return state;
+	//return state;
 
 	if (state.hasIn(["gamedef","endturn","canalwaysreachend"])){
 		return state;

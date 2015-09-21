@@ -10,16 +10,16 @@
 		"icons": {"attackers":"pawns","defenders":"queens","strikers":"kings" }
 	},
 	"setup": {
-		"attackers": [ ["rectangle",7001,7011,1] ],
-		"defenders": [ ["positions",[2004,2005,2007,2008],2] ],
-		"strikers": [ {"pos":2006,"owner":2} ]
+		"attackers": {"1": [["rect","a1","k1"]] },
+		"defenders": {"2": ["d6","e6","g6","h6"] },
+		"strikers": {"2": ["f6"]}
 	},
 	"terrain": {
-		"bases": [ ["rectangle",7001,7011,1], ["rectangle",1001,1011,2] ],
-		"goals": [ ["rectangle",1001,1011,2] ]
+		"bases": [["rect","a1","k1"],["rect","a7","k7"]],
+		"goals": [["rect","a7","k7"]]
 	},
 	"startturn": {
-		"allow": [["mark","selectunit"]]
+		"allow": ["selectunit"]
 	},
 	"endturn": {
 		"endgame": {
@@ -31,11 +31,11 @@
 		"selectunit": {
 			"from": "myunits",
 			"runGenerators": ["findtargets"],
-			"allow": [["mark","selectmove"]]
+			"allow": ["selectmove"]
 		},
 		"selectmove": {
 			"from": "movetargets",
-			"allow": [["command","move"]]
+			"allow": ["move"]
 		}
 	},
 	"commands": {
@@ -44,7 +44,7 @@
 				["kill","selectmove"],
 				["move","selectunit","selectmove"]
 			],
-			"allow": [["endturn"]]
+			"allow": ["endturn"]
 		}
 	},
 	"generators": {

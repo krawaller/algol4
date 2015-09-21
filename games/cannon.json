@@ -6,13 +6,11 @@
 	},
 	"board": { "height": 10, "width": 10 },
 	"graphics": { "icons": {"soldiers":"pawns","flags":"kings"} },
-	"setup": { "soldiers": [
-		["rectangle",2002,4002,1,{"dir":5}], ["rectangle",2004,4004,1,{"dir":5}], ["rectangle",2006,4006,1,{"dir":5}],
-		["rectangle",2008,4008,1,{"dir":5}], ["rectangle",2010,4010,1,{"dir":5}],
-		["rectangle",7001,9001,2,{"dir":1}], ["rectangle",7003,9003,2,{"dir":1}], ["rectangle",7005,9005,2,{"dir":1}],
-		["rectangle",7007,9007,2,{"dir":1}], ["rectangle",7009,9009,2,{"dir":1}]
-	 ] },
-	"terrain": { "townplaces": [ ["rectangle",1002,1009,1], ["rectangle",10002,10009,2] ] },
+	"setup": { "soldiers": {
+		"1": [["rect","b7","b9",5],["rect","d7","d9",5],["rect","f7","f9",5],["rect","h7","h9",5],["rect","j7","j9",5]],
+		"2": [["rect","a2","a4",1],["rect","c2","c4",1],["rect","e2","e4",1],["rect","g2","g4",1],["rect","i2","i4",1]]
+	}},
+	"terrain": { "townplaces": {"1":[["rect","b10","i10"]],"2":[["rect","b1","i1"]] }},
 	"marks": {
 		"selectdeploy": {
 			"from": "mytownplaces",
@@ -20,11 +18,11 @@
 		},
 		"selectunit": {
 			"from": "mysoldiers",
-			"runGenerators": ["findmovetargets","findkilltargets","findfleetargets","findpotentialtails","findmarchtargets", "findfiretargets" ],
+			"runGenerators": ["findmoveandkilltargets","findfleetargets","findpotentialtails","findmarchtargets", "findfiretargets" ],
 			"allow": [ "selectmove", "selectmarch", "selectfire" ]
 		},
 		"selectmove": {
-			"from": ["union","movetargets","killtargets"],
+			"from": "movetargets",
 			"allow": [ "move" ]
 		},
 		"selectfire": {
@@ -93,25 +91,20 @@
 				}
 			}
 		},
-		"findmovetargets": {
-			"type": "nextto",
-			"dirs": ["relativedirs",["dirs",[8,1,2]],["lookup","units",["contextpos","start"],"dir"]],
-			"starts": "selectunit",
-			"condition": ["noneat","units",["contextpos","target"]],
-			"draw": {
-				"target": {
-					"tolayer":  "movetargets"
-				}
-			}
-		},
-		"findkilltargets": {
+		"findmoveandkilltargets": {
 			"type": "nextto",
 			"dirs": ["relativedirs",["dirs",[7,8,1,2,3]],["lookup","units",["contextpos","start"],"dir"]],
 			"starts": "selectunit",
-			"condition": ["anyat","oppunits",["contextpos","target"]],
+			"condition": ["not",["or",[
+				["anyat","myunits",["contextpos","target"]],
+				["and",[
+					["valinlist",["contextval","dir"],[7,3]],
+					["noneat","units",["contextpos","target"]]
+				]]
+			]]],
 			"draw": {
 				"target": {
-					"tolayer": "killtargets"
+					"tolayer": "movetargets"
 				}
 			}
 		},

@@ -37,21 +37,17 @@ Used in prepareState
 */
 Algol.prepareInitialUnitsForGame = function(gamedef){
 	var n = 0;
-	return gamedef.get("setup").reduce(function(data,list,groupname){
-		return this.prepareEntitiesFromList(list,gamedef.get("board")).reduce(function(data,unit){
-			var id = "unit"+(++n);
-			return data.set(id,unit.set("id",id).set("group",groupname));
+	var ret = gamedef.get("setup").reduce(function(data,perowner,groupname){
+		return perowner.reduce(function(data,list,owner){
+			return this.prepareEntitiesFromList(list,gamedef.get("board")).reduce(function(data,unit){
+				var id = "unit"+(++n);
+				return data.set(id,unit.set("id",id).set("group",groupname).set("owner",parseInt(owner||0)));
+			},data,this);
 		},data,this);
 	},I.Map(),this);
+	console.log("Initial setup",ret.toJS());
+	return ret;
 };
-
-Algol.ykxToA1 = function(ykx,board){
-	var cols = ["a","b","c","d","e","f","g","i","j","k","l","m","n","o","p","q","r","s","t","u"];
-};
-
-Algol.A1Toykx = function(a1,board){
-	var cols = ["a","b","c","d","e","f","g","i","j","k","l","m","n","o","p","q","r","s","t","u"];	
-}
 
 /*
 Helper function used only in prepareEntitiesFromList
@@ -59,45 +55,43 @@ Helper function used only in prepareEntitiesFromList
 Algol.addEntitiesFromDef = function(coll,def,board){
 	var blueprint, topleft, bottomright,holes;
 	if (I.List.isList(def)){ 
-		if (def.first()==="positions"){ // [positions,<list>,<owner>,<blueprint>]
-			blueprint = (def.get(3) || I.Map()).set("owner",def.get(2)||0);
+		if (def.first()==="positions"){ // [positions,<list>,dir,<blueprint>]
+			blueprint = (def.get(2) || I.Map());
 			return def.get(1).reduce(function(mem,pos){
 				return mem.push(blueprint.set("pos",pos));
 			},coll);
-		} else if (def.first()==="holedrectangle") { // [holedrectangle,topleft,bottomright,holes,owner,blueprint]
-			blueprint = (def.get(5) || I.Map()).set("owner",def.get(4)||0);
+		} else if (def.first()==="holerect") { // [holedrectangle,topleft,bottomright,holes,dir,blueprint]
+			blueprint = (def.get(5) || I.Map());
 			topleft = this.posNameToObj(def.get(1),board);  //parseInt(def.get(1));
 			bottomright = this.posNameToObj(def.get(2),board); //parseInt(def.get(2));
 			holes = def.get(3);
 			return rect =  _.reduce(_.range(topleft.y,bottomright.y+1),function(mem,r){
 				return _.reduce(_.range(topleft.x,bottomright.x+1),function(mem,c){
 					var name = this.posObjToName({x:c,y:r},board);
-					return holes.contains(name) ? mem : mem.push(blueprint.set("pos",name));
+					return holes.contains(name) ? mem : mem.push(blueprint.set("pos",name).set("dir",def.get(4)||1));
 				},mem,this);
 			},coll,this);
-		} else { // [rectangle,topleft,bottomright,owner,blueprint]
-			blueprint = (def.get(4) || I.Map()).set("owner",def.get(3)||0);
+		} else { // [rect,topleft,bottomright,dir,blueprint]
+			blueprint = (def.get(4) || I.Map());
+			//console.log("Strange def?",def.toJS());
 			topleft = this.posNameToObj(def.get(1),board);  //parseInt(def.get(1));
 			bottomright = this.posNameToObj(def.get(2),board); //parseInt(def.get(2));
 			return rect =  _.reduce(_.range(topleft.y,bottomright.y+1),function(mem,r){
 				return _.reduce(_.range(topleft.x,bottomright.x+1),function(mem,c){
-					return mem.push(blueprint.set("pos",this.posObjToName({x:c,y:r},board)));
+					return mem.push(blueprint.set("pos",this.posObjToName({x:c,y:r},board)).set("dir",def.get(3)||1));
 				},mem,this);
 			},coll,this);
-			/*return rect =  _.reduce(_.range(Math.floor(topleft/1000),Math.floor(bottomright/1000)+1),function(mem,r){
-				return _.reduce(_.range(topleft % 1000,(bottomright % 1000)+1),function(mem,c){
-					return mem.push(blueprint.set("pos",r*1000+c));
-				},mem);
-			},coll);*/
 		}
-	} else { // single definition
+	} else if (I.Map.isMap(def)){ // single definition
 		return coll.push(def);
+	} else { // single pos
+		return coll.push(I.Map().set("pos",def));
 	}
 }
 
-Algol.offsetPosName = function(name,dir,forward,right,board){ // topleft is 1,1
-	var forwardmods = [[0,-1],[1,-1],[1,0],[1,1],[0,1],[-1,1],[-1,0],[-1,-1]], // x,y
-		rightmods =   [[1,0],[1,1],[0,1],[-1,1],[-1,0],[-1,-1],[0,-1],[1,-1]],
+Algol.offsetPosName = function(name,dir,forward,right,board){ // bottom left is 1,1
+	var forwardmods = [[0,1],[1,1],[1,0],[1,-1],[0,-1],[-1,-1],[-1,0],[-1,1]], // x,y
+		rightmods =   [[1,0],[1,-1],[0,-1],[-1,-1],[-1,0],[-1,1],[0,1],[1,1]],
 		obj = this.posNameToObj(name,board),
 		n = dir-1,
 		newx = obj.x + forwardmods[n][0]*forward + rightmods[n][0]*right,
@@ -105,13 +99,21 @@ Algol.offsetPosName = function(name,dir,forward,right,board){ // topleft is 1,1
 	return newx>0 && newx<=board.get("width") && newy>0 && newy<=board.get("height") && this.posObjToName({x:newx,y:newy},board);
 };
 
+var colnametonumber = _.reduce("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVXYZ".split(""),function(mem,char,n){
+	mem[char] = n+1;
+	return mem;
+},{});
+
+colnumbertoname = _.invert(colnametonumber);
+
+console.log("COLNAMETONUMBER",colnametonumber,"COLNUMBERTONAME",colnumbertoname);
+
 Algol.posNameToObj = function(name,board){
-	var int = parseInt(name);
-	return {x: (int % 1000), y: Math.floor(int/1000) };
+	return {x: colnametonumber[name[0]], y: parseInt(name.substr(1)) };
 };
 
 Algol.posObjToName = function(obj,board){
-	return obj.y*1000+obj.x;
+	return colnumbertoname[obj.x]+obj.y;
 };
 
 

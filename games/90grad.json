@@ -10,14 +10,14 @@
 	},
 	"board": { "height": 9, "width": 9 },
 	"terrain": {
-		"leftcolumn": [["rectangle",2001,8001]],
-		"toprow": [["rectangle",1002,1008]],
-		"goal": [{"pos":5005}],
-		"lava": [["rectangle",1001,1009],["rectangle",9001,9009],["rectangle",2001,8001],["rectangle",2009,8009]]
+		"leftcolumn": [["rect","a2","a8"]],
+		"toprow": [["rect","b9","h9"]],
+		"goal": [{"pos":"e5"}],
+		"lava": [["rect","a9","i9"],["rect","a1","i1"],["rect","a2","a8"],["rect","i2","i8"]]
 	},
 	"setup": {
-		"soldiers": [["rectangle",2003,2005,1],["rectangle",3002,5002,1],["rectangle",8005,8007,2],["rectangle",5008,7008,2]],
-		"balls": [{"pos":2002,"owner":1},{"pos":8008,"owner":2}]
+		"soldiers": {"1":[["rect","c8","e8"],["rect","b5","b7"]],"2":[["rect","e2","g2"],["rect","h3","h5"]]},
+		"balls": {"1":["b8"],"2":["h2"]}
 	},
 	"startturn": {
 		"runGenerators": ["findverticaldistances","findhorisontaldistances"],

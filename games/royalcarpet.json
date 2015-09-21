@@ -9,10 +9,10 @@
 	},
 	"board": {"height":10,"width":8},
 	"setup": {
-		"kings": [["positions",[2001,2003,2006,2008],1],["positions",[9001,9003,9006,9008],2]]
+		"kings": {"1":["a2","c2","f2","h2"], "2": ["a9","c9","f9","h9"] }
 	},
 	"terrain": {
-		"base": [["rectangle",1001,1008,1],["rectangle",10001,10008,2]]
+		"base": {"1":[["rect","a1","h1"]],"2":[["rect","a10","h10"]]}
 	},
 	"startturn": {
 		"allow": [

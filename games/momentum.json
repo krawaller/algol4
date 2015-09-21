@@ -5,13 +5,22 @@
 		"tags": ["push","deploy"]
 	},
 	"board": {"height":9,"width":9},
-	"terrain": {"edge":[{"pos":5005},["rectangle",1001,1009],["rectangle",1001,9001],["rectangle",9001,9009],["rectangle",1009,9009]]},
+	"terrain": {"edge":["e5",["rect","a1","i1"],["rect","a9","i9"],["rect","a2","a8"],["rect","i2","i8"]]},
 	"graphics": {"tiles": {"edge":"water"}, "icons": {"soldiers":"pawns"} },
+	"startturn": {
+		"applyEffects": [["forallin","edge", ["killunit",["loopid"]] ]],
+		"allow": ["selectdrop"]
+	},
+	"endturn": {
+		"endgame": {
+			"deployedall": {"condition":["same",["positionsin",["intersect","myunits","noedge"]],12]}
+		}
+	},
 	"marks": {
 		"selectdrop": {
 			"from": ["subtract","noedge","units"],
 			"runGenerators": ["findpushtargets"],
-			"allow": [["command","drop"]]
+			"allow": ["drop"]
 		}
 	},
 	"commands": {
@@ -22,7 +31,7 @@
 					["offsetunit",["idofunitat",["contextpos","target"]],["lookup","tobepushed",["contextpos","target"],"dir"],1]
 				]
 			],
-			"allow": [["endturn"]]
+			"allow": ["endturn"]
 		}
 	},
 	"generators": {
@@ -37,15 +46,6 @@
 					"include": {"dir":["contextval","dir"]}
 				}
 			}
-		}
-	},
-	"startturn": {
-		"applyEffects": [["forallin","edge", ["killunit",["loopid"]] ]],
-		"allow": [["mark","selectdrop"]]
-	},
-	"endturn": {
-		"endgame": {
-			"deployedall": {"condition":["same",["positionsin",["intersect","myunits","noedge"]],12]}
 		}
 	}
 }

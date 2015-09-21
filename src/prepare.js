@@ -25,10 +25,6 @@ Algol.prepareConnectionsFromBoardDef = function(boarddef){
 				var newpos = this.offsetPosName(name,dir,1,0,boarddef);
 				return newpos ? map.set(dir,newpos) : map;
 			},I.Map(),this));
-			/*return mem.set(this.posObjToName({x:x,y:y},boarddef),_.reduce([[0,-1],[1,-1],[1,0],[1,1],[0,1],[-1,1],[-1,0],[-1,-1]],function(map,mods,n){
-				var newx = x+mods[0], newy = y+mods[1];
-				return newx>0 && newx<=width && newy>0 && newy<=height ? map.set(n+1,this.posObjToName({x:newx,y:newy},boarddef)) : map;
-			},I.Map(),this));*/
 		},mem,this);
 	},I.Map(),this);
 };
@@ -52,9 +48,14 @@ Algol.prepareBoardLayersFromBoardDef = function(boarddef){
 Used in prepareNewGameState
 */
 Algol.prepareBaseLayers = function(gamedef,nbrofplayers){
-	var parsedterrains = (gamedef.get("terrain")||I.Map()).map(function(terdef){
-		return this.prepareEntitiesFromList(terdef,gamedef.get("board"));
+	var parsedterrains = (gamedef.get("terrain")||I.Map()).map(function(perowner){
+		return perowner.reduce(function(ret,list,owner){
+			return ret.concat(this.prepareEntitiesFromList(list,gamedef.get("board")).map(function(tile){
+				return tile.set("owner",parseInt(owner||0));
+			}));
+		},I.List(),this);
 	},this);
+	console.log("Parsedterrains",parsedterrains.toJS());
 	var base = this.prepareBoardLayersFromBoardDef(gamedef.get("board"));
 	// add noterrain
 	base = base.set("noterrain",parsedterrains.reduce(function(mem,layer,layername){

@@ -8,10 +8,10 @@
 	"graphics": {
 		"tiles": {"bases":"grass"}, "icons": {"pawns":"pawns"}
 	},
-	"setup": { "pawns":[ ["rectangle",2001,2008,1,{"dir":5}], ["rectangle",7001,7008,2,{"dir":1}] ] },
+	"setup": { "pawns": {"1":[["rect","a2","h2",1]],"2":[["rect","a7","h7",5]] } },
 	"terrain": {
-		"startrows": [ ["rectangle",2001,2008,1], ["rectangle",7001,7008,2] ],
-		"bases": [ ["rectangle",1001,1008,1], ["rectangle",8001,8008,2] ]
+		"startrows": {"1":[["rect","a2","h2"]],"2":[["rect","a7","h7"]] },
+		"bases": {"1":[["rect","a1","h1"]],"2":[["rect","a8","h8"]] }
 	},
 	"startturn": {
 		"runGenerators": ["findoppshadows"],

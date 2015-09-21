@@ -10,11 +10,11 @@
 		"icons": { "daggers": "bishops", "crowns": "kings" }
 	},
 	"terrain": {
-		"bases": [["rectangle",1001,1008,1],["rectangle",8001,8008,2]]
+		"bases": {"1":[["rect","a8","h8"]],"2":[["rect","a1","h1"]]}
 	},
 	"setup": {
-		"crowns": [["positions",[1004,1005],1],["positions",[8003,8006],2]],
-		"daggers": [["rectange",2003,2006,1],["positions",[6003,6006],2],["rectangle",7002,7007,2]]
+		"crowns": {"1":["d8","e8"],"2":["c1","f1"]},
+		"daggers": {"1":[["rect","c7","f7"]],"2":["c3","f3",["rect","b2","g2"]]}
 	},
 	"endturn": {
 		"endgame": {

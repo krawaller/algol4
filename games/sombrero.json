@@ -10,17 +10,17 @@
 	},
 	"board": { "height": 8, "width": 8 },
 	"setup": {
-		"kings": [
-			["positions",[1001,1002,1003,1004,8005,8006,8007,8008],1],
-			["positions",[1005,1006,1007,1008,8001,8002,8003,8004],2]
-		]
+		"kings": {
+			"1": [["rect","a1","d1"],["rect","e8","h8"]],
+			"2": [["rect","a8","d8"],["rect","e1","h1"]]
+		}
 	},
 	"startturn": {
 		"applyEffects": [["setcontextval","movesleft",2]],
-		"allow": [["mark","selectking"]]
+		"allow": ["selectking"]
 	},
 	"afterstep": {
-		"allow": [ ["ifelse",["falsy",["contextval","movesleft"]],["endturn"],["mark","selectking"]] ]
+		"allow": [ ["ifelse",["falsy",["contextval","movesleft"]],"endturn","selectking"] ]
 	},
 	"endturn": {
 		"endgame": {
@@ -31,17 +31,17 @@
 		"selectking": {
 			"from": "mykings",
 			"runGenerators": ["findtargets","findsecondtargets"],
-			"allow": [["mark","selectswap"],["mark","selectmove"]]
+			"allow": ["selectswap","selectmove"]
 		},
 		"selectswap": {
 			"from": "swaptarget",
 			"runGenerators": ["finddemotees"],
-			"allow": [["command","swap"]]
+			"allow": ["swap"]
 		},
 		"selectmove": {
 			"from": "movetarget",
 			"runGenerators": ["finddemotees"],
-			"allow": [["command","move"]]
+			"allow": ["move"]
 		}
 	},
 	"commands": {

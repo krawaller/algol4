@@ -7,11 +7,11 @@
 	"graphics": {"icons":{"kings":"kings","pawns":"pawns","bishops":"bishops"}},
 	"board": {"width":4,"height":3},
 	"startturn": {
-		"allow": [["mark","selectdeploytarget"],["mark","selectunit"]]
+		"allow": ["selectdeploytarget","selectunit"]
 	},
 	"afterstep": {
 		"runGenerators": ["findlines"],
-		"allow": [["endturn"]]
+		"allow": ["endturn"]
 	},
 	"endturn": {
 		"endgame": {
@@ -21,11 +21,11 @@
 	"marks": {
 		"selectdeploytarget": {
 			"from": ["subtract","board","units"],
-			"allow": [["command","deploy"]]
+			"allow": ["deploy"]
 		},
 		"selectunit": {
 			"from": ["union","pawns","bishops"],
-			"allow": [["command","promote"]]
+			"allow": ["promote"]
 		}
 	},
 	"commands": {

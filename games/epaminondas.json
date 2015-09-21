@@ -6,31 +6,31 @@
 	},
 	"board": { "height": 12, "width": 14 },
 	"graphics": { "tiles": {"bases":"grass"}, "icons": {"soldiers":"pawns"} },
-	"setup": { "soldiers": [ ["rectangle",1001,2014,1], ["rectangle",11001,12014,2] ] },
-	"terrain": { "bases": [ ["rectangle",1001,1014,1], ["rectangle",12001,12014,2] ] },
+	"setup": { "soldiers": {"1":[["rect","a11","n12"]], "2":[["rect","a1","n2"]]} },
+	"terrain": { "bases": {"1":[["rect","a12","n12"]], "2":[["rect","a1","n1"]]} },
 	"marks": {
 		"selecthead": {
 			"from": "myunits",
 			"runGenerators": ["findimmediatetargets","findpotentialtails"],
-			"allow": [ ["mark","selecttail"], ["mark","selectmove"] ]
+			"allow": [ "selecttail", "selectmove" ]
 		},
 		"selecttail": {
 			"from": "potentialtail",
 			"runGenerators": ["findphalanxmembers","findmarchandchargetargets","findopposingphalanx"],
-			"allow": [ ["mark","selectcharge"], ["mark","selectmarch"] ]
+			"allow": [ "selectcharge", "selectmarch" ]
 		},
 		"selectmove": {
 			"from": "movetarget",
-			"allow": [["command","move"]]
+			"allow": ["move"]
 		},
 		"selectcharge": {
 			"from": "chargetarget",
 			"runGenerators": ["findchargevictims"],
-			"allow": [["command","charge"]]
+			"allow": ["charge"]
 		},
 		"selectmarch": {
 			"from": "marchtarget",
-			"allow": [["command","march"]]
+			"allow": ["march"]
 		}
 	},
 	"commands": {
@@ -60,10 +60,10 @@
 		}
 	},
 	"startturn": {
-		"allow": [["mark","selecthead"]]
+		"allow": ["selecthead"]
 	},
 	"afterstep": {
-		"allow": [["endturn"]]
+		"allow": ["endturn"]
 	},
 	"endturn": {
 		"endgame": {

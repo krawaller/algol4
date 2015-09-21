@@ -16,12 +16,10 @@ var Pieces = React.createClass({
         units = graphics.get("icons").reduce(function(list,look,layer){
             return list.concat((battle.getIn(["layers",layer])||I.Map()).toList().reduce(function(list,arr,pos){
                 return list.concat(arr.map(function(u){
-                    return u.set("look",look).set("ident",u.get("id")||u.get("parentid")+u.get("suffix"));
+                    return u.set("look",look).set("ident",parseInt((u.get("id")||u.get("parentid")).replace(/unit/,""))*100+parseInt(u.get("suffix")||0));
                 }).toJS());
             },[]));
-        },[]).sort(function(u1,u2){
-            return parseInt(u1.ident.replace(/unit/,'')) > parseInt(u2.ident.replace(/unit/,'')) ? 1 : -1;
-        });
+        },[]).sort(function(u1,u2){ return u1.ident > u2.ident ? 1 : -1; });
         var DOMS = _.map(units,function(entity){
             var pos = entity.pos,
                 x = board.getIn([pos,0,"x"]),

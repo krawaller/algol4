@@ -12,14 +12,76 @@
 		"rotatepieces": true
 	},
 	"terrain": {
-		"trees": [
-			["rectangle",2002,4004,1],
-			["rectangle",6006,8008,2]
-		]
+		"trees": {"1":[["rect","b6","d8"]],"2":[["rect","f2","h4"]]}
 	},
 	"setup": {
-		"archers": [["holedrectangle",2002,4004,[3003],1,{"dir":5}],["holedrectangle",6006,8008,[7007],2,{"dir":1}]],
-		"kings": [{"pos":3003,"dir":5,"owner":1},{"pos":7007,"dir":1,"owner":2}]
+		"archers": {"1":[["holerect","b6","d8",["c7"],5]],"2":[["holerect","f2","h4",["g3"],1]]},
+		"kings": {"1":[{"pos":"c7","dir":5}],"2":[{"pos":"g3","dir":1}]}
+	},
+	"startturn": {
+		"applyEffects": [["setcontextval","nonfiremoves",2]],
+		"runGenerators": ["findarrows"],
+		"allow": ["selectunit"]
+	},
+	"afterstep": {
+		"runGenerators": ["findarrows"],
+		"allow": [["ifelse",["truthy",["contextval","nonfiremoves"]],"selectunit","endturn"]]
+	},
+	"endturn": {
+		"canalwaysreachend": true,
+		"endgame": {
+			"infiltration": {"condition":["overlaps","myunits","opptrees"]},
+			"kingkill": {"condition":["notempty","oppdeadkings"]}
+		}
+	},
+	"marks": {
+		"selectunit": {
+			"from": "myunits",
+			"runGenerators": ["findfooting","findkilltargets"],
+			"allow": [
+				"selectmove","left","right",
+				["if",["and",[
+					["same",["contextval","nonfiremoves"],2],
+					["notempty","gonnadie"],
+					["falsy",["contextval",["idofunitat",["markpos","selectunit"]]]]
+				]],"fire"]
+			]
+		},
+		"selectmove": {
+			"from": "movetargets",
+			"allow": ["move"]
+		}
+	},
+	"commands": {
+		"move": {
+			"applyEffects": [
+				["setcontextval",["idofunitat","selectunit"],"hasmoved"],
+				["move","selectunit","selectmove"],
+				["addtocontextval","nonfiremoves",["mult",-1,["lookup","movetargets","selectmove","cost"]]]
+			],
+			"setMarks": { "selectunit": "selectmove" }
+		},
+		"left": {
+			"applyEffects": [
+				["turnunit",["idofunitat",["markpos","selectunit"]],-2],
+				["addtocontextval","nonfiremoves",-1]
+			],
+			"setMarks": { "selectunit": "selectunit" }
+		},
+		"right": {
+			"applyEffects": [
+				["turnunit",["idofunitat",["markpos","selectunit"]],2],
+				["addtocontextval","nonfiremoves",-1]
+			],
+			"setMarks": { "selectunit": "selectunit" }
+		},
+		"fire": {
+			"applyEffects": [
+				["setcontextval",["idofunitat",["markpos","selectunit"]],"hasfired"],
+				["kill",["firstposin","gonnadie"]]
+			],
+			"setMarks": { "selectunit": "selectunit" }
+		}
 	},
 	"generators": {
 		"findkilltargets": {
@@ -73,73 +135,6 @@
 					}
 				}
 			}
-		}
-	},
-	"marks": {
-		"selectunit": {
-			"from": "myunits",
-			"runGenerators": ["findfooting","findkilltargets"],
-			"allow": [
-				["mark","selectmove"],
-				["command","left"],
-				["command","right"],
-				["if",["and",[
-					["same",["contextval","nonfiremoves"],2],
-					["notempty","gonnadie"],
-					["falsy",["contextval",["idofunitat",["markpos","selectunit"]]]]
-				]],["command","fire"]]
-			]
-		},
-		"selectmove": {
-			"from": "movetargets",
-			"allow": [["command","move"]]
-		}
-	},
-	"startturn": {
-		"applyEffects": [["setcontextval","nonfiremoves",2]],
-		"runGenerators": ["findarrows"],
-		"allow": [["mark","selectunit"]]
-	},
-	"afterstep": {
-		"runGenerators": ["findarrows"],
-		"allow": [["ifelse",["truthy",["contextval","nonfiremoves"]],["mark","selectunit"],["endturn"]]]
-	},
-	"endturn": {
-		"canalwaysreachend": true,
-		"endgame": {
-			"infiltration": {"condition":["overlaps","myunits","opptrees"]},
-			"kingkill": {"condition":["notempty","oppdeadkings"]}
-		}
-	},
-	"commands": {
-		"move": {
-			"applyEffects": [
-				["setcontextval",["idofunitat","selectunit"],"hasmoved"],
-				["move","selectunit","selectmove"],
-				["addtocontextval","nonfiremoves",["mult",-1,["lookup","movetargets","selectmove","cost"]]]
-			],
-			"setMarks": { "selectunit": "selectmove" }
-		},
-		"left": {
-			"applyEffects": [
-				["turnunit",["idofunitat",["markpos","selectunit"]],-2],
-				["addtocontextval","nonfiremoves",-1]
-			],
-			"setMarks": { "selectunit": "selectunit" }
-		},
-		"right": {
-			"applyEffects": [
-				["turnunit",["idofunitat",["markpos","selectunit"]],2],
-				["addtocontextval","nonfiremoves",-1]
-			],
-			"setMarks": { "selectunit": "selectunit" }
-		},
-		"fire": {
-			"applyEffects": [
-				["setcontextval",["idofunitat",["markpos","selectunit"]],"hasfired"],
-				["kill",["firstposin","gonnadie"]]
-			],
-			"setMarks": { "selectunit": "selectunit" }
 		}
 	}
 }

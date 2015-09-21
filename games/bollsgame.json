@@ -8,9 +8,9 @@
 		"icons": {"soldiers":"rooks"}
 	},
 	"board": { "height": 5, "width": 5 },
-	"setup": { "soldiers": [ ["rectangle",1001,1005,1], ["rectangle",5001,5005,2] ] },
+	"setup": { "soldiers": {"1": [["rect","a5","e5"]], "2":[["rect","a1","e1"]]}},
 	"startturn": {
-		"allow": [["mark","selectunit"]]
+		"allow": ["selectunit"]
 	},
 	"endturn": {
 		"endgame": {
@@ -22,12 +22,12 @@
 		"selectunit": {
 			"from": ["union","mysoldiers","neutralsoldiers"],
 			"runGenerators": ["findmovetargets"],
-			"allow": [["mark","selectmovetarget"]]
+			"allow": ["selectmovetarget"]
 		},
 		"selectmovetarget": {
 			"from": "movetargets",
 			"runGenerators": ["findtransformations"],
-			"allow": [["command","move"]]
+			"allow": ["move"]
 		}
 	},
 	"commands": {
@@ -38,7 +38,7 @@
 					["setunitdata",["loopid"],"owner",["lookup","transform",["firstposin","transform"],"transformto"]]
 				]]
 			],
-			"allow": [["endturn"]]
+			"allow": ["endturn"]
 		}
 	},
 	"generators": {
@@ -59,12 +59,14 @@
 			"dirs": ["dirs",[1,3,5,7]],
 			"condition": ["and",[
 				["different",["contextpos","target"],["markpos","selectunit"]],
-				["anyat","units",["contextpos","target"]],
-				["different",["lookup","units",["contextpos","start"],"owner"],["lookup","units",["contextpos","target"],"owner"]]
+				["anyat","units",["contextpos","target"]]
 			]],
 			"draw": {
 				"target": {
-					"condition": ["same",["contextval","neighbourcount"],1],
+					"condition": ["and",[
+						["same",["contextval","neighbourcount"],1],
+						["different",["lookup","units","selectunit","owner"],["lookup","units",["contextpos","target"],"owner"]]
+					]],
 					"tolayer": "transform",
 					"include": {
 						"transformto": ["ifelse",["anyat","oppunits",["contextpos","target"]],

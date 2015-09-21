@@ -60,17 +60,17 @@
 		}
 	},
 	"startturn": {
-		"allow": [["mark","selectunit"]]
+		"allow": ["selectunit"]
 	},
 	"marks": {
 		"selectunit": {
 			"from": "myunits",
 			"runGenerators": ["findhops","findslides"],
-			"allow": [["mark","selectmovetarget"]]
+			"allow": ["selectmovetarget"]
 		},
 		"selectmovetarget": {
 			"from": "movetargets",
-			"allow": [["command","move"]]
+			"allow": ["move"]
 		}
 	},
 	"commands": {
@@ -79,7 +79,7 @@
 				["kill","selectmovetarget"],
 				["move","selectunit","selectmovetarget"]
 			],
-			"allow": [["endturn"]]
+			"allow": ["endturn"]
 		}
 	},
 	"endturn": {

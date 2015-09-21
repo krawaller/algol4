@@ -5,16 +5,16 @@
 		"tags": ["deploy","infiltrate","kingkill","multiplegoals","differentunits"]
 	},
 	"board": {"height":8,"width":8},
-	"terrain": {
-		"homerow": [ ["rectangle",1001,1008,2], ["rectangle",8001,8008,1] ],
-		"edges": [ ["rectangle",1001,8001], ["rectangle",1008,8008], ["rectangle",1002,1007], ["rectangle",8002,8007] ]
-	},
 	"graphics": {
 		"tiles": {"homerow":"castle"},
 		"icons": {"kings":"kings","soldiers":"pawns"}
 	},
+	"terrain": {
+		"homerow": {"1": [["rect","a8","h8"]],"2":[["rect","a1","h1"]]},
+		"edges": [["rect","a1","a8"],["rect","h1","h8"],["rect","b8","g8"],["rect","b1","g1"]]
+	},
 	"setup": {
-		"soldiers": [ ["rectangle",1001,1008,2], ["rectangle",8001,8008,1] ]
+		"soldiers": {"1": [["rect","a1","h1"]],"2":[["rect","a8","h8"]]}
 	},
 	"generators": {
 		"findforbiddenkingspots": {

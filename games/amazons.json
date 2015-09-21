@@ -9,7 +9,7 @@
 	},
 	"board": { "height": 10, "width": 10 },
 	"setup": {
-		"queens":[["positions",[1004,1007,4001,4010],1],["positions",[10004,10007,7001,7010],2]]
+		"queens": {"1":["d10","g10","a7","j7"],"2":["a4","d1","g1","j4"]}
 	},
 	"startturn": {
 		"allow": ["selectunit"]

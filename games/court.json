@@ -10,7 +10,7 @@
 		"height": 8, "width": 8
 	},
 	"setup": {
-		"pawns": [["rectangle",2002,3007,1,{"dir":5}],["rectangle",6002,7007,2,{"dir":1}]]
+		"pawns": {"1":[["rect","b6","g7",5]],"2":[["rect","b2","g3",1]]}
 	},
 	"playervars": {
 		"clerics": [2,2],

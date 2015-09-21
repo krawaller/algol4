@@ -6,8 +6,8 @@
 	"graphics": { "icons": {"pawns":"pawns","kings":"kings"}},
 	"board": { "height": 5, "width": 5 },
 	"setup": {
-		"kings": [{"pos":5001,"owner":1},{"pos":3003,"owner":1},{"pos":1005,"owner":1}],
-		"pawns": [["holedrectangle",1001,5005,[5001,3003,1005],2]]
+		"kings": {"1":["a1","c3","e5"]},
+		"pawns": {"2":[["holerect","a1","e5",["a1","c3","e5"]]]}
 	},
 	"startturn": {
 		"allow": [["mark","selectunit"]]

@@ -164,7 +164,7 @@ var Game = React.createClass({
             var hi = parseInt(historyindex);
             battle = s.history[hi][1];
         }
-        //console.log("RENDER",battle.get("layers").toJS(),"context",battle.get("context").toJS(),battle.getIn(["data","units"]).toJS(),battle.get("save").toJS(),battle.get("path").toJS());
+        //console.log("RENDER",battle.get("layers").toJS(),"context",battle.get("context").toJS(),battle.getIn(["data","units"]).toJS(),battle.get("save").toJS(),battle.get("path").toJS(),"CONNECTIONS",battle.get("connections").toJS());
         return (
             <div>
                 <div className="board" style={style}>
@@ -176,7 +176,7 @@ var Game = React.createClass({
                     <li><Link to={"/game/"+gamename+"/info"}>Info</Link></li>
                     <li><Link to={"/game/"+gamename+"/local"}>Battles</Link></li>
                     {battleid && <li><Link to={"/game/"+gamename+"/battle/"+battleid+"/play"}>Play</Link></li>}
-                    {battleid && <li><Link to={"/game/"+gamename+"/battle/"+battleid+"/history"}>History</Link></li>}
+                    {battleid && <li><Link to={"/game/"+gamename+"/battle/"+battleid+"/history/"}>History</Link></li>}
                 </ul>
                 <div className="side">
                     <RouteHandler battle={battle} history={this.state.history}/>

@@ -10,33 +10,33 @@
 		"icons": { "soldiers":"pawns","kings":"kings" }
 	},
 	"terrain": {
-		"center": [{"pos":5005}],
-		"plus": [ ["positions",[4005,5004,5006,6005]] ],
-		"x": [ ["positions",[4004,4006,6004,6006]] ],
-		"fortress": [ ["rectangle",4004,6006] ]
+		"center": ["e5"],
+		"plus": ["d5","f5","e4","e6"],
+		"x": ["d4","d6","f4","f6"],
+		"fortress": [["rect","d4","f6"]]
 	},
 	"setup": {
-		"soldiers": [["holedrectangle",1001,3003,[2002],1],["holedrectangle",7007,9009,[8008],2]],
-		"kings": [{"pos":2002,"owner":1},{"pos":8008,"owner":2}]
+		"soldiers": {"1":[["holerect","a7","c9",["b8"]]],"2":[["holerect","g1","i3",["h2"]]]},
+		"kings": {"1":["b8"],"2":["h2"]}
 	},
 	"marks": {
 		"selectunit": {
 			"from": "myunits",
 			"runGenerators": ["findmovetargets"],
-			"allow": [["mark","selectmovetarget"]]
+			"allow": ["selectmovetarget"]
 		},
 		"selectmovetarget": {
 			"from": "movetargets",
-			"allow": [["command","move"]]
+			"allow": ["move"]
 		},
 		"selectexiletarget": {
 			"from": "exiletargets",
 			"runGenerators": ["findexiledestinations"],
-			"allow": [["mark","selectexiledestination"]]
+			"allow": ["selectexiledestination"]
 		},
 		"selectexiledestination": {
 			"from": "exiledestinations",
-			"allow": [["command","exile"]]
+			"allow": ["exile"]
 		}
 	},
 	"commands": {
@@ -51,11 +51,11 @@
 		}
 	},
 	"startturn": {
-		"allow": [["mark","selectunit"]]
+		"allow": ["selectunit"]
 	},
 	"afterstep": {
 		"runGenerators": ["findexiletargets"],
-		"allow": [["endturn"],["mark","selectexiletarget"]]
+		"allow": ["endturn","selectexiletarget"]
 	},
 	"endturn": {
 		"endgame": {
