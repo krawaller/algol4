@@ -6,24 +6,42 @@
 	},
 	"graphics": {"tiles":{"throne":"castle","corners":"grass"},"icons":{"soldiers":"pawns","kings":"kings"}},
 	"board": {"height":9,"width":9},
-	"terrain": {"corners": [["positions",[1001,1009,9001,9009]]], "throne": [{"pos":5005}]},
+	"terrain": {"corners": ["a1","a9","i1","i9"], "throne": ["e5"]},
 	"setup": {
-		"soldiers": [
-			["positions",[1004,1005,1006,2005,4001,5001,6001,5002,4009,5009,6009,5008,9004,9005,9006,8005],2],
-			["positions",[3005,4005,6005,7005,5003,5004,5006,5007],1]
-		],
-		"kings": [{"pos":5005,"owner":1}]
+		"soldiers": {
+			"2": ["d9","e9","f9","e8","a4","a5","a6","b5","d1","e1","f1","e2","i4","i5","i6","h5"],
+			"1": ["c5","d5","f5","g5","e3","e4","e6","e7"]
+		},
+		"kings": {"1":["e5"]}
 	},
 	"marks": {
 		"selectunit": {
 			"from": "myunits",
 			"runGenerators": ["findmovetargets"],
-			"allow": [["mark","selectmove"]]
+			"allow": ["selectmove"]
 		},
 		"selectmove": {
 			"from": "movetargets",
 			"runGenerators": ["findkilltargets","finddeadkings"],
-			"allow": [["command","move"]]
+			"allow": ["move"]
+		}
+	},
+	"commands": {
+		"move": {
+			"applyEffects": [
+				["forallin","willdie",["killunit",["loopid"]]],
+				["move","selectunit","selectmove"]
+			],
+			"allow": ["endturn"]
+		}
+	},
+	"startturn": {
+		"allow": ["selectunit"]
+	},
+	"endturn":{
+		"endgame": {
+			"kingkill": {"condition":["notempty","oppdeadkings"]},
+			"escape": {"condition":["overlaps","corners","mykings"]}
 		}
 	},
 	"generators": {
@@ -66,24 +84,6 @@
 					"tolayer": "willdie"
 				}
 			}
-		}
-	},
-	"commands": {
-		"move": {
-			"applyEffects": [
-				["forallin","willdie",["killunit",["loopid"]]],
-				["move","selectunit","selectmove"]
-			],
-			"allow": [["endturn"]]
-		}
-	},
-	"startturn": {
-		"allow": [["mark","selectunit"]]
-	},
-	"endturn":{
-		"endgame": {
-			"kingkill": {"condition":["notempty","oppdeadkings"]},
-			"escape": {"condition":["overlaps","corners","mykings"]}
 		}
 	}
 }

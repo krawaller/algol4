@@ -10,33 +10,27 @@
 		"icons": { "notfrozens": "knights", "frozens": "rooks" }
 	},
 	"terrain": {
-		"southeast": [ ["positions",[1001,3003]] ],
-		"northwest": [ ["positions",[2002,4004]] ],
-		"corners": [ {"owner":1,"pos":1001}, {"owner":2,"pos":4004} ],
-		"bases": [
-			["positions",[1002,2001,2002],1],
-			["positions",[3003,3004,4003],2]
-		]
+		"southeast": ["a4","c2"],
+		"northwest": ["b3","d1"],
+		"corners": {"1":["a4"],"2":["d1"]},
+		"bases": {"1":["b4","a3","b3"],"2":["c2","d2","c1"]}
 	},
 	"setup": {
-		"notfrozens": [
-			["rectangle",1001,2002,1],
-			["rectangle",3003,4004,2]
-		]
+		"notfrozens": {"1":["a4","b4","a3","b3"],"2":["c2","c1","d2","d1"]}
 	},
 	"marks": {
 		"selectunit": {
 			"from": "mynotfrozens",
 			"runGenerators": ["findmovetargets"],
-			"allow": [["mark","selectmove"]]
+			"allow": ["selectmove"]
 		},
 		"selectmove": {
 			"from": "movetargets",
-			"allow": [["command","move"]]
+			"allow": ["move"]
 		}
 	},
 	"startturn": {
-		"allow": [["mark","selectunit"]]
+		"allow": ["selectunit"]
 	},
 	"endturn": {
 		"endgame": {
@@ -53,7 +47,7 @@
 				["moveunit",["idofunitat","selectunit"],"selectmove"],
 				["setunitdata",["idofunitat","selectunit"],"group","frozens"]
 			],
-			"allow": [["endturn"]]
+			"allow": ["endturn"]
 		}
 	},
 	"generators": {

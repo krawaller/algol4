@@ -6,7 +6,7 @@
 	},
 	"board": {"height":8,"width":8},
 	"graphics": {
-		"tiles": {"homerow":"castle"},
+		"tiles": {"homerow":"grass"},
 		"icons": {"kings":"kings","soldiers":"pawns"}
 	},
 	"terrain": {

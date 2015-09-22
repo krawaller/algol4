@@ -6,23 +6,23 @@
 	},
 	"graphics": {"tiles":{"corners":"grass"},"icons":{"runners":"bishops","sidekickers":"pawns"}},
 	"board": {"height":5,"width":5},
-	"terrain": { "corners": [{"pos":5001,"owner":2},{"pos":1005,"owner":1}] },
+	"terrain": { "corners": {"1":["a1"],"2":["e5"]} },
 	"setup": {
-		"runners": [["positions",[1004,2005],1,{"dir":6}],["positions",[4001,5002],2,{"dir":2}]],
-		"sidekickers": [["positions",[1003,1005,3005],1,{"dir":6}],["positions",[3001,5001,5003],2,{"dir":2}]]
+		"runners": {"1":[["pos",["a2","b1"],2]], "2": [["pos",["d5","e4"],6]] },
+		"sidekickers": {"1":[["pos",["a1","c1","a3"],2]], "2": [["pos",["c5","e5","e3"],6]] }
 	},
 	"startturn": {
-		"allow": [["mark","selectunit"]]
+		"allow": ["selectunit"]
 	},
 	"marks": {
 		"selectunit": {
 			"from": "myunits",
 			"runGenerators": ["findmovetargets"],
-			"allow": [["mark","selectmovetarget"]]
+			"allow": ["selectmovetarget"]
 		},
 		"selectmovetarget": {
 			"from": "movetargets",
-			"allow": [["command","move"]]
+			"allow": ["move"]
 		}
 	},
 	"commands": {
@@ -31,7 +31,7 @@
 				["kill","selectmovetarget"],
 				["move","selectunit","selectmovetarget"]
 			],
-			"allow": [["endturn"]]
+			"allow": ["endturn"]
 		}
 	},
 	"endturn": {

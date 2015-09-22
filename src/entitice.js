@@ -55,10 +55,10 @@ Helper function used only in prepareEntitiesFromList
 Algol.addEntitiesFromDef = function(coll,def,board){
 	var blueprint, topleft, bottomright,holes;
 	if (I.List.isList(def)){ 
-		if (def.first()==="positions"){ // [positions,<list>,dir,<blueprint>]
-			blueprint = (def.get(2) || I.Map());
+		if (def.first()==="pos"){ // [positions,<list>,dir,<blueprint>]
+			blueprint = (def.get(3) || I.Map());
 			return def.get(1).reduce(function(mem,pos){
-				return mem.push(blueprint.set("pos",pos));
+				return mem.push(blueprint.set("pos",pos).set("dir",def.get(2)||1));
 			},coll);
 		} else if (def.first()==="holerect") { // [holedrectangle,topleft,bottomright,holes,dir,blueprint]
 			blueprint = (def.get(5) || I.Map());
