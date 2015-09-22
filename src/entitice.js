@@ -106,8 +106,6 @@ var colnametonumber = _.reduce("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUV
 
 colnumbertoname = _.invert(colnametonumber);
 
-console.log("COLNAMETONUMBER",colnametonumber,"COLNUMBERTONAME",colnumbertoname);
-
 Algol.posNameToObj = function(name,board){
 	return {x: colnametonumber[name[0]], y: parseInt(name.substr(1)) };
 };

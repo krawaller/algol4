@@ -1,0 +1,84 @@
+{
+	"meta": {
+		"name": "Donkan",
+		"source": "http://www.di.fc.ul.pt/~jpn/gv/donkan.htm"
+	},
+	"graphics": {
+		"icons": {"kings":"kings","soldiers":"queens"},
+		"tiles": {"castle":"castle"}
+	},
+	"board": { "width": 7, "height": 7 },
+	"terrain": { "castle": ["d4"] },
+	"setup": {
+		"soldiers": { "1": ["c1","f1"], "2": ["b7","e7"] },
+		"kings": { "1": ["d1"], "2": ["d7"] }
+	},
+	"playervars": { "points": [0,0] },
+	"startturn": {
+		"allow": ["selectunit"],
+		"applyEffects": [["if",["or",[["overlaps","kings","castle"],["notempty","deadkings"]]],["resetunits"]]]
+	},
+	"endturn": {
+		"unless": {
+			"threatenedking": ["notempty","threats"]
+		},
+		"endgame": {
+			"reachpoints": { "condition": ["morethan",["playervar","points",["contextval","currentplayer"]],4] }
+		}
+	},
+	"marks": {
+		"selectunit": {
+			"from": "myunits",
+			"runGenerators": [["ifelse",["anyat","mysoldiers","selectunit"],"findsoldiertargets","findkingtargets"]],
+			"allow": ["selectmovetarget"]
+		},
+		"selectmovetarget": {
+			"from": "movetargets",
+			"allow": ["move"]
+		}
+	},
+	"commands": {
+		"move": {
+			"runGenerators": ["findthreats"],
+			"allow": ["endturn"],
+			"applyEffects": [
+				["if",
+					["and",[["anyat","mykings","selectunit"],["anyat","castle","selectmovetarget"]]],
+					["addtoplayervar","points",["contextval","currentplayer"],2]
+				],
+				["if",
+					["anyat","oppkings","selectmovetarget"],
+					["addtoplayervar","points",["contextval","currentplayer"],1]
+				],
+				["kill","selectmovetarget"],
+				["move","selectunit","selectmovetarget"]
+			]
+		}
+	},
+	"generators": {
+		"findsoldiertargets": {
+			"type": "walker",
+			"starts": "selectunit",
+			"blocks": ["union","units","castle"],
+			"draw": {
+				"steps": { "tolayer": "movetargets" },
+				"block": {
+					"condition": ["anyat","oppunits",["contextpos","target"]],
+					"tolayer": "movetargets"
+				}
+			}
+		},
+		"findkingtargets": {
+			"type": "nextto",
+			"starts": "selectunit",
+			"condition": ["noneat","myunits",["contextpos","target"]],
+			"draw": { "target": { "tolayer": "movetargets" } }
+		},
+		"findthreats": {
+			"type": "walker",
+			"starts": ["intersect","castle","mykings"],
+			"blocks": "oppsoldiers",
+			"draw": { "block": { "tolayer": "threats" } }
+		}
+	}
+}

@@ -113,6 +113,9 @@ var effectmethods = {
 			dist--;
 		}
 		return state.setIn(["data","units",id,"pos"],pos);
+	},
+	resetunits: function(state){
+		return state.setIn(["data","units"],state.get("startunits"));
 	}
 };
 

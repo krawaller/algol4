@@ -121,6 +121,7 @@ Algol.generateWalkerPods = function(state,def){
 	var pods = this.evaluatePositionSet(state,def.get("starts")).reduce(function(recorder,startpos){
 		return this.generateWalkerPodsFromStart(state,def,recorder,startpos);
 	},I.fromJS({}),this);
+	// TODO - only merge steps and blocks!
 	return pods.set("all",pods.reduce(function(mem,pod){ return mem.mergeWith(I.concat,pod); }),I.Map(),this);
 };
 

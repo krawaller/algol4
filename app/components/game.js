@@ -165,6 +165,7 @@ var Game = React.createClass({
             battle = s.history[hi][1];
         }
         //console.log("RENDER",battle.get("layers").toJS(),"context",battle.get("context").toJS(),battle.getIn(["data","units"]).toJS(),battle.get("save").toJS(),battle.get("path").toJS(),"CONNECTIONS",battle.get("connections").toJS());
+        console.log("Render",battle.delete("cache").toJS());
         return (
             <div>
                 <div className="board" style={style}>

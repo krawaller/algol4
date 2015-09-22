@@ -92,63 +92,6 @@ Algol.addPersonalisedTerrainVersions = function(layers,terrains,forplr){
 	},layers,this);
 };
 
-/*
-The master function to set up a new state at the very beginning of a game. Called once.
-TODO: also pass in plr information. oh, and default for nbrofplayers?
-*/
-Algol.prepareNewGameState = function(gamedef,nbrofplayers){
-	var commandslist = gamedef.get("commands").keySeq().sort();
-	var state = I.fromJS({
-		gamedef: gamedef.set("commands",commandslist.reduce(function(map,comname,n){
-			return map.set(comname,gamedef.getIn(["commands",comname]).set("number",n+1));
-		},I.Map())),
-		commandsinorder: commandslist,
-		connections: this.prepareConnectionsFromBoardDef(gamedef.get("board")),
-		data: I.Map().set("units",this.prepareInitialUnitForGame(gamedef)),
-		baselayers: this.prepareBaseLayers(gamedef,nbrofplayers),
-		basecontext: {
-			nbrofplayers: nbrofplayers
-		},
-		status: "ongoing",
-		passto: _.reduce(_.range(1,nbrofplayers+1),function(mem,p){
-			return mem.set(p,p===nbrofplayers?1:p+1);
-		},I.Map())
-	});
-	return this.performOption(state,I.List(["passto",this.setOptions(this.prepareNewTurnState(state,1))]));
-};
-
-
-/*
-Called from ....
-Reset all stuff, run generators for startturn, finally call prepareNewStepState
-1: remove old previousstep
-2: reset steps, marks, baselayer and context, and update player, and set layers to baselayer
-3: apply startturn effects
-4: apply startturn generators
-
-*/
-Algol.prepareNewTurnState = function(state,newturnplayer){
-	var startturn = state.getIn(["gamedef","startturn"])||I.Map(),
-		//effect = startturn.get("applyeffect"),
-		baselayer = state.getIn(["baselayers",newturnplayer])||state.getIn(["baselayers",newturnplayer+""]);
-	state = state.delete("previousstep").delete("canendturn").merge(I.fromJS({
-		steps: [],
-		marks: {},
-		player: newturnplayer,
-		turn: (state.get("turn")||0)+1,
-		baselayer: baselayer,
-		//layers: baselayer,
-		context: state.get("basecontext").merge(I.fromJS({
-			currentplayer:newturnplayer,
-			turn: (state.get("turn")||0)+1,
-			performedsteps:0,
-			nextplayer:state.getIn(["passto",newturnplayer])||state.getIn(["passto",""+newturnplayer])
-		}))
-	}));
-	return this.prepareFirstStepInTurn(state);
-};
-
-
 Algol.prepareInitialPlayerVarsForGame = function(gamedef){
 	return (gamedef.get("playervars")||I.Map()).reduce(function(mem,values,name){
 		return mem.set(name,values.reduce(function(mem,startvalue,n){
@@ -164,37 +107,7 @@ Algol.prepareBasicUnitLayers = function(state){
 	return state.set("layers",this.addUnitLayersFromData(state.get("baselayer"),state.getIn(["data","units"]),state.get("player")));
 }
 
-Algol.prepareFirstStepInTurn = function(state){
-	var startturn = state.getIn(["gamedef","startturn"]) || I.Map();
-	state = this.prepareBasicUnitLayers(state);
-	state = this.applyGeneratorList(state,startturn.get("rungenerators")||I.List());
-	state = this.applyGeneratorList(state,state.getIn(["gamedef","startstep","rungenerators"])||I.List());
-	if (startturn.has("applyeffect")){
-		state = this.applyEffect(state,startturn.get("applyeffect"));
-		state = this.prepareBasicUnitLayers(state);
-		state = this.applyGeneratorList(state,startturn.get("rungenerators")||I.List());
-		state = this.applyGeneratorList(state,state.getIn(["gamedef","startstep","rungenerators"])||I.List());
-	}
-	return state;
-}
 
-/*
-Called from prepareNewTurnState as well as... sth else involving commands! :)
-*/
-Algol.prepareNewStepState = function(state,oldstate,newmarks,generators){
-	state = this.prepareBasicUnitLayers(state);
-	state = state.setIn(["context","performedsteps"],state.getIn(["context","performedsteps"])+1);
-	state = this.applyGeneratorList(state,state.getIn(["gamedef","startstep","rungenerators"])||I.List());
-	state = state.set("previousstep",oldstate).set("canendturn",this.evaluateBoolean(state,state.getIn(["gamedef","endturn","condition"])));
-	state = state.set("marks",I.Map());
-	state = (newmarks||I.Map()).reduce(function(mem,pos,markname){
-		return this.setMark(mem,markname,pos);
-	},state,this);
-	state = this.applyGeneratorList(state,generators||I.List());
-	//console.log("NEW STEP",state.toJS())
-	return state;
-	//return state.get("steps").isEmpty() ? state : state.set("previousstep",oldstate).set("canendturn",this.evaluateBoolean(state,state.getIn(["gamedef","endturn","condition"]))); 
-};
 
 // €€€€€€€€€€€€€€€€€€€€€€€€€ E X P O R T €€€€€€€€€€€€€€€€€€€€€€€€€
 

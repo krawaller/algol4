@@ -282,7 +282,8 @@ Algol.pruneOptions = function(state){
 };
 
 Algol.newGame = function(gamedef,nbrofplayers){
-	var commandslist = gamedef.get("commands").keySeq().sort();
+	var commandslist = gamedef.get("commands").keySeq().sort(),
+		startunits = this.prepareInitialUnitsForGame(gamedef);
 	var state = I.fromJS({
 		gamedef: gamedef.set("commands",commandslist.reduce(function(map,comname,n){
 			return map.set(comname,gamedef.getIn(["commands",comname]).set("number",n+1));
@@ -290,9 +291,10 @@ Algol.newGame = function(gamedef,nbrofplayers){
 		commandsinorder: commandslist,
 		connections: this.prepareConnectionsFromBoardDef(gamedef.get("board")),
 		data: {
-			units: this.prepareInitialUnitsForGame(gamedef),
+			units: startunits,
 			playervars: this.prepareInitialPlayerVarsForGame(gamedef),
 		},
+		startunits: startunits,
 		baselayers: this.prepareBaseLayers(gamedef,nbrofplayers),
 		basecontext: {
 			nbrofplayers: nbrofplayers
