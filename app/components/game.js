@@ -56,10 +56,10 @@ var Game = React.createClass({
         window.localStorage.setItem(ongoingsavename,JSON.stringify( ongoinglist ));
         window.localStorage.setItem(finishedsavename,JSON.stringify( finishedlist ));
     },
-    addTurnToHistory: function(battle,history){
-        var newl = [], finalbattle = toaddbattle = battle, previousstep, sinfo;
+    addTurnToHistory: function(tree,id,history){
+        var newl = [], finalbattle = toaddbattle = tree.getIn(["cache",id]), previousstep, sinfo;
         while (toaddbattle.has("undo")) {
-            previousstep = toaddbattle.getIn(["cache",toaddbattle.get("undo")]);
+            previousstep = tree.getIn(["cache",toaddbattle.get("undo")]);
             sinfo = toaddbattle.get("steps").last();
             newl = [[{
                 player:previousstep.get("player"),
@@ -82,23 +82,26 @@ var Game = React.createClass({
     getInitialState: function(){
         var gamename = this.props.gamename,
             battleid = this.getParams().battleid,
-            start = this.props.game,
+            tree = this.props.tree,
+            start = this.props.tree.getIn(["cache","root"]),
             battle = start,
-            history = [[{player:0,command:"start"},start.delete("availableMarks")]],
+            history = [[{player:0,command:"start"},start.deleteIn(["cache","root","availableMarks"])]],
             moves = battleid && this.loadBattleMoves(gamename,battleid);
         // perform moves, adding them to history
         _.each(moves||[],function(steps){
             _.each(steps,function(step){
-                var markname = battle.getIn(["availableMarks",step]);
-                battle = (markname ? Algol.makeMark(battle,markname,step) : Algol.makeCommand(battle,step));
+                var currentid = tree.get("current");
+                    markname = tree.getIn(["cache",current,"availableMarks",step]);
+                tree = (markname ? Algol.makeMark(tree,currentid,markname,step) : Algol.makeCommand(tree,currentid,step));
             });
-            history = this.addTurnToHistory(battle,history);
-            battle = Algol.makeCommand(battle,"endturn");
+            history = this.addTurnToHistory(tree,tree.get("current"),history);
+            tree = Algol.makeCommand(tree,tree.get("current"),"endturn");
         },this);
         // return state
         return {
-            battle: battle,
+            battle: tree.getIn(["cache",tree.get("current")]),
             start: start,
+            tree: tree,
             history: history,
             gamename: gamename,
             battleid: battleid
@@ -123,29 +126,38 @@ var Game = React.createClass({
         this.transitionTo("battleplay",{gamename:gamename,battleid:id});
     },
     onMakeMark: function(markname,pos){
-        this.setState({ battle: Algol.makeMark(this.state.battle,markname,pos) });
+        var s = this.state,
+            newtree = Algol.makeMark(s.tree,s.battle.get("id"),markname,pos),
+            newbattle = newtree.getIn(["cache",newtree.get("current")]);
+        this.setState({ battle: newbattle, tree: newtree });
     },
     onRemoveMark: function(markname){
-        this.setState({ battle: Algol.removeMark(this.state.battle,markname) });
+        var s = this.state,
+            newtree = Algol.removeMark(s.tree,s.battle.get("id"),markname),
+            newbattle = newtree.getIn(["cache",newtree.get("current")]);
+        this.setState({ battle: newbattle, tree: newtree });
     },
     onMakeCommand: function(cmnd){
-        var newbattle = Algol.makeCommand(this.state.battle,cmnd),
+        var s = this.state,
+            newtree = Algol.makeCommand(s.tree,s.battle.get("id"),cmnd),
+            newbattle = newtree.getIn(["cache",newtree.get("current")]);
             history = this.state.history,
             params = this.getParams(),
             gamename = params.gamename,
             battleid = params.battleid;
         if (cmnd==="endturn"){
-            history = this.addTurnToHistory(this.state.battle,history);
+            history = this.addTurnToHistory(newtree,newbattle.get("id"),history);
             this.saveBattleMoves(gamename,battleid,newbattle.has("save") && newbattle.get("save").toJS() || []);
             if (newbattle.has("endedby")){
                 this.moveEntryToFinishedList(gamename,battleid,newbattle);
             } else {
                 this.updateEntryInList(gamename,battleid,newbattle);
             }
-        }
-        this.setState({ battle: newbattle, history: history });
+        } // TODO - figure out why we have to set current for newbattle
+        this.setState({ battle: newbattle, history: history, tree: newtree });
     },
     render: function() {
+        console.log("RENDER",this.state.tree.toJS())
         var s = this.state,
             historyindex = this.getParams().historyindex,
             gamename = this.props.gamename,

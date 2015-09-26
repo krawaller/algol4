@@ -23,17 +23,17 @@
 		}
 	},
 	"startturn": {
-		"allow": [ ["mark","selectunit"] ]
+		"allow": ["selectunit"]
 	},
 	"marks": {
 		"selectunit": {
 			"from": "myunits",
 			"runGenerators": [["ifelse",["anyat","mycrowns","selectunit"],"findcrowntargets","finddaggertargets"]],
-			"allow": [ ["mark","selectmovetarget"] ]
+			"allow": ["selectmovetarget"]
 		},
 		"selectmovetarget": {
 			"from": "movetarget",
-			"allow": [ ["command","move"] ]
+			"allow": ["move"]
 		}
 	},
 	"commands": {
@@ -42,7 +42,7 @@
 				["kill","selectmovetarget"],
 				["move","selectunit","selectmovetarget"]
 			],
-			"allow": [["endturn"]]
+			"allow": ["endturn"]
 		}
 	},
 	"generators": {

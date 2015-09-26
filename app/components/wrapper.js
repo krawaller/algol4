@@ -12,7 +12,7 @@ var Wrapper = React.createClass({
 	getInitialState: function(){
 		var gamename = this.getParams().gamename;
 		return gamename ? {
-			game: Algol.newGame(games[gamename],2),
+			tree: Algol.newGame(games[gamename],2),
 			currentgamename: gamename
 		} : {};
 	},
@@ -30,9 +30,9 @@ var Wrapper = React.createClass({
             	<ul className="nav">
             		<li><Link to="home">Home</Link></li>
             		<li><Link to="/games">Games</Link></li>
-            		{s.game && <li><Link to={"/game/"+s.currentgamename+"/info"}>{s.game.getIn(["gamedef","meta","name"])}</Link></li>}
+            		{s.tree && <li><Link to={"/game/"+s.currentgamename+"/info"}>{s.tree.getIn(["gamedef","meta","name"])}</Link></li>}
             	</ul>
-                <RouteHandler game={s.game} gamename={s.currentgamename} />
+                <RouteHandler tree={s.tree} gamename={s.currentgamename} />
             </div>
         );
     }

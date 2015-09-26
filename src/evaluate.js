@@ -262,8 +262,8 @@ Algol.evaluatePosition = function(state,def){
 	if (state.hasIn(["gamedef","marks",def])){
 		return state.getIn(["marks",def]);
 	}
-	if (typeof def.first !== "function" || !positionmethods[def.first()]){
-		console.log("THE HECK POS",state.toJS(),"def",def.toJS && def.toJS() || def)
+	if (typeof def.first !== "function" || !positionmethods[def.first()]){
+		console.log("THE HECK POS",state.keySeq().toJS(),"def",def.toJS && def.toJS() || def)
 	}
 	return positionmethods[def.first()].apply(this,[state].concat(def.rest().toArray()));
 };

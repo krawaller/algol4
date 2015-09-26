@@ -6,47 +6,9 @@ function augmentWithFlowFunctions(Algol){
 
 // €€€€€€€€€€€€€€€€€€€€€€€€€€€ F L O W  F U N C T I O N S €€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€*/
 
-/*
-
-flow game, turn, command, mark
-
-Each state has a turn-specific id: pos,pos,command,pos,command etc
-It also has a cache with previous stored states, by id.
-
-GAME
- * pretty much same as before
-
-MARK
- * set removemark[pos] to id of prior state and cache prior state
- * add mark to state.marks[markname] = pos
- * flow instructions from mark
-
-
-COMMAND - backtrack through undos to see if same
- * set undo to id of prior state
- * reset marks, removemarks, layers
- * increase stepcount
- * flow instructions from command, afterstep
-
-NEWTURN
- * change player, base layer
- * increase turn
- * flow instructions from startturn
-
-
-FLOWINSTRUCTIONS
- * allowmark
- * allowcommand
- * allowend
- // cmnd only
- * performeffects
- * setmarks (ignore for ai)
-
-
-*/
 
 Algol.removeMark = function(tree,id,markname){
-	return tree.set("current",tree.getIn(["cache",id,removeMarks,markname]));
+	return tree.set("current",tree.getIn(["cache",id,"removeMarks",markname]));
 }
 
 Algol.makeMark = function(tree,id,markname,pos,nodive){
@@ -60,7 +22,7 @@ Algol.makeMark = function(tree,id,markname,pos,nodive){
 		return tree.set("current",newid);
 	} else {
 		var newstate = oldstate
-			.setIn(["removeMarks",markname],oldid)
+			.setIn(["removeMarks",markname],id)
 			.set("availableMarks",I.Map())
 			.set("availableCommands",I.Map())
 			.set("reversalCommands",I.Map())
@@ -69,7 +31,7 @@ Algol.makeMark = function(tree,id,markname,pos,nodive){
 			.set("canreachendturn",false)
 			.set("path",oldstate.get("path").push(pos))
 			.setIn(["marks",markname],pos);
-		tree = tree.setIn(["cache",newid,newstate]);
+		tree = tree.setIn(["cache",newid],newstate);
 		tree = this.obeyInstructions(tree,newid,tree.getIn(["gamedef","marks",markname]));
 		if (!nodive){
 			tree = this.pruneOptions(tree,newid);
@@ -80,13 +42,14 @@ Algol.makeMark = function(tree,id,markname,pos,nodive){
 
 Algol.makeCommand = function(tree,id,cmndname,nodive){
 	var fromstate = tree.getIn(["cache",id]),
-		reversal = fromstate.getIn(["reversalCommands"],cmndname);
+		reversal = fromstate.getIn(["reversalCommands",cmndname]);
 	if (cmndname==="undo"){
 		//console.log("UNDOING",cmndname,state.get("undo"),state.hasIn(["cache",state.get("undo")]));
 		return tree.set("current",fromstate.get("undo"));
 	} else if (cmndname==="endturn"){
 		return this.endTurn(tree,id);
 	} else if (reversal){
+		console.log("REVERSING!");
 		return tree.set("current",reversal);
 	} else {
 		var newid = fromstate.getIn(["availableCommands",cmndname]),
@@ -94,6 +57,7 @@ Algol.makeCommand = function(tree,id,cmndname,nodive){
 		if (!nodive && !newstate.get("pruned")){
 			tree = this.pruneOptions(tree,newid);
 		}
+		console.log("Performed command",cmndname,"for id",id,"which lead to",newid);
 		return tree.set("current",newid);
 	}
 };
@@ -149,7 +113,7 @@ Algol.allowCommand = function(tree,id,cmndname,auto){
 	while(tocheck.has("undo")){
 		tocheck = tree.getIn(["cache",tocheck.get("undo")]);
 		if (this.areStatesEqual(tocheck,newstate)){
-			return tree.setIn(["cache",id,"reversalCommands",cmndname],tocheck.get("id")));
+			return tree.setIn(["cache",id,"reversalCommands",cmndname],tocheck.get("id"));
 		}
 	};
 	// command causes new state! we add its instructions (and generators)
@@ -162,6 +126,7 @@ Algol.allowCommand = function(tree,id,cmndname,auto){
 	if (!auto){
 		tree = tree.setIn(["cache",id,"availableCommands",cmndname],newid);
 	}
+	console.log("Allowed command",cmndname,"for",id,"which would lead to",newid);
 	return tree;
 };
 
@@ -263,15 +228,20 @@ Algol.newTurnTree = function(oldtree,state,newturnplayer){
 	}
 	// layers
 	state = this.prepareBasicUnitLayers(state);
-	var newtree = oldtree.set("cache",I.Map().set("root",state).set("current","root");
+	var newtree = oldtree.set("cache",I.Map().set("root",state)).set("current","root");
 	// commands
 	newtree = this.obeyInstructions(newtree,state.get("id"),startturn);
 	//newtree = this.pruneOptions(newtree,state.get("id"));
-	return tree;
+	return newtree;
 };
 
-// Called in newGame and endTurn
+// Called in endTurn
 Algol.checkEndReach = function(tree,id){
+	return tree;
+}
+
+// called in newGame, makeMark, makeCommand
+Algol.pruneOptions = function(tree,id){
 	return tree;
 }
 
@@ -325,16 +295,17 @@ Algol.allow = function(tree,id,def){
 	} else if (def === "endturn"){
 		return this.allowEndTurn(tree,id);
 	}
-	if (!def.first){
-		console.log("ALARM",def);
+	if (!def.first || typeof def.first !== "function" || !allowmethods[def.first()] ){
+		console.log("ALARM",def && def.toJS && def.toJS() || def);
 	}
 	return allowmethods[def.first()].apply(this,[tree,tree.getIn(["cache",id])].concat(def.rest().toArray()));
 };
 
 Algol.obeyInstructions = function(tree,id,instr){
+	//console.log("Obeying instruction",tree.toJS(),"id",id,"instr",instr.toJS());
 	if (instr.has("runGenerators")){
 		//console.log("applying generator list",instr.get("runGenerators").toJS && instr.get("runGenerators").toJS()  )
-		tree = tree.setIn(["cache",state.get("id")],this.applyGeneratorList(tree.getIn(["cache",id]),instr.get("runGenerators")));
+		tree = tree.setIn(["cache",id],this.applyGeneratorList(tree.getIn(["cache",id]),instr.get("runGenerators")));
 		//console.log("after generator list",state.get("layers").toJS())
 	}
 	if (instr.has("allow")){
