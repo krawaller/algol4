@@ -15,11 +15,7 @@
 		"base": {"1":[["rect","a1","h1"]],"2":[["rect","a10","h10"]]}
 	},
 	"startturn": {
-		"allow": [
-			["mark","selectking"],
-			["mark","selectsoldier"],
-			["if",["morethan",4,["positionsin","mysoldiers"]],["mark","selectdeploytarget"]]
-		]
+		"allow": ["selectking","selectsoldier",["if",["morethan",4,["positionsin","mysoldiers"]],"selectdeploytarget"]]
 	},
 	"endturn": {
 		"endgame": {
@@ -29,36 +25,36 @@
 	"marks": {
 		"selectdeploytarget": {
 			"from": ["subtract","nobase","units"],
-			"allow": [["command","deploy"]]
+			"allow": ["deploy"]
 		},
 		"selectking": {
 			"from": "mykings",
 			"runGenerators": ["findjumptargets"],
-			"allow": [["mark","selectjumptarget"]]
+			"allow": ["selectjumptarget"]
 		},
 		"selectsoldier": {
 			"from": "mysoldiers",
 			"runGenerators": ["findmovetargets"],
-			"allow": [["mark","selectmovetarget"]]
+			"allow": ["selectmovetarget"]
 		},
 		"selectjumptarget": {
 			"from": "jumptargets",
 			"runGenerators": ["findsplashed"],
-			"allow": [["command","jump"]]
+			"allow": ["jump"]
 		},
 		"selectmovetarget": {
 			"from": "movetargets",
-			"allow": [["command","move"]]
+			"allow": ["move"]
 		}
 	},
 	"commands": {
 		"deploy": {
 			"applyEffects": [["spawnunit","selectdeploytarget","soldiers",["contextval","currentplayer"]]],
-			"allow": [["endturn"]]
+			"allow": ["endturn"]
 		},
 		"move": {
 			"applyEffects": [["move","selectsoldier","selectmovetarget"]],
-			"allow": [["endturn"]]
+			"allow": ["endturn"]
 		},
 		"jump": {
 			"applyEffects": [
@@ -68,7 +64,7 @@
 				["setcontextval","jumpspot",["markpos","selectjumptarget"]]
 			],
 			"runGenerators": ["findjumptargets"],
-			"allow": [["ifelse",["isempty","jumptargets"],["endturn"],["mark","selectjumptarget"]]]
+			"allow": [["ifelse",["isempty","jumptargets"],"endturn","selectjumptarget"]]
 		}
 	},
 	"generators": {

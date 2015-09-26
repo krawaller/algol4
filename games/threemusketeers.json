@@ -10,7 +10,7 @@
 		"pawns": {"2":[["holerect","a1","e5",["a1","c3","e5"]]]}
 	},
 	"startturn": {
-		"allow": [["mark","selectunit"]]
+		"allow": ["selectunit"]
 	},
 	"endturn": {
 		"endgame": {
@@ -22,18 +22,18 @@
 		"selectunit": {
 			"from": "myunits",
 			"runGenerators": ["findmovetargets"],
-			"allow": [["mark","selectmovetarget"]]
+			"allow": ["selectmovetarget"]
 		},
 		"selectmovetarget": {
 			"from": "movetargets",
-			"allow": [["command","move"]]
+			"allow": ["move"]
 		}
 	},
 	"commands": {
 		"move": {
 			"applyEffects": [["kill","selectmovetarget"],["move","selectunit","selectmovetarget"]],
 			"runGenerators": ["findmusketeerline",["if",["same",2,["contextval","currentplayer"]],"findstrandedmusketeers"]],
-			"allow": [["endturn"]]
+			"allow": ["endturn"]
 		}
 	},
 	"generators": {

@@ -55,7 +55,7 @@ Algol.prepareBaseLayers = function(gamedef,nbrofplayers){
 			}));
 		},I.List(),this);
 	},this);
-	console.log("Parsedterrains",parsedterrains.toJS());
+	//console.log("Parsedterrains",parsedterrains.toJS());
 	var base = this.prepareBoardLayersFromBoardDef(gamedef.get("board"));
 	// add noterrain
 	base = base.set("noterrain",parsedterrains.reduce(function(mem,layer,layername){

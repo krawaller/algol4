@@ -8,20 +8,31 @@
 	"board": { "height": 7, "width": 8 },
 	"terrain": { "homerow": { "1": [["rect","a1","h1"]], "2":[["rect","a7","h7"]] } },
 	"setup": { "towers": { "1": [["rect","a1","h1"]], "2":[["rect","a7","h7"]] } },
+	"startturn": {
+		"allow": ["selecttower"]
+	},
+	"afterstep": {
+		"allow": ["endturn"]
+	},
+	"endturn": {
+		"endgame": {
+			"infiltration": {"condition":["overlaps","myunits","opphomerow"]}
+		}
+	},
 	"marks": {
 		"selecttower": {
 			"from": "mytowers",
 			"runGenerators": ["findmovetargets","findkilltargets"],
-			"allow": [ ["mark","selectmove"], ["mark","selectkill"] ]
+			"allow": [ "selectmove", "selectkill" ]
 		},
 		"selectmove": {
 			"from": "movetargets",
 			"runGenerators": ["findmoveresults"],
-			"allow": [["command","move"]]
+			"allow": ["move"]
 		},
 		"selectkill": {
 			"from": "killtargets",
-			"allow": [["command","kill"]]
+			"allow": ["kill"]
 		}
 	},
 	"commands": {
@@ -78,17 +89,6 @@
 					"tolayer": "killtargets"
 				}
 			}
-		}
-	},
-	"startturn": {
-		"allow": [["mark","selecttower"]]
-	},
-	"afterstep": {
-		"allow": [["endturn"]]
-	},
-	"endturn": {
-		"endgame": {
-			"infiltration": {"condition":["overlaps","myunits","opphomerow"]}
 		}
 	}
 }

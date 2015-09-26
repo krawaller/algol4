@@ -21,7 +21,7 @@
 			"allow": ["selectmovetarget"]
 		},
 		"selectmovetarget": {
-			"canalwaysreachturnend": true,
+			"nodeadends": true,
 			"from": "targets",
 			"allow": ["move"]
 		},

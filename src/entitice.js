@@ -45,7 +45,7 @@ Algol.prepareInitialUnitsForGame = function(gamedef){
 			},data,this);
 		},data,this);
 	},I.Map(),this);
-	console.log("Initial setup",ret.toJS());
+	//console.log("Initial setup",ret.toJS());
 	return ret;
 };
 

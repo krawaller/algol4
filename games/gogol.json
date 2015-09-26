@@ -16,6 +16,53 @@
 	"setup": {
 		"soldiers": {"1": [["rect","a1","h1"]],"2":[["rect","a8","h8"]]}
 	},
+	"startturn": {
+		"runGenerators": ["findforbiddenkingspots","findforbiddensoldierspots"],
+		"allow": [ ["ifelse",["morethan",3,["contextval","turn"]],"selectkingdeploy","selectunit"] ]
+	},
+	"afterstep": {
+		"allow": ["endturn"]
+	},
+	"endturn": {
+		"endgame": {
+			"infiltration": { "condition": ["overlaps","mykings","opphomerow"] },
+			"kingkill": { "condition": ["notempty","oppdeadkings"] }
+		}
+	},
+	"marks": {
+		"selectkingdeploy": {
+			"from": ["subtract","board",["union","units","nokings"]],
+			"allow": ["deploy"]
+		},
+		"selectunit": {
+			"from": "myunits",
+			"runGenerators": ["findkingwalktargets","findadjacentenemies","findjumptargets"],
+			"allow": ["selectmovetarget","selectjumptarget"]
+		},
+		"selectmovetarget": {
+			"from": ["ifelse",["anyat","mykings","selectunit"],"kingwalk",["subtract","board",["union","units",["union","nosoldiers","jumptargets"]]]],
+			"allow": ["move"]
+		},
+		"selectjumptarget": {
+			"from": "jumptargets",
+			"runGenerators": ["findsplashed"],
+			"allow": ["jump"]
+		}
+	},
+	"commands": {
+		"deploy": {
+			"applyEffects": [["spawnunit","selectkingdeploy","kings",["contextval","currentplayer"]]]
+		},
+		"move": {
+			"applyEffects": [["moveunit",["idofunitat","selectunit"],"selectmovetarget"]]
+		},
+		"jump": {
+			"applyEffects": [
+				["killunit",["idofunitat",["firstposin","willdie"]]],
+				["moveunit",["idofunitat","selectunit"],"selectjumptarget"]
+			]
+		}
+	},
 	"generators": {
 		"findforbiddenkingspots": {
 			"type": "nextto",
@@ -96,53 +143,6 @@
 					}
 				}
 			}
-		}
-	},
-	"marks": {
-		"selectkingdeploy": {
-			"from": ["subtract","board",["union","units","nokings"]],
-			"allow": [["command","deploy"]]
-		},
-		"selectunit": {
-			"from": "myunits",
-			"runGenerators": ["findkingwalktargets","findadjacentenemies","findjumptargets"],
-			"allow": [["mark","selectmovetarget"],["mark","selectjumptarget"]]
-		},
-		"selectmovetarget": {
-			"from": ["ifelse",["anyat","mykings","selectunit"],"kingwalk",["subtract","board",["union","units",["union","nosoldiers","jumptargets"]]]],
-			"allow": [["command","move"]]
-		},
-		"selectjumptarget": {
-			"from": "jumptargets",
-			"runGenerators": ["findsplashed"],
-			"allow": [["command","jump"]]
-		}
-	},
-	"commands": {
-		"deploy": {
-			"applyEffects": [["spawnunit","selectkingdeploy","kings",["contextval","currentplayer"]]]
-		},
-		"move": {
-			"applyEffects": [["moveunit",["idofunitat","selectunit"],"selectmovetarget"]]
-		},
-		"jump": {
-			"applyEffects": [
-				["killunit",["idofunitat",["firstposin","willdie"]]],
-				["moveunit",["idofunitat","selectunit"],"selectjumptarget"]
-			]
-		}
-	},
-	"startturn": {
-		"runGenerators": ["findforbiddenkingspots","findforbiddensoldierspots"],
-		"allow": [ ["ifelse",["morethan",3,["contextval","turn"]],["mark","selectkingdeploy"],["mark","selectunit"]] ]
-	},
-	"afterstep": {
-		"allow": [["endturn"]]
-	},
-	"endturn": {
-		"endgame": {
-			"infiltration": { "condition": ["overlaps","mykings","opphomerow"] },
-			"kingkill": { "condition": ["notempty","oppdeadkings"] }
 		}
 	}
 }

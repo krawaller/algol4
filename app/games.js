@@ -16,7 +16,7 @@ var _ = require('lodash'),
         donkan: require("../games/donkan.json"),
         epaminondas: require("../games/epaminondas.json"),
         gogol: require("../games/gogol.json"),
-        khan: require("../games/khan.json"),
+        //khan: require("../games/khan.json"), // Needs conversion!
         kickrun: require("../games/kickrun.json"),
         krieg: require("../games/krieg.json"),
         momentum: require("../games/momentum.json"),
