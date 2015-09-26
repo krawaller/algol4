@@ -59,7 +59,9 @@ var Game = React.createClass({
     addTurnToHistory: function(tree,id,hist){
         //console.log("Gonna add turn to hist, previous hist was",hist)
         var newl = [], finalbattle = toaddbattle = tree.getIn(["cache",id]), previousstep, sinfo;
+        //console.log("Adding turn to history!",tree.toJS(),"id",id,"history",hist);
         while (toaddbattle.has("undo")) {
+            //console.log("Adding one cmnd back!");
             previousstep = tree.getIn(["cache",toaddbattle.get("undo")]);
             sinfo = toaddbattle.get("steps").last();
             newl = [[{
@@ -70,6 +72,7 @@ var Game = React.createClass({
             },toaddbattle.set("marks",previousstep.get("marks"))]].concat(newl);
             toaddbattle = previousstep;
         }
+        //console.log("here's the full list of what's added",newl);
         return hist.concat(newl);
     },
     componentWillReceiveProps: function(nextProps){
@@ -149,7 +152,7 @@ var Game = React.createClass({
         //console.log("Making command, hist is",hist)
         if (cmnd==="endturn"){ // TODO save finish move too!
             //console.log("THe heck",hist);
-            hist = this.addTurnToHistory(newtree,newbattle.get("id"),hist);
+            hist = this.addTurnToHistory(s.tree,s.battle.get("id"),hist);
             this.saveBattleMoves(gamename,battleid,newbattle.has("save") && newbattle.get("save").toJS() || []);
             if (newbattle.has("endedby")){
                 this.moveEntryToFinishedList(gamename,battleid,newbattle);
