@@ -56,7 +56,8 @@ var Game = React.createClass({
         window.localStorage.setItem(ongoingsavename,JSON.stringify( ongoinglist ));
         window.localStorage.setItem(finishedsavename,JSON.stringify( finishedlist ));
     },
-    addTurnToHistory: function(tree,id,history){
+    addTurnToHistory: function(tree,id,hist){
+        //console.log("Gonna add turn to hist, previous hist was",hist)
         var newl = [], finalbattle = toaddbattle = tree.getIn(["cache",id]), previousstep, sinfo;
         while (toaddbattle.has("undo")) {
             previousstep = tree.getIn(["cache",toaddbattle.get("undo")]);
@@ -69,7 +70,7 @@ var Game = React.createClass({
             },toaddbattle.set("marks",previousstep.get("marks"))]].concat(newl);
             toaddbattle = previousstep;
         }
-        return history.concat(newl);
+        return hist.concat(newl);
     },
     componentWillReceiveProps: function(nextProps){
         var battleid = this.getParams().battleid,
@@ -85,16 +86,16 @@ var Game = React.createClass({
             tree = this.props.tree,
             start = this.props.tree.getIn(["cache","root"]),
             battle = start,
-            history = [[{player:0,command:"start"},start.deleteIn(["cache","root","availableMarks"])]],
+            hist = [[{player:0,command:"start"},start.deleteIn(["cache","root","availableMarks"])]],
             moves = battleid && this.loadBattleMoves(gamename,battleid);
-        // perform moves, adding them to history
+        // perform moves, adding them to hist
         _.each(moves||[],function(steps){
             _.each(steps,function(step){
                 var currentid = tree.get("current");
-                    markname = tree.getIn(["cache",current,"availableMarks",step]);
+                    markname = tree.getIn(["cache",currentid,"availableMarks",step]);
                 tree = (markname ? Algol.makeMark(tree,currentid,markname,step) : Algol.makeCommand(tree,currentid,step));
             });
-            history = this.addTurnToHistory(tree,tree.get("current"),history);
+            hist = this.addTurnToHistory(tree,tree.get("current"),hist);
             tree = Algol.makeCommand(tree,tree.get("current"),"endturn");
         },this);
         // return state
@@ -102,7 +103,7 @@ var Game = React.createClass({
             battle: tree.getIn(["cache",tree.get("current")]),
             start: start,
             tree: tree,
-            history: history,
+            hist: hist,
             gamename: gamename,
             battleid: battleid
         };
@@ -141,12 +142,14 @@ var Game = React.createClass({
         var s = this.state,
             newtree = Algol.makeCommand(s.tree,s.battle.get("id"),cmnd),
             newbattle = newtree.getIn(["cache",newtree.get("current")]);
-            history = this.state.history,
+            hist = s.hist,
             params = this.getParams(),
             gamename = params.gamename,
             battleid = params.battleid;
-        if (cmnd==="endturn"){
-            history = this.addTurnToHistory(newtree,newbattle.get("id"),history);
+        //console.log("Making command, hist is",hist)
+        if (cmnd==="endturn"){ // TODO save finish move too!
+            //console.log("THe heck",hist);
+            hist = this.addTurnToHistory(newtree,newbattle.get("id"),hist);
             this.saveBattleMoves(gamename,battleid,newbattle.has("save") && newbattle.get("save").toJS() || []);
             if (newbattle.has("endedby")){
                 this.moveEntryToFinishedList(gamename,battleid,newbattle);
@@ -154,12 +157,12 @@ var Game = React.createClass({
                 this.updateEntryInList(gamename,battleid,newbattle);
             }
         } // TODO - figure out why we have to set current for newbattle
-        this.setState({ battle: newbattle, history: history, tree: newtree });
+        this.setState({ battle: newbattle, hist: hist, tree: newtree });
     },
     render: function() {
-        console.log("RENDER",this.state.tree.toJS())
+        //console.log("RENDER",this.state.tree.toJS());
         var s = this.state,
-            historyindex = this.getParams().historyindex,
+            histindex = this.getParams().historyindex,
             gamename = this.props.gamename,
             battleid = this.state.battleid,
             battle = s.battle,
@@ -172,9 +175,9 @@ var Game = React.createClass({
                 height: height*40+"px;",
                 width: width*40+"px;"
             };
-        if (historyindex !== undefined){
-            var hi = parseInt(historyindex);
-            battle = s.history[hi][1];
+        if (histindex !== undefined){
+            var hi = parseInt(histindex);
+            battle = s.hist[hi][1];
         }
         //console.log("RENDER",battle.get("layers").toJS(),"context",battle.get("context").toJS(),battle.getIn(["data","units"]).toJS(),battle.get("save").toJS(),battle.get("path").toJS(),"CONNECTIONS",battle.get("connections").toJS());
         //console.log("Render",battle.delete("cache").toJS());
@@ -192,7 +195,7 @@ var Game = React.createClass({
                     {battleid && <li><Link to={"/game/"+gamename+"/battle/"+battleid+"/history/"}>History</Link></li>}
                 </ul>
                 <div className="side">
-                    <RouteHandler battle={battle} history={this.state.history}/>
+                    <RouteHandler battle={battle} history={this.state.hist}/>
                 </div>
             </div>
         );

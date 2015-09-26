@@ -49,7 +49,7 @@ Algol.makeCommand = function(tree,id,cmndname,nodive){
 	} else if (cmndname==="endturn"){
 		return this.endTurn(tree,id);
 	} else if (reversal){
-		console.log("REVERSING!");
+		//console.log("REVERSING!");
 		return tree.set("current",reversal);
 	} else {
 		var newid = fromstate.getIn(["availableCommands",cmndname]),
@@ -57,7 +57,7 @@ Algol.makeCommand = function(tree,id,cmndname,nodive){
 		if (!nodive && !newstate.get("pruned")){
 			tree = this.pruneOptions(tree,newid);
 		}
-		console.log("Performed command",cmndname,"for id",id,"which lead to",newid);
+		//console.log("Performed command",cmndname,"for id",id,"which lead to",newid);
 		return tree.set("current",newid);
 	}
 };
@@ -126,14 +126,15 @@ Algol.allowCommand = function(tree,id,cmndname,auto){
 	if (!auto){
 		tree = tree.setIn(["cache",id,"availableCommands",cmndname],newid);
 	}
-	console.log("Allowed command",cmndname,"for",id,"which would lead to",newid);
+	//console.log("Allowed command",cmndname,"for",id,"which would lead to",newid);
 	return tree;
 };
 
 
 Algol.endTurn = function(tree,id){
 	var endturndef = tree.getIn(["gamedef","endturn"]),
-		state = tree.getIn(["cache",id]);
+		state = tree.getIn(["cache",id]),
+		newturntree, finishid;
 	// perform eventual afterturn effects
 	if (endturndef.has("applyEffects")){
 		state = endturndef.get("applyEffects").reduce(function(s,effect){
@@ -155,13 +156,13 @@ Algol.endTurn = function(tree,id){
 	},undefined,this);
 	if (endgame) {
 		// Endgame condition met!
-		var finishid = state.get("id")+",finish";
+		finishid = state.get("id")+",finish";
 		return tree.setIn(["cache",finishid],state).set("current",finishid);
 	} else {
-		var newturntree = this.newTurnTree(tree,state,state.getIn(["passto",state.get("player")]));
-		newturntree = this.checkEndReach(tree,"root");
+		newturntree = this.newTurnTree(tree,state,state.getIn(["passto",state.get("player")]));
+		newturntree = this.checkEndReach(newturntree,"root");
 		// Opponent cannot end in next turn!
-		if (!newturntree.get("canreachend")){
+		if (!newturntree.get("canreachendturn")){
 			state = state.set("endedby", newturntree.get("forbidden") || "stalemate").set("winner",state.get("player"));
 			return tree.setIn(["cache",finishid],state).set("current",finishid);
 		}
@@ -232,12 +233,13 @@ Algol.newTurnTree = function(oldtree,state,newturnplayer){
 	// commands
 	newtree = this.obeyInstructions(newtree,state.get("id"),startturn);
 	//newtree = this.pruneOptions(newtree,state.get("id"));
+	//console.log("So ok, what do we have here. Old tree",oldtree.toJS(),"new tree",newtree.toJS());
 	return newtree;
 };
 
 // Called in endTurn
 Algol.checkEndReach = function(tree,id){
-	return tree;
+	return tree.set("canreachendturn",true);
 }
 
 // called in newGame, makeMark, makeCommand
