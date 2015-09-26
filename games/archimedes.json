@@ -1,0 +1,83 @@
+{
+	"meta": {
+		"name": "Archimedes",
+		"source": "http://superdupergames.org/rules/archimedes.pdf"
+	},
+	"graphics": {
+		"icons": {"boats": "pawns"},
+		"tiles": {"corner": "grass"}
+	},
+	"board": {"width":8,"height":8},
+	"setup": {
+		"boats": {
+			"1": [["holerect","a1","d4",["a1","c4","d4","d3"]]],
+			"2": [["holerect","e5","f6",["e5","e6","f5","h8"]]]
+		}
+	},
+	"terrain": { "corner": { "1": ["a1"], "2": ["h8"] } },
+	"startturn": {
+		"allow": ["selectunit",["if",["noneat","units",["firstposin","mycorner"]],"deploy"]]
+	},
+	"endturn": {
+		"endgame": {},
+		"unless": { "invaded": ["overlaps","mycorner","oppunits"] }
+	},
+	"marks": {
+		"selectunit": {
+			"from": "myunits",
+			"runGenerators": ["findmovetargets"],
+			"allow": ["selectmovetarget"]
+		},
+		"selectmovetarget": {
+			"from": "movetargets",
+			"allow": ["move"]
+		}
+	},
+	"commands": {
+		"deploy": {
+			"applyEffects": [["spawnunit",["firstposin","mycorner"],"boats",["contextval","currentplayer"]]],
+			"runGenerators": ["findmovetargets"],
+			"allow": ["selectmovetarget"]
+		},
+		"move": {
+			"applyEffects": [["move",["ifelse",["hasperformedcommand","deploy"],["firstposin","mycorner"],"selectunit"],"selectmovetarget"]],
+			"runGenerators": ["findthreats","finddoomed"],
+			"allow": [["ifelse",["isempty","doomed"],"endturn",["auto","kill"]]]
+		},
+		"kill": {
+			"applyEffects": [["forallin","doomed",["killunit",["loopid"]]]],
+			"runGenerators": ["findthreats","finddoomed"],
+			"allow": [["ifelse",["isempty","doomed"],"endturn",["auto","kill"]]]
+		}
+	},
+	"generators": {
+		"finddoomed": {
+			"type": "filter",
+			"layer": "threat",
+			"condition": ["morethan",["layerweightat","threat",["contextpos","start"]],2],
+			"tolayer": "doomed"
+		},
+		"findmovetargets": {
+			"type": "walker",
+			"starts": ["ifelse",["hasperformedcommand","deploy"],["firstposin","mycorner"],"selectunit"],
+			"blocks": "units",
+			"draw": {
+				"steps": {
+					"condition": ["noneat","mycorner",["contextpos","target"]],
+					"tolayer": "movetargets"
+				}
+			}
+		},
+		"findthreats": {
+			"type": "walker",
+			"starts": "myunits",
+			"blocks": "units",
+			"draw": {
+				"block": {
+					"condition": ["anyat","oppunits",["contextpos","target"]],
+					"tolayer": "threat"
+				}
+			}
+		}
+	}
+}

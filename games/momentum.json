@@ -40,8 +40,7 @@
 			"starts": "selectdrop",
 			"steps": "units",
 			"draw": {
-				"steps": {
-					"condition": ["same",["contextval","step"],["contextval","linelength"]],
+				"last": {
 					"tolayer": "tobepushed",
 					"include": {"dir":["contextval","dir"]}
 				}

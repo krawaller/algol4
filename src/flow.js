@@ -45,58 +45,73 @@ FLOWINSTRUCTIONS
 
 */
 
-Algol.removeMark = function(state,markname){
-	//console.log("Gonna remove mark",markname,"which means",state.getIn(["removeMarks",markname]), "in cache",state.getIn(["cache", state.getIn(["removeMarks",markname]) ]) )
-	return state.getIn(["cache", state.getIn(["removeMarks",markname]) ]);
+Algol.removeMark = function(tree,id,markname){
+	return tree.set("current",tree.getIn(["cache",id,removeMarks,markname]));
 }
 
-Algol.makeMark = function(state,markname,pos,nodive){
-	var oldid = state.get("id"), newid = oldid+","+pos;
-	if (state.hasIn(["cache",newid])){
-		return nodive ? state.getIn(["cache",newid]) : this.pruneOptions( state.getIn(["cache",newid]) );
-	}
-	var newstate = state
-		.setIn(["removeMarks",markname],oldid)
-		.setIn(["cache",oldid],state)
-		.set("availableMarks",I.Map())
-		.set("availableCommands",I.Map())
-		.set("reversalCommands",I.Map())
-		.set("id",newid)
-		.set("canendturnnow",false)
-		.set("path",state.get("path").push(pos))
-		.setIn(["marks",markname],pos);
-	newstate = this.obeyInstructions(newstate,newstate.getIn(["gamedef","marks",markname]));
-	return nodive ? newstate : this.pruneOptions(newstate);
-};
-
-Algol.makeCommand = function(state,cmnd,nodive){
-	if (cmnd==="undo"){
-		//console.log("UNDOING",cmnd,state.get("undo"),state.hasIn(["cache",state.get("undo")]));
-		return state.getIn(["cache",state.get("undo")]);
-	} else if (cmnd==="endturn"){
-		return this.endTurn(state);
+Algol.makeMark = function(tree,id,markname,pos,nodive){
+	var oldstate = tree.getIn(["cache",id]),
+		newid = id+","+pos,
+		stored = tree.getIn(["cache",newid]);
+	if (stored){
+		if (!nodive && !stored.get("pruned")){
+			tree = this.pruneOptions(tree,newid);
+		}
+		return tree.set("current",newid);
 	} else {
-		var oldid = state.get("id"),
-			newstate = state.getIn(["cache",state.getIn(["availableCommands",cmnd]) ])
-				.set("undo",oldid)
-				.setIn(["cache",oldid],state);
-		return nodive ? newstate : this.pruneOptions(newstate);
+		var newstate = oldstate
+			.setIn(["removeMarks",markname],oldid)
+			.set("availableMarks",I.Map())
+			.set("availableCommands",I.Map())
+			.set("reversalCommands",I.Map())
+			.set("id",newid)
+			.set("canendturnnow",false)
+			.set("canreachendturn",false)
+			.set("path",oldstate.get("path").push(pos))
+			.setIn(["marks",markname],pos);
+		tree = tree.setIn(["cache",newid,newstate]);
+		tree = this.obeyInstructions(tree,newid,tree.getIn(["gamedef","marks",markname]));
+		if (!nodive){
+			tree = this.pruneOptions(tree,newid);
+		}
+		return tree.set("current",newid);
 	}
 };
 
-Algol.allowMark = function(state,markname){
-	//console.log("Allowing mark",markname);
-	return this.evaluatePositionSet(state,state.getIn(["gamedef","marks",markname,"from"])).reduce(function(s,pos){
-		return s.setIn(["availableMarks",pos],markname);	
-	},state);
+Algol.makeCommand = function(tree,id,cmndname,nodive){
+	var fromstate = tree.getIn(["cache",id]),
+		reversal = fromstate.getIn(["reversalCommands"],cmndname);
+	if (cmndname==="undo"){
+		//console.log("UNDOING",cmndname,state.get("undo"),state.hasIn(["cache",state.get("undo")]));
+		return tree.set("current",fromstate.get("undo"));
+	} else if (cmndname==="endturn"){
+		return this.endTurn(tree,id);
+	} else if (reversal){
+		return tree.set("current",reversal);
+	} else {
+		var newid = fromstate.getIn(["availableCommands",cmndname]),
+			newstate = tree.getIn(["cache",newid ]);
+		if (!nodive && !newstate.get("pruned")){
+			tree = this.pruneOptions(tree,newid);
+		}
+		return tree.set("current",newid);
+	}
 };
 
-Algol.performCommand = function(state,cdef){
+Algol.allowMark = function(tree,id,markname){
+	//console.log("Allowing mark",markname)
+	var state = tree.getIn(["cache",id]);
+	return tree.setIn(["cache",id],this.evaluatePositionSet(state,state.getIn(["gamedef","marks",markname,"from"])).reduce(function(s,pos){
+		return s.setIn(["availableMarks",pos],markname);
+	},state));
+};
+
+Algol.calculateStateAfterCommand = function(state,cdef,auto){
 	var gamedef = state.get("gamedef"),
 		cmndname = cdef.get("name"),// = gamedef.getIn(["gamedef","commands",cmndname]),
 		afterstep = gamedef.get("afterstep"),
 		oldid = state.get("id"),
-		newid = oldid+","+cmndname,
+		newid = auto ? oldid : oldid+","+cmndname,
 		newstate;
 	// calculate new state after command effects
 	newstate = cdef.get("applyEffects").reduce(function(s,effect){
@@ -112,9 +127,10 @@ Algol.performCommand = function(state,cdef){
 		.set("removeMarks",I.Map())
 		.setIn(["context","hasperformed"+cmndname],true)
 		.set("canendturnnow",false)
-		.set("path",state.get("path").push(cmndname))
+		.set("canreachendturn",false)
+		.set("path",auto ? state.get("path") : state.get("path").push(cmndname))
 		.setIn(["context","performedsteps"],state.getIn(["context","performedsteps"])+1);
-	newstate = I.pushIn(newstate,["steps"],I.fromJS({
+	newstate = auto ? newstate : I.pushIn(newstate,["steps"],I.fromJS({
 		command: cmndname,
 		marks: state.get("marks")
 	}));
@@ -122,34 +138,37 @@ Algol.performCommand = function(state,cdef){
 	return newstate;
 };
 
-Algol.allowCommand = function(state,cmndname){
+Algol.allowCommand = function(tree,id,cmndname,auto){
 	//console.log("Allowing command",cmndname);
-	var gamedef = state.get("gamedef"),
+	var gamedef = tree.get("gamedef"),
 		cdef = gamedef.getIn(["commands",cmndname]),
-		newstate = this.performCommand(state,cdef),
+		newstate = this.calculateStateAfterCommand(tree.getIn(["cache",id]),cdef,auto),
 		newid = newstate.get("id");
 	// make sure this isn't a reversal to earlier
 	var tocheck = newstate
 	while(tocheck.has("undo")){
-		tocheck = tocheck.getIn(["cache",tocheck.get("undo")]);
+		tocheck = tree.getIn(["cache",tocheck.get("undo")]);
 		if (this.areStatesEqual(tocheck,newstate)){
-			return state.setIn(["reversalCommands",cmndname],tocheck.get("id"));
+			return tree.setIn(["cache",id,"reversalCommands",cmndname],tocheck.get("id")));
 		}
 	};
 	// command causes new state! we add its instructions (and generators)
-	newstate = this.obeyInstructions(newstate,cdef);
+	tree = tree.setIn(["cache",newid],newstate.set("undo",id));
+	tree = this.obeyInstructions(tree,newid,cdef);
 	var afterstep = gamedef.get("afterstep");
 	if (afterstep){
-		newstate = this.obeyInstructions(newstate,afterstep);
+		tree = this.obeyInstructions(tree,newid,afterstep);
 	}
-	return state
-		.setIn(["availableCommands",cmndname],newid)
-		.setIn(["cache",newid], newstate);
+	if (!auto){
+		tree = tree.setIn(["cache",id,"availableCommands",cmndname],newid);
+	}
+	return tree;
 };
 
 
-Algol.endTurn = function(state){
-	var endturndef = state.getIn(["gamedef","endturn"]);
+Algol.endTurn = function(tree,id){
+	var endturndef = tree.getIn(["gamedef","endturn"]),
+		state = tree.getIn(["cache",id]);
 	// perform eventual afterturn effects
 	if (endturndef.has("applyEffects")){
 		state = endturndef.get("applyEffects").reduce(function(s,effect){
@@ -169,32 +188,46 @@ Algol.endTurn = function(state){
 		}
 		return mem;
 	},undefined,this);
-	if (endgame) { return endgame; }
-	// end if nxtplayer cannot end
-	var newstate = this.newTurn(state,state.getIn(["passto",state.get("player")]));
-	if (!this.canReachEndTurn(newstate)){
-		return state
-			.set("endedby", newstate.get("forbidden") || "stalemate" )
-			.set("winner", state.get("player"));
+	if (endgame) {
+		// Endgame condition met!
+		var finishid = state.get("id")+",finish";
+		return tree.setIn(["cache",finishid],state).set("current",finishid);
+	} else {
+		var newturntree = this.newTurnTree(tree,state,state.getIn(["passto",state.get("player")]));
+		newturntree = this.checkEndReach(tree,"root");
+		// Opponent cannot end in next turn!
+		if (!newturntree.get("canreachend")){
+			state = state.set("endedby", newturntree.get("forbidden") || "stalemate").set("winner",state.get("player"));
+			return tree.setIn(["cache",finishid],state).set("current",finishid);
+		}
+		// Game keeps going!
+		return newturntree.set("current","root"); // todo - store final states on tree for comparison?
 	}
-	// no end, return new state
-	return newstate;
 };
 
-
-Algol.allowEndTurn = function(state){
+Algol.allowEndTurn = function(tree,id){
 	//console.log("allowing endturn");
-	var endturndef = state.getIn(["gamedef","endturn"]),
-		unless = endturndef.get("unless");
+	var endturndef = tree.getIn(["gamedef","endturn"]),
+		unless = endturndef.get("unless"),
+		forbidden,
+		state = tree.getIn(["cache",id]);
 	if (unless){
 		state = unless.reduce(function(s,cond,name){
-			return this.evaluateBoolean(s,cond) ? s.set("forbidden",name) : state;
+			if (this.evaluateBoolean(s,cond)){
+				forbidden = name;
+				return s.set("forbidden",name);
+			}
+			return s;
 		},state,this);
 	}
-	return state.has("forbidden") ? state : state.set("canreachendturn",true).set("canendturnnow",true);
+	if (forbidden){
+		return tree.set("forbidden",forbidden);
+	} else {
+		return tree.setIn(["cache",id,"canendturnnow"],true).set("canreachendturn",true);
+	}
 };
 
-Algol.newTurn = function(state,newturnplayer){
+Algol.newTurnTree = function(oldtree,state,newturnplayer){
 	var startturn = state.getIn(["gamedef","startturn"])||I.Map(),
 		//effect = startturn.get("applyeffect"),
 		baselayer = state.getIn(["baselayers",newturnplayer])||state.getIn(["baselayers",newturnplayer+""]);
@@ -230,61 +263,22 @@ Algol.newTurn = function(state,newturnplayer){
 	}
 	// layers
 	state = this.prepareBasicUnitLayers(state);
+	var newtree = oldtree.set("cache",I.Map().set("root",state).set("current","root");
 	// commands
-	state = this.obeyInstructions(state,startturn);
-	if (true){
-		state = this.pruneOptions(state);
-	}
-	return state;
+	newtree = this.obeyInstructions(newtree,state.get("id"),startturn);
+	//newtree = this.pruneOptions(newtree,state.get("id"));
+	return tree;
 };
 
-Algol.canReachEndTurn = function(state){ // TODO - cache the checked states?
-	//console.log("...checking reach capability of",state.get("id"));
-	return state.get("canendturnnow") || state.getIn(["gamedef","endturn","canalwaysreachend"]) || state.get("availableCommands").some(function(id,cmndname){
-		return this.canReachEndTurn( this.makeCommand(state,cmndname,true) );
-	},this) || state.get("availableMarks").some(function(markname,pos){
-		return this.canReachEndTurn( this.makeMark(state,markname,pos,true) );
-	},this);
-};
-
-Algol.pruneOptions = function(state){
-	//return state;
-
-	if (state.hasIn(["gamedef","endturn","canalwaysreachend"])){
-		return state;
-	}
-	var debug = false;
-	debug && console.log("pruning state",state.get("id"));
-	// fix markings
-	state = state.get("availableMarks").reduce(function(s,markname,pos){
-		var newstate = this.makeMark(s,markname,pos,true);
-		if (state.hasIn(["gamedef","marks",markname,"canalwaysreachturnend"]) || this.canReachEndTurn(newstate)){
-			debug && console.log("state",s.get("id"),"can reach end by mark",markname,"at pos",pos,"so keeping that")
-			return s.set("canreachendturn",true).setIn(["cache",newstate.get("id")],newstate); 
-		} else {
-			debug && console.log("state",s.get("id"),"can NOT reach end by mark",markname,"at pos",pos,"so DELETING that")
-			return s.deleteIn(["availableMarks",pos]).deleteIn(["cache",newstate.get("id")]);
-		}
-	},state,this);
-	// fix commands
-	state = state.get("availableCommands").reduce(function(s,newid,cmndname){
-		var newstate = this.makeCommand(s,cmndname,true);
-		if (this.canReachEndTurn(newstate)){
-			debug && console.log("state",s.get("id"),"can reach end by cmnd",cmndname,"so keeping that")
-			return s.set("canreachendturn",true).setIn(["cache",newid],newstate); 
-		} else {
-			debug && console.log("state",s.get("id"),"can NOT reach end by cmnd",cmndname,"so DELETING that")
-			return s.deleteIn(["availableCommands",cmndname]).deleteIn(["cache",newid]);
-		}
-	},state,this);
-	// send me home
-	return state;
-};
+// Called in newGame and endTurn
+Algol.checkEndReach = function(tree,id){
+	return tree;
+}
 
 Algol.newGame = function(gamedef,nbrofplayers){
 	var commandslist = gamedef.get("commands").keySeq().sort(),
 		startunits = this.prepareInitialUnitsForGame(gamedef);
-	var state = I.fromJS({
+	var startstate = I.fromJS({
 		gamedef: gamedef.set("commands",commandslist.reduce(function(map,comname,n){
 			return map.set(comname,gamedef.getIn(["commands",comname]).set("number",n+1));
 		},I.Map())),
@@ -304,47 +298,51 @@ Algol.newGame = function(gamedef,nbrofplayers){
 			return mem.set(p,p===nbrofplayers?1:p+1);
 		},I.Map())
 	});
-	return this.newTurn(state,1)
+	return this.checkEndReach(this.newTurnTree(I.Map().set("gamedef",gamedef),startstate,1),"root");
 };
 
 
 var allowmethods = {
-	mark: Algol.allowMark,
-	command: Algol.allowCommand,
-	endturn: Algol.allowEndTurn,
-	ifelse: function(state,bool,allow1,allow2){
+	ifelse: function(tree,state,bool,allow1,allow2){
 		return this.evaluateBoolean(state,bool) ? this.allow(state,allow1) : this.allow(state,allow2);
 	},
-	"if": function(state,bool,allowdef){
+	"if": function(tree,state,bool,allowdef){
 		return this.evaluateBoolean(state,bool) ? this.allow(state,allowdef) : state;
+	},
+	auto: function(tree,state,cmnd){
+		cmnd = this.evaluateValue(state,cmnd);
+		//console.log("Autodoing",cmnd,"for state",state.get("id"));
+		return this.allowCommand(tree,state.get("id"),cmnd,true);
 	}
 };
 
-Algol.allow = function(state,def){
-	//console.log("ALLOW",def && def.toJS && def.toJS() || def);
-	if (state.hasIn(["gamedef","marks",def])){
-		return this.allowMark(state,def);
-	} else if (state.hasIn(["gamedef","commands",def])){
-		return this.allowCommand(state,def);
+Algol.allow = function(tree,id,def){
+
+	if (tree.hasIn(["gamedef","marks",def])){
+		return this.allowMark(tree,id,def);
+	} else if (tree.hasIn(["gamedef","commands",def])){
+		return this.allowCommand(tree,id,def);
 	} else if (def === "endturn"){
-		return this.allowEndTurn(state);
+		return this.allowEndTurn(tree,id);
 	}
 	if (!def.first){
 		console.log("ALARM",def);
 	}
-	return allowmethods[def.first()].apply(this,[state].concat(def.rest().toArray()));
+	return allowmethods[def.first()].apply(this,[tree,tree.getIn(["cache",id])].concat(def.rest().toArray()));
 };
 
-Algol.obeyInstructions = function(state,instr){
+Algol.obeyInstructions = function(tree,id,instr){
 	if (instr.has("runGenerators")){
 		//console.log("applying generator list",instr.get("runGenerators").toJS && instr.get("runGenerators").toJS()  )
-		state = this.applyGeneratorList(state,instr.get("runGenerators"));
+		tree = tree.setIn(["cache",state.get("id")],this.applyGeneratorList(tree.getIn(["cache",id]),instr.get("runGenerators")));
 		//console.log("after generator list",state.get("layers").toJS())
 	}
 	if (instr.has("allow")){
-		state = instr.get("allow").reduce(Algol.allow,state,this);
+		tree = instr.get("allow").reduce(function(t,def){
+			return this.allow(t,id,def)
+		},tree,this);
 	}
-	return state;
+	return tree;
 };
 
 

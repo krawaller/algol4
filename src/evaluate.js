@@ -210,6 +210,13 @@ var valuemethods = {
 	layerpositioncount: function(state,layername){
 		return (state.getIn(["layers",this.evaluateValue(state,layername)])||I.Map()).size;
 	},
+	layerweightat: function(state,layername,pos){
+		var layer = this.evaluateValue(state,layername),
+			pos = this.evaluatePosition(state,pos),
+			list = (state.getIn(["layers",layer,pos])||I.List());
+		//console.log("Weight at",pos,"was this list",list.toJS(),"with size",list.size);
+		return list.size;
+	},
 	overlapsize: function(state,layername1,layername2){
 		var lr1 = state.getIn(["layers",layername1]) || I.Map();
 		return (state.getIn(["layers",layername2])||I.Map()).reduce(function(count,entities,pos){
@@ -232,7 +239,7 @@ var valuemethods = {
 	dirline: function(state,dir){
 		return {
 			1: "vertical", 5: "vertical", 2: "uphill", 6: "uphill", 3: "horisontal", 7: "horisontal", 4: "downhill", 8: "downhill"
-		}[this.evaluateValue(state,dir)] || "unknown"
+		}[this.evaluateValue(state,dir)] || "unknown"
 	}
 };
 
@@ -247,14 +254,15 @@ var positionmethods = {
 	markpos: function(state,markname){ return state.getIn(["marks",markname]); },
 	firstposin: function(state,layername){ return I.Iterable(this.evaluatePositionSet(state,layername)).first(); },
 	contextpos: function(state,ctxposname){ return state.getIn(["context",ctxposname]); },
-	pos: function(state,pos){ return this.evaluateValue(state,pos); }
+	pos: function(state,pos){ return this.evaluateValue(state,pos); },
+	ifelse: function(state,cond,val1,val2){ return this.evaluatePosition(state, this.evaluateBoolean(state,cond) ? val1 : val2); },
 };
 
 Algol.evaluatePosition = function(state,def){
 	if (state.hasIn(["gamedef","marks",def])){
 		return state.getIn(["marks",def]);
 	}
-	if (typeof def.first !== "function"){
+	if (typeof def.first !== "function" || !positionmethods[def.first()]){
 		console.log("THE HECK POS",state.toJS(),"def",def.toJS && def.toJS() || def)
 	}
 	return positionmethods[def.first()].apply(this,[state].concat(def.rest().toArray()));
