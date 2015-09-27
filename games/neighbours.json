@@ -2,5 +2,62 @@
 	"meta": {
 		"name": "Neighbours",
 		"source": "http://www.di.fc.ul.pt/~jpn/gv/neighbours.htm"
+	},
+	"graphics": {"icons":{"soldiers":"pawns"}},
+	"board": {"height":8,"width":8},
+	"setup": { "soldiers": {"1":[["rect","a1","h1"]],"2":[["rect","a8","h8"]]} },
+	"startturn": {"allow":["selectunit"]},
+	"marks": {
+		"selectunit": {
+			"from": "myunits",
+			"runGenerators": ["findrange","findmovetargets"],
+			"allow": ["selectmovetarget"]
+		},
+		"selectmovetarget": {
+			"from": "movetargets",
+			"allow": ["move"]
+		}
+	},
+	"commands": {
+		"move": {
+			"applyEffects": [
+				["kill","selectmovetarget"],
+				["move","selectunit","selectmovetarget"]
+			],
+			"allow": ["endturn"]
+		}
+	},
+	"generators": {
+		"findrange": {
+			"type": "nextto",
+			"starts": "selectunit",
+			"condition": ["anyat","units",["contextpos","target"]],
+			"draw": {
+				"start": {
+					"tolayer": "range",
+					"include": {
+						"distance": ["contextval","neighbourcount"]
+					}
+				}
+			}
+		},
+		"findmovetargets": {
+			"type": "walker",
+			"starts": "selectunit",
+			"blocks": "units",
+			"draw": {
+				"steps": {
+					"condition": ["same",["contextval","step"],["lookup","range","selectunit","distance"]],
+					"tolayer": "movetargets"
+				},
+				"block": {
+					"condition": ["and",[
+						["noneat","myunits",["contextpos","target"]],
+						["same",["sum",1,["contextval","linelength"]],["lookup","range","selectunit","distance"]]
+					]],
+					"tolayer": "movetargets"
+				}
+			}
+		}
 	}
 }
