@@ -2,5 +2,73 @@
 	"meta": {
 		"name": "Aries",
 		"source": "http://www.di.fc.ul.pt/~jpn/gv/aries.htm"
+	},
+	"graphics": { "tiles": {"corner":"grass"}, "icons": {"soldiers":"rooks"} },
+	"board": { "height": 8, "width": 8 },
+	"terrain": { "corner": {"1":["a1"],"2":["h8"]} },
+	"setup": { "soldiers": { "1": [["rect","a1","d4"]], "2": [["rect","e5","h8"]] } },
+	"startturn": { "allow": ["selectunit"] },
+	"endturn": {
+		"endgame": {
+			"invade": {"condition":["overlaps","oppcorner","myunits"]}
+		}
+	},
+	"marks": {
+		"selectunit": {
+			"from": "myunits",
+			"runGenerators": ["findmovetargets"],
+			"allow": ["selectmovetarget"]
+		},
+		"selectmovetarget": {
+			"from": "movetargets",
+			"allow": ["move"],
+			"runGenerators": [["if",["anyat","oppunits","selectmovetarget"],"findpushresults"]]
+		}
+	},
+	"commands": {
+		"move": {
+			"applyEffects": [
+				["forallin","squished",["killunit",["loopid"]]],
+				["forallin","beingpushed",["offsetunit",["loopid"],["lookup","movetargets","selectmovetarget","dir"],1,0]],
+				["move","selectunit","selectmovetarget"]
+			],
+			"allow": ["endturn"]
+		}
+	},
+	"generators": {
+		"findmovetargets": {
+			"type": "walker",
+			"starts": "selectunit",
+			"dirs": ["dirs",[1,3,5,7]],
+			"blocks": "units",
+			"draw": {
+				"steps": {
+					"tolayer": "movetargets"
+				},
+				"block": {
+					"condition": ["anyat","oppunits",["contextpos","target"]],
+					"tolayer": "movetargets",
+					"include": {"dir":["contextval","dir"]}
+				}
+			}
+		},
+		"findpushresults": {
+			"type": "walker",
+			"starts": "selectmovetarget",
+			"dirs": ["relativedir",1,["lookup","movetargets","selectmovetarget","dir"]],
+			"steps": "oppunits",
+			"blocks": "myunits",
+			"startasstep": true,
+			"prioritizeblocksoversteps": true,
+			"draw": {
+				"steps": {
+					"tolayer": "beingpushed"
+				},
+				"last": {
+					"condition": ["valinlist",["contextval","stopreason"],["hitblock","outofbounds"]],
+					"tolayer": "squished"
+				}
+			}
+		}
 	}
 }
