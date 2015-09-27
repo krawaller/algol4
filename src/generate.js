@@ -81,7 +81,7 @@ Algol.generateWalkerPodsInDir = function(startstate,def,recorder,startpos,dir){
 		tobecounted = def.has("count") && this.evaluatePositionSet(startstate,def.get("count")),
 		prevcounttotal = 0, counttrack = [],
 		max = def.has("max") ? this.evaluateValue(startstate,def.get("max")) : undefined;
-	startstate = startstate.setIn(["context","max"],max);
+	startstate = startstate.setIn(["context","max"],max).setIn(["context","target"],startpos);
 	if (def.get("startasstep")){
 		walk.push(startpos);
 		if (tobecounted){

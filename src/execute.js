@@ -46,6 +46,14 @@ var effectmethods = {
 			return state.setIn(["data","units",unit.get("id"),"group"],groupname);
 		},state,this);
 	},
+	setowner: function(state,pos,owner){
+		//console.log("SET unit",this.evaluateId(state,id),"prop",this.evaluateValue(state,propname),"to",this.evaluateValue(state,val))
+		pos = this.evaluatePosition(state,pos);
+		owner = this.evaluateValue(state,owner);
+		return (state.getIn(["layers","units",pos])||I.List()).reduce(function(s,unit){
+			return state.setIn(["data","units",unit.get("id"),"owner"],owner);
+		},state,this);
+	},
 	removeunitdata: function(state,id,propname){
 		return state.deleteIn(["data","units",this.evaluateId(state,id),this.evaluateValue(state,propname)]);
 	},
