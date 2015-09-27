@@ -171,8 +171,8 @@ Algol.endTurn = function(tree,id,inhistory){
 	},undefined,this);
 	if (endgame) {
 		// Endgame condition met!
-		finishid = id+",finish";
-		console.log("ENDGAME!!")
+		//finishid = id+",finish";
+		//console.log("ENDGAME!!")
 		return tree.setIn(["cache",id],endgame).set("current",id);
 	} else {
 		newturntree = this.newTurnTree(tree.setIn(["cache",id,state]),id,state.getIn(["passto",state.get("player")]));

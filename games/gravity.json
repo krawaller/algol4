@@ -2,5 +2,67 @@
 	"meta": {
 		"name": "Gravity",
 		"source": "http://www.di.fc.ul.pt/~jpn/gv/gravity.htm"
+	},
+	"graphics": { "icons": {"soldiers":"pawns"} },
+	"board": { "height": 8, "width": 8 },
+	"terrain": {
+		"drops": { "0": [
+			["pos",["b8","c7","d6","e6","f7","g8"],1],
+			["pos",["e5"],2],
+			["pos",["h7","g6","f5","f4","g3","h2"],3],
+			["pos",["e4"],4],
+			["pos",["b1","c2","d3","e3","f2","g1"],5],
+			["pos",["d4"],6],
+			["pos",["a7","b6","c5","c4","b3","a2"],7],
+			["pos",["d5"],8]
+		]}
+	},
+	"startturn": {
+		"runGenerators": ["finddrops"],
+		"allow": ["selectlanding"]
+	},
+	"endturn": {
+		"endgame": {
+			"madefour": {"condition":["notempty","fours"]}
+		}
+	},
+	"marks": {
+		"selectlanding": {
+			"from": "landings",
+			"allow": ["drop"]
+		}
+	},
+	"commands": {
+		"drop": {
+			"applyEffects": [["spawnunit","selectlanding","soldiers",["contextval","currentplayer"]]],
+			"runGenerators": ["findfours"],
+			"allow": ["endturn"]
+		}
+	},
+	"generators": {
+		"finddrops": {
+			"type": "walker",
+			"startasstep": true,
+			"starts": "drops",
+			"dirs": ["relativedir",1,["lookup","drops",["contextpos","start"],"dir"]],
+			"blocks": "units",
+			"draw": {
+				"last": {
+					"condition": ["noneat","units",["contextpos","start"]],
+					"tolayer": "landings"
+				}
+			}
+		},
+		"findfours": {
+			"type": "walker",
+			"starts": "myunits",
+			"steps": "myunits",
+			"draw": {
+				"start": {
+					"condition": ["same",["contextpos","linelength"],3],
+					"tolayer": "fours"
+				}
+			}
+		}
 	}
 }

@@ -21,13 +21,13 @@ var React = require('react'),
 var Game = React.createClass({
     mixins: [Router.Navigation,Router.State,Reflux.listenToMany(listactions),Reflux.listenToMany(battleactions)],
     saveBattleMoves: function(gamename,battleid,moves){
-        console.log("Saving battle moves",battleid,"moves",moves);
+        //console.log("Saving battle moves",battleid,"moves",moves);
         window.localStorage.setItem("algol-"+gamename+"-localbattle-"+battleid,JSON.stringify(moves||[]));
     },
     loadBattleMoves: function(gamename,battleid){
         var savename = "algol-"+gamename+"-localbattle-"+battleid,
             save = window.localStorage.getItem(savename);
-        console.log("Tried to load",savename,"got",save);
+        //console.log("Tried to load",savename,"got",save);
         return JSON.parse(save||"[]");
     },
     updateEntryInList: function(gamename,battleid,battle){
