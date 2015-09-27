@@ -36,7 +36,7 @@ Algol.prepareBoardLayersFromBoardDef = function(boarddef){
 	var height = boarddef.get("height"), width = boarddef.get("width");
 	return I.Range(1,width+1).reduce(function(mem,x){
 		return I.Range(1,height+1).reduce(function(mem,y){
-			var pos = this.posObjToName({x:x,y:y},boarddef), clr = ["light","dark"][(x+(y%2))%2], obj = I.Map({
+			var pos = this.posObjToName({x:x,y:y},boarddef), clr = ["dark","light"][(x+(y%2))%2], obj = I.Map({
 				x: x, y: y, pos: pos, colour: clr
 			})
 			return mem.setIn(["board",pos],I.List([obj])).setIn([clr,pos],I.List([obj]));

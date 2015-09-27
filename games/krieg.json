@@ -6,7 +6,7 @@
 	},
 	"board": { "width": 4, "height": 4 },
 	"graphics": {
-		"tiles": { "corners": "grass", "bases": "castle" },
+		"tiles": { "corners": "playercolour", "bases": "castle" },
 		"icons": { "notfrozens": "knights", "frozens": "rooks" }
 	},
 	"terrain": {

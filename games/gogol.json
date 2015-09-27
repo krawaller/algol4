@@ -6,11 +6,11 @@
 	},
 	"board": {"height":8,"width":8},
 	"graphics": {
-		"tiles": {"homerow":"grass"},
+		"tiles": {"homerow":"playercolour"},
 		"icons": {"kings":"kings","soldiers":"pawns"}
 	},
 	"terrain": {
-		"homerow": {"1": [["rect","a8","h8"]],"2":[["rect","a1","h1"]]},
+		"homerow": {"2": [["rect","a8","h8"]],"1":[["rect","a1","h1"]]},
 		"edges": [["rect","a1","a8"],["rect","h1","h8"],["rect","b8","g8"],["rect","b1","g1"]]
 	},
 	"setup": {

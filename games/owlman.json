@@ -1,6 +1,99 @@
 {
 	"meta": {
 		"name": "Owlman",
-		"source": "http://superdupergames.org/rules/owlman.pdf"
+		"source": "http://superdupergames.org/rules/owlman.pdf",
+		"tags": ["assymetric"]
+	},
+	"graphics": {
+		"icons": {"owlman":"knights","helpers":"pawns","doc":"kings"},
+		"tiles": {"tower":"playercolour","lair":"playercolour","outside":"grass"}
+	},
+	"board": {"width":8,"height":8},
+	"setup": {
+		"doc": {"1":["h1"]},
+		"helpers": {"1":["d1","d3","d5","e2","e4","f1","f3","f5","g2","g4","h3","h5"]},
+		"owlman": {"2":["a8"]}
+	},
+	"terrain": { "tower": {"1":["h1"]} ,"lair":{"2":["a8"]},"outside":["b7"] },
+	"startturn": {
+		"allow": ["selectunit"]
+	},
+	"endturn": {
+		"endgame": {
+			"evidence": { "condition": ["and",[["overlaps","lair","doc"],["overlaps","outside","helpers"]]]},
+			"scareddoc": { "condition": ["isempty","doc"] },
+			"scaredallhelpers": { "condition": ["isempty","helpers"] }
+		}
+	},
+	"marks": {
+		"selectunit": {
+			"from": "myunits",
+			"runGenerators": [
+				"findsteps",
+				["if",["anyat","myowlman","selectunit"],"findswooptargets"]
+			],
+			"allow": ["selectmovetarget"]
+		},
+		"selectmovetarget": {
+			"from": ["ifelse",["overlaps","myowlman","tower"],"opphelpers","movetargets"],
+			"allow": ["move"],
+			"runGenerators": [["if",["truthy",["lookup","movetargets","selectmovetarget","dir"]],"findscarevictims"]]
+		}
+	},
+	"commands": {
+		"move": {
+			"allow": ["endturn"],
+			"applyEffects": [
+				["forallin",["union","scarevictims","selectmovetarget"],["killunit",["loopid"]]],
+				["move","selectunit","selectmovetarget"]
+			]
+		}
+	},
+	"generators": {
+		"findsteps": {
+			"type": "nextto",
+			"starts": "selectunit",
+			"dirs": ["dirs",[2,4,6,8]],
+			"condition": ["or",[
+				["and",[
+					["noneat","units",["contextpos","target"]],
+					["noneat","tower",["contextpos","target"]]
+				]],
+				["and",[
+					["anyat","myowlman","selectunit"],
+					["anyat","tower",["contextpos","target"]]
+				]]
+			]],
+			"draw": {
+				"target": {
+					"tolayer": "movetargets",
+					"include": { "dir": ["contextval","dir"] }
+				}
+			}
+		},
+		"findswooptargets": {
+			"type": "offset",
+			"starts": "selectunit",
+			"offsets": [[3,1],[3,-1]],
+			"dirs": ["dirs",[1,3,5,7]],
+			"condition": ["noneat","units",["contextpos","target"]],
+			"draw": {
+				"target": {
+					"tolayer": "movetargets"
+				}
+			}
+		},
+		"findscarevictims": {
+			"type": "walker",
+			"starts": "selectmovetarget",
+			"dirs": ["relativedir",1,["lookup","movetargets","selectmovetarget","dir"]],
+			"blocks": "units",
+			"draw": {
+				"block": {
+					"condition": ["anyat","helpers",["contextpos","target"]],
+					"tolayer": "scarevictims"
+				}
+			}
+		}
 	}
 }

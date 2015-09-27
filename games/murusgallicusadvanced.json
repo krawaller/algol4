@@ -4,7 +4,7 @@
 		"source": "https://boardgamegeek.com/thread/844020/advanced-murus-gallicus",
 		"tags": ["differentunits","infiltrate","shoot"]
 	},
-	"graphics": { "tiles": {"homerow":"grass"}, "icons": {"towers":"rooks","walls":"pawns","catapults":"queens"} },
+	"graphics": { "tiles": {"homerow":"playercolour"}, "icons": {"towers":"rooks","walls":"pawns","catapults":"queens"} },
 	"board": { "height": 7, "width": 8 },
 	"terrain": { "homerow": { "1": [["rect","a1","h1"]], "2":[["rect","a7","h7"]] } },
 	"setup": { "towers": { "1": [["rect","a1","h1"]], "2":[["rect","a7","h7"]] } },

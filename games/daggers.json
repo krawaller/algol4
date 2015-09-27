@@ -6,7 +6,7 @@
 	},
 	"board": { "height": 8, "width": 8 },
 	"graphics": {
-		"tiles": { "bases": "grass" },
+		"tiles": { "bases": "playercolour" },
 		"icons": { "daggers": "bishops", "crowns": "kings" }
 	},
 	"terrain": {

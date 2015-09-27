@@ -24,14 +24,16 @@ var _ = require('lodash'),
         momentum: require("../games/momentum.json"),
         murusgallicus: require("../games/murusgallicus.json"),
         murusgallicusadvanced: require("../games/murusgallicusadvanced.json"),
-        threemusketeers: require("../games/threemusketeers.json"),
+        owlman: require("../games/owlman.json"),
         pawnographic: require("../games/pawnographic.json"),
         royalcarpet: require("../games/royalcarpet.json"),
         //retsami: require("../games/retsami.json"),
+        sabotage: require("../games/sabotage.json"),
         semaphor: require("../games/semaphor.json"),
         sombrero: require("../games/sombrero.json"),
         tablut: require("../games/tablut.json"),
-        trespass: require("../games/trespass.json"),
+        threemusketeers: require("../games/threemusketeers.json"),
+        trespass: require("../games/trespass.json")
     };
 
 module.exports = _.reduce(games,function(mem,def,name){

@@ -2,5 +2,83 @@
 	"meta": {
 		"name": "Sabotage",
 		"source": "http://www.di.fc.ul.pt/~jpn/gv/sabotage.htm"
+	},
+	"graphics": {"icons":{"kings":"kings","soldiers":"pawns"},"tiles":{"goal":"playercolour"}},
+	"board": {"width":13,"height":9},
+	"terrain": {
+		"bottomrow":[["rect","a1","m1"]],
+		"goal": {"1":["l5"],"2":["b5"]}
+	},
+	"setup": {
+		"kings": {"0":["g5"]},
+		"soldiers": {
+			"1": ["a1","b1","a9","b9","i5","j6","k6","j4","k4"],
+			"2": ["l1","m1","l9","m9","c6","d6","e5","c4","d4"]
+		}
+	},
+	"startturn": {
+		"runGenerators": ["findmovecounts"],
+		"allow": ["selectunit"]
+	},
+	"endturn": {
+		"endgame": { "goal": {"condition":["overlaps","mykings","mygoal"]} }
+	},
+	"marks": {
+		"selectunit": {
+			"from": "myunits",
+			"runGenerators": ["findmovetargets"],
+			"allow": ["selectmovetarget"]
+		},
+		"selectmovetarget": {
+			"from": "movetargets",
+			"allow": ["move"]
+		}
+	},
+	"commands": {
+		"move": {
+			"applyEffects": [
+				["if",["anyat","kings","selectmovetarget"],["setgroup","selectunit","kings"]],
+				["kill","selectmovetarget"],
+				["move","selectunit","selectmovetarget"]
+			],
+			"allow": ["endturn"]
+		}
+	},
+	"generators": {
+		"findmovetargets": {
+			"type": "walker",
+			"starts": "selectunit",
+			"dirs": ["ifelse",["anyat","mykings","selectunit"],["dirs",[1,3,5,7]],["dirs",[1,2,3,4,5,6,7,8]]],
+			"blocks": "units",
+			"draw": {
+				"steps": {
+					"condition": ["same",["contextval","step"],["lookup","range","selectunit","distance"]],
+					"tolayer": "movetargets"
+				},
+				"block": {
+					"condition": ["and",[
+						["noneat","myunits",["contextpos","target"]],
+						["same",["sum",1,["contextval","linelength"]],["lookup","range","selectunit","distance"]]
+					]],
+					"tolayer": "movetargets"
+				}
+			}
+		},
+		"findmovecounts": {
+			"type": "walker",
+			"dirs": ["dir",1],
+			"starts": "bottomrow",
+			"count": ["subtract","units","neutralunits"],
+			"startasstep": true,
+			"draw": {
+				"steps": {
+					"condition": ["anyat","myunits",["contextpos","target"]],
+					"tolayer": "range",
+					"include": {
+						"distance": ["contextval","counttotal"]
+					}
+				}
+			}
+		}
 	}
 }

@@ -5,60 +5,9 @@
 		"tags": ["infiltrate","formation"]
 	},
 	"board": { "height": 12, "width": 14 },
-	"graphics": { "tiles": {"bases":"grass"}, "icons": {"soldiers":"pawns"} },
+	"graphics": { "tiles": {"bases":"playercolour"}, "icons": {"soldiers":"pawns"} },
 	"setup": { "soldiers": {"1":[["rect","a11","n12"]], "2":[["rect","a1","n2"]]} },
 	"terrain": { "bases": {"1":[["rect","a12","n12"]], "2":[["rect","a1","n1"]]} },
-	"marks": {
-		"selecthead": {
-			"from": "myunits",
-			"runGenerators": ["findimmediatetargets","findpotentialtails"],
-			"allow": [ "selecttail", "selectmove" ]
-		},
-		"selecttail": {
-			"from": "potentialtail",
-			"runGenerators": ["findphalanxmembers","findmarchandchargetargets","findopposingphalanx"],
-			"allow": [ "selectcharge", "selectmarch" ]
-		},
-		"selectmove": {
-			"from": "movetarget",
-			"allow": ["move"]
-		},
-		"selectcharge": {
-			"from": "chargetarget",
-			"runGenerators": ["findchargevictims"],
-			"allow": ["charge"]
-		},
-		"selectmarch": {
-			"from": "marchtarget",
-			"allow": ["march"]
-		}
-	},
-	"commands": {
-		"move": {
-			"applyEffects": [["moveunit",["idofunitat","selecthead"],"selectmove"]]
-		},
-		"march": {
-			"applyEffects": [["forallin","phalanxmember",
-				["offsetunit",["loopid"],
-					["lookup","marchtarget",["markpos","selectmarch"],"heading"],
-					["lookup","marchtarget",["markpos","selectmarch"],"distance",
-					0]]
-			]]
-		},
-		"charge": {
-			"applyEffects": [
-				["forallin","chargevictims",
-					["killunit",["loopid"]]
-				],
-				["forallin","phalanxmember",
-					["offsetunit",["loopid"],
-						["lookup","chargetarget",["markpos","selectcharge"],"heading"],
-						["lookup","chargetarget",["markpos","selectcharge"],"distance",
-						0]]
-				]
-			]
-		}
-	},
 	"startturn": {
 		"allow": ["selecthead"]
 	},
@@ -75,11 +24,50 @@
 			}
 		}
 	},
+	"marks": {
+		"selecthead": {
+			"from": "myunits",
+			"runGenerators": ["findimmediatetargets","findpotentialtails"],
+			"allow": [ "selecttail", "selectmove" ]
+		},
+		"selecttail": {
+			"from": "potentialtail",
+			"runGenerators": ["findphalanxmembers","findmarchandchargetargets","findopposingphalanx"],
+			"allow": [ "selectmarch" ]
+		},
+		"selectmove": {
+			"from": "movetarget",
+			"allow": ["move"]
+		},
+		"selectmarch": {
+			"from": "marchtarget",
+			"runGenerators": ["findchargevictims"],
+			"allow": ["march"]
+		}
+	},
+	"commands": {
+		"move": {
+			"applyEffects": [["moveunit",["idofunitat","selecthead"],"selectmove"]]
+		},
+		"march": {
+			"applyEffects": [
+				["forallin","chargevictims",
+					["killunit",["loopid"]]
+				],
+				["forallin","phalanxmember",
+					["offsetunit",["loopid"],
+						["lookup","marchtarget",["markpos","selectmarch"],"heading"],
+						["lookup","marchtarget",["markpos","selectmarch"],"distance",
+						0]]
+				]
+			]
+		}
+	},
 	"generators": {
 		"findchargevictims": {
 			"type": "filter",
 			"layer": "opposingphalanx",
-			"matching": {"heading":["is",["lookup","opposingphalanx",["markpos","selectcharge"],"heading"]]},
+			"matching": {"heading":["is",["lookup","opposingphalanx","selectmarch","heading"]]},
 			"tolayer": "chargevictims"
 		},
 		"findimmediatetargets": {
@@ -167,7 +155,7 @@
 			"draw": {
 				"start": {
 					"condition": ["morethan",["lookup","threatened",["contextpos","start"],"strength"],["contextval","linelength"]],
-					"tolayer": "chargetarget",
+					"tolayer": "marchtarget",
 					"include": {
 						"heading": ["contextval","dir"],
 						"distance": ["lookup","threatened",["contextpos","start"],"distance"]

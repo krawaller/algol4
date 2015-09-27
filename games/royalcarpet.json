@@ -5,7 +5,7 @@
 		"tags": ["infiltrate","deploy","differentunits"]
 	},
 	"graphics": {
-		"tiles": {"base":"grass"}, "icons": {"kings":"kings","towers":"rooks","soldiers":"pawns"}
+		"tiles": {"base":"playercolour"}, "icons": {"kings":"kings","towers":"rooks","soldiers":"pawns"}
 	},
 	"board": {"height":10,"width":8},
 	"setup": {

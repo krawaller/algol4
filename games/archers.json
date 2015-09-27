@@ -6,7 +6,7 @@
 	},
 	"board": { "height": 9, "width": 9 },
 	"graphics": {
-		"tiles": { "trees": "grass" },
+		"tiles": { "trees": "playercolour" },
 		"icons": { "archers": "pawns", "kings": "kings", "arrows": "projectiles", "bullseyes": "projectiles" },
 		"turnvars": { "nonfiremoves": "moves left" },
 		"rotatepieces": true

@@ -4,7 +4,7 @@
 		"source": "https://boardgamegeek.com/thread/862890/quicker-more-tactical-mini-8x8-version-epaminondas"
 	},
 	"board": { "height": 8, "width": 8 },
-	"graphics": { "tiles": {"bases":"grass"}, "icons": {"soldiers":"pawns", "towers":"rooks"} },
+	"graphics": { "tiles": {"bases":"playercolour"}, "icons": {"soldiers":"pawns", "towers":"rooks"} },
 	"setup": { "soldiers": {"1":[["rect","a7","h8"]], "2":[["rect","a1","h2"]] } },
 	"terrain": { "bases": {"1":[["rect","a8","h8"]], "2":[["rect","a1","h1"]] } },
 	"marks": {

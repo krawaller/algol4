@@ -160,6 +160,18 @@ a.square, .square a {
 	width: 100%;
 }
 
+.playercolour {
+	opacity: 0.4;
+}
+
+.playercolour.plr1 {
+	background-color: red;
+}
+
+.playercolour.plr2 {
+	background-color: blue;
+}
+
 .wood {
 	background-color: #996633;
 }

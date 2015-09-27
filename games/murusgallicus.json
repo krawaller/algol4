@@ -4,7 +4,7 @@
 		"source": "https://boardgamegeek.com/filepage/46316/murus-gallicus-detailed-rules",
 		"tags": ["differentunits","infiltrate"]
 	},
-	"graphics": { "tiles": {"homerow":"grass"}, "icons": {"towers":"rooks","walls":"pawns"} },
+	"graphics": { "tiles": {"homerow":"playercolour"}, "icons": {"towers":"rooks","walls":"pawns"} },
 	"board": { "height": 7, "width": 8 },
 	"terrain": { "homerow": { "1": [["rect","a1","h1"]], "2":[["rect","a7","h7"]] } },
 	"setup": { "towers": { "1": [["rect","a1","h1"]], "2":[["rect","a7","h7"]] } },

@@ -6,7 +6,7 @@
 	},
 	"board": {"height":7,"width":11},
 	"graphics": {
-		"tiles": {"bases":"grass"},
+		"tiles": {"bases":"playercolour"},
 		"icons": {"attackers":"pawns","defenders":"queens","strikers":"kings" }
 	},
 	"setup": {
@@ -15,7 +15,7 @@
 		"strikers": {"2": ["f6"]}
 	},
 	"terrain": {
-		"bases": [["rect","a1","k1"],["rect","a7","k7"]],
+		"bases": {"1":[["rect","a1","k1"]],"2":[["rect","a7","k7"]]},
 		"goals": [["rect","a7","k7"]]
 	},
 	"startturn": {

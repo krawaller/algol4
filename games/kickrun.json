@@ -4,7 +4,7 @@
 		"source": "http://www.di.fc.ul.pt/~jpn/gv/kickrun.htm",
 		"tags": ["infiltrate","differentunits"]
 	},
-	"graphics": {"tiles":{"corners":"grass"},"icons":{"runners":"bishops","sidekickers":"pawns"}},
+	"graphics": {"tiles":{"corners":"playercolour"},"icons":{"runners":"bishops","sidekickers":"pawns"}},
 	"board": {"height":5,"width":5},
 	"terrain": { "corners": {"1":["a1"],"2":["e5"]} },
 	"setup": {

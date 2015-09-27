@@ -19,7 +19,7 @@ var Terrain = React.createClass({
                             tilewidth={this.props.tilewidth}
                             x={board.getIn([pos,0,"x"])}
                             y={board.getIn([pos,0,"y"])}>
-                                <div className={"tile "+look}></div>
+                                <div className={"tile "+look+" plr"+(arr.getIn([0,"owner"])||0)}></div>
                             </Square>);
                     },list,this);
                 },[],this) }

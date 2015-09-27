@@ -38,6 +38,14 @@ var effectmethods = {
 		//console.log("SET unit",this.evaluateId(state,id),"prop",this.evaluateValue(state,propname),"to",this.evaluateValue(state,val))
 		return state.setIn(["data","units",this.evaluateId(state,id),this.evaluateValue(state,propname)],this.evaluateValue(state,val));
 	},
+	setgroup: function(state,pos,groupname){
+		//console.log("SET unit",this.evaluateId(state,id),"prop",this.evaluateValue(state,propname),"to",this.evaluateValue(state,val))
+		pos = this.evaluatePosition(state,pos);
+		groupname = this.evaluateValue(state,groupname);
+		return (state.getIn(["layers","units",pos])||I.List()).reduce(function(s,unit){
+			return state.setIn(["data","units",unit.get("id"),"group"],groupname);
+		},state,this);
+	},
 	removeunitdata: function(state,id,propname){
 		return state.deleteIn(["data","units",this.evaluateId(state,id),this.evaluateValue(state,propname)]);
 	},
