@@ -21,6 +21,7 @@ var React = require('react'),
 var Game = React.createClass({
     mixins: [Router.Navigation,Router.State,Reflux.listenToMany(listactions),Reflux.listenToMany(battleactions)],
     saveBattleMoves: function(gamename,battleid,moves){
+        console.log("Saving battle moves",battleid,"moves",moves);
         window.localStorage.setItem("algol-"+gamename+"-localbattle-"+battleid,JSON.stringify(moves||[]));
     },
     loadBattleMoves: function(gamename,battleid){
@@ -63,6 +64,9 @@ var Game = React.createClass({
         while (toaddbattle.has("undo")) {
             //console.log("Adding one cmnd back!");
             previousstep = tree.getIn(["cache",toaddbattle.get("undo")]);
+            if (!previousstep){
+                console.log("Alarm! was at",toaddbattle.get("id"),"which has bogus undo to",toaddbattle.get("undo"));
+            }
             sinfo = toaddbattle.get("steps").last();
             newl = [[{
                 player:previousstep.get("player"),
@@ -98,8 +102,8 @@ var Game = React.createClass({
                     markname = tree.getIn(["cache",currentid,"availableMarks",step]);
                 tree = (markname ? Algol.makeMark(tree,currentid,markname,step,true) : Algol.makeCommand(tree,currentid,step,true));
             });
-            hist = this.addTurnToHistory(tree,tree.get("current"),hist);
-            console.log("ending turn",t,"out of",turns.length,"and means",t+1<turns.length);
+            hist = this.addTurnToHistory(tree,tree.get("current"),hist,true);
+            //console.log("ending turn",t,"out of",turns.length,"and means",t+1<turns.length);
             tree = Algol.endTurn(tree,tree.get("current"),t+1<turns.length);
         },this);
         // prune only latest if we're playing

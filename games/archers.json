@@ -18,6 +18,7 @@
 		"archers": {"1":[["holerect","b6","d8",["c7"],5]],"2":[["holerect","f2","h4",["g3"],1]]},
 		"kings": {"1":[{"pos":"c7","dir":5}],"2":[{"pos":"g3","dir":1}]}
 	},
+	"checkrepeat": true,
 	"startturn": {
 		"applyEffects": [["setcontextval","nonfiremoves",2]],
 		"runGenerators": ["findarrows"],

@@ -48,7 +48,7 @@ Algol.makeCommand = function(tree,id,cmndname,nodive){
 		reversal = fromstate.getIn(["reversalCommands",cmndname]);
 	if (cmndname==="undo"){
 		//console.log("UNDOING",cmndname,state.get("undo"),state.hasIn(["cache",state.get("undo")]));
-		console.log("UNDO! to",fromstate.get("undo"),"tree",tree.toJS());
+		//console.log("UNDO! was at",id,"to",fromstate.get("undo"),"tree",tree.toJS());
 		return tree.set("current",fromstate.get("undo"));
 	} else if (cmndname==="endturn"){
 		return this.endTurn(tree,id);
@@ -96,12 +96,20 @@ Algol.calculateStateAfterCommand = function(state,cdef,auto){
 		.setIn(["context","hasperformed"+cmndname],true)
 		.set("canendturnnow",false)
 		.set("canreachendturn",false)
-		.set("path",auto ? state.get("path") : state.get("path").push(cmndname))
+		//.set("undo",auto ? state.get("undobeforefirstauto") : oldid)
+		//.set("path",auto ? state.get("path") : state.get("path").push(cmndname))
 		.setIn(["context","performedsteps"],state.getIn(["context","performedsteps"])+1);
-	newstate = auto ? newstate : I.pushIn(newstate,["steps"],I.fromJS({
+	if (!auto){
+		newstate = newstate.delete("undobeforefirstauto").set("path",state.get("path").push(cmndname));
+		newstate = I.pushIn(newstate,["steps"],I.fromJS({
+			command: cmndname,
+			marks: state.get("marks")
+		}));
+	}
+	/*newstate = auto ? newstate : I.pushIn(newstate,["steps"],I.fromJS({
 		command: cmndname,
 		marks: state.get("marks")
-	}));
+	}));*/
 	newstate = this.prepareBasicUnitLayers(newstate);
 	return newstate;
 };
@@ -114,14 +122,16 @@ Algol.allowCommand = function(tree,id,cmndname,auto){
 		newid = newstate.get("id");
 	// make sure this isn't a reversal to earlier
 	var tocheck = newstate
-	while(tocheck.has("undo")){
-		tocheck = tree.getIn(["cache",tocheck.get("undo")]);
-		if (this.areStatesEqual(tocheck,newstate)){
-			return tree.setIn(["cache",id,"reversalCommands",cmndname],tocheck.get("id"));
+	if (tree.getIn(["gamedef","checkrepeat"])){
+		while(tocheck.has("undo")){
+			tocheck = tree.getIn(["cache",tocheck.get("undo")]);
+			if (this.areStatesEqual(tocheck,newstate)){
+				return tree.setIn(["cache",id,"reversalCommands",cmndname],tocheck.get("id"));
+			}
 		}
-	};
+	}
 	// command causes new state! we add its instructions (and generators)
-	tree = tree.setIn(["cache",newid],newstate.set("undo",id));
+	tree = tree.setIn(["cache",newid],newstate.set("undo",auto ? newstate.get("undobeforefirstauto") : id));
 	tree = this.obeyInstructions(tree,newid,cdef);
 	var afterstep = gamedef.get("afterstep");
 	if (afterstep){
@@ -151,10 +161,11 @@ Algol.endTurn = function(tree,id,inhistory){
 		if (!mem && this.evaluateBoolean(state,end.get("condition"))) {
 			var //res = this.evaluateValue(state,end.get("result")),
 				who = end.has("who") && this.evaluateValue(state,end.get("who")) || state.get("player");  //(res==="loseto" && this.evaluateValue(state,end.get("who")) || res==="draw" || 0 || state.get("player") );
-			return state
+			return (state
 				.set("endedby",name)
 				.set("winner",who)
-				.set("save",state.get("save").push(state.get("path")));
+				.set("save",state.get("save").push(state.get("path")))
+			);
 		}
 		return mem;
 	},undefined,this);
@@ -169,7 +180,10 @@ Algol.endTurn = function(tree,id,inhistory){
 			newturntree = this.checkEndReach(newturntree,"root");
 			// Opponent cannot end in next turn!
 			if (!newturntree.getIn(["cache","root","canreachendturn"])){
-				state = state.set("endedby", newturntree.get("forbidden") || "stalemate").set("winner",state.get("player"));
+				state = state
+					.set("endedby", newturntree.get("forbidden") || "stalemate")
+					.set("winner",state.get("player"))
+					.set("save",state.get("save").push(state.get("path")));
 				return tree.setIn(["cache",id],state).set("current",id);
 			}
 		}
@@ -211,7 +225,7 @@ Algol.newTurnTree = function(oldtree,id,newturnplayer){
 		//effect = startturn.get("applyeffect"),
 		baselayer = state.getIn(["baselayers",newturnplayer])||state.getIn(["baselayers",newturnplayer+""]);
 	// set basics
-	state = state.delete("previousstep").delete("canreachendturn").delete("canendturnnow").delete("forbidden").delete("undo").merge(I.fromJS({
+	state = state.delete("undobeforefirstauto").delete("previousstep").delete("canreachendturn").delete("canendturnnow").delete("forbidden").delete("undo").merge(I.fromJS({
 		player: newturnplayer,
 		turn: newturnnumber,
 		baselayer: baselayer,
@@ -312,7 +326,7 @@ Algol.pruneOptions = function(tree,id){
 
 // called in endTurn, 
 Algol.checkEndReach = function(tree,id){
-	console.log("Checking endreach turn",tree.get("turn"),"player",tree.get("player"),"stepid",id);
+	//console.log("Checking endreach turn",tree.get("turn"),"player",tree.get("player"),"stepid",id);
 	var statetocheck = tree.getIn(["cache",id]),
 		wasat = tree.get("current"),
 		gamedef = tree.get("gamedef"),
@@ -415,9 +429,13 @@ var allowmethods = {
 		return this.evaluateBoolean(state,bool) ? this.allow(tree,state.get("id"),allowdef) : tree;
 	},
 	auto: function(tree,state,cmnd){
+		var id = state.get("id");
 		cmnd = this.evaluateValue(state,cmnd);
 		//console.log("Autodoing",cmnd,"for state",state.get("id"));
-		return this.allowCommand(tree,state.get("id"),cmnd,true);
+		if (!state.has("undobeforefirstauto")){
+			tree = tree.setIn(["cache",id,"undobeforefirstauto"],state.get("undo"));
+		}
+		return this.allowCommand(tree,id,cmnd,true);
 	}
 };
 
