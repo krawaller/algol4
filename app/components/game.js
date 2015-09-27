@@ -90,17 +90,20 @@ var Game = React.createClass({
             start = this.props.tree.getIn(["cache","root"]),
             battle = start,
             hist = [[{player:0,command:"start"},start.deleteIn(["cache","root","availableMarks"])]],
-            moves = battleid && this.loadBattleMoves(gamename,battleid);
-        // perform moves, adding them to hist
-        _.each(moves||[],function(steps){
+            turns = battleid && this.loadBattleMoves(gamename,battleid);
+        // perform turns, adding them to hist
+        _.each(turns||[],function(steps,t){
             _.each(steps,function(step){
                 var currentid = tree.get("current");
                     markname = tree.getIn(["cache",currentid,"availableMarks",step]);
-                tree = (markname ? Algol.makeMark(tree,currentid,markname,step) : Algol.makeCommand(tree,currentid,step));
+                tree = (markname ? Algol.makeMark(tree,currentid,markname,step,true) : Algol.makeCommand(tree,currentid,step,true));
             });
             hist = this.addTurnToHistory(tree,tree.get("current"),hist);
-            tree = Algol.makeCommand(tree,tree.get("current"),"endturn");
+            console.log("ending turn",t,"out of",turns.length,"and means",t+1<turns.length);
+            tree = Algol.endTurn(tree,tree.get("current"),t+1<turns.length);
         },this);
+        // prune only latest if we're playing
+        tree = Algol.pruneOptions(tree,tree.get("current"));
         // return state
         return {
             battle: tree.getIn(["cache",tree.get("current")]),

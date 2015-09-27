@@ -135,7 +135,7 @@ Algol.allowCommand = function(tree,id,cmndname,auto){
 };
 
 
-Algol.endTurn = function(tree,id){
+Algol.endTurn = function(tree,id,inhistory){
 	var endturndef = tree.getIn(["gamedef","endturn"]),
 		state = tree.getIn(["cache",id]),
 		newturntree, finishid;
@@ -147,7 +147,7 @@ Algol.endTurn = function(tree,id){
 		state = this.prepareBasicUnitLayers(state);
 	}
 	// end game if reached sth
-	var endgame = endturndef.get("endgame").reduce(function(mem,end,name){
+	var endgame = inhistory ? false : endturndef.get("endgame").reduce(function(mem,end,name){
 		if (!mem && this.evaluateBoolean(state,end.get("condition"))) {
 			var //res = this.evaluateValue(state,end.get("result")),
 				who = end.has("who") && this.evaluateValue(state,end.get("who")) || state.get("player");  //(res==="loseto" && this.evaluateValue(state,end.get("who")) || res==="draw" || 0 || state.get("player") );
@@ -165,14 +165,17 @@ Algol.endTurn = function(tree,id){
 		return tree.setIn(["cache",id],endgame).set("current",id);
 	} else {
 		newturntree = this.newTurnTree(tree.setIn(["cache",id,state]),id,state.getIn(["passto",state.get("player")]));
-		newturntree = this.checkEndReach(newturntree,"root");
-		// Opponent cannot end in next turn!
-		if (!newturntree.getIn(["cache","root","canreachendturn"])){
-			state = state.set("endedby", newturntree.get("forbidden") || "stalemate").set("winner",state.get("player"));
-			return tree.setIn(["cache",id],state).set("current",id);
+		if (!inhistory){
+			newturntree = this.checkEndReach(newturntree,"root");
+			// Opponent cannot end in next turn!
+			if (!newturntree.getIn(["cache","root","canreachendturn"])){
+				state = state.set("endedby", newturntree.get("forbidden") || "stalemate").set("winner",state.get("player"));
+				return tree.setIn(["cache",id],state).set("current",id);
+			}
 		}
 		// Game keeps going!
-		return this.pruneOptions(newturntree.set("current","root"),"root"); // todo - store final states on tree for comparison?
+		newturntree = newturntree.set("current","root");
+		return inhistory ? newturntree : this.pruneOptions(newturntree,"root"); // todo - store final states on tree for comparison?
 	}
 };
 
@@ -204,12 +207,13 @@ Algol.allowEndTurn = function(tree,id){
 Algol.newTurnTree = function(oldtree,id,newturnplayer){
 	var state = oldtree.getIn(["cache",id]),
 		startturn = oldtree.getIn(["gamedef","startturn"])||I.Map(),
+		newturnnumber = (state.get("turn")||0)+1,
 		//effect = startturn.get("applyeffect"),
 		baselayer = state.getIn(["baselayers",newturnplayer])||state.getIn(["baselayers",newturnplayer+""]);
 	// set basics
 	state = state.delete("previousstep").delete("canreachendturn").delete("canendturnnow").delete("forbidden").delete("undo").merge(I.fromJS({
 		player: newturnplayer,
-		turn: (state.get("turn")||0)+1,
+		turn: newturnnumber,
 		baselayer: baselayer,
 		id: "root",
 		path: [],
@@ -239,7 +243,12 @@ Algol.newTurnTree = function(oldtree,id,newturnplayer){
 	}
 	// layers
 	state = this.prepareBasicUnitLayers(state);
-	var newtree = oldtree.set("cache",I.Map().set("root",state)).set("current","root").delete("canreachendturn");
+	var newtree = oldtree
+		.set("cache",I.Map().set("root",state))
+		.set("current","root")
+		.delete("canreachendturn")
+		.set("player",newturnplayer)
+		.set("turn",(state.get("turn")||0)+1);
 	// commands
 	//console.log("So here is newtree before obeyintructions",newtree.toJS());
 	newtree = this.obeyInstructions(newtree,"root",startturn);
@@ -303,7 +312,7 @@ Algol.pruneOptions = function(tree,id){
 
 // called in endTurn, 
 Algol.checkEndReach = function(tree,id){
-	//console.log("Checking endreach",tree.toJS(),"id",id);
+	console.log("Checking endreach turn",tree.get("turn"),"player",tree.get("player"),"stepid",id);
 	var statetocheck = tree.getIn(["cache",id]),
 		wasat = tree.get("current"),
 		gamedef = tree.get("gamedef"),
@@ -394,7 +403,7 @@ Algol.newGame = function(gamedef,nbrofplayers){
 		"gamedef": gamedef,
 		"cache": {"start":startstate}
 	});
-	return this.pruneOptions(this.newTurnTree(starttree,"start",1),"root");
+	return this.newTurnTree(starttree,"start",1);
 };
 
 
