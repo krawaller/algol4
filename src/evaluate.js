@@ -167,7 +167,7 @@ var boolmethods = {
 };
 
 Algol.evaluateBoolean = function(state,def){
-	if (typeof def.first !== "function"){
+	if (typeof def.first !== "function" || !boolmethods[def.first()]){
 		console.log("THE HECK BOOL",state.toJS(),"def",def.toJS && def.toJS() || def)
 	}
 	return boolmethods[def.first()].apply(this,[state].concat(def.rest().toArray()));

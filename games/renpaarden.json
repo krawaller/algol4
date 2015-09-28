@@ -1,0 +1,52 @@
+{
+	"meta": {
+		"name": "Renpaarden",
+		"source": "http://www.di.fc.ul.pt/~jpn/gv/renpaarden.htm"
+	},
+	"graphics": {"icons": {"soldiers":"knights"}, "tiles": {"bases":"playercolour"}},
+	"terrain": {"bases": { "1": [["rect","a1","i2"]], "2": [["rect","a8","i9"]] } },
+	"board": {"height":9,"width":9},
+	"setup": { "soldiers": { "1": [["rect","a1","i2"]], "2": [["rect","a8","i9"]] } },
+	"startturn": { "allow": ["selectunit"] },
+	"endturn": {
+		"endgame": {
+			"invasion": {"condition":["same",18,["overlapsize","oppbases","myunits"]]}
+		}
+	},
+	"checkrepeat": true,
+	"marks": {
+		"selectunit": {
+			"from": "myunits",
+			"runGenerators": ["findjumptargets"],
+			"allow": ["selectjumptarget"]
+		},
+		"selectjumptarget": {
+			"from": "jumptargets",
+			"allow":["jump"]
+		}
+	},
+	"commands": {
+		"jump": {
+			"applyEffects": [
+				["forallmatchingin",
+					["union","selectunit",["contextpos","jumpspot"]],
+					{"owner":["is",["contextval","currentplayer"]]},
+					["moveunit",["loopid"],"selectjumptarget"]
+				],
+				["setcontextval","jumpspot",["markpos","selectjumptarget"]]
+			],
+			"runGenerators": [["if",["anyat","oppunits",["contextpos","jumpspot"]],"findjumptargets"]],
+			"allow": [["ifelse",["anyat","oppunits",["contextpos","jumpspot"]],"selectjumptarget","endturn"]]
+		}
+	},
+	"generators": {
+		"findjumptargets": {
+			"type": "offset",
+			"starts": ["union","selectunit",["contextpos","jumpspot"]],
+			"dirs": ["dirs",[1,3,5,7]],
+			"offsets": [[2,1],[2,-1]],
+			"condition": ["noneat","myunits",["contextpos","target"]],
+			"draw": { "target": { "tolayer": "jumptargets" } }
+		}
+	}
+}

@@ -65,15 +65,15 @@ var effectmethods = {
 	},
 	forallin: function(state,positionset,effect){
 		var positionset = this.evaluatePositionSet(state,positionset);
-		//console.log("FOR ALL IN",positionset.toJS());
-		/*return positionset.reduce(function(state,pos){
-			return (state.getIn(["layers","units",pos])||I.List()).reduce(function(unit){
-				return this.applyEffect(state.setIn(["context","loopid"],unit.get("id")),effect);
-			},state,this);
-		},state,this)[state.hasIn(["context","loopid"])?"setIn":"deleteIn"](["context","loopid"],state.getIn(["context","loopid"]));*/
 		return state.getIn(["data","units"]).reduce(function(state,unit,id){
 			//console.log("checking unit",id,positionset.has(unit.get("pos")));
 			return positionset.has(unit.get("pos")) ? this.applyEffect(state.setIn(["context","loopid"],id).setIn(["context","target"],unit.get("pos")),effect) : state;
+		},state,this)[state.hasIn(["context","loopid"])?"setIn":"deleteIn"](["context","loopid"],state.getIn(["context","loopid"]));
+	},
+	forallmatchingin: function(state,positionset,match,effect){
+		var positionset = this.evaluatePositionSet(state,positionset);
+		return state.getIn(["data","units"]).reduce(function(state,unit,id){
+			return positionset.has(unit.get("pos")) && this.evaluateObjectMatch(state,match,unit) ? this.applyEffect(state.setIn(["context","loopid"],id).setIn(["context","target"],unit.get("pos")),effect) : state;
 		},state,this)[state.hasIn(["context","loopid"])?"setIn":"deleteIn"](["context","loopid"],state.getIn(["context","loopid"]));
 	},
 	forallposin: function(state,positionset,effect){
