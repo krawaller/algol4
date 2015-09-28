@@ -1,0 +1,75 @@
+{
+	"meta": {
+		"name": "Four field Kono",
+		"source": "http://www.di.fc.ul.pt/~jpn/gv/kono2.htm"
+	},
+	"graphics": {"icons":{"soldiers":"pawns"}},
+	"board": {"width":4,"height":4},
+	"setup": {
+		"soldiers": {
+			"1": [["rect","a1","b4"]],
+			"2": [["rect","c1","d4"]]
+		}
+	},
+	"startturn": {
+		"allow": ["selectunit"],
+		"runGenerators": ["findjumptargets","findmovetargets"]
+	},
+	"marks": {
+		"selectunit": {
+			"from": "myunits",
+			"runGenerators": ["findmymovetargets","findmyjumptargets"],
+			"allow": ["selectmovetarget"]
+		},
+		"selectmovetarget": {
+			"from": "targets",
+			"allow": ["move"]
+		}
+	},
+	"commands": {
+		"move": {
+			"applyEffects": [["kill","selectmovetarget"],["move","selectunit","selectmovetarget"]],
+			"allow": ["endturn"]
+		}
+	},
+	"generators": {
+		"findmymovetargets": {
+			"type": "filter",
+			"layer": "movetargets",
+			"condition": ["isempty","jumptargets"],
+			"matching": {"id":["is",["idofunitat","selectunit"]]},
+			"tolayer": "targets"
+		},
+		"findmyjumptargets": {
+			"type": "filter",
+			"layer": "jumptargets",
+			"matching": {"id":["is",["idofunitat","selectunit"]]},
+			"tolayer": "targets"
+		},
+		"findmovetargets": {
+			"type": "nextto",
+			"starts": "myunits",
+			"dirs": ["dirs",[1,3,5,7]],
+			"condition": ["noneat","units",["contextpos","target"]],
+			"draw": {
+				"target": { "tolayer": "movetargets", "include": {"id":["idofunitat",["contextpos","start"]]} }
+			}
+		},
+		"findjumptargets": {
+			"type": "walker",
+			"starts": "myunits",
+			"dirs": ["dirs",[1,3,5,7]],
+			"steps": "myunits",
+			"blocks": "oppunits",
+			"max": 2,
+			"prioritizeblocksoversteps": true,
+			"draw": {
+				"block": {
+					"condition": ["same",["contextval","linelength"],1],
+					"tolayer": "jumptargets",
+					"include": {"id":["idofunitat",["contextpos","start"]]}
+				}
+			}
+		}
+	}
+}

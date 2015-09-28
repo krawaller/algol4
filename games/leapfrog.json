@@ -1,0 +1,67 @@
+{
+	"meta": {
+		"name": "Leap frog",
+		"source": "http://www.di.fc.ul.pt/~jpn/gv/leapfrog.htm"
+	},
+	"graphics": { "icons": {"frogs":"knights"} },
+	"board": {"height":8,"width":8},
+	"setup": {
+		"frogs": {
+			"1": ["d2","e3","f3","b4","d4","f4","c5","e5","g5","c6","d6","e7"],
+			"2": ["e2","c3","d3","c4","e4","g4","b5","d5","f5","e6","f6","d7"]
+		}
+	},
+	"checkrepeat": true,
+	"startturn": {
+		"allow": ["selectunit"]
+	},
+	"marks": {
+		"selectunit": {
+			"from": "myunits",
+			"runGenerators": ["findjumptargets"],
+			"allow": ["selectjumptarget"]
+		},
+		"selectjumptarget": {
+			"from": "jumptargets",
+			"runGenerators": ["findjumpvictims"],
+			"allow": ["jump"]
+		}
+	},
+	"commands": {
+		"jump": {
+			"applyEffects": [
+				["kill",["firstposin","jumpvictim"]],
+				["move",["firstposin",["union",["contextpos","jumpspot"],"selectunit"]],"selectjumptarget"],
+				["setcontextval","jumpspot",["markpos","selectjumptarget"]]
+			],
+			"runGenerators": ["findjumptargets"],
+			"allow": ["endturn","selectjumptarget"]
+		}
+	},
+	"generators": {
+		"findjumpvictims": {
+			"type": "nextto",
+			"starts": "selectjumptarget",
+			"dirs": ["relativedir",5,["lookup","jumptargets","selectjumptarget","dir"]],
+			"condition": ["anyat","oppunits",["contextpos","target"]],
+			"draw": { "target": { "tolayer": "jumpvictim" }}
+		},
+		"findjumptargets": {
+			"type": "walker",
+			"starts": ["union","selectunit",["contextpos","jumpspot"]],
+			"steps": "units",
+			"blocks": ["subtract","board","units"],
+			"max": 2,
+			"prioritizeblocksoversteps": true,
+			"draw": {
+				"block": {
+					"condition": ["same",["contextval","linelength"],1],
+					"tolayer": "jumptargets",
+					"include": {
+						"dir": ["contextval","dir"]
+					}
+				}
+			}
+		}
+	}
+}

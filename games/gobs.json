@@ -1,0 +1,96 @@
+{
+	"meta": {
+		"name": "Gobs",
+		"source": "http://www.di.fc.ul.pt/~jpn/gv/gobs.htm"
+	},
+	"graphics": {"icons":{"soldiers":"pawns"}},
+	"board": {"height":9,"width":9},
+	"setup": {
+		"soldiers": {"1":[["rect","a1","i3"]],"2":[["rect","a7","i9"]]}
+	},
+	"startturn": { "allow": ["selectunit"] },
+	"endturn": {
+		"unless": {
+			"reduced": ["and",[
+				["same",5,["layerobjectcount","myunits"]],
+				["morethan",["layerobjectcount","oppunits"],5]
+			]]
+		},
+		"endgame": {
+			"elim": {"condition":["morethan",5,["layerobjectcount","oppunits"]]},
+			"5-5": {"who":0,"condition":["and",[
+				["same",5,["layerobjectcount","oppunits"]],["same",[5,["layerobjectcount","myunits"]]]
+			]]}
+		}
+	},
+	"marks": {
+		"selectunit": {
+			"from": "myunits",
+			"runGenerators": ["findmovetargets","findjumptargets","finduntouchables"],
+			"allow": ["selectmovetarget","selectjumptarget"]
+		},
+		"selectmovetarget": {
+			"from": ["subtract","movetargets","untouchables"],
+			"allow": ["move"]
+		},
+		"selectjumptarget": {
+			"from": "jumptargets",
+			"runGenerators": ["findjumpvictims"],
+			"allow": ["jump"]
+		}
+	},
+	"commands": {
+		"move": {
+			"applyEffects": [["kill","selectmovetarget"],["move","selectunit","selectmovetarget"]],
+			"allow": ["endturn"]
+		},
+		"jump": {
+			"applyEffects": [
+				["setowner",["firstposin","jumpvictim"],["contextval","currentplayer"]],
+				["move",["firstposin",["union",["contextpos","jumpspot"],"selectunit"]],"selectjumptarget"],
+				["setcontextval","jumpspot",["markpos","selectjumptarget"]]
+			],
+			"runGenerators": ["findmovetargets","findjumptargets"],
+			"allow": ["endturn","selectjumptarget"]
+		}
+	},
+	"generators": {
+		"finduntouchables": {
+			"type": "nextto",
+			"starts": "selectunit",
+			"condition": ["anyat","oppunits",["contextpos","target"]],
+			"draw": { "target": { "tolayer": "untouchables" } }
+		},
+		"findmovetargets": {
+			"type": "walker",
+			"starts": ["union","selectunit",["contextpos","jumpspot"]],
+			"blocks": "units",
+			"draw": {
+				"steps": {"tolayer":"movetargets"},
+				"block": {
+					"condition": ["anyat","oppunits",["contextpos","target"]],
+					"tolayer": "movetargets",
+					"include": { "dir": ["contextval","dir"] }
+				}
+			}
+		},
+		"findjumptargets": {
+			"type": "nextto",
+			"starts": ["intersect","movetargets","oppunits"],
+			"dirs": ["relativedir",1,["lookup","movetargets",["contextpos","start"],"dir"]],
+			"condition": ["noneat","units",["contextpos","target"]],
+			"draw": {
+				"target": {
+					"tolayer": "jumptargets",
+					"include": { "dir": ["contextval","dir"] }
+				}
+			}
+		},
+		"findjumpvictims": {
+			"type": "nextto",
+			"starts": "selectjumptarget",
+			"dirs": ["relativedir",5,["lookup","jumptargets","selectjumptarget","dir"]],
+			"draw": { "target": { "tolayer": "jumpvictim" }}
+		}
+	}
+}

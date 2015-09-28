@@ -78,6 +78,7 @@ var effectmethods = {
 	},
 	forallposin: function(state,positionset,effect){
 		var positionset = this.evaluatePositionSet(state,positionset);
+		//console.log("FORALLPOS",positionset.toJS());
 		return positionset.reduce(function(state,pos){
 			return this.applyEffect(state.setIn(["context","target"],pos),effect);
 		},state,this)[state.hasIn(["context","target"])?"setIn":"deleteIn"](["context","target"],state.getIn(["context","target"]));

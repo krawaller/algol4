@@ -1,0 +1,97 @@
+{
+	"meta": {
+		"name": "Man in the moon",
+		"source": "http://www.abstractstrategy.com/maninthemoon-rules.html"
+	},
+	"graphics": {"icons":{"soldiers":"pawns"},"tiles":{"center":"grass"}},
+	"terrain": {"center":["c3"],"nexttocenter":["c2","c4","b3","d3"]},
+	"board": {"height":5,"width":5},
+	"startturn": {
+		"allow": [["ifelse",["morethan",25,["contextval","turn"]],"selectdrop","selectunit"]]
+	},
+	"endturn": {
+		"endgame": {
+			"reducedopp": {"condition": ["and",[
+				["morethan",["contextval","turn"],24],
+				["morethan",2,["layerpositioncount","oppunits"]]
+			]]}
+		}
+	},
+	"marks": {
+		"selectdrop": {
+			"from": ["subtract","board",["union","units","center"]],
+			"allow": ["drop"]
+		},
+		"selectunit": {
+			"from": "myunits",
+			"runGenerators": ["findmovetargets"],
+			"allow": ["selectmovetarget"]
+		},
+		"selectmovetarget": {
+			"from": "movetargets",
+			"runGenerators": ["findvictims"],
+			"allow": ["move"]
+		}
+	},
+	"commands": {
+		"drop": {
+			"applyEffects": [["spawnunit","selectdrop","soldiers",["contextval","currentplayer"]]],
+			"allow": [
+				["ifelse",["and",[
+					["same",["contextval","turn"],24],
+					["same",4,["overlapsize","myunits","nexttocenter"]]
+				]],"selectunit","endturn"]
+			]
+		},
+		"move": {
+			"applyEffects": [
+				["forallin","victims",["killunit",["loopid"]]],
+				["move","selectunit","selectmovetarget"]
+			],
+			"runGenerators": ["findoppmoves"],
+			"allow": [["ifelse",["isempty","oppmoves"],"selectunit","endturn"]]
+		}
+	},
+	"generators": {
+		"findoppmoves": {
+			"type": "nextto",
+			"starts": "oppunits",
+			"dirs": ["dirs",[1,3,5,7]],
+			"condition": ["noneat","units",["contextpos","target"]],
+			"draw": {
+				"target": {
+					"tolayer": "oppmoves"
+				}
+			}
+		},
+		"findmovetargets": {
+			"type": "nextto",
+			"starts": "selectunit",
+			"dirs": ["dirs",[1,3,5,7]],
+			"condition": ["noneat","units",["contextpos","target"]],
+			"draw": {
+				"target": {
+					"tolayer": "movetargets"
+				}
+			}
+		},
+		"findvictims": {
+			"type": "walker",
+			"starts": "selectmovetarget",
+			"dirs": ["dirs",[1,3,5,7]],
+			"steps": "oppunits",
+			"blocks": "myunits",
+			"max": 2,
+			"prioritizeblocksoversteps": true,
+			"draw": {
+				"steps": {
+					"condition": ["and",[
+						["same",["contextval","linelength"],1],
+						["same",["contextval","stopreason"],"hitblock"]
+					]],
+					"tolayer": "victims"
+				}
+			}
+		}
+	}
+}

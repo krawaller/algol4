@@ -1,0 +1,43 @@
+{
+	"meta": {
+		"name": "Jack rabbits",
+		"source": "http://www.di.fc.ul.pt/~jpn/gv/jackrabbits.htm"
+	},
+	"graphics": {"icons":{"rabbits":"pawns"}},
+	"board": {"width":15,"height":13},
+	"startturn": {
+		"allow": ["selectspot"]
+	},
+	"endturn": {
+		"endgame": {
+			"laststone": {"condition":["same",["layerpositioncount","units"],195],"who":["contextval","nextplayer"]}
+		}
+	},
+	"marks": {
+		"selectspot": {
+			"from": ["subtract","board","units"],
+			"runGenerators": ["findbreeds"],
+			"allow": ["drop"]
+		}
+	},
+	"commands": {
+		"drop": {
+			"applyEffects": [
+				["spawnunit","selectspot","rabbits",["contextval","currentplayer"]],
+				["forallposin",["subtract","breeds","selectspot"],["spawnunit",["contextpos","target"],"rabbits",["contextval","currentplayer"]]]
+			],
+			"allow": ["endturn"]
+		}
+	},
+	"generators": {
+		"findbreeds": {
+			"type": "nextto",
+			"starts": "myunits",
+			"dirs": ["dirs",[1,3,5,7]],
+			"condition": ["noneat","units",["contextpos","target"]],
+			"draw": {
+				"target": {"tolayer":"breeds"}
+			}
+		}
+	}
+}
