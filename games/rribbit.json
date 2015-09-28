@@ -1,0 +1,55 @@
+{
+	"meta": {
+		"name": "Rrib bit",
+		"source": "http://www.di.fc.ul.pt/~jpn/gv/rib_bit.htm"
+	},
+	"graphics": {"icons":{"frogs":"knights"},"tiles":{"center":"grass"}},
+	"board": {"height":7,"width":9},
+	"terrain": {"center":[["rect","d3","f5"]]},
+	"setup": { "frogs": { "1": [["rect","a1","i1"]],"2": [["rect","a7","i7"]] } },
+	"startturn": { "allow": ["selectunit"] },
+	"endturn": {
+		"unless": {
+			"heldline": ["notempty","loseline"]
+		}
+	},
+	"marks": {
+		"selectunit": {
+			"from": "myunits",
+			"runGenerators": ["findjumptargets"],
+			"allow": ["selectjumptarget"]
+		},
+		"selectjumptarget": {
+			"from": "jumptargets",
+			"allow": ["jump"]
+		}
+	},
+	"commands": {
+		"jump": {
+			"applyEffects": [["kill","selectjumptarget"],["move","selectunit","selectjumptarget"]],
+			"runGenerators": ["findlines"],
+			"allow": ["endturn"]
+		}
+	},
+	"generators": {
+		"findjumptargets": {
+			"type": "offset",
+			"starts": "selectunit",
+			"dirs": ["dirs",[1,3,5,7]],
+			"offsets": [[2,1],[2,-1]],
+			"condition": ["noneat","myunits",["contextpos","target"]],
+			"draw": { "target": { "tolayer": "jumptargets" } }
+		},
+		"findlines": {
+			"starts": ["intersect","oppunits","center"],
+			"type": "walker",
+			"steps": ["intersect","oppunits","center"],
+			"draw": {
+				"start": {
+					"condition": ["same",2,["contextval","linelength"]],
+					"tolayer": "loseline"
+				}
+			}
+		}
+	}
+}
