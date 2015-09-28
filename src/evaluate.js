@@ -76,7 +76,7 @@ var positionsetmethods = {
 	},
 	subtract: function(state,set1,set2){ return this.evaluatePositionSet(state,set1).subtract(this.evaluatePositionSet(state,set2)); },
 	layer: function(state,layername){
-		return state.getIn(["layers",this.evaluateValue(state,layername)]).keySeq().toSet();
+		return (state.getIn(["layers",this.evaluateValue(state,layername)])||I.Map()).keySeq().toSet();
 	}
 };
 

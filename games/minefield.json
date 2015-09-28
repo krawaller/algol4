@@ -1,0 +1,81 @@
+{
+	"meta": {
+		"name": "Minefield",
+		"source": "http://www.di.fc.ul.pt/~jpn/gv/minefield.htm"
+	},
+	"graphics": {
+		"turnvars": { "shape": "make" },
+		"icons": {"soldiers": "pawns"}
+	},
+	"board": {"height":8,"width":8},
+	"terrain": {"edge":[["rect","a1","a8"],["rect","b8","h8"]]},
+	"setup":{
+		"soldiers": {
+			"1": ["a1","a3","a5","a7","b2","b4","b6","b8","c1","c3","c5","c7","d2","d4","d6","d8","e1","e3","e5","e7","f2","f4","f6","f8","g1","g3","g5","g7","h2","h4","h6","h8"],
+			"2": ["h1","h3","h5","h7","g2","g4","g6","g8","f1","f3","f5","f7","e2","e4","e6","e8","d1","d3","d5","d7","c2","c4","c6","c8","b1","b3","b5","b7","a2","a4","a6","a8"]
+		}
+	},
+	"startturn": {
+		"applyEffects": [["setcontextval","shape",["ifelse",["same",1,["contextval","currentplayer"]],"horisontal","vertical"]]],
+		"allow": ["selectflip"]
+	},
+	"nodeadends": true,
+	"endturn": {
+		"endgame": {
+			"madeoppshape": {
+				"condition":["notempty",["ifelse",["same",["contextval","currentplayer"],1],"vertical","horisontal"]],
+				"who":["contextval","nextplayer"]
+			},
+			"madeownshape": {
+				"condition":["notempty",["layer",["contextval","shape"]]]
+			}
+		}
+	},
+	"marks": {
+		"selectflip": {
+			"from": "units",
+			"runGenerators": ["findflips"],
+			"allow": ["flip"]
+		}
+	},
+	"commands": {
+		"flip": {
+			"applyEffects": [
+				["ifelse",["anyat","myunits","selectflip"],
+					["forallposin","flips",["setowner",["contextpos","target"],["contextval","nextplayer"]]],
+					["forallposin","flips",["setowner",["contextpos","target"],["contextval","currentplayer"]]]
+				]
+			],
+			"runGenerators": ["findshapes"],
+			"allow": ["endturn"]
+		}
+	},
+	"generators": {
+		"findflips": {
+			"type": "walker",
+			"starts": "selectflip",
+			"steps": ["ifelse",["anyat","myunits","selectflip"],"myunits","oppunits"],
+			"blocks": ["ifelse",["anyat","myunits","selectflip"],"oppunits","myunits"],
+			"prioritizeblocksoversteps": true,
+			"draw": {
+				"start": { "tolayer": "flips" },
+				"steps": {
+					"condition": ["same",["contextval","stopreason"],"hitblock"],
+					"tolayer": "flips"
+				}
+			}
+		},
+		"findshapes": {
+			"type": "walker",
+			"starts": "edge",
+			"dirs": ["dirs",[3,5]],
+			"steps": ["ifelse",["anyat","myunits",["contextpos","start"]],"myunits","oppunits"],
+			"draw": {
+				"start": {
+					"condition": ["same",["contextval","linelength"],7],
+					"tolayer": ["ifelse",["same",["contextval","dir"],3],"horisontal","vertical"]
+				}
+			}
+		}
+	}
+}

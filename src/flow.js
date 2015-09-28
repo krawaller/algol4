@@ -284,7 +284,7 @@ Algol.pruneOptions = function(tree,id){
 	if (!statetocheck){
 		console.log("Prune alarm! id",id,"in tree",tree.toJS());
 	}
-	if (statetocheck.get("pruned") || statetocheck.get("nodeadends")){
+	if (statetocheck.get("pruned") || statetocheck.get("nodeadends") || tree.getIn(["gamedef","nodeadends"])){
 		return tree;
 	}
 	// lets go through the available commands

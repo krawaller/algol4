@@ -142,6 +142,9 @@ var effectmethods = {
 
 Algol.applyEffect = function(state,def){
 	//console.log("Applying effect",def.toJS());
+	if (!effectmethods[def.first()]){
+		console.log("Unknown effect!",def.toJS && def.toJS() || def);
+	}
 	return effectmethods[def.first()].apply(this,[state].concat(def.rest().toArray()));
 };
 
