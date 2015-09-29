@@ -24,10 +24,25 @@ var dirlistmethods = {
 	ifelse: function(state,cond,val1,val2){ return this.evaluateDirList(state, this.evaluateBoolean(state,cond) ? val1 : val2); },
 	dir: function(state,dir){
 		return I.List([this.evaluateValue(state,dir)]);
-	}
+	},
+	case: function(state,val,listofpairs,defaultval){
+		var val = this.evaluateValue(state,val),
+			find = listofpairs.filter(function(pair){
+				return this.evaluateValue(state,pair.first()) === val;
+			},this);
+		/*if (find && !find.get || !find.get(0) || !find.get(0).get || !find.get(0).get(1)){
+			console.log("BOGUS CASE",find.toJS && find.toJS() || find,"full",listofpairs.toJS());
+		}*/
+		var ret = this.evaluateDirList(state,find&&find.size?find.get(0).get(1):defaultval);
+		//console.log("CASE",val,"FOUND",find && find.get(0).get(1).toJS(),"ret",ret.toJS && ret.toJS() || ret);
+		return ret;
+	},
 };
 
 Algol.evaluateDirList = function(state,def){
+	if (!dirlistmethods[def.first()]){
+		console.log("BOGUS dirlist",def.toJS && def.toJS() || def);
+	}
 	return dirlistmethods[def.first()].apply(this,[state].concat(def.rest().toArray()));
 };
 
@@ -228,7 +243,7 @@ var valuemethods = {
 			find = listofpairs.filter(function(pair){
 				return this.evaluateValue(state,pair.first()) === val;
 			},this);
-		return this.evaluateValue(state,find?find.second():defaultval);
+		return this.evaluateValue(state,find?find.first().last():defaultval);
 	},
 	position: function(state,pos){
 		return this.evaluatePosition(state,pos);

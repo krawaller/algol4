@@ -273,7 +273,7 @@ Algol.newTurnTree = function(oldtree,id,newturnplayer){
 
 // called in newGame, makeMark, makeCommand
 Algol.pruneOptions = function(tree,id){
-	//return tree;
+	return tree;
 	//console.log("Pruning",tree.toJS(),"id",id);
 	var statetocheck = tree.getIn(["cache",id]),
 		wasat = tree.get("current"),

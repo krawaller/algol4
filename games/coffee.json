@@ -1,0 +1,91 @@
+{
+	"meta": {
+		"name": "Coffee",
+		"source": "https://www.boardgamegeek.com/filepage/64972/coffee-rules-nestorgames"
+	},
+	"graphics": {"icons": {"soldiers":"pawns"}, "battlevals": {"slant":"slant"}, "hiKDSAghlight":"droptargets"},
+	"board": {"height":5,"width":5},
+	"endturn": {
+		"unless": {
+			"nolegal": ["isempty","droptargets"]
+		},
+		"endgame": {
+			"madeline": {"condition":["notempty","winline"]}
+		}
+	},
+	"startturn": {
+		"runGenerators": ["finddroptargets"],
+		"allow": ["selectdrop"]
+	},
+	"marks": {
+		"selectdrop": {
+			"from": ["ifelse",["same",["contextpos","turn"],1],"board","droptargets"],
+			"allow": ["uphill","downhill","vertical","horisontal"]
+		}
+	},
+	"commands": {
+		"uphill": {
+			"applyEffects": [
+				["spawnunit","selectdrop","soldiers",["contextval","currentplayer"]],
+				["setbattleval","spot",["markpos","selectdrop"]],
+				["setbattleval","slant","uphill"]
+			],
+			"runGenerators": ["findwinlines","finddroptargets"],
+			"allow": ["endturn"]
+		},
+		"downhill": {
+			"applyEffects": [
+				["spawnunit","selectdrop","soldiers",["contextval","currentplayer"]],
+				["setbattleval","spot",["markpos","selectdrop"]],
+				["setbattleval","slant","downhill"]
+			],
+			"runGenerators": ["findwinlines","finddroptargets"],
+			"allow": ["endturn"]
+		},
+		"horisontal": {
+			"applyEffects": [
+				["spawnunit","selectdrop","soldiers",["contextval","currentplayer"]],
+				["setbattleval","spot",["markpos","selectdrop"]],
+				["setbattleval","slant","horisontal"]
+			],
+			"runGenerators": ["findwinlines","finddroptargets"],
+			"allow": ["endturn"]
+		},
+		"vertical": {
+			"applyEffects": [
+				["spawnunit","selectdrop","soldiers",["contextval","currentplayer"]],
+				["setbattleval","spot",["markpos","selectdrop"]],
+				["setbattleval","slant","vertical"]
+			],
+			"runGenerators": ["findwinlines","finddroptargets"],
+			"allow": ["endturn"]
+		}
+	},
+	"generators": {
+		"finddroptargets": {
+			"type": "walker",
+			"starts": ["pos",["battleval","spot"]],
+			"dirs": ["case",["battleval","slant"],
+				[ ["horisontal",["dirs",[3,7]]], ["vertical",["dirs",[1,5]]], ["uphill",["dirs",[2,6]]] ],
+				["dirs",[4,8]]
+			],
+			"draw": {
+				"steps": {
+					"condition": ["noneat",["union","units",["pos",["battleval","spot"]]],["contextpos","target"]],
+					"tolayer": "droptargets"
+				}
+			}
+		},
+		"findwinlines": {
+			"type": "walker",
+			"starts": "myunits",
+			"steps": "myunits",
+			"draw": {
+				"start": {
+					"condition": ["same",3,["contextval","linelength"]],
+					"tolayer": "winline"
+				}
+			}
+		}
+	}
+}

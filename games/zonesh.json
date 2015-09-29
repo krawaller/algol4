@@ -1,0 +1,57 @@
+{
+	"meta": {
+		"name": "Zonesh",
+		"source": "http://www.di.fc.ul.pt/~jpn/gv/zonesh.htm"
+	},
+	"graphics": {"tiles":{"bases":"playercolour","corner":"grass"},"icons":{"soldiers":"pawns"}},
+	"board": {"height":6,"width":6},
+	"terrain": {
+		"bases": {
+			"1": ["b1","c1","d1","a2","b2","c2","a3","b3","a4"],
+			"2": ["c6","d6","e6","d5","e5","f5","e4","f4","f3"]
+		},
+		"corner": {"1":["a1"],"2":["f6"]}
+	},
+	"setup": {
+		"soldiers": {
+			"1": ["b1","c1","d1","a2","b2","c2","a3","b3","a4","a1"],
+			"2": ["c6","d6","e6","d5","e5","f5","e4","f4","f3","f6"]
+		}
+	},
+	"endturn": {
+		"endgame": {
+			"invasion": {"condition":["overlaps","oppcorner","myunits"]}
+		}
+	},
+	"startturn": { "allow": ["selectunit"] },
+	"marks": {
+		"selectunit": {
+			"from": "myunits",
+			"runGenerators": ["findmovetargets"],
+			"allow": ["selectmovetarget"]
+		},
+		"selectmovetarget": {
+			"from": "movetargets",
+			"allow": ["move"]	
+		}
+	},
+	"commands": {
+		"move": {
+			"applyEffects": [["kill","selectmovetarget"],["move","selectunit","selectmovetarget"]],
+			"allow": ["endturn"]
+		}
+	},
+	"generators": {
+		"findmovetargets": {
+			"type": "nextto",
+			"starts": "selectunit",
+			"dirs": ["ifelse",["anyat",["union","mybases","mycorner"],"selectunit"],["dirs",[1,3,5,7]],["dirs",[1,2,3,4,5,6,7,8]]],
+			"condition": ["noneat","myunits",["contextpos","target"]],
+			"draw": {
+				"target": {
+					"tolayer": "movetargets"
+				}
+			}
+		}
+	}
+}

@@ -189,7 +189,7 @@ var Game = React.createClass({
             var hi = parseInt(histindex);
             battle = s.hist[hi][1];
         }
-        //console.log("RENDER",battle.get("layers").toJS(),"marks",battle.get("marks").toJS())//,"context",battle.get("context").toJS(),battle.getIn(["data","units"]).toJS(),battle.get("save").toJS(),battle.get("path").toJS(),"CONNECTIONS",battle.get("connections").toJS());
+        //console.log("RENDER",battle.get("layers").toJS(),"marks",battle.get("marks").toJS(),"data",battle.get("data").toJS())//,"context",battle.get("context").toJS(),battle.getIn(["data","units"]).toJS(),battle.get("save").toJS(),battle.get("path").toJS(),"CONNECTIONS",battle.get("connections").toJS());
         //console.log("Render",battle.delete("cache").toJS());
         return (
             <div>

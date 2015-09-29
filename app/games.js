@@ -10,6 +10,7 @@ var _ = require('lodash'),
         bollsgame: require("../games/bollsgame.json"),
         cannon: require("../games/cannon.json"),
         //castle: require("../games/castle.json"),
+        coffee: require("../games/coffee.json"),
         conquest: require("../games/conquest.json"),
         court: require("../games/court.json"),
         crossings: require("../games/crossings.json"),
@@ -42,7 +43,8 @@ var _ = require('lodash'),
         sombrero: require("../games/sombrero.json"),
         tablut: require("../games/tablut.json"),
         threemusketeers: require("../games/threemusketeers.json"),
-        trespass: require("../games/trespass.json")
+        trespass: require("../games/trespass.json"),
+        zonesh: require("../games/zonesh.json")
     };
 
 module.exports = _.reduce(games,function(mem,def,name){

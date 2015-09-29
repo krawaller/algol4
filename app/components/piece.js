@@ -38,7 +38,7 @@ var Piece = React.createClass({
         };
         var p = this.props;
         return (
-            <div className={"piece dir"+(p.dir||1)+" owner"+(p.owner||0)+" "+(p.icon==="projectiles"?"projectiles":"")}>
+            <div className={"piece dir"+(p.dir||1)+" owner"+(p.owner||0)+" "+({projectiles:1,highlight:1}[p.icon]?p.icon:"")}>
                 <span>{fullicons[p.icon]||''}</span>
                 <span className="background">{lineicons[p.icon]||''}</span>
             </div>
