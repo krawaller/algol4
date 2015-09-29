@@ -255,6 +255,12 @@ var valuemethods = {
 		return {
 			1: "vertical", 5: "vertical", 2: "uphill", 6: "uphill", 3: "horisontal", 7: "horisontal", 4: "downhill", 8: "downhill"
 		}[this.evaluateValue(state,dir)] || "unknown"
+	},
+	linelength: function(state,pos1,pos2){
+		//console.log("WAH",this.evaluatePosition(state,pos1),this.evaluatePosition(state,pos2),pos1 && pos1.toJS && pos1.toJS() || pos1,pos2 && pos2.toJS && pos2.toJS() || pos2)
+		var c1 = this.posNameToObj(this.evaluatePosition(state,pos1),state.getIn(["gamedef","board"])),
+			c2 = this.posNameToObj(this.evaluatePosition(state,pos2),state.getIn(["gamedef","board"]));
+		return Math.sqrt(Math.pow(c1.x-c2.x,2)+Math.pow(c1.y-c2.y,2));
 	}
 };
 

@@ -1,0 +1,77 @@
+{
+	"meta": {
+		"name": "Monkey Queen",
+		"source": "http://www.marksteeregames.com/Monkey_Queen_rules.html"
+	},
+	"graphics": { "icons": {"queen":"queens","babies":"pawns"} },
+	"board": { "height": 12, "width": 12 },
+	"playervars": { "queensize": [20,20] },
+	"setup": {"queen": {"1":["g1"],"2":["f12"]} },
+	"startturn": {
+		"allow":["selectunit",["if",["same",["contextval","turn"],2],"pie"]]
+	},
+	"endturn": {
+		"endgame": {
+			"killqueen": {"condition":["notempty","oppdeadqueen"]}
+		}
+	},
+	"marks": {
+		"selectunit": {
+			"from": "myunits",
+			"runGenerators": ["findmovetargets"],
+			"allow": ["selectmovetarget"]
+		},
+		"selectmovetarget": {
+			"from": "movetargets",
+			"allow": ["move"]
+		}
+	},
+	"commands": {
+		"move": {
+			"applyEffects": [
+				["kill","selectmovetarget"],
+				["if",["and",[["noneat","units","selectmovetarget"],["anyat","myqueen","selectunit"]]],
+					["multieffect",[
+						["spawnunit","selectunit","babies",["contextval","currentplayer"]],
+						["addtoplayervar","queensize",["contextval","currentplayer"],-1]
+					]]
+				],
+				["move","selectunit","selectmovetarget"]
+			],
+			"allow": ["endturn"]
+		},
+		"pie": {
+			"applyEffects": [
+				["forallin","myunits",["setunitdata",["loopid"],"owner",1]],
+				["forallin","oppunits",["setunitdata",["loopid"],"owner",2]]
+			],
+			"allow": ["endturn"]
+		}
+	},
+	"generators": {
+		"findmovetargets": {
+			"type": "walker",
+			"starts": "selectunit",
+			"blocks": "units",
+			"draw": {
+				"steps": {
+					"condition": ["or",[
+						["and",[
+							["anyat","myqueen","selectunit"],
+							["morethan",["playervar","queensize",["contextval","currentplayer"]],2]
+						]],
+						["and",[
+							["anyat","mybabies","selectunit"],
+							["morethan",["linelength","selectunit",["firstposin","oppqueen"]],["linelength",["contextpos","target"],["firstposin","oppqueen"]]]
+						]]
+					]],
+					"tolayer": "movetargets"
+				},
+				"block": {
+					"condition": ["anyat","oppunits",["contextpos","target"]],
+					"tolayer": "movetargets"
+				}
+			}
+		}
+	}
+}

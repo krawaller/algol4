@@ -4,21 +4,20 @@
 		"name": "Momentum",
 		"tags": ["push","deploy"]
 	},
-	"board": {"height":9,"width":9},
-	"terrain": {"edge":["e5",["rect","a1","i1"],["rect","a9","i9"],["rect","a2","a8"],["rect","i2","i8"]]},
-	"graphics": {"tiles": {"edge":"water"}, "icons": {"soldiers":"pawns"} },
+	"board": {"height":7,"width":7},
+	"terrain": {"edge":[["rect","a1","g1"],["rect","a7","g7"],["rect","a2","a6"],["rect","g2","g6"]]},
+	"graphics": {"icons": {"soldiers":"pawns"} },
 	"startturn": {
-		"applyEffects": [["forallin","edge", ["killunit",["loopid"]] ]],
 		"allow": ["selectdrop"]
 	},
 	"endturn": {
 		"endgame": {
-			"deployedall": {"condition":["same",["positionsin",["intersect","myunits","noedge"]],12]}
+			"deployedall": {"condition":["same",["positionsin","myunits"],8]}
 		}
 	},
 	"marks": {
 		"selectdrop": {
-			"from": ["subtract","noedge","units"],
+			"from": ["subtract","board","units"],
 			"runGenerators": ["findpushtargets"],
 			"allow": ["drop"]
 		}
@@ -27,8 +26,9 @@
 		"drop": {
 			"applyEffects": [
 				["spawnunit","selectdrop","soldiers",["contextval","currentplayer"]],
-				["forallposin","tobepushed",
-					["offsetunit",["idofunitat",["contextpos","target"]],["lookup","tobepushed",["contextpos","target"],"dir"],1]
+				["forallin",["intersect","tobepushed","edge"], ["killunit",["loopid"]] ],
+				["forallin","tobepushed",
+					["offsetunit",["loopid"],["lookup","tobepushed",["contextpos","target"],"dir"],1]
 				]
 			],
 			"allow": ["endturn"]
