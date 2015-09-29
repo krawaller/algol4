@@ -1,0 +1,58 @@
+{
+	"meta": {
+		"name": "Neutreeko",
+		"source": "https://www.boardgamegeek.com/boardgame/3319/neutreeko"
+	},
+	"graphics": {"icons": {"soldiers":"queens"}},
+	"board": {"height":5,"width":5},
+	"setup": {
+		"soldiers": { "1": ["b1","c4","d1"], "2": ["b5","c2","d5"]}
+	},
+	"startturn": { "allow": ["selectunit"] },
+	"endturn": {
+		"endgame": {
+			"madeline": {"condition":["notempty","winline"]}
+		}
+	},
+	"marks": {
+		"selectunit": {
+			"from": "myunits",
+			"runGenerators": ["findmovetargets"],
+			"allow": ["selectmovetarget"]
+		},
+		"selectmovetarget": {
+			"from": "movetargets",
+			"allow": ["move"]
+		}
+	},
+	"commands": {
+		"move": {
+			"applyEffects": [["move","selectunit","selectmovetarget"]],
+			"runGenerators": ["findwinlines"],
+			"allow": ["endturn"]
+		}
+	},
+	"generators": {
+		"findmovetargets": {
+			"type": "walker",
+			"starts": "selectunit",
+			"blocks": "units",
+			"draw": {
+				"last": {
+					"tolayer": "movetargets"
+				}
+			}
+		},
+		"findwinlines": {
+			"type": "walker",
+			"starts": "myunits",
+			"steps": "myunits",
+			"draw": {
+				"start": {
+					"condition": ["same",["contextval","linelength"],2],
+					"tolayer": "winline"
+				}
+			}
+		}
+	}
+}
