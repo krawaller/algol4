@@ -194,8 +194,8 @@ var Game = React.createClass({
             <div>
                 <div className="board" style={style}>
                     <Terrain state={s.start} tileheight={tileheight} tilewidth={tilewidth} />
-                    <Pieces state={battle} tileheight={tileheight} tilewidth={tilewidth} />
                     <Marks state={battle} tileheight={tileheight} tilewidth={tilewidth} />
+                    <Pieces state={battle} tileheight={tileheight} tilewidth={tilewidth} />
                 </div>
                 <ul className="nav">
                     <li><Link to={"/game/"+gamename+"/info"}>Info</Link></li>

@@ -62,7 +62,7 @@ a.square, .square a {
 
 
 .marks {
-	z-index: 19;
+	
 }
 
 .terrain, .pieces, .marks {
@@ -158,6 +158,7 @@ a.square, .square a {
 
 .pieces {
 	z-index: 3;
+	pointer-events: none;
 }
 
 .terrain, .pieces, .marks {
