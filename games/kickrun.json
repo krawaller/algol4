@@ -2,7 +2,7 @@
 	"meta": {
 		"name": "Kick & run",
 		"source": "http://www.di.fc.ul.pt/~jpn/gv/kickrun.htm",
-		"tags": ["infiltrate","differentunits"]
+		"tags": ["infiltrate","differentunits","capture"]
 	},
 	"graphics": {"tiles":{"corners":"playercolour"},"icons":{"runners":"bishops","sidekickers":"pawns"}},
 	"board": {"height":5,"width":5},

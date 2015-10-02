@@ -1,7 +1,8 @@
 {
 	"meta": {
 		"name": "Archimedes",
-		"source": "http://superdupergames.org/rules/archimedes.pdf"
+		"source": "http://superdupergames.org/rules/archimedes.pdf",
+		"tags": ["infiltration","shoot"]
 	},
 	"graphics": {
 		"icons": {"boats": "pawns"},

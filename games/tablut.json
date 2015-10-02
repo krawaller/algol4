@@ -2,7 +2,7 @@
 	"meta": {
 		"name": "Tablut",
 		"source": "https://boardgamegeek.com/thread/346976/another-tafl-lesson",
-		"tags": ["assymetric","differentunits","kingkill","infiltrate","custodian"]
+		"tags": ["asymmetric","kingkill","infiltrate","custodian"]
 	},
 	"graphics": {"tiles":{"throne":"playercolour","corners":"playercolour"},"icons":{"soldiers":"pawns","kings":"kings"}},
 	"board": {"height":9,"width":9},

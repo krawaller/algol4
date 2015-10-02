@@ -1,7 +1,8 @@
 {
 	"meta": {
 		"name": "Mad bishops",
-		"source": "http://www.iggamecenter.com/info/en/madbishops.html"
+		"source": "http://www.iggamecenter.com/info/en/madbishops.html",
+		"tags": ["capture","eradicate"]
 	},
 	"graphics": {"icons":{"bishops":"bishops"}},
 	"board": {"height":10,"width":10},

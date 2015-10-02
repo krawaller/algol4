@@ -1,7 +1,8 @@
 {
 	"meta": {
 		"name": "Man in the moon",
-		"source": "http://www.abstractstrategy.com/maninthemoon-rules.html"
+		"source": "http://www.abstractstrategy.com/maninthemoon-rules.html",
+		"tags": ["deploy","custodian"]
 	},
 	"graphics": {"icons":{"soldiers":"pawns"},"tiles":{"center":"grass"}},
 	"terrain": {"center":["c3"],"nexttocenter":["c2","c4","b3","d3"]},

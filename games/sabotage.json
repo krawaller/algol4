@@ -1,7 +1,8 @@
 {
 	"meta": {
 		"name": "Sabotage",
-		"source": "http://www.di.fc.ul.pt/~jpn/gv/sabotage.htm"
+		"source": "http://www.di.fc.ul.pt/~jpn/gv/sabotage.htm",
+		"tags": ["limitmoves","differentunits","infiltrate"]
 	},
 	"graphics": {"icons":{"kings":"kings","soldiers":"pawns"},"tiles":{"goal":"playercolour"}},
 	"board": {"width":13,"height":9},

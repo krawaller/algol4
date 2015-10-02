@@ -1,7 +1,8 @@
 {
 	"meta": {
 		"name": "Court",
-		"source": "http://www.di.fc.ul.pt/~jpn/gv/court.htm"
+		"source": "http://www.di.fc.ul.pt/~jpn/gv/court.htm",
+		"tags": ["promote","differentunits","capture"]
 	},
 	"graphics": {
 		"icons": {"knights":"knights","pawns":"pawns","bishops":"bishops","rooks":"rooks"}

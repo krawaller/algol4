@@ -1,7 +1,8 @@
 {
 	"meta": {
 		"name": "Zonesh",
-		"source": "http://www.di.fc.ul.pt/~jpn/gv/zonesh.htm"
+		"source": "http://www.di.fc.ul.pt/~jpn/gv/zonesh.htm",
+		"tags": ["infiltrate","capture"]
 	},
 	"graphics": {"tiles":{"bases":"playercolour","corner":"grass"},"icons":{"soldiers":"pawns"}},
 	"board": {"height":6,"width":6},

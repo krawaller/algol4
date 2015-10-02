@@ -2,7 +2,7 @@
 	"meta": {
 		"name": "Conquest",
 		"source": "http://www.di.fc.ul.pt/~jpn/gv/conquest.htm",
-		"tags": ["formation"]
+		"tags": ["formation","infiltrate"]
 	},
 	"board": {"height": 9,"width": 9},
 	"graphics": {

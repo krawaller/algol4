@@ -6,7 +6,10 @@ var GameInfo = React.createClass({
     render: function() {
         var meta = this.props.battle.getIn(["gamedef","meta"]);
         return (
-            <p>This is nice game named {meta.get("name")}!</p>
+        	<div>
+	            <p>This is a game named {meta.get("name")}. The rules are <a href={meta.get("source")}>here</a>.</p>
+	            <p>Tags: {meta.get("tags").toJS().join(" ")}</p>
+            </div>
         );
     }
 });

@@ -1,7 +1,8 @@
 {
 	"meta": {
 		"name": "Rrib bit",
-		"source": "http://www.di.fc.ul.pt/~jpn/gv/rib_bit.htm"
+		"source": "http://www.di.fc.ul.pt/~jpn/gv/rib_bit.htm",
+		"tags": ["capture","formation"]
 	},
 	"graphics": {"icons":{"frogs":"knights"},"tiles":{"center":"grass"}},
 	"board": {"height":7,"width":9},

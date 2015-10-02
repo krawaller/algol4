@@ -2,7 +2,7 @@
 	"meta": {
 		"name": "Royal carpet",
 		"source": "http://www.di.fc.ul.pt/~jpn/gv/royalcarpet.htm",
-		"tags": ["infiltrate","deploy","differentunits"]
+		"tags": ["infiltrate","deploy","differentunits","jump"]
 	},
 	"graphics": {
 		"tiles": {"base":"playercolour"}, "icons": {"kings":"kings","towers":"rooks","soldiers":"pawns"}

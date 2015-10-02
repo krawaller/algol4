@@ -1,7 +1,8 @@
 {
 	"meta": {
 		"name": "Leap frog",
-		"source": "http://www.di.fc.ul.pt/~jpn/gv/leapfrog.htm"
+		"source": "http://www.di.fc.ul.pt/~jpn/gv/leapfrog.htm",
+		"tags": ["starve","jump"]
 	},
 	"graphics": { "icons": {"frogs":"knights"} },
 	"board": {"height":8,"width":8},

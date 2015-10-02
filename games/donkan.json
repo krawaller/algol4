@@ -1,7 +1,8 @@
 {
 	"meta": {
 		"name": "Donkan",
-		"source": "http://www.di.fc.ul.pt/~jpn/gv/donkan.htm"
+		"source": "http://www.di.fc.ul.pt/~jpn/gv/donkan.htm",
+		"tags": ["differentunits","kingkill","infiltrate","multiplegoals","repeat"]
 	},
 	"graphics": {
 		"icons": {"kings":"kings","soldiers":"queens"},

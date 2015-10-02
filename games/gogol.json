@@ -2,7 +2,7 @@
 	"meta": {
 		"name": "Gogol",
 		"source": "http://www.di.fc.ul.pt/~jpn/gv/gogol.htm",
-		"tags": ["deploy","infiltrate","kingkill","multiplegoals","differentunits"]
+		"tags": ["deploy","infiltrate","kingkill","multiplegoals","differentunits","jump"]
 	},
 	"board": {"height":8,"width":8},
 	"graphics": {

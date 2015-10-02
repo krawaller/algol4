@@ -2,7 +2,7 @@
 	"meta": {
 		"name": "Amazons",
 		"source": "http://www.chessvariants.org/other.dir/amazons.html",
-		"tags": ["deploy"]
+		"tags": ["deploy","starve","nocapture"]
 	},
 	"graphics": {
 		"icons": { "queens": "queens", "fires": "pawns" }

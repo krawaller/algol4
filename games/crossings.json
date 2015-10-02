@@ -1,7 +1,8 @@
 {
 	"meta": {
 		"name": "Crossings",
-		"source": "https://boardgamegeek.com/thread/862890/quicker-more-tactical-mini-8x8-version-epaminondas"
+		"source": "https://boardgamegeek.com/thread/862890/quicker-more-tactical-mini-8x8-version-epaminondas",
+		"tags": ["formation","infiltrate","capture"]
 	},
 	"board": { "height": 8, "width": 8 },
 	"graphics": { "tiles": {"bases":"playercolour"}, "icons": {"soldiers":"pawns", "towers":"rooks"} },

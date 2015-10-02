@@ -2,7 +2,7 @@
 	"meta": {
 		"name": "Boll's game",
 		"source": "http://www.di.fc.ul.pt/~jpn/gv/bollsgame.htm",
-		"tags": ["commonunits","changeowners"]
+		"tags": ["commonunits","changeowners","eradicate"]
 	},
 	"graphics": {
 		"icons": {"soldiers":"rooks"}

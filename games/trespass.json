@@ -2,7 +2,7 @@
 	"meta": {
 		"name": "Trespass",
 		"source": "http://www.di.fc.ul.pt/~jpn/gv/trespass.htm",
-		"tags": ["asymmetric","differentunits","infiltrate"]
+		"tags": ["asymmetric","differentunits","infiltrate","starve"]
 	},
 	"board": {"height":7,"width":11},
 	"graphics": {

@@ -1,7 +1,8 @@
 {
 	"meta": {
 		"name": "Four field Kono",
-		"source": "http://www.di.fc.ul.pt/~jpn/gv/kono2.htm"
+		"source": "http://www.di.fc.ul.pt/~jpn/gv/kono2.htm",
+		"tags": ["starve","jump"]
 	},
 	"graphics": {"icons":{"soldiers":"pawns"}},
 	"board": {"width":4,"height":4},

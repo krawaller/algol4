@@ -2,7 +2,7 @@
 	"meta": {
 		"name": "Owlman",
 		"source": "http://superdupergames.org/rules/owlman.pdf",
-		"tags": ["assymetric"]
+		"tags": ["asymmetric"]
 	},
 	"graphics": {
 		"icons": {"owlman":"knights","helpers":"pawns","doc":"kings"},

@@ -1,7 +1,8 @@
 {
 	"meta": {
 		"name": "Minefield",
-		"source": "http://www.di.fc.ul.pt/~jpn/gv/minefield.htm"
+		"source": "http://www.di.fc.ul.pt/~jpn/gv/minefield.htm",
+		"tags": ["changeowner","formation"]
 	},
 	"graphics": {
 		"turnvars": { "shape": "make" },

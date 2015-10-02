@@ -1,7 +1,8 @@
 {
 	"meta": {
 		"name": "Neighbours",
-		"source": "http://www.di.fc.ul.pt/~jpn/gv/neighbours.htm"
+		"source": "http://www.di.fc.ul.pt/~jpn/gv/neighbours.htm",
+		"tags": ["limitmoves","capture","starve"]
 	},
 	"graphics": {"icons":{"soldiers":"pawns"}},
 	"board": {"height":8,"width":8},

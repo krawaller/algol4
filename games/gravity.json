@@ -1,7 +1,8 @@
 {
 	"meta": {
 		"name": "Gravity",
-		"source": "http://www.di.fc.ul.pt/~jpn/gv/gravity.htm"
+		"source": "http://www.di.fc.ul.pt/~jpn/gv/gravity.htm",
+		"tags": ["deploy","formation"]
 	},
 	"graphics": { "icons": {"soldiers":"pawns"} },
 	"board": { "height": 8, "width": 8 },

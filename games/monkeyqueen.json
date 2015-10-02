@@ -1,7 +1,8 @@
 {
 	"meta": {
 		"name": "Monkey Queen",
-		"source": "http://www.marksteeregames.com/Monkey_Queen_rules.html"
+		"source": "http://www.marksteeregames.com/Monkey_Queen_rules.html",
+		"tags": ["differentunits","capture"]
 	},
 	"graphics": { "icons": {"queen":"queens","babies":"pawns"} },
 	"board": { "height": 12, "width": 12 },

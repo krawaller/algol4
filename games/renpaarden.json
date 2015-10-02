@@ -1,7 +1,8 @@
 {
 	"meta": {
 		"name": "Renpaarden",
-		"source": "http://www.di.fc.ul.pt/~jpn/gv/renpaarden.htm"
+		"source": "http://www.di.fc.ul.pt/~jpn/gv/renpaarden.htm",
+		"tags": ["jump","infiltrate"]
 	},
 	"graphics": {"icons": {"soldiers":"knights"}, "tiles": {"bases":"playercolour"}},
 	"terrain": {"bases": { "1": [["rect","a1","i2"]], "2": [["rect","a8","i9"]] } },

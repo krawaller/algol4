@@ -1,7 +1,8 @@
 {
 	"meta": {
 		"name": "Neutreeko",
-		"source": "https://www.boardgamegeek.com/boardgame/3319/neutreeko"
+		"source": "https://www.boardgamegeek.com/boardgame/3319/neutreeko",
+		"tags": ["formation","limitmoves"]
 	},
 	"graphics": {"icons": {"soldiers":"queens"}},
 	"board": {"height":5,"width":5},
