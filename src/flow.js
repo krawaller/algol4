@@ -265,7 +265,7 @@ Algol.newTurnTree = function(oldtree,id,newturnplayer){
 		.set("turn",(state.get("turn")||0)+1);
 	// commands
 	//console.log("So here is newtree before obeyintructions",newtree.toJS());
-	newtree = this.obeyInstructions(newtree,"root",startturn);
+	newtree = this.obeyInstructions(newtree,"root",startturn,"startturn");
 	//newtree = this.pruneOptions(newtree,state.get("id"));
 	//console.log("And here is new tree afterwards",newtree.toJS());
 	return newtree;
@@ -455,12 +455,12 @@ Algol.allow = function(tree,id,def){
 	return allowmethods[def.first()].apply(this,[tree,tree.getIn(["cache",id])].concat(def.rest().toArray()));
 };
 
-Algol.obeyInstructions = function(tree,id,instr){
+Algol.obeyInstructions = function(tree,id,instr,when){
 	var debug = false // tree.getIn(["cache",id,"turn"]) === 6;
 	debug && console.log("Obeying instruction",tree.toJS(),"id",id,"instr",instr.toJS());
 	if (instr.has("runGenerators")){
 		debug && console.log("applying generator list",instr.get("runGenerators").toJS && instr.get("runGenerators").toJS()  )
-		tree = tree.setIn(["cache",id],this.applyGeneratorList(tree.getIn(["cache",id]),instr.get("runGenerators")));
+		tree = tree.setIn(["cache",id],this.applyGeneratorList(tree.getIn(["cache",id]),instr.get("runGenerators")),when);
 		debug && console.log("after generator list",tree.getIn(["cache",id,"layers"]).toJS());
 	}
 	if (instr.has("allow")){

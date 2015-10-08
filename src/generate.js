@@ -157,19 +157,19 @@ Algol.applyGenerator = function(state,def){
 	}
 };
 
-Algol.applyGeneratorList = function(state,list){
+Algol.applyGeneratorList = function(state,list,when){
 	return list.reduce(function(state,generatorname){
 		//console.log("runnning generator",generatorname);
 		if (I.List.isList(generatorname) && generatorname.first() === "if"){ // [if,cond,name]
 			//console.log("Will we actually run",generatorname.get(2),"cond is",generatorname.get(1).toJS(),"evaluated to",this.evaluateBoolean(state,generatorname.get(1)));
-			return this.evaluateBoolean(state,generatorname.get(1)) ? this.applyGenerator(state,state.getIn(["gamedef","generators",generatorname.get(2)])) : state;
+			return this.evaluateBoolean(state,generatorname.get(1)) ? this.applyGenerator(state.setIn(["context","when"],when),state.getIn(["gamedef","generators",generatorname.get(2)])) : state;
 		} else if (I.List.isList(generatorname) && generatorname.first() === "ifelse"){
 			var name = this.evaluateBoolean(state,generatorname.get(1)) ? generatorname.get(2) : generatorname.get(3);
 			return this.applyGenerator(state,state.getIn(["gamedef","generators",name]));
 		} else {
 			return this.applyGenerator(state,state.getIn(["gamedef","generators",generatorname]));
 		}
-	},state,this);
+	},state,this).deleteIn(["context","when"]);
 };
 
 Algol.generateFilterPods = function(state,def){

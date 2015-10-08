@@ -1,6 +1,110 @@
 {
 	"meta": {
 		"name": "7 sages",
-		"source": "http://www.di.fc.ul.pt/~jpn/gv/7sages.htm"
+		"source": "http://www.di.fc.ul.pt/~jpn/gv/7sages.htm",
+		"tags": ["terrain","infiltrate","neutralunits"],
+		"author": "Max Gerchambeau",
+		"year": 1980
+	},
+	"graphics": {"tiles":{"outside":"grass","goal":"playercolours"},"icons":{"players":"pawns","ball":"pawns"}},
+	"terrain": {
+		"outside": [["rect","a1","a15"],["rect","b15","e15"],["rect","b1","e1"],"b2","b14",["rect","o1","o15"],["rect","k15","n15"],["rect","k1","n1"],"n2","n14"],
+		"goal": { "1": [["rect","f1","j1"]], "2": [["rect","f15","j15"]] }
+	},
+	"setup": {
+		"ball": {"0":["h9"]},
+		"players": { "1": ["h1","d3","d5","h3","h5","l3","l5"], "2": ["d11","d13","h11","h13","h15","l11","l13"] }
+	},
+	"board": {"width":15,"height":15},
+	"checkrepeat": true,
+	"startturn": {
+		"allow": ["selectunit"]
+	},
+	"marks": {
+		"selectunit": {
+			"from": "myunits",
+			"runGenerators": ["findmovetargets"],
+			"allow": ["selectmovetarget"]
+		},
+		"selectmovetarget": {
+			"from": "movetargets",
+			"allow": ["move"]
+		},
+		"selectbouncetarget": {
+			"from": "bouncetargets",
+			"allow": ["bounce"]
+		}
+	},
+	"commands": {
+		"move": {
+			"applyEffects": [
+				["if",["anyat","ball","selectmovetarget"],["setcontextval","pivot",["markpos","selectmovetarget"]]],
+				["if",["anyat","ball","selectmovetarget"],["setcontextval","balldir",["lookup","movetargets","selectmovetarget","dir"]]],
+				["if",["anyat","ball","selectmovetarget"],["setcontextval","bouncecount",1]],
+				["setcontextval","scorepoints",2],
+				["move","selectunit","selectmovetarget"]
+			],
+			"runGenerators": [["if",["truthy",["contextval","bouncecount"]],"findbouncetargets"]],
+			"allow": [["ifelse",["truthy",["contextval","bouncecount"]],"selectbouncetarget","endturn"]]
+		},
+		"bounce": {
+			"applyEffects": [
+				["if",["anyat","pivot","selectbouncetarget"],["setcontextval","pivot",["markpos","selectbouncetarget"]]],
+				["if",["anyat","pivot","selectbouncetarget"],["setcontextval","balldir",["lookup","pivot","selectbouncetarget","dir"]]],
+				["if",["anyat","pivot","selectbouncetarget"],["setcontextval","bouncecount",["ifelse",["same",["lookup","units",""]]]],
+				["setcontextval","scorepoints",2],
+				["move",["firstposin","ball"],"selectbouncetarget"]
+			],
+			"runGenerators": [],
+			"allow": [
+
+			]
+		}
+	},
+	"generators": {
+		"findbouncetargets": {
+			"type": "walker",
+			"starts": ["contextpos","pivot"],
+			"dirs": ["relativedirs",[3,5,7],["contextval","balldir"]],
+			"blocks": "units",
+			"draw": {
+				"steps": {
+					"condition": ["noneat","outside",["contextpos","target"]],
+					"tolayer": "bouncetarget"
+				},
+				"last": {
+					"condition": [["and",
+						["same",["contextval","stopreason"],"hitblock"],
+						["anyat","units",["contextpos","blockpos"]]
+					]],
+					"tolayer": "pivot",
+					"include": {
+						"dir": ["contextval","dir"],
+						"points": ["ifelse",["anyat","myunits",["contextpos","blockpos"]],2,1]
+					}
+				}
+			}
+		},
+		"findmovetargets": {
+			"type": "walker",
+			"starts": "selectunit",
+			"dirs": ["dirs",[1,2,3,4,5,6,7,8]],
+			"blocks": "units",
+			"draw": {
+				"steps": {
+					"condition": ["or",[
+						["anyat","mygoal","selectunit"],
+						["noneat","mygoal","selectmovetarget"],
+						["not",["overlaps","mygoal","myunits"]]
+					]],
+					"tolayer": "movetargets"
+				},
+				"block": {
+					"condition": ["anyat","ball",["contextpos","target"]],
+					"tolayer": "movetargets",
+					"include": { "dir": ["contextval","dir"] }
+				}
+			}
+		}
 	}
 }

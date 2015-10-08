@@ -1,6 +1,31 @@
-.highlight {
+.pill {
+	display: inline-block;
+	margin-right: 0.5em;
+	margin-bottom: 0.5em;
+	border-radius: 5px;
+	padding: 3px;
+	background-color: #AAA;
+	color: #555;
+}
+
+.tag.never {
+	text-decoration: line-through;
+	background-color: #333;
+	color: #555;
+}
+
+.tag.need {
+	text-decoration: underline;
+	background-color: #CCC;
+	color: #222;
+}
+
+.highlight .square {
 	background-color: white;
 	opacity: 0.5;
+	-webkit-transition: bottom 0s, left 0s;
+	-moz-transition: bottom 0s, left 0s;
+	transition: bottom 0s, left 0s;
 }
 
 ul.nav {

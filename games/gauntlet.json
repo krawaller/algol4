@@ -1,0 +1,54 @@
+{
+	"meta": {
+		"name": "Gauntlet",
+		"source": "http://homepages.di.fc.ul.pt/~jpn/gv/gauntlet.htm",
+		"tags": ["asymmetric","directions","jump","infiltrate"],
+		"author": "Phillip L Leduc"
+	},
+	"graphics": {"icons":{"soldiers":"pawns"},"rotatepieces":true},
+	"board": {"height":8,"width":8},
+	"setup": {
+		"soldiers": {
+			"1": [["rect","b1","g1",1]],
+			"2": [["rect","a2","a7",3],["rect","h2","h7",7]]
+		}
+	},
+	"terrain": { "goal": {"2":[["rect","b8","g8"]]} },
+	"startturn": {
+		"allow": "selectunit",
+		"runGenerators": ["findjumps"]
+	},
+	"endturn": {
+		"endgame": {}
+	},
+	"marks": {
+		"selectunit": {
+			"from": "myunits",
+			"runGenerators": ["findjumps","findmoves"],
+			"allow": "move"
+		}
+	},
+	"commands": {},
+	"generators": {
+		"findjumps": {
+			"type": "walker",
+			"starts": ["ifelse",["same","startturn",["contextval","when"]],"myunits","selectunit"],
+			"dirs": ["relativedir",1,["lookup","units",["contextpos","start"],"dir"]],
+			"steps": "oppunits",
+			"blocks": ["subtract","board","units"],
+			"max": 2,
+			"draw": {
+				"starts": {
+					
+				},
+				"steps": {
+					"tolayer": "tobekilled"
+				},
+				"block": {
+					"condition": ["same",["contextval","linelength"],1],
+					"tolayer": "jumptargets"
+				}
+			}
+		}
+	}
+}

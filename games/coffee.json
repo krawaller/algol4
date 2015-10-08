@@ -2,9 +2,10 @@
 	"meta": {
 		"name": "Coffee",
 		"source": "https://www.boardgamegeek.com/filepage/64972/coffee-rules-nestorgames",
-		"tags": ["deploy","formation"]
+		"tags": ["deploy","formation"],
+		"author": "Néstor Romeral Andrés"
 	},
-	"graphics": {"icons": {"soldiers":"pawns"}, "battlevals": {"slant":"slant"}, "hiKDSAghlight":"droptargets"},
+	"graphics": {"icons": {"soldiers":"pawns"}, "battlevals": {"slant":"slant"}, "highlight":"droptargets"},
 	"board": {"height":5,"width":5},
 	"endturn": {
 		"unless": {

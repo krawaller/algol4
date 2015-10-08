@@ -5,6 +5,7 @@ var React = require('react'),
     RouteHandler = Router.RouteHandler,
     Link = Router.Link,
     Terrain = require('./terrain'),
+    Highlight = require('./highlight'),
     Pieces = require('./pieces'),
     Marks = require('./marks'),
     Controls = require('./controls'),
@@ -194,6 +195,7 @@ var Game = React.createClass({
             <div>
                 <div className="board" style={style}>
                     <Terrain state={s.start} tileheight={tileheight} tilewidth={tilewidth} />
+                    <Highlight state={battle} tileheight={tileheight} tilewidth={tilewidth} />
                     <Marks state={battle} tileheight={tileheight} tilewidth={tilewidth} />
                     <Pieces state={battle} tileheight={tileheight} tilewidth={tilewidth} />
                 </div>
