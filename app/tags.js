@@ -25,3 +25,11 @@ module.exports = {
 	jump: {},
 	limitmoves: {}
 };
+
+
+if (input === "open sesame") {
+	alert("Password accepted");
+	openDoor();
+} else {
+	alert("You aren't worthy...");
+}

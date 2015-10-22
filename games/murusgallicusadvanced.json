@@ -2,7 +2,8 @@
 	"meta": {
 		"name": "Murus Gallicus Advanced",
 		"source": "https://boardgamegeek.com/thread/844020/advanced-murus-gallicus",
-		"tags": ["differentunits","infiltrate","shoot"]
+		"tags": ["differentunits","infiltrate","shoot"],
+		"author": "Phillip L. Leduc"
 	},
 	"graphics": { "tiles": {"homerow":"playercolour"}, "icons": {"towers":"rooks","walls":"pawns","catapults":"queens"} },
 	"board": { "height": 7, "width": 8 },

@@ -2,7 +2,8 @@
 	"meta": {
 		"name": "Murus Gallicus",
 		"source": "https://boardgamegeek.com/filepage/46316/murus-gallicus-detailed-rules",
-		"tags": ["differentunits","infiltrate"]
+		"tags": ["differentunits","infiltrate"],
+		"author": "Phillip L. Leduc"
 	},
 	"graphics": { "tiles": {"homerow":"playercolour"}, "icons": {"towers":"rooks","walls":"pawns"} },
 	"board": { "height": 7, "width": 8 },

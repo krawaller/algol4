@@ -73,6 +73,9 @@ function gatherLayerNames(l){
 function defaultify(def){
     // fix tags
     def = def.setIn(["meta","tags"],def.getIn(["meta","tags"]).push(def.getIn(["board","width"])+"x"+def.getIn(["board","height"])));
+    if (def.hasIn(["meta","author"])){
+        def = def.setIn(["meta","tags"],def.getIn(["meta","tags"]).push(def.getIn(["meta","author"])));
+    }
 
     // fix setup (empty default)
     def = def.set("setup",(def.get("setup")||I.Map()).map(function(sdef,name){
