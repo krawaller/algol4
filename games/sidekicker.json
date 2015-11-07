@@ -1,0 +1,55 @@
+{
+	"meta": {
+		"name": "Sidekicker",
+		"source": "http://www.di.fc.ul.pt/~jpn/gv/sidekicker.htm",
+		"tags": ["starve"]
+	},
+	"graphics": {"icons":{"soldiers":"pawns"}},
+	"board": {"width":7,"height":6},
+	"setup": {
+		"soldiers": {
+			"1": [["rect","a1","g1",1]],
+			"2": [["rect","a6","h6",5]]
+		}
+	},
+	"startturn": {
+		"allow": ["selectunit"]
+	},
+	"marks": {
+		"selectunit": {
+			"from": "myunits",
+			"runGenerators": ["findmovetargets"],
+			"allow": ["selectmovetarget"]
+		},
+		"selectmovetarget": {
+			"from": "movetargets",
+			"allow": ["move"]
+		}
+	},
+	"commands": {
+		"move": {
+			"applyEffects": [
+				["kill","selectmovetarget"],
+				["move","selectunit","selectmovetarget"]
+			],
+			"allow": ["endturn"]
+		}
+	},
+	"generators": {
+		"findmovetargets": {
+			"type": "nextto",
+			"starts": "selectunit",
+			"dirs": ["relativedirs",["dirs",[7,8,1,2,3]],["lookup","units","selectunit","dir"]],
+			"condition": ["ifelse",
+				["valinlist",["contextval","dir"],[3,7]],
+				["anyat","oppunits",["contextpos","target"]],
+				["noneat","oppunits",["contextpos","target"]]
+			],
+			"draw": {
+				"target": {
+					"tolayer": "movetargets"
+				}
+			}
+		}
+	}
+}
