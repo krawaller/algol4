@@ -16,7 +16,6 @@ module.exports = {
 	directions: {},
 	custodian: {},
 	starve: {},
-	nocapture: {},
 	eradicate: {},
 	terrain: {},
 	capture: {},

@@ -1,0 +1,37 @@
+{
+	"meta": {
+		"name": "Snort",
+		"source": "http://www.di.fc.ul.pt/~jpn/gv/catdogs.htm",
+		"tags": ["deploy"]
+	},
+	"graphics": {"icons":{"soldiers":"pawns"}},
+	"board": {"width":8,"height":8},
+	"startturn": {
+		"allow": ["selectdrop"],
+		"runGenerators": ["findforbidden"]
+	},
+	"marks": {
+		"selectdrop": {
+			"from": ["subtract","board",["union","units","forbidden"]],
+			"allow": ["drop"]
+		}
+	},
+	"commands": {
+		"drop": {
+			"applyEffects": [["spawnunit","selectdrop","soldiers",["contextval","currentplayer"]]],
+			"allow": ["endturn"]
+		}
+	},
+	"generators": {
+		"findforbidden": {
+			"type": "nextto",
+			"starts": "oppunits",
+			"dirs": ["dirs",[1,3,5,7]],
+			"draw": {
+				"target": {
+					"tolayer": "forbidden"
+				}
+			}
+		}
+	}
+}
