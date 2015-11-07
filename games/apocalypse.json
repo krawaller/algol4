@@ -1,0 +1,95 @@
+{
+	"meta": {
+		"name": "Apocalypse",
+		"source": "http://www.di.fc.ul.pt/~jpn/gv/apocalypse.htm",
+		"tags": ["capture","differentunits"]
+	},
+	"graphics": {"icons": {"soldiers":"pawns","kings":"knights"}},
+	"board": {"height":5,"width":5},
+	"setup": {
+		"soldiers": {
+			"1": [["pos",["a2","b1","c1","d1","e2"],1]],
+			"2": [["pos",["a4","b5","c5","d5","e4"],5]]
+		},
+		"kings": {
+			"1": ["a1","e1"],
+			"2": ["a5","e5"]
+		}
+	},
+	"terrain": {
+		"homerow": {"1":[["rect","a1","e1"]],"2":[["rect","a5","e5"]]}
+	},
+	"startturn": {
+		"allow":["selectunit"]
+	},
+	"endturn": {
+		"endgame": {
+			"killoppsoldiers": {"condition":["isempty","oppsoldiers"]}
+		}
+	},
+	"marks": {
+		"selectunit": {
+			"from": "myunits",
+			"runGenerators": [["ifelse",["anyat","mykings","selectunit"],"findkingmoves","findsoldiermoves"]],
+			"allow": ["selectmovetarget"]
+		},
+		"selectmovetarget": {
+			"from": "movetargets",
+			"allow": ["move"]
+		},
+		"selectretreattarget": {
+			"from": ["subtract","board","units"],
+			"allow": ["retreat"]
+		}
+	},
+	"commands": {
+		"move": {
+			"applyEffects": [
+				["kill","selectmovetarget"],
+				["if",["and",[["anyat","mysoldiers","selectunit"],["anyat","opphomerow","selectmovetarget"]]],
+					["ifelse",["morethan",["positionsin","mykings"],1],
+						["setcontextval","pawntomove",["markpos","selectmovetarget"]],
+						["setunitdata",["idofunitat","selectunit"],"group","kings"]
+					]
+				],
+				["move","selectunit","selectmovetarget"]
+			],
+			"allow": [["ifelse",
+				["truthy",["contextval","pawntomove"]],"selectretreattarget","endturn"
+			]]
+		},
+		"retreat": {
+			"applyEffects": [["move",["contextpos","pawntomove"],"selectretreattarget"]],
+			"allow": ["endturn"]
+		}
+	},
+	"generators": {
+		"findsoldiermoves": {
+			"type": "nextto",
+			"starts": "selectunit",
+			"dirs": ["relativedirs",["dirs",[8,1,2]],["lookup","units","selectunit","dir"]],
+			"condition": ["ifelse",
+				["valinlist",["contextval","dir"],[1,5]],
+				["noneat","units",["contextpos","target"]],
+				["anyat","oppunits",["contextpos","target"]]
+			],
+			"draw": {
+				"target": {
+					"tolayer": "movetargets"
+				}
+			}
+		},
+		"findkingmoves": {
+			"type": "offset",
+			"starts": "selectunit",
+			"offsets": [[2,1],[2,-1]],
+			"dirs": ["dirs",[1,3,5,7]],
+			"condition": ["noneat","myunits",["contextpos","target"]],
+			"draw": {
+				"target": {
+					"tolayer": "movetargets"
+				}
+			}
+		}
+	}
+}
