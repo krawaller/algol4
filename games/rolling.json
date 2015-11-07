@@ -1,0 +1,64 @@
+{
+	"meta": {
+		"name": "Roll-ing to four",
+		"source": "http://www.di.fc.ul.pt/~jpn/gv/rolling.htm",
+		"tags": ["formation"]
+	},
+	"graphics": {"icons": {"soldiers":"pawns"}},
+	"board": {"height":10,"width":4},
+	"setup": {
+		"soldiers": {
+			"1": [["rect","a1","c1"],["rect","b6","d6"]],
+			"2": [["rect","a5","c5"],["rect","b10","d10"]]
+		}
+	},
+	"startturn": {
+		"allow": ["selectunit"]
+	},
+	"endturn": {
+		"endgame": {
+			"madeline": {"condition":["notempty","winline"]}
+		}
+	},
+	"marks": {
+		"selectunit": {
+			"from": "myunits",
+			"runGenerators": ["findmovetargets"],
+			"allow": ["selectmovetarget"]
+		},
+		"selectmovetarget": {
+			"from": "movetargets",
+			"allow": ["move"]
+		}
+	},
+	"commands": {
+		"move": {
+			"applyEffects": [["move","selectunit","selectmovetarget"]],
+			"runGenerators": ["findlines"],
+			"allow": ["endturn"]
+		}
+	},
+	"generators": {
+		"findmovetargets": {
+			"type": "nextto",
+			"starts": "selectunit",
+			"condition": ["noneat","units",["contextpos","target"]],
+			"draw": {
+				"target": {
+					"tolayer": "movetargets"
+				}
+			}
+		},
+		"findlines": {
+			"type": "walker",
+			"starts": "myunits",
+			"steps": "myunits",
+			"draw": {
+				"start": {
+					"condition": ["morethan",["contextval","linelength"],2],
+					"tolayer": "winline"
+				}
+			}
+		}
+	}
+}
