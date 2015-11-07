@@ -24,6 +24,8 @@
 	},
 	"endturn": {
 		"endgame": {
+			"nopawns": {"condition":["and",[["isempty","mysoldiers"],["isempty","oppsoldiers"]]],"who":0},
+			"suicide": {"condition":["isempty","mysoldiers"],"who":["contextval","nextplayer"]},
 			"killoppsoldiers": {"condition":["isempty","oppsoldiers"]}
 		}
 	},
