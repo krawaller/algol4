@@ -1,0 +1,67 @@
+{
+	"meta": {
+		"name": "Ugly duck",
+		"source": "http://www.di.fc.ul.pt/~jpn/gv/uglyduck.htm",
+		"tags": ["capture","differentunits"]
+	},
+	"graphics": {"icons": {"soldiers":"pawns","kings":"kings"}},
+	"board": {"height":5,"width":5},
+	"setup": {
+		"soldiers": {
+			"1": [["rect","a1","e1",1]],
+			"2": [["rect","a5","e5",5]]
+		}
+	},
+	"terrain": {
+		"homerow": {"1":[["rect","a1","e1"]],"2":[["rect","a5","e5"]]}
+	},
+	"startturn": {
+		"allow": ["selectunit"]
+	},
+	"endturn": {
+		"endgame": {
+			"swanhome": {"condition":["overlaps","mykings","myhomerow"]}
+		}
+	},
+	"marks": {
+		"selectunit": {
+			"from": "myunits",
+			"runGenerators": ["findmovetargets"],
+			"allow": ["selectmovetarget"]
+		},
+		"selectmovetarget": {
+			"from": "movetargets",
+			"allow": ["move"]
+		}
+	},
+	"commands": {
+		"move": {
+			"applyEffects": [
+				["kill","selectmovetarget"],
+				["if",["anyat","opphomerow","selectmovetarget"],["multieffect",[
+					["setunitdata",["idofunitat","selectunit"],"group","kings"],
+					["setunitdata",["idofunitat","selectunit"],"dir",["relativedir",5,["lookup","units","selectunit","dir"]]]
+				]]],
+				["move","selectunit","selectmovetarget"]
+			],
+			"allow": ["endturn"]
+		}
+	},
+	"generators": {
+		"findmovetargets": {
+			"type": "nextto",
+			"starts": "selectunit",
+			"dirs": ["relativedirs",["dirs",[8,1,2]],["lookup","units","selectunit","dir"]],
+			"condition": ["ifelse",
+				["valinlist",["contextval","dir"],[1,5]],
+				["noneat","units",["contextpos","target"]],
+				["noneat","myunits",["contextpos","target"]]
+			],
+			"draw": {
+				"target": {
+					"tolayer": "movetargets"
+				}
+			}
+		}
+	}
+}
