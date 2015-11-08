@@ -1,0 +1,64 @@
+{
+	"meta": {
+		"name": "Manic minelayers",
+		"source": "http://www.invisible-city.com/play/26/manic-minelayers",
+		"tags": ["deploy"]
+	},
+	"graphics": {
+		"icons": {"layers":"knights","mines":"pawns"},
+		"tiles": {"home":"playercolour"}
+	},
+	"board": {"height":5,"width":10},
+	"terrain": {
+		"home": {
+			"1": [["rect","a1","a5"]],
+			"2": [["rect","j1","j5"]]
+		}
+	},
+	"startturn": {
+		"allow": [["ifelse",["morethan",["contextval","turn"],2],"selectunit","selectdroptarget"]]
+	},
+	"endturn": {},
+	"marks": {
+		"selectdroptarget": {
+			"from": "myhome",
+			"allow": ["drop"]
+		},
+		"selectunit": {
+			"from": "myunits",
+			"runGenerators": ["findmovetargets"],
+			"allow": ["selectmovetarget"]
+		},
+		"selectmovetarget": {
+			"from": "movetargets",
+			"allow": ["move"]
+		}
+	},
+	"commands": {
+		"drop": {
+			"applyEffects": [["spawnunit","selectdroptarget","layers",["contextval","currentplayer"]]],
+			"allow": ["endturn"]
+		},
+		"move": {
+			"applyEffects": [
+				["move","selectunit","selectmovetarget"],
+				["spawnunit","selectunit","mines",0]
+			],
+			"allow": ["endturn"]
+		}
+	},
+	"generators": {
+		"findmovetargets": {
+			"type": "offset",
+			"starts": "selectunit",
+			"offsets": [[2,1],[2,-1]],
+			"dirs": ["dirs",[1,3,5,7]],
+			"condition": ["noneat","myunits",["contextpos","target"]],
+			"draw": {
+				"target": {
+					"tolayer": "movetargets"
+				}
+			}
+		}
+	}
+}
