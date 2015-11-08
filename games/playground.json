@@ -1,0 +1,106 @@
+{
+	"meta": {
+		"name": "Playground commandos",
+		"source": "http://www.di.fc.ul.pt/~jpn/gv/playground.htm",
+		"tags": ["asymmetric","differentunits","capture","multiplegoals"]
+	},
+	"graphics": {
+		"icons":{"attackers":"kings","defenders":"rooks","obstacles":"pawns"},
+		"tiles":{"center":"playercolour"}
+	},
+	"board": {"width":8,"height":8},
+	"terrain": {"center":{"2":[["rect","d4","e5"]]}},
+	"setup": {
+		"attackers": { "1": ["a2","a7","b1","b8","g1","g8","h2","h7"] },
+		"defenders": { "2": [["rect","d4","e5"]]}
+	},
+	"endturn": {
+		"endgame": {
+			"infiltration": {"condition":["same",4,["overlapsize","center","attackers"]]},
+			"reduceattackers": {"condition":["same",3,["positionsin","attackers"]]}
+		}
+	},
+	"startturn": {
+		"allow": [["ifelse",["morethan",["contextval","turn"],6],"selectunit","selectdroptarget"]]
+	},
+	"marks": {
+		"selectdroptarget": {
+			"from": ["subtract","board","units"],
+			"allow": ["drop"]
+		},
+		"selectunit": {
+			"from": "myunits",
+			"runGenerators": ["finddiagtargets","findortotargets",["if",["anyat","attackers","selectunit"],"findjumptargets"]],
+			"allow": ["selectmovetarget","selectjumptarget"]
+		},
+		"selectmovetarget": {
+			"from": "movetargets",
+			"allow": ["move"]
+		},
+		"selectjumptarget": {
+			"from": "jumptargets",
+			"allow": ["jump"]
+		}
+	},
+	"commands": {
+		"drop": {
+			"applyEffects": [["spawnunit","selectdroptarget","obstacles",0]],
+			"allow": ["endturn"]
+		},
+		"move": {
+			"applyEffects": [["kill","selectmovetarget"],["move","selectunit","selectmovetarget"]],
+			"allow": ["endturn"]
+		},
+		"jump": {
+			"applyEffects": [["move","selectunit","selectjumptarget"]],
+			"allow": ["endturn"]
+		}
+	},
+	"generators": {
+		"finddiagtargets": {
+			"type": "nextto",
+			"starts": "selectunit",
+			"dirs": ["dirs",[2,4,6,8]],
+			"condition": ["and",[
+				["noneat","myunits",["contextpos","target"]],
+				["noneat","obstacles",["contextpos","target"]]
+			]],
+			"draw": {
+				"target": {
+					"tolayer": "movetargets"
+				}
+			}
+		},
+		"findortotargets": {
+			"type": "walker",
+			"starts": "selectunit",
+			"dirs": ["dirs",[1,3,5,7]],
+			"blocks": "units",
+			"max": ["ifelse",["anyat","defenders","selectunit"],8,1],
+			"draw": {
+				"steps": {
+					"tolayer": "movetargets"
+				},
+				"block": {
+					"condition": ["and",[
+						["noneat","myunits",["contextpos","target"]],
+						["noneat","obstacles",["contextpos","target"]]
+					]],
+					"tolayer": "movetargets"
+				}
+			}
+		},
+		"findjumptargets": {
+			"type": "walker",
+			"starts": "selectunit",
+			"steps": "units",
+			"blocks": ["subtract","board","units"],
+			"prioritizeblocksoversteps": true,
+			"draw": {
+				"block": {
+					"tolayer": "jumptargets"
+				}
+			}
+		}
+	}
+}
