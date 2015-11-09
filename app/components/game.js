@@ -84,7 +84,7 @@ var Game = React.createClass({
         var battleid = this.getParams().battleid,
             s = this.state;
         if (this.props.gamename === nextProps.gamename && battleid && battleid !== s.battleid){
-            console.log("Loading new battle!");
+            //console.log("Loading new battle!");
             this.setState(this.getInitialState());
         }
     },

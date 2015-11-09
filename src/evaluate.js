@@ -233,10 +233,11 @@ var valuemethods = {
 		return list.size;
 	},
 	overlapsize: function(state,layername1,layername2){
-		var lr1 = state.getIn(["layers",layername1]) || I.Map();
+		return this.evaluatePositionSet(state,I.List(["intersect",layername1,layername2])).size;
+		/*var lr1 = state.getIn(["layers",layername1]) || I.Map();
 		return (state.getIn(["layers",layername2])||I.Map()).reduce(function(count,entities,pos){
 			return lr1.has(pos) ? count+1 : count;
-		},0);
+		},0);*/
 	},
 	case: function(state,val,listofpairs,defaultval){
 		var val = this.evaluateValue(state,val),

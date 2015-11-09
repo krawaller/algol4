@@ -1,0 +1,77 @@
+{
+	"meta": {
+		"name": "Serauqs",
+		"source": "https://boardgamegeek.com/image/274401/serauqs",
+		"tags": ["formation"]
+	},
+	"graphics": {
+		"icons": {"soldiers":"pawns","wild":"kings"},
+		"tiles": {"corners":"grass","middle":"castle"}
+	},
+	"board": {"height":4,"width":4},
+	"terrain": {
+		"base": {"1":[["rect","a1","d1"]],"2":[["rect","a4","d4"]]},
+		"corners": ["a1","a4","d1","d4"],
+		"middle": [["rect","b2","c3"]]
+	},
+	"setup": { "soldiers": {"1":[["rect","a1","d1"]],"2":[["rect","a4","d4"]]} },
+	"endturn": {
+		"endgame": {
+			"madeline": {"condition":["notempty","winline"]},
+			"madex": {"condition":["morethan",["overlapsize","corners",["union","myunits","oppwild"]],3]},
+			"tookcenter": {"condition":["morethan",["overlapsize","middle",["union","myunits","oppwild"]],3]}
+		}
+	},
+	"startturn": {
+		"allow": ["selectunit"]
+	},
+	"marks": {
+		"selectunit": {
+			"from": "myunits",
+			"runGenerators": ["findmovetargets"],
+			"allow": [["ifelse",["morethan",3,["contextval","turn"]],"makewild","selectmovetarget"]]
+		},
+		"selectmovetarget": {
+			"from": "movetargets",
+			"allow": ["move"]
+		}
+	},
+	"commands": {
+		"makewild": {
+			"applyEffects": [["setunitdata",["idofunitat","selectunit"],"group","wild"]],
+			"allow": ["endturn"]
+		},
+		"move": {
+			"applyEffects": [["move","selectunit","selectmovetarget"]],
+			"runGenerators": ["findwinline"],
+			"allow": ["endturn"]
+		}
+	},
+	"generators": {
+		"findmovetargets": {
+			"type": "nextto",
+			"starts": "selectunit",
+			"condition": ["noneat","units",["contextpos","target"]],
+			"draw": {
+				"target": {
+					"tolayer": "movetargets"
+				}
+			}
+		},
+		"findwinline": {
+			"type": "walker",
+			"starts": ["union","myunits","oppwild"],
+			"steps": ["union","myunits","oppwild"],
+			"count": "mybase",
+			"draw": {
+				"start": {
+					"condition": ["and",[
+						["same",["contextval","linelength"],3],
+						["different",["contextval","counttotal"],3]
+					]],
+					"tolayer": "winline"
+				}
+			}
+		}
+	}
+}
