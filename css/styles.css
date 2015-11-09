@@ -224,6 +224,10 @@ a.square, .square a {
 	background-color: rgba(0,0,0,0.07);
 }
 
+.void {
+	background-color: #333;
+}
+
 .dir2 { transform: rotate(45deg) ; -webkit-transform: rotate(45deg); }
 .dir3 { transform: rotate(90deg) ; -webkit-transform: rotate(90deg);}
 .dir4 { transform: rotate(135deg); -webkit-transform: rotate(135deg);}
