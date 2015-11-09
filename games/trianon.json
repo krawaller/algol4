@@ -1,0 +1,47 @@
+{
+	"meta": {
+		"name": "Trianon",
+		"source": "http://www.vanmaanen.org/hans/boeken/wolf/trianon.html",
+		"tags": ["deploy","formation"]
+	},
+	"graphics": { "icons": {"soldiers":"pawns"} },
+	"board": { "height": 5, "width": 5 },
+	"terrain": {
+		"edges": [["rect","a1","a5"],["rect","b5","e5"],["rect","b1","e1"],["rect","e2","e4"]]
+	},
+	"startturn": {
+		"allow": ["selectdeploytarget"]
+	},
+	"endturn": {
+		"unless": {
+			"mustmaketriplets": ["notempty","triplets"]
+		}
+	},
+	"marks": {
+		"selectdeploytarget": {
+			"from": ["subtract","board","units"],
+			"allow": ["deploy"]
+		}
+	},
+	"commands": {
+		"deploy": {
+			"applyEffects": [["spawnunit","selectdeploytarget","soldiers",["contextval","currentplayer"]]],
+			"runGenerators": ["findtriplets"],
+			"allow": ["endturn"]
+		}
+	},
+	"generators": {
+		"findtriplets": {
+			"type": "walker",
+			"starts": "edges",
+			"count": "myunits",
+			"startasstep": true,
+			"draw": {
+				"start": {
+					"condition": ["morethan",["contextval","counttotal"],2],
+					"tolayer": "triplets"
+				}
+			}
+		}
+	}
+}

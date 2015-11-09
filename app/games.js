@@ -55,6 +55,7 @@ var _ = require('lodash'),
         tablut: require("../games/tablut.json"),
         threemusketeers: require("../games/threemusketeers.json"),
         trespass: require("../games/trespass.json"),
+        trianon: require("../games/trianon.json"),
         uglyduck: require("../games/uglyduck.json"),
         zonesh: require("../games/zonesh.json")
     };

@@ -202,6 +202,7 @@ Algol.allowEndTurn = function(tree,id){
 	//console.log("Gonna allow end turn id",id,"tree",tree.toJS());
 	if (unless){
 		state = unless.reduce(function(s,cond,name){
+			//console.log(tree.get("gamedef").toJS(),"FULL UNLESS",unless.toJS(),"name",name,"cond",cond && cond.toJS && cond.toJS() || cond)
 			if (this.evaluateBoolean(s,cond)){
 				forbidden = name;
 				return s.set("forbidden",name);
