@@ -1,0 +1,75 @@
+{
+	"meta" : {
+		"name": "Grensholm",
+		"source": "http://www.zillions-of-games.com/cgi-bin/zilligames/submissions.cgi/49215?do=show;id=1009",
+		"tags": ["infiltration","promotion"]
+	},
+	"graphics": {
+		"icons": {
+			"soldiers": "knights",
+			"kings": "kings"
+		},
+		"tiles": {
+			"base": "playercolour"
+		}
+	},
+	"board": { "height": 6, "width": 4 },
+	"terrain": {
+		"base": {
+			"1": [["rect","a1","d1"]],
+			"2": [["rect","a6","d6"]]
+		}
+	},
+	"setup": {
+		"soldiers": {
+			"1": [["holerect","a1","d2",["b2","c2"],1]],
+			"2": [["holerect","a5","d6",["b5","c5"],5]]
+		}
+	},
+	"endturn": {
+		"endgame": {
+			"returnedking": {"condition":["overlaps","mykings","mybase"]}
+		}
+	},
+	"startturn": {
+		"allow": ["selectunit"]
+	},
+	"marks": {
+		"selectunit": {
+			"from": "myunits",
+			"runGenerators": ["findmovetargets"],
+			"allow": ["selectmovetarget"]
+		},
+		"selectmovetarget": {
+			"from": "movetargets",
+			"allow": ["move"]
+		}
+	},
+	"commands": {
+		"move": {
+			"applyEffects": [
+				["if",["anyat","oppbase","selectmovetarget"],["multieffect",[
+					["setunitdata",["idofunitat","selectunit"],"group","kings"],
+					["setunitdata",["idofunitat","selectunit"],"dir",["relativedir",5,["lookup","units","selectunit","dir"]]]
+				]]],
+				["kill","selectmovetarget"],
+				["move","selectunit","selectmovetarget"]
+			],
+			"allow": ["endturn"]
+		}
+	},
+	"generators": {
+		"findmovetargets": {
+			"type": "offset",
+			"starts": "selectunit",
+			"dirs": ["relativedir",1,["lookup","units","selectunit","dir"]],
+			"offsets": [[2,-1],[2,1],[1,-2],[1,2]],
+			"condition": ["noneat","myunits",["contextpos","target"]],
+			"draw": {
+				"target": {
+					"tolayer": "movetargets"
+				}
+			}
+		}
+	}
+}

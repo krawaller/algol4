@@ -22,6 +22,7 @@ var _ = require('lodash'),
         gobs: require("../games/gobs.json"),
         gogol: require("../games/gogol.json"),
         gravity: require("../games/gravity.json"),
+        grensholm: require("../games/grensholm.json"),
         jackrabbits: require("../games/jackrabbits.json"),
         //khan: require("../games/khan.json"), // Needs conversion!
         kickrun: require("../games/kickrun.json"),

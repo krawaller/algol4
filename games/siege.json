@@ -137,12 +137,16 @@
 		},
 		"findcommanderstep": {
 			"type": "nextto",
-			"starts": ["ifelse",["truthy",["markpos","selectunit"]],["intersect","mycommander",["intersect","selectunit","hq"]],["intersect","commander","hq"] ],
+			"starts": ["ifelse",
+				["truthy",["markpos","selectunit"]],
+				["intersect","selectunit",["intersect","hq","commander"]],
+				["intersect","commander","hq"]
+			],
 			"dirs": ["dirs",[3,7]],
 			"condition": ["anyat","hq",["contextpos","target"]],
 			"draw": {
 				"target": {
-					"condition": ["anyat","knights",["contextpos","target"]],
+					"condition": ["noneat","soldiers",["contextpos","target"]],
 					"tolayer": ["ifelse",["truthy",["markpos","selectunit"]],"movetargets","potentialmoves"],
 					"include": {"owner":2}
 				}
