@@ -1,7 +1,8 @@
 /** @jsx React.DOM */
 
 var React = require('react'),
-    I = require('../../src/immutableextensions');
+    I = require('../../src/immutableextensions'),
+    Algol = require("../../src/index");
 
 var Status = React.createClass({
     render: function() {
@@ -20,12 +21,13 @@ var Status = React.createClass({
                 return ret+name+": "+values.reduce(function(arr,current,plr){
                     return arr.concat(current);
                 },[]).join("|")+" ";
-            },"");
+            },""),
+            instruction = s.hasIn(["gamedef","graphics","instruction"]) ? Algol.evaluateValue(s,s.getIn(["gamedef","graphics","instruction"])) : "";
         return <div className="status">
             Playing a game of {s.getIn(["gamedef","meta","name"])}&nbsp;(
             <a href={s.getIn(["gamedef","meta","source"])}>rules</a>
             ). &nbsp;
-            { turn+". "+desc+" "+turnvars+" "+battlevals+" "+plrvars }
+            { turn+". "+desc+" "+turnvars+" "+battlevals+" "+plrvars+" "+instruction }
         </div>
     }
 });

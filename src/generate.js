@@ -135,16 +135,27 @@ Algol.generateWalkerPods = function(state,def){
 };
 
 Algol.applyFilter = function(state,def){
-	var matching = def.get("matching"), tolayer = def.get("tolayer"), condition = def.get("condition");
-	return (state.getIn(["layers",this.evaluateValue(state,def.get("layer"))])||I.Map()).reduce(function(state,list,pos){
+	var matching = def.get("matching"),
+		tolayer = def.get("tolayer"),
+		condition = def.get("condition"),
+		filterlayer = this.evaluateValue(state,def.get("layer"));
+	//console.log("applying filter to",filterlayer,(state.getIn(["layers",filterlayer])||I.Map()).toJS());
+	return (state.getIn(["layers",filterlayer])||I.Map()).reduce(function(state,list,pos){
+		//console.log("position",pos);
 		return list.reduce(function(state,obj){
 			return (!matching || this.evaluateObjectMatch(state,matching,obj)) && (!condition || this.evaluateBoolean(state,condition)) ? I.pushIn(state,["layers",this.evaluateValue(state,tolayer),pos],obj) : state;
 		},state.setIn(["context","start"],pos),this);
 	},state,this).set("context",state.get("context"));
 };
 
-Algol.applyGenerator = function(state,def){
-	var type = def.get("type"), marklist = def.get("requiredmarks"), marks = state.get("marks"), pods;
+Algol.applyGenerator = function(state,name){
+	if (I.List.isList(name)){
+		return this.applyGeneratorList(state,name);
+	}
+	if (!state.getIn(["gamedef","generators",name])){
+		console.log("ALARM",name)
+	}
+	var def = state.getIn(["gamedef","generators",name]), type = def.get("type"), marklist = def.get("requiredmarks"), marks = state.get("marks"), pods;
 	if (!marklist || marklist.every(function(mark){return marks.has(mark);})){
 		if (type==="filter") {
 			return this.applyFilter(state,def);
@@ -157,17 +168,20 @@ Algol.applyGenerator = function(state,def){
 	}
 };
 
-Algol.applyGeneratorList = function(state,list,when){
+Algol.applyGeneratorList = function(state,list,when,debug){
+	debug && console.log("running generator list",list.toJS())
 	return list.reduce(function(state,generatorname){
-		//console.log("runnning generator",generatorname);
+		debug && console.log("runnning generator",generatorname && generatorname.toJS && generatorname.toJS() || generatorname );
 		if (I.List.isList(generatorname) && generatorname.first() === "if"){ // [if,cond,name]
 			//console.log("Will we actually run",generatorname.get(2),"cond is",generatorname.get(1).toJS(),"evaluated to",this.evaluateBoolean(state,generatorname.get(1)));
-			return this.evaluateBoolean(state,generatorname.get(1)) ? this.applyGenerator(state.setIn(["context","when"],when),state.getIn(["gamedef","generators",generatorname.get(2)])) : state;
+			var bool = this.evaluateBoolean(state,generatorname.get(1));
+			debug && console.log("Generator list IF",bool);
+			return bool ? this.applyGenerator(state.setIn(["context","when"],when),generatorname.get(2)) : state;
 		} else if (I.List.isList(generatorname) && generatorname.first() === "ifelse"){
 			var name = this.evaluateBoolean(state,generatorname.get(1)) ? generatorname.get(2) : generatorname.get(3);
-			return this.applyGenerator(state,state.getIn(["gamedef","generators",name]));
+			return this.applyGenerator(state,name);
 		} else {
-			return this.applyGenerator(state,state.getIn(["gamedef","generators",generatorname]));
+			return this.applyGenerator(state,generatorname);
 		}
 	},state,this).deleteIn(["context","when"]);
 };

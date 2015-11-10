@@ -457,11 +457,11 @@ Algol.allow = function(tree,id,def){
 };
 
 Algol.obeyInstructions = function(tree,id,instr,when){
-	var debug = false // tree.getIn(["cache",id,"turn"]) === 6;
+	var debug = false; // when === "startturn" && tree.getIn(["cache",id,"turn"]) === 6; // tree.getIn(["cache",id,"turn"]) === 6;
 	debug && console.log("Obeying instruction",tree.toJS(),"id",id,"instr",instr.toJS());
 	if (instr.has("runGenerators")){
 		debug && console.log("applying generator list",instr.get("runGenerators").toJS && instr.get("runGenerators").toJS()  )
-		tree = tree.setIn(["cache",id],this.applyGeneratorList(tree.getIn(["cache",id]),instr.get("runGenerators")),when);
+		tree = tree.setIn(["cache",id],this.applyGeneratorList(tree.getIn(["cache",id]),instr.get("runGenerators"),when,debug));
 		debug && console.log("after generator list",tree.getIn(["cache",id,"layers"]).toJS());
 	}
 	if (instr.has("allow")){

@@ -8,7 +8,24 @@
 	},
 	"graphics": {
 		"icons": {"knights":"knights","soldiers":"pawns","commander":"kings"},
-		"tiles": {"void":"grass","floor":"castle","water":"water","hq":"playercolour"}
+		"tiles": {"void":"grass","floor":"castle","water":"water","hq":"playercolour"},
+		"instruction": ["ifelse",
+			["morethan",9,["contextval","turn"]],
+			["ifelse",
+				["same",["contextval","currentplayer"],1],
+				"Move in before they are organised!",
+				["ifelse",
+					["isempty","threats"],
+					"We must leave the barracks!",
+					"The battle has begun!"
+				]
+			],
+			["ifelse",
+				["same",["contextval","currentplayer"],1],
+				"Take the castle!",
+				"Repell the attackers!"
+			]
+		]
 	},
 	"board": {"height":7,"width":8},
 	"terrain": {
@@ -31,16 +48,28 @@
 		}
 	},
 	"startturn": {
+		"runGenerators": [["if",["and",[
+			["same",["contextval","currentplayer"],2],
+			["morethan",9,["contextval","turn"]]
+		]],["findknightfirststeps","findknightsecondsteps","findcommanderslides","findcommanderstep","findsoldiermoves","findthreats"]]],
 		"allow": ["selectunit"]
 	},
 	"marks": {
 		"selectunit": {
-			"from": ["ifelse",["morethan",9,["contextval","turn"]],["subtract","myunits","commander"],"myunits"],
-			"runGenerators": ["findknightfirststeps","findknightsecondsteps","findcommanderslides","findcommanderstep","findsoldiermoves"],
+			"from": ["ifelse",["and",[
+				["same",["contextval","currentplayer"],2],
+				["morethan",9,["contextval","turn"]],
+				["isempty","threats"]
+			]],["intersect","barracks","mysoldiers"],"myunits"],
+			"runGenerators": [["ifelse",["same",["contextval","currentplayer"],1],["findknightfirststeps","findknightsecondsteps"],["findcommanderslides","findcommanderstep","findsoldiermoves"]]],
 			"allow": ["selectmovetarget"]
 		},
 		"selectmovetarget": {
-			"from": ["ifelse",["morethan",9,["contextval","turn"]],["subtract","movetargets","barracks"],"movetargets"],
+			"from": ["ifelse",["and",[
+				["same",["contextval","currentplayer"],2],
+				["morethan",9,["contextval","turn"]],
+				["isempty","threats"]
+			]],["subtract","movetargets","barracks"],"movetargets"],
 			"allow": ["move"]
 		}
 	},
@@ -53,7 +82,7 @@
 	"generators": {
 		"findknightfirststeps": {
 			"type": "nextto",
-			"starts": ["intersect","myknights","selectunit"],
+			"starts": ["ifelse",["truthy",["markpos","selectunit"]],["intersect","myknights","selectunit"],"knights"],
 			"dirs": ["dirs",[1,3,5,7]],
 			"draw": {
 				"target": {
@@ -71,7 +100,7 @@
 			"dirs": ["relativedirs",["dirs",[8,2]],["lookup","knightstep1",["contextpos","start"],"dir"]],
 			"condition": ["and",[
 				["noneat","void",["contextpos","target"]],
-				["noneat","myunits",["contextpos","target"]],
+				["noneat","knights",["contextpos","target"]],
 				["or",[
 					["falsy",["lookup","knightstep1",["contextpos","start"],"startedincastle"]],
 					["anyat","castle",["contextpos","target"]]
@@ -83,54 +112,71 @@
 			]],
 			"draw": {
 				"target": {
-					"tolayer": "movetargets"
+					"tolayer": ["ifelse",["truthy",["markpos","selectunit"]],"movetargets","potentialmoves"],
+					"include": {"owner":1}
 				}
 			}
 		},
 		"findcommanderslides": {
 			"type": "walker",
 			"dirs": ["dirs",[2,4,6,8]],
-			"starts": ["intersect","mycommander","selectunit"],
+			"starts": ["ifelse",["truthy",["markpos","selectunit"]],["intersect","mycommander","selectunit"],"commander"],
 			"steps": "castle",
 			"blocks": "units",
 			"draw": {
 				"steps": {
-					"tolayer": "movetargets"
+					"tolayer": ["ifelse",["truthy",["markpos","selectunit"]],"movetargets","potentialmoves"],
+					"include": {"owner":2}
 				},
 				"block": {
-					"condition": ["noneat","myunits",["contextpos","target"]],
-					"tolayer": "movetargets"
+					"condition": ["anyat","knights",["contextpos","target"]],
+					"tolayer": ["ifelse",["truthy",["markpos","selectunit"]],"movetargets","potentialmoves"],
+					"include": {"owner":2}
 				}
 			}
 		},
 		"findcommanderstep": {
 			"type": "nextto",
-			"starts": ["intersect","mycommander",["intersect","selectunit","hq"]],
+			"starts": ["ifelse",["truthy",["markpos","selectunit"]],["intersect","mycommander",["intersect","selectunit","hq"]],["intersect","commander","hq"] ],
 			"dirs": ["dirs",[3,7]],
 			"condition": ["anyat","hq",["contextpos","target"]],
 			"draw": {
 				"target": {
-					"condition": ["noneat","myunits",["contextpos","target"]],
-					"tolayer": "movetargets"
+					"condition": ["anyat","knights",["contextpos","target"]],
+					"tolayer": ["ifelse",["truthy",["markpos","selectunit"]],"movetargets","potentialmoves"],
+					"include": {"owner":2}
 				}
 			}
 		},
 		"findsoldiermoves": {
 			"type": "nextto",
-			"starts": ["intersect","selectunit","mysoldiers"],
+			"starts": ["ifelse",["truthy",["markpos","selectunit"]],["intersect","selectunit","mysoldiers"],"soldiers"],
 			"condition": ["and",[
 				["anyat","defenderarea",["contextpos","target"]],
-				["noneat","myunits",["contextpos","target"]]
+				["noneat",["union","soldiers","commander"],["contextpos","target"]]
 			]],
 			"draw": {
 				"target": {
 					"condition": ["or",[
-						["noneat","oppunits",["contextpos","target"]],
+						["noneat","knights",["contextpos","target"]],
 						["valinlist",["contextval","dir"],[2,4,6,8]]
 					]],
-					"tolayer": "movetargets"
+					"tolayer": ["ifelse",["truthy",["markpos","selectunit"]],"movetargets","potentialmoves"],
+					"include": {"owner":2}
 				}
 			}
+		},
+		"findthreats": {
+			"type": "filter",
+			"layer": "potentialmoves",
+			"condition": ["and",[
+				["anyat","units",["contextpos","start"]],
+				["different",
+					["lookup","potentialmoves",["contextpos","start"],"owner"],
+					["lookup","units",["contextpos","start"],"owner"]
+				]
+			]],
+			"tolayer": "threats"
 		}
 	}
 }
