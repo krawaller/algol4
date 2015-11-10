@@ -22,7 +22,7 @@ var Status = React.createClass({
                     return arr.concat(current);
                 },[]).join("|")+" ";
             },""),
-            instruction = s.hasIn(["gamedef","graphics","instruction"]) ? Algol.evaluateValue(s,s.getIn(["gamedef","graphics","instruction"])) : "";
+            instruction = !s.has("endedby") && s.hasIn(["gamedef","graphics","instruction"]) ? Algol.evaluateValue(s,s.getIn(["gamedef","graphics","instruction"])) : "";
         return <div className="status">
             Playing a game of {s.getIn(["gamedef","meta","name"])}&nbsp;(
             <a href={s.getIn(["gamedef","meta","source"])}>rules</a>

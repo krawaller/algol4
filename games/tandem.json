@@ -1,0 +1,83 @@
+{
+	"meta": {
+		"name": "Tandem",
+		"source": "http://www.di.fc.ul.pt/~jpn/gv/tandems.htm",
+		"tags": ["infiltration"]
+	},
+	"graphics": {
+		"icons": {"soldiers":"pawns"},
+		"tiles": {"traps":"castle","base":"playercolour"}
+	},
+	"board": {"height":5,"width":5},
+	"setup": {
+		"soldiers": {
+			"1": [["rect","a1","e1"]],
+			"2": [["rect","a5","e5"]]
+		}
+	},
+	"terrain": {
+		"traps": ["b2","d2","b4","d4"],
+		"base": {
+			"1": [["rect","a1","e1"]],
+			"2": [["rect","a5","e5"]]
+		}
+	},
+	"endturn": {
+		"endgame": {
+			"winline": {
+				"condition": ["and",[
+					["same",["overlapsize","oppbase","units"],5],
+					["overlaps","oppbase","myunits"]
+				]]
+			},
+			"loseline": {
+				"condition": ["and",[
+					["same",["overlapsize","mybase","units"],5],
+					["overlaps","mybase","oppunits"]
+				]],
+				"who": ["contextval","nextplayer"]
+			}
+		}
+	},
+	"startturn": {
+		"allow": ["selectunit"]
+	},
+	"marks": {
+		"selectunit": {
+			"from": ["subtract","myunits",["contextpos","movedto"]],
+			"runGenerators": [["if",["morethan",2,["contextval","performedsteps"]],"findmovetargets"]],
+			"allow": ["selectmovetarget"]
+		},
+		"selectmovetarget": {
+			"from": "movetargets",
+			"allow": ["move"]
+		}
+	},
+	"commands": {
+		"move": {
+			"applyEffects": [
+				["move","selectunit","selectmovetarget"],
+				["setcontextpos","movedto","selectmovetarget"],
+				["setcontextval","moveddir",["lookup","movetargets","selectmovetarget","dir"]]
+			],
+			"allow": [["ifelse",["morethan",2,["contextval","performedsteps"]],"selectunit","endturn"]]
+		}
+	},
+	"generators": {
+		"findmovetargets": {
+			"type": "nextto",
+			"starts": "selectunit",
+			"dirs": ["ifelse",["hasperformedcommand","move"],["relativedir",1,["contextval","moveddir"]],["dirs",[1,2,3,4,5,6,7,8]]],
+			"condition": ["and",[
+				["noneat","units",["contextpos","target"]],
+				["noneat","traps",["contextpos","target"]]
+			]],
+			"draw": {
+				"target": {
+					"tolayer": "movetargets",
+					"include": {"dir":["contextval","dir"]}
+				}
+			}
+		}
+	}
+}
