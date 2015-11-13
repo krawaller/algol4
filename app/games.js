@@ -16,6 +16,7 @@ var _ = require('lodash'),
         court: require("../games/court.json"),
         crossings: require("../games/crossings.json"),
         daggers: require("../games/daggers.json"),
+        dao: require("../games/dao.json"),
         dodgem: require("../games/dodgem.json"),
         donkan: require("../games/donkan.json"),
         duffer: require("../games/duffer.json"),
@@ -89,7 +90,10 @@ function defaultify(def){
     // fix tags
     def = def.setIn(["meta","tags"],def.getIn(["meta","tags"]).push(def.getIn(["board","width"])+"x"+def.getIn(["board","height"])));
     if (def.hasIn(["meta","author"])){
-        def = def.setIn(["meta","tags"],def.getIn(["meta","tags"]).push(def.getIn(["meta","author"])));
+        /*if (!I.List.isList(def.getIn(["meta","author"]))){
+            def = def.setIn(["meta","author"],I.List(def.getIn(["meta","author"])));
+        }*/
+        def = def.setIn(["meta","tags"],def.getIn(["meta","tags"]).concat(def.getIn(["meta","author"])));
     }
 
     // fix setup (empty default)
