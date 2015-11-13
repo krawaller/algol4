@@ -1,0 +1,68 @@
+{
+	"meta": {
+		"name": "Dodgem",
+		"source": "http://www.di.fc.ul.pt/~jpn/gv/dodgem.htm",
+		"tags": [],
+		"author": "Colin Vout",
+		"year": "1972"
+	},
+	"graphics": {"icons":{"soldiers":"pawns"},"tiles":{"justone":"playercolour","both":"castle"}},
+	"board": {"height":4,"width":4},
+	"terrain": {
+		"escape": { "1": [["rect","a4","d4"]], "2": [["rect","d1","d4"]] },
+		"justone": { "1": [["rect","a4","c4"]], "2": [["rect","d1","d3"]] },
+		"both": ["d4"]
+	},
+	"setup": {
+		"soldiers": {
+			"1": [["rect","b1","d1",1]],
+			"2": [["rect","a2","a4",3]]
+		}
+	},
+	"endturn": {
+		"endgame": {
+			"nomoreunits": {"condition": ["isempty","myunits"], "who": ["contextval","nextplayer"]},
+			"stalematedopp": {"condition": ["isempty",["union",["intersect","oppunits","oppescape"],"movetargets"]], "who": ["contextval","nextplayer"]}
+		}
+	},
+	"startturn": {
+		"allow": ["selectunit"]
+	},
+	"afterstep": {
+		"runGenerators": ["findmovetargets"],
+		"allow": ["endturn"]
+	},
+	"marks": {
+		"selectunit": {
+			"from": "myunits",
+			"runGenerators": ["findmovetargets"],
+			"allow": ["selectmovetarget",["if",["overlaps","selectunit","myescape"],"escape"]]
+		},
+		"selectmovetarget": {
+			"from": "movetargets",
+			"allow": ["move"]
+		}
+	},
+	"commands": {
+		"move": {
+			"applyEffects": [["move","selectunit","selectmovetarget"]]
+		},
+		"escape": {
+			"applyEffects": [["kill","selectunit"]]
+		}
+	},
+	"generators": {
+		"findmovetargets": {
+			"type": "nextto",
+			"starts": ["ifelse",["hasmademove"],"oppunits","selectunit"],
+			"dirs": ["relativedirs",["dirs",[7,1,3]],["lookup","units",["contextpos","start"],"dir"]],
+			"condition": ["noneat","units",["contextpos","target"]],
+			"draw": {
+				"target": {
+					"tolayer": "movetargets"
+				}
+			}
+		}
+	}
+}
+

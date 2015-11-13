@@ -1,0 +1,98 @@
+{
+	"meta": {
+		"name": "Evasion",
+		"source": "http://www.di.fc.ul.pt/~jpn/gv/evasion.htm",
+		"tags": [],
+		"author": "Karl Scherer",
+		"year": 2001
+	},
+	"graphics": {"icons":{"soldiers":"pawns"},"tiles":{"base":"playercolour"}},
+	"board": {"height":8,"width":8},
+	"setup": {
+		"soldiers": {
+			"1": [["rect","a1","h2",1]],
+			"2": [["rect","a7","h8",5]]
+		}
+	},
+	"terrain": {
+		"base": {
+			"1": [["rect","a1","h2"]],
+			"2": [["rect","a7","h8"]]
+		}
+	},
+	"endturn": {
+		"endgame": {
+			"invaded": {"condition":["same",["overlapsize","oppbase","myunits"],16]}
+		}
+	},
+	"startturn": {
+		"allow": ["selectunit"]
+	},
+	"marks": {
+		"selectunit": {
+			"from": "myunits",
+			"runGenerators": ["findforwardslides","findsideslides","findevadetargets"],
+			"allow": ["selectmovetarget"]
+		},
+		"selectmovetarget": {
+			"from": "movetargets",
+			"allow": ["move"]
+		}
+	},
+	"commands": {
+		"move": {
+			"applyEffects": [
+				["move",["firstposin",["union","selectunit",["contextpos","evadedto"]]],"selectmovetarget"],
+				["ifelse",
+					["truthy",["lookup","movetargets","selectmovetarget","evade"]],
+					["setcontextpos","evadedto","selectmovetarget"],
+					["setcontextval","madeslide",true]
+				]
+			],
+			"runGenerators": [["if",["falsy",["contextval","madeslide"]],["findforwardslides","findsideslides","findevadetargets"]]],
+			"allow": ["endturn","selectmovetarget"]
+		}
+	},
+	"generators": {
+		"findforwardslides": {
+			"type": "walker",
+			"starts": ["union",["contextpos","evadedto"],"selectunit"],
+			"dirs": ["relativedir",1,["lookup","units",["contextpos","start"],"dir"]],
+			"blocks": "units",
+			"max": 2,
+			"draw": {
+				"start": {
+					"condition": ["falsy",["contextval","linelength"]],
+					"tolayer": "isblocked"
+				},
+				"steps": {
+					"tolayer": "movetargets"
+				}
+			}
+		},
+		"findsideslides": {
+			"type": "walker",
+			"starts": "isblocked",
+			"dirs": ["dirs",[3,7]],
+			"blocks": "units",
+			"max": 2,
+			"draw": {
+				"steps": {
+					"tolayer": "movetargets"
+				}
+			}
+		},
+		"findevadetargets": {
+			"type": "walker",
+			"starts": "isblocked",
+			"dirs": ["relativedirs",["dirs",[2,8]],["lookup","units",["contextpos","start"],"dir"]],
+			"blocks": "units",
+			"draw": {
+				"steps": {
+					"tolayer": "movetargets",
+					"include": {"evade":true}
+				}
+			}
+		}
+	}
+}

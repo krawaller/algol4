@@ -2,7 +2,9 @@
 	"meta": {
 		"name": "Duffer",
 		"source": "http://www.di.fc.ul.pt/~jpn/gv/duffer.htm",
-		"tags": ["starvation","commonunits"]
+		"tags": ["starvation","commonunits"],
+		"author": "Walter Joris",
+		"year": "2002"
 	},
 	"graphics": { "icons": {"soldiers":"pawns"} },
 	"board": {"height":4,"width":4},

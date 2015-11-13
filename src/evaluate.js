@@ -149,6 +149,7 @@ var boolmethods = {
 	different: function(state,val1,val2){ return this.evaluateValue(state,val1) !== this.evaluateValue(state,val2); },
 	morethan: function(state,val1,val2){ return this.evaluateValue(state,val1) > this.evaluateValue(state,val2); },
 	hasperformedcommand: function(state,command){ return !!state.getIn(["context","hasperformed"+command]); },
+	hasmademove: function(state){ return !!state.getIn(["context","performedsteps"]); },
 	true: function(){ return true; },
 	false: function(){ return false; },
 	truthy: function(state,def){ return !!this.evaluateValue(state,def); },

@@ -428,6 +428,7 @@ var allowmethods = {
 		return this.evaluateBoolean(state,bool) ? this.allow(tree,state.get("id"),allow1) : this.allow(tree,state.get("id"),allow2);
 	},
 	"if": function(tree,state,bool,allowdef){
+		//console.log("IF ALLOW",bool.toJS(),this.evaluateBoolean(state,bool));
 		return this.evaluateBoolean(state,bool) ? this.allow(tree,state.get("id"),allowdef) : tree;
 	},
 	auto: function(tree,state,cmnd){
