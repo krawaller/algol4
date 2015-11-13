@@ -1,0 +1,53 @@
+{
+	"meta": {
+		"name": "Duffer",
+		"source": "http://www.di.fc.ul.pt/~jpn/gv/duffer.htm",
+		"tags": ["starvation","commonunits"]
+	},
+	"graphics": { "icons": {"soldiers":"pawns"} },
+	"board": {"height":4,"width":4},
+	"setup": {
+		"soldiers": {
+			"0": ["a1","a2","b1","b2"]
+		}
+	},
+	"startturn": { "allow": ["selectunit"] },
+	"marks": {
+		"selectunit": {
+			"from": "units",
+			"runGenerators": ["findjumptargets"],
+			"allow": ["selectjumptarget"]
+		},
+		"selectjumptarget": {
+			"from": "jumptargets",
+			"allow": ["jump"]
+		}
+	},
+	"commands": {
+		"jump": {
+			"applyEffects": [
+				["move",["firstposin",["union","selectunit",["contextpos","jumpedto"]]],"selectjumptarget"],
+				["spawnunit",["firstposin",["union","selectunit",["contextpos","jumpedto"]]],"soldiers",0],
+				["setcontextpos","jumpedto","selectjumptarget"]
+			],
+			"runGenerators": ["findjumptargets"],
+			"allow": ["endturn","selectjumptarget"]
+		}
+	},
+	"generators": {
+		"findjumptargets": {
+			"type": "walker",
+			"starts": ["union","selectunit",["contextpos","jumpedto"]],
+			"steps": "units",
+			"blocks": ["subtract","board","units"],
+			"prioritizeblocksoversteps": true,
+			"max": 2,
+			"draw": {
+				"block": {
+					"condition": ["same",["contextval","linelength"],1],
+					"tolayer": "jumptargets"
+				}
+			}
+		}
+	}
+}
