@@ -1,0 +1,110 @@
+{
+	"meta": {
+		"name": "Snijpunt",
+		"source": "http://www.di.fc.ul.pt/~jpn/gv/snijpunt.htm",
+		"tags": ["formation","changeowner","deploy"]
+	},
+	"graphics": {
+		"icons": {"soldiers":"pawns","sniper":"kings"},
+		"tiles": {"zone":"grass","corner":"castle"}
+	},
+	"board": {"height":6,"width":6},
+	"terrain": {
+		"zone": {
+			"1": [["rect","b6","f6",5,{"perp":7}]],
+			"2": [["rect","a1","a5",3,{"perp":1}]]
+		},
+		"corner": ["a6"]
+	},
+	"endturn": {
+		"endgame": {
+			"madeline": {"condition":["notempty","winline"]},
+			"madeoppline": {"condition":["notempty","loseline"],"who":["contextval","nextplayer"]}
+		}
+	},
+	"startturn": {
+		"runGenerators": ["findpotentialempties","findmandatory"],
+		"allow": ["selecttarget"]
+	},
+	"marks": {
+		"selecttarget": {
+			"from": ["ifelse",["isempty","mandatory"],["subtract","myzone","sniper"],"mandatory"],
+			"runGenerators": ["findintersection"],
+			"allow": ["snipe"]
+		}
+	},
+	"commands": {
+		"snipe": {
+			"applyEffects": [
+				["ifelse",
+					["isempty","mysniper"],
+					["spawnunit","selecttarget","sniper",["contextval","currentplayer"]],
+					["move",["firstposin","mysniper"],"selecttarget"]
+				],
+				["if",
+					["morethan",["contextval","turn"],1],
+					["ifelse",
+						["anyat","units",["firstposin","intersection"]],
+						["setunitdata",["idofunitat",["firstposin","intersection"]],"owner",["ifelse",
+							["same",["lookup","units",["firstposin","intersection"],"owner"],2],
+							1,
+							2
+						]],
+						["spawnunit",["firstposin","intersection"],"soldiers",["contextval","currentplayer"]]
+					]
+				]
+			],
+			"runGenerators": ["findwinline"],
+			"allow": ["endturn"]
+		}
+	},
+	"generators": {
+		"findwinline": {
+			"type": "walker",
+			"starts": "soldiers",
+			"steps": ["ifelse",["anyat","mysoldiers",["contextpos","start"]],"mysoldiers","oppsoldiers"],
+			"draw": {
+				"start": {
+					"condition": ["morethan",["contextval","linelength"],2],
+					"tolayer": ["ifelse",["anyat","mysoldiers",["contextpos","start"]],"winline","loseline"]
+				}
+			}
+		},
+		"findintersection": {
+			"type": "walker",
+			"starts": "selecttarget",
+			"dirs": ["dir",["ifelse",["same",["contextval","currentplayer"],1],5,3]],
+			"draw": {
+				"steps": {
+					"condition": ["anyat","enemyline",["contextpos","target"]],
+					"tolayer": "intersection"
+				}
+			}
+		},
+		"findpotentialempties": {
+			"type": "walker",
+			"starts": "oppsniper",
+			"dirs": ["dir",["ifelse",["same",["contextval","currentplayer"],1],3,5]],
+			"draw": {
+				"all": {
+					"tolayer": "enemyline"
+				},
+				"steps": {
+					"condition": ["noneat","units",["contextpos","target"]],
+					"tolayer": "potentialempties"
+				}
+			}
+		},
+		"findmandatory": {
+			"type": "walker",
+			"starts": "potentialempties",
+			"dirs": ["dir",["ifelse",["same",["contextval","currentplayer"],1],1,7]],
+			"draw": {
+				"last": {
+					"condition": ["noneat","sniper",["contextpos","target"]],
+					"tolayer": "mandatory"
+				}
+			}
+		}
+	}
+}
