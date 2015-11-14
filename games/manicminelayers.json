@@ -2,7 +2,9 @@
 	"meta": {
 		"name": "Manic minelayers",
 		"source": "http://www.invisible-city.com/play/26/manic-minelayers",
-		"tags": ["deploy"]
+		"tags": ["deploy"],
+		"author": "Frank Truelove",
+		"year": 2000
 	},
 	"graphics": {
 		"icons": {"layers":"knights","mines":"pawns"},
@@ -16,33 +18,27 @@
 		}
 	},
 	"startturn": {
-		"allow": [["ifelse",["morethan",["contextval","turn"],2],"selectunit","selectdroptarget"]]
+		"runGenerators": ["findmovetargets"],
+		"allow": ["selecttarget"]
 	},
 	"endturn": {},
 	"marks": {
-		"selectdroptarget": {
-			"from": "myhome",
-			"allow": ["drop"]
-		},
-		"selectunit": {
-			"from": "myunits",
-			"runGenerators": ["findmovetargets"],
-			"allow": ["selectmovetarget"]
-		},
-		"selectmovetarget": {
-			"from": "movetargets",
+		"selecttarget": {
+			"from": ["ifelse",["isempty","myunits"],"myhome","movetargets"],
 			"allow": ["move"]
 		}
 	},
 	"commands": {
-		"drop": {
-			"applyEffects": [["spawnunit","selectdroptarget","layers",["contextval","currentplayer"]]],
-			"allow": ["endturn"]
-		},
 		"move": {
 			"applyEffects": [
-				["move","selectunit","selectmovetarget"],
-				["spawnunit","selectunit","mines",0]
+				["ifelse",
+					["isempty","myunits"],
+					["spawnunit","selecttarget","layers",["contextval","currentplayer"]],
+					["multieffect",[
+						["spawnunit",["firstposin","myunits"],"mines",0],
+						["move",["firstposin","myunits"],"selecttarget"]
+					]]
+				]
 			],
 			"allow": ["endturn"]
 		}
@@ -50,10 +46,10 @@
 	"generators": {
 		"findmovetargets": {
 			"type": "offset",
-			"starts": "selectunit",
+			"starts": "myunits",
 			"offsets": [[2,1],[2,-1]],
 			"dirs": ["dirs",[1,3,5,7]],
-			"condition": ["noneat","myunits",["contextpos","target"]],
+			"condition": ["noneat","units",["contextpos","target"]],
 			"draw": {
 				"target": {
 					"tolayer": "movetargets"

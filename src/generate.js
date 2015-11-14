@@ -13,25 +13,33 @@ Algol.generateOffsetPods = function(state,def){
 		offsets = def.get("offsets"),
 		board = state.getIn(["gamedef","board"]);
 	var ret = this.evaluatePositionSet(state,def.get("starts")).reduce(function(recorder,startpos){
-		var startstate = state.setIn(["context","start"],startpos);
+		var startstate = state.setIn(["context","start"],startpos),
+			tobecounted = def.has("count") && this.evaluatePositionSet(startstate,def.get("count")),
+			counttotal = 0;
 		//console.log("From here");
 		var targets = this.evaluateDirList(startstate,def.get("dirs")).reduce(function(map,dir){
 			return offsets.reduce(function(map,offset){ // offset is [forward,right]
 				var forward = offset.get(0),
 					right = offset.get(1),
-					newpos = this.offsetPosName(startpos,dir,offset.get(0),offset.get(1),board);
+					newpos = this.offsetPosName(startpos,dir,offset.get(0),offset.get(1),board),
+					counted = false;
+				if (tobecounted && newpos && tobecounted.contains(newpos)){
+					counted = true;
+					counttotal++;
+				}
 				return newpos && (!cond || this.evaluateBoolean(startstate.setIn(["context","target"],newpos),cond)) ? map.set(newpos,I.fromJS({
 					start:startpos,
 					target:newpos,
 					forward:forward,
 					right:right,
-					dir:dir
+					dir:dir,
+					counted: counted
 				})) : map;
 			},map,this);
 		},I.Map(),this);
 		return targets.reduce(function(recorder,info,pos){
-			return I.pushIn(recorder,["target",pos],info.set("offsetcount",targets.size));
-		},I.pushIn(recorder,["start",startpos],I.Map({start:startpos,offsetcount:targets.size})),this);
+			return I.pushIn(recorder,["target",pos],info.set("offsetcount",targets.size).set("counttotal",counttotal));
+		},I.pushIn(recorder,["start",startpos],I.Map({start:startpos,offsetcount:targets.size,counttotal:counttotal})),this);
 	},I.fromJS({start:{},target:{}}),this);
 	return ret;
 }
@@ -40,17 +48,27 @@ Algol.generateOffsetPods = function(state,def){
 Algol.generateNeighbourPods = function(state,def){
 	var cond = def.get("condition");
 	var ret = this.evaluatePositionSet(state,def.get("starts")).reduce(function(recorder,startpos){
-		var startstate = state.setIn(["context","start"],startpos);
+		var startstate = state.setIn(["context","start"],startpos),
+			tobecounted = def.has("count") && this.evaluatePositionSet(startstate,def.get("count")),
+			counttotal = 0;
 		//console.log("From here");
 		var neighbours = this.evaluateDirList(startstate,def.get("dirs")).reduce(function(map,dir){
 			startstate = startstate.setIn(["context","dir"],dir);
 			var targetpos = state.getIn(["connections",startpos,dir])||state.getIn(["connections",startpos,dir+""]);
 			//console.log("neighbour",startpos,dir,targetpos, targetpos && this.evaluateBoolean(startstate.setIn(["context","target"],targetpos),cond));
-			return targetpos && (!cond || this.evaluateBoolean(startstate.setIn(["context","target"],targetpos),cond)) ? map.set(dir,targetpos) : map;
+			if (targetpos && (!cond || this.evaluateBoolean(startstate.setIn(["context","target"],targetpos),cond))){
+				if (tobecounted && tobecounted.contains(targetpos)){
+					counttotal++;
+				}
+				return map.set(dir,targetpos);
+			} else {
+				return map;
+			}
+			//return targetpos && (!cond || this.evaluateBoolean(startstate.setIn(["context","target"],targetpos),cond)) ? map.set(dir,targetpos) : map;
 		},I.Map(),this);
 		return neighbours.reduce(function(recorder,pos,dir){
-			return I.pushIn(recorder,["target",pos],I.Map({start:startpos,dir:dir,target:pos,neighbourcount:neighbours.size}));
-		},I.pushIn(recorder,["start",startpos],I.Map({start:startpos,neighbourcount:neighbours.size})),this);
+			return I.pushIn(recorder,["target",pos],I.Map({start:startpos,dir:dir,target:pos,neighbourcount:neighbours.size,counttotal:counttotal}));
+		},I.pushIn(recorder,["start",startpos],I.Map({start:startpos,neighbourcount:neighbours.size,counttotal:counttotal})),this);
 	},I.fromJS({start:{},target:{}}),this);
 	//console.log("NEI",def.toJS(),"ret",ret.toJS());
 	return ret;
