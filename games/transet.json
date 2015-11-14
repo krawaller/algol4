@@ -1,0 +1,133 @@
+{
+	"meta": {
+		"name": "Transet",
+		"source": "http://sagme.blogspot.se/2013/05/transet.html",
+		"tags": ["infiltration","differentunits"]
+	},
+	"graphics": {
+		"icons": {"pinets":"pawns","piokers":"bishops","piases":"kings"},
+		"tiles": {"base":"playercolour"}
+	},
+	"board": {"height":5,"width":5},
+	"terrain": {
+		"base": {
+			"1": [["rect","a1","e1"]],
+			"2": [["rect","a5","e5"]]
+		}
+	},
+	"setup": {
+		"pinets": {"1":["a1","e1"],"2":["a5","e5"]},
+		"piokers": {"1":["b1","d1"],"2":["b5","d5"]},
+		"piases": {"1":["c1"],"2":["c5"]}
+	},
+	"endturn": {
+		"endgame": {
+			"infiltration": {"condition":["overlaps","myunits","oppbase"]}
+		}
+	},
+	"startturn": {
+		"allow": ["selectunit"]
+	},
+	"marks": {
+		"selectunit": {
+			"from": "myunits",
+			"runGenerators": ["findmovetargets"],
+			"allow": ["selectmovetarget","selectswapunit"]
+		},
+		"selectmovetarget": {
+			"from": "movetargets",
+			"allow": [["ifelse",
+				["and",[
+					["anyat","units","selectmovetarget"],
+					["noneat","oppbase","selectmovetarget"]
+				]],
+				"selectdeportdestination",
+				"move"
+			]]
+		},
+		"selectdeportdestination": {
+			"from": ["subtract","oppbase","oppunits"],
+			"allow": ["move"]
+		},
+		"selectswapunit": {
+			"from": ["subtract","myunits","selectunit"],
+			"runGenerators": ["findswap1steps"],
+			"allow": ["selectswap1target"]
+		},
+		"selectswap1target": {
+			"from": "swap1steps",
+			"runGenerators": ["findswap2step"],
+			"allow": [["if",["notempty","swap2step"],"swap"]]
+		}
+	},
+	"commands": {
+		"move": {
+			"applyEffects": [
+				["if",
+					["anyat","units","selectmovetarget"],
+					["ifelse",
+						["anyat","oppbase","selectmovetarget"],
+						["kill","selectmovetarget"],
+						["move","selectmovetarget","selectdeportdestination"]
+					]
+				],
+				["move","selectunit","selectmovetarget"]
+			],
+			"allow": ["endturn"]
+		},
+		"swap": {
+			"applyEffects": [
+				["move","selectunit","selectswap1target"],
+				["move","selectswapunit",["firstposin","swap2step"]]
+			],
+			"allow": ["endturn"]
+		}
+	},
+	"generators": {
+		"findswap2step": {
+			"type": "nextto",
+			"starts": "selectswapunit",
+			"dirs": ["relativedir",5,["lookup","swap1steps","selectswap1target","dir"]],
+			"condition": ["noneat","units",["contextpos","target"]],
+			"draw": {
+				"target": {
+					"tolayer": "swap2step"
+				}
+			}
+		},
+		"findswap1steps": {
+			"type": "nextto",
+			"starts": "selectunit",
+			"dirs": ["dirs",[1,3,5,7]],
+			"condition": ["noneat","units",["contextpos","target"]],
+			"draw": {
+				"target": {
+					"tolayer": "swap1steps",
+					"include": {"dir": ["contextval","dir"]}
+				}
+			}
+		},
+		"findmovetargets": {
+			"type": "nextto",
+			"starts": "selectunit",
+			"dirs": ["relativedirs",
+				["ifelse",
+					["anyat","pinets","selectunit"],
+					["dirs",[1]],
+					["ifelse",
+						["anyat","piokers","selectunit"],
+						["dirs",[8,2]],
+						["dirs",[7,8,1,2,3]]
+					]
+				],
+				["ifelse",["same",["contextval","currentplayer"],1],1,5]
+			],
+			"condition": ["noneat","myunits",["contextpos","target"]],
+			"draw": {
+				"target": {
+					"tolayer": "movetargets"
+				}
+			}
+		}
+	}
+}
