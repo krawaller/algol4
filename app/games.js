@@ -3,6 +3,7 @@ var _ = require('lodash'),
     games = {
         "90grad": require("../games/90grad.json"),
         amazons: require("../games/amazons.json"),
+        ambivalence: require("../games/ambivalence.json"),
         archers: require("../games/archers.json"),
         archimedes: require("../games/archimedes.json"),
         apocalypse: require("../games/apocalypse.json"),

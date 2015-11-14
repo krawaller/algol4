@@ -1,0 +1,83 @@
+{
+	"meta": {
+		"name": "Ambivalence",
+		"source": "http://www.di.fc.ul.pt/~jpn/gv/ambivalence.htm",
+		"tags": ["deploy"],
+		"author": "Walter Joris",
+		"year": 2002
+	},
+	"graphics": {"icons":{"soldiers":"pawns"}},
+	"board": {"height":6,"width":6},
+	"startturn": {
+		"allow": ["selecttarget"]
+	},
+	"endturn": {
+		"endgame": {
+			"filledboard": {
+				"condition": ["same",["positionsin","units"],36],
+				"who": ["ifelse",
+					["same",["positionsin","myunits"],["positionsin","oppunits"]],
+					0,
+					["ifelse",
+						["morethan",["positionsin","myunits"],["positionsin","oppunits"]],
+						["contextval","currentplayer"],
+						["contextval","nextplayer"]
+					]
+				]
+			}
+		}
+	},
+	"marks": {
+		"selecttarget": {
+			"from": ["subtract","board","units"],
+			"runGenerators": ["findtouchedfoes","findcustodianvictims","findintrusionvictims"],
+			"allow": ["drop"]
+		}
+	},
+	"commands": {
+		"drop": {
+			"applyEffects": [
+				["forallin","victims",["setunitdata",["loopid"],"owner",0]],
+				["spawnunit","selecttarget","soldiers",["contextval","currentplayer"]]
+			],
+			"allow": ["endturn"]
+		}
+	},
+	"generators": {
+		"findtouchedfoes": {
+			"type": "nextto",
+			"starts": "selecttarget",
+			"condition": ["anyat","oppunits",["contextpos","target"]],
+			"draw": {
+				"target": {
+					"tolayer": "touchedfoes",
+					"include": {"dir":["contextval","dir"]}
+				}
+			}
+		},
+		"findcustodianvictims": {
+			"type": "nextto",
+			"starts": "touchedfoes",
+			"dirs": ["dir",["lookup","touchedfoes",["contextpos","start"],"dir"]],
+			"count": "myunits",
+			"draw": {
+				"start": {
+					"condition": ["truthy",["contextval","counttotal"]],
+					"tolayer": "victims"
+				}
+			}
+		},
+		"findintrusionvictims": {
+			"type": "offset",
+			"starts": "touchedfoes",
+			"dirs": ["relativedir",5,["lookup","touchedfoes",["contextpos","start"],"dir"]],
+			"offsets": [[2,0]],
+			"condition": ["anyat","oppunits",["contextpos","target"]],
+			"draw": {
+				"target": {
+					"tolayer": "victims"
+				}
+			}
+		}
+	}
+}

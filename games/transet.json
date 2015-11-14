@@ -88,7 +88,7 @@
 			"type": "nextto",
 			"starts": "selectswapunit",
 			"dirs": ["relativedir",5,["lookup","swap1steps","selectswap1target","dir"]],
-			"condition": ["noneat","units",["contextpos","target"]],
+			"condition": ["noneat",["union","units","selectswap1target"],["contextpos","target"]],
 			"draw": {
 				"target": {
 					"tolayer": "swap2step"
