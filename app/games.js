@@ -42,7 +42,7 @@ var _ = require('lodash'),
         murusgallicusadvanced: require("../games/murusgallicusadvanced.json"),
         neighbours: require("../games/neighbours.json"),
         neutreeko: require("../games/neutreeko.json"),
-        // notchess: require("../games/notchess.json"),   // TODO - in progress! :D
+        notchess: require("../games/notchess.json"), 
         owlman: require("../games/owlman.json"),
         pawnographic: require("../games/pawnographic.json"),
         playground: require("../games/playground.json"),

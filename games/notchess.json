@@ -22,20 +22,76 @@
 		"runGenerators": ["findsoldiermoves","findknightmoves"],
 		"allow": ["selectunit"]
 	},
+	"marks": {
+		"selectunit": {
+			"from": ["ifelse",["isempty","cankill"],"myunits","cankill"],
+			"runGenerators": ["findmymoves"],
+			"allow": ["selectmovetarget"]
+		},
+		"selectmovetarget": {
+			"from": ["ifelse",["isempty","cankill"],"mymoves",["intersect","mymoves","oppunits"]],
+			"allow": ["move"]
+		}
+	},
+	"commands": {
+		"move": {
+			"applyEffects": [
+				["kill","selectmovetarget"],
+				["setunitdata",["idofunitat","selectunit"],"group",["ifelse",
+					["anyat","myknights","selectunit"],
+					"soldiers",
+					"knights"
+				]],
+				["move","selectunit","selectmovetarget"]
+			],
+			"allow": ["endturn"]
+		}
+	},
 	"generators": {
+		"findmymoves": {
+			"type": "filter",
+			"layer": "movetargets",
+			"matching": {"id":["is",["idofunitat","selectunit"]]},
+			"tolayer": "mymoves"
+		},
+		"findknightmoves": {
+			"type": "offset",
+			"starts": "myknights",
+			"dirs": ["dirs",[1,3,5,7]],
+			"offsets": [[2,1],[2,-1]],
+			"count": "oppunits",
+			"condition": ["noneat","myunits",["contextpos","target"]],
+			"draw": {
+				"start": {
+					"condition": ["truthy",["contextval","counttotal"]],
+					"tolayer": "cankill"
+				},
+				"target": {
+					"tolayer": "movetargets",
+					"include": {
+						"id": ["idofunitat",["contextpos","start"]],
+						"count": ["contextval","counttotal"]
+					}
+				}
+			}
+		},
 		"findsoldiermoves": {
 			"type": "nextto",
 			"starts": "mysoldiers",
 			"dirs": ["dirs",[1,3,5,7]],
 			"count": "oppunits",
+			"condition": ["noneat","myunits",["contextpos","target"]],
 			"draw": {
 				"start": {
-					"condition": ["truthy",["contextval","countotal"]],
+					"condition": ["truthy",["contextval","counttotal"]],
 					"tolayer": "cankill"
 				},
 				"target": {
 					"tolayer": "movetargets",
-					"include": {"id":["idofunitat",["contextpos","target"]]}
+					"include": {
+						"id":["idofunitat",["contextpos","start"]],
+						"count": ["contextval","counttotal"]
+					}
 				}
 			}
 		}
