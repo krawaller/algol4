@@ -165,6 +165,10 @@ Algol.endTurn = function(tree,id,inhistory){
 				.set("endedby",name)
 				.set("winner",who)
 				.set("save",state.get("save").push(state.get("path")))
+				.set("availableCommands",I.Map())
+				.set("availableMarks",I.Map())
+				.set("removeMarks",I.Map())
+				.set("reversalCommands",I.Map())
 			);
 		}
 		return mem;
