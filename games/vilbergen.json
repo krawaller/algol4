@@ -1,0 +1,112 @@
+{
+	"meta": {
+		"name": "Vilbergen",
+		"source": "http://www.di.fc.ul.pt/~jpn/gv/vilbergen.htm",
+		"tags": ["deploy"],
+		"author": "Markus Salo",
+		"year": 2003
+	},
+	"graphics": {
+		"icons": {"soldiers":"pawns"}, "tiles": {"goal":"grass"}
+	},
+	"board": { "height":3, "width":4 },
+	"terrain": { "goal": ["d2"] },
+	"endturn": {
+		"endgame": {
+			"lastingoal": {"condition":["and",[
+				["same",["positionsin","myunits"],1],
+				["overlaps","myunits","goal"]
+			]]}
+		}
+	},
+	"startturn": {
+		"runGenerators": [["if",["morethan",["contextval","turn"],10],"findjumptargets"]],
+		"allow": [["ifelse",["morethan",11,["contextval","turn"]],"selectdroptarget","selectunit"]]
+	},
+	"marks": {
+		"selectunit": {
+			"from": ["ifelse",["isempty","jumpers"],"myunits","jumpers"],
+			"runGenerators": [["ifelse",["isempty","jumpers"],"findsteptargets","findmyjumps"]],
+			"allow": ["selectmovetarget"]
+		},
+		"selectdroptarget": {
+			"from": ["ifelse",["same",1,["contextval","turn"]],"nogoal",["subtract","board","units"]],
+			"allow": ["drop"]
+		},
+		"selectmovetarget": {
+			"from": "movetargets",
+			"runGenerators": [["if",["notempty","jumpers"],"findvictims"]],
+			"allow":  [["ifelse",["isempty","jumpers"],"step","jump"]]
+		}
+	},
+	"commands": {
+		"drop": {
+			"applyEffects": [["spawnunit","selectdroptarget","soldiers",["contextval","currentplayer"]]],
+			"allow": ["endturn"]
+		},
+		"step": {
+			"applyEffects": [["move","selectunit","selectmovetarget"]],
+			"allow": ["endturn"]
+		},
+		"jump": {
+			"applyEffects": [
+				["forallin","victims",["killunit",["loopid"]]],
+				["move",["firstposin",["union","selectunit",["contextpos","jumpedto"]]],"selectmovetarget"],
+				["setcontextpos","jumpedto","selectmovetarget"]
+			],
+			"runGenerators": ["findjumptargets"],
+			"allow": [["ifelse",["isempty","jumpers"],"endturn","selectmovetarget"]]
+		}
+	},
+	"generators": {
+		"findmyjumps": {
+			"type": "filter",
+			"layer": "alljumptargets",
+			"matching": {"id":["is",["idofunitat","selectunit"]]},
+			"tolayer": "movetargets"
+		},
+		"findvictims": {
+			"type": "nextto",
+			"starts": "selectmovetarget",
+			"dirs": ["relativedir",5,["lookup","movetargets","selectmovetarget","dir"]],
+			"draw": { "target": { "tolayer": "victims" }}
+		},
+		"findjumptargets": {
+			"type": "walker",
+			"starts": ["ifelse",["hasmademove"],["contextpos","jumpedto"],"myunits"],
+			"dirs": ["dirs",[1,3,5,7]],
+			"steps": "oppunits",
+			"blocks": ["subtract","board","units"],
+			"max": 2,
+			"prioritizeblocksoversteps": true,
+			"draw": {
+				"start": {
+					"condition": ["and",[
+						["same",["contextval","linelength"],1],
+						["same",["contextval","stopreason"],"hitblock"]
+					]],
+					"tolayer": "jumpers"
+				},
+				"block": {
+					"condition": ["same",["contextval","linelength"],1],
+					"tolayer": ["ifelse",["hasmademove"],"movetargets","alljumptargets"],
+					"include": {
+						"dir": ["contextval","dir"],
+						"id": ["idofunitat",["contextpos","start"]]
+					}
+				}
+			}
+		},
+		"findsteptargets": {
+			"type": "nextto",
+			"starts": "selectunit",
+			"dirs": ["dirs",[1,3,5,7]],
+			"condition": ["noneat","units",["contextpos","target"]],
+			"draw": {
+				"target": {
+					"tolayer": "movetargets"
+				}
+			}
+		}
+	}
+}

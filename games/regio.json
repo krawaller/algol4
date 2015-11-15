@@ -1,0 +1,38 @@
+{
+	"meta": {
+		"name": "Regio",
+		"source": "http://www.di.fc.ul.pt/~jpn/gv/regio.htm",
+		"tags": ["deploy","starvation"],
+		"author": "Fabian Maeser"
+	},
+	"graphics": {"icons":{"soldiers":"pawns"}},
+	"board": {"height":6,"width":6},
+	"startturn": {
+		"allow": ["selecttarget"]
+	},
+	"marks": {
+		"selecttarget": {
+			"from": ["subtract","board","units"],
+			"runGenerators": ["findgrowths"],
+			"allow": ["drop"]
+		}
+	},
+	"commands": {
+		"drop": {
+			"applyEffects": [["forallposin","growths",["spawnunit",["contextpos","target"],"soldiers",0]]],
+			"allow": ["endturn"]
+		}
+	},
+	"generators": {
+		"findgrowths": {
+			"type": "nextto",
+			"starts": "selecttarget",
+			"dirs": ["dirs",[1,3,5,7]],
+			"condition": ["noneat","units",["contextpos","target"]],
+			"draw": {
+				"start": { "tolayer": "growths" },
+				"target": { "tolayer": "growths" }
+			}
+		}
+	}
+}

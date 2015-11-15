@@ -1,0 +1,77 @@
+{
+	"meta": {
+		"name": "Partonia",
+		"source": "http://www.di.fc.ul.pt/~jpn/gv/partonia.htm",
+		"tags": ["custodian"],
+		"author": "Unknown",
+		"year": 1955
+	},
+	"graphics": {
+		"icons": {"soldiers":"pawns"}
+	},
+	"board": {"height":10,"width":10},
+	"setup": {
+		"soldiers": {
+			"1": [["rect","a4","j4"],["rect","a9","j9"]],
+			"2": [["rect","a2","j2"],["rect","a7","j7"]]
+		}
+	},
+	"startturn": {
+		"allow": ["selectunit"]
+	},
+	"marks": {
+		"selectunit": {
+			"from": "myunits",
+			"runGenerators": ["findmovetargets"],
+			"allow": ["selectmovetarget"]
+		},
+		"selectmovetarget": {
+			"from": "movetargets",
+			"runGenerators": ["findvictims"],
+			"allow": ["move"]
+		}
+	},
+	"commands": {
+		"move": {
+			"applyEffects": [
+				["forallin","victims",["killunit",["loopid"]]],
+				["move","selectunit","selectmovetarget"]
+			],
+			"allow": ["endturn"]
+		}
+	},
+	"generators": {
+		"findmovetargets": {
+			"type": "nextto",
+			"dirs": ["dirs",[1,3,5,7]],
+			"starts": "selectunit",
+			"condition": ["noneat","units",["contextpos","target"]],
+			"draw": {
+				"target": {
+					"tolayer": "movetargets"
+				}
+			}
+		},
+		"findvictims": {
+			"type": "walker",
+			"dirs": ["dirs",[1,3,5,7]],
+			"starts": "selectmovetarget",
+			"steps": "oppunits",
+			"blocks": "myunits",
+			"prioritizeblocksoversteps": true,
+			"max": 2,
+			"draw": {
+				"steps": {
+					"condition": ["and",[
+						["same",["contextval","linelength"],1],
+						["or",[
+							["same",["contextval","stopreason"],"outofbounds"],
+							["same",["contextval","stopreason"],"hitblock"]
+						]]
+					]],
+					"tolayer": "victims"
+				}
+			}
+		}
+	}
+}
