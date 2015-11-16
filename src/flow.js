@@ -77,7 +77,6 @@ Algol.allowMark = function(tree,id,markname){
 Algol.calculateStateAfterCommand = function(state,cdef,auto){
 	var gamedef = state.get("gamedef"),
 		cmndname = cdef.get("name"),// = gamedef.getIn(["gamedef","commands",cmndname]),
-		afterstep = gamedef.get("afterstep"),
 		oldid = state.get("id"),
 		newid = auto ? oldid : oldid+","+cmndname,
 		newstate;
@@ -135,6 +134,11 @@ Algol.allowCommand = function(tree,id,cmndname,auto){
 	tree = this.obeyInstructions(tree,newid,cdef);
 	var afterstep = gamedef.get("afterstep");
 	if (afterstep){
+		if (afterstep.has("applyEffects")){
+			tree = tree.setIn(["cache",newid],this.prepareBasicUnitLayers(afterstep.get("applyEffects").reduce(function(s,effect){
+				return this.applyEffect(s,effect);
+			},tree.getIn(["cache",newid]),this)));
+		}
 		tree = this.obeyInstructions(tree,newid,afterstep);
 	}
 	if (!auto){
@@ -160,7 +164,10 @@ Algol.endTurn = function(tree,id,inhistory){
 	var endgame = inhistory ? false : endturndef.get("endgame").reduce(function(mem,end,name){
 		if (!mem && this.evaluateBoolean(state,end.get("condition"))) {
 			var //res = this.evaluateValue(state,end.get("result")),
-				who = end.has("who") && this.evaluateValue(state,end.get("who")) || state.get("player");  //(res==="loseto" && this.evaluateValue(state,end.get("who")) || res==="draw" || 0 || state.get("player") );
+				who = endturndef.has("winner")
+					? this.evaluateValue(state,endturndef.get("winner"))
+					: end.has("who") ? this.evaluateValue(state,end.get("who"))
+					: state.get("player");
 			return (state
 				.set("endedby",name)
 				.set("winner",who)
@@ -186,7 +193,7 @@ Algol.endTurn = function(tree,id,inhistory){
 			if (!newturntree.getIn(["cache","root","canreachendturn"])){
 				state = state
 					.set("endedby", newturntree.get("forbidden") || "stalemate")
-					.set("winner",state.get("player"))
+					.set("winner",endturndef.has("winner") ? this.evaluateValue(state,endturndef.get("winner")) : state.get("player"))
 					.set("save",state.get("save").push(state.get("path")));
 				return tree.setIn(["cache",id],state).set("current",id);
 			}
@@ -408,6 +415,7 @@ Algol.newGame = function(gamedef,nbrofplayers){
 		data: {
 			units: startunits,
 			playervars: this.prepareInitialPlayerVarsForGame(gamedef),
+			battlevals: gamedef.get("battlevals")
 		},
 		startunits: startunits,
 		baselayers: this.prepareBaseLayers(gamedef,nbrofplayers),

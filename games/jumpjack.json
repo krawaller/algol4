@@ -1,0 +1,100 @@
+{
+	"meta": {
+		"name": "Jump jack",
+		"source": "http://www.di.fc.ul.pt/~jpn/gv/jumpjack.htm",
+		"tags": ["soccerlike"],
+		"author": "Jim McAuley",
+		"year": 1987,
+		"rules": [
+			"Each turn players may move 1 of their units to an adjacent (any dir) empty square",
+			"Instead of moving they can jump with one of their units or the ball.",
+			"Jumps are in a straight line (any dir) over any number of units (not the ball!) onto an empty square. Jumps can be multiple.",
+			"Win my jumping the ball into the opposing goal.",
+			"You can have max 1 unit in your own goal, and never stop a unit in the opponent's goal."
+		]
+	},
+	"graphics": {
+		"icons": {"ball":"pawns","soldiers":"pawns"},
+		"tiles": {"goal":"playercolour"}
+	},
+	"board": {"height":7,"width":5},
+	"terrain": {
+		"goal": {
+			"1": [["rect","a1","e1"]],
+			"2": [["rect","a7","e7"]]
+		}
+	},
+	"setup": {
+		"ball": ["c4"],
+		"soldiers": {
+			"1": [["rect","a2","e2"]],
+			"2": [["rect","a6","e6"]]
+		}
+	},
+	"endturn": {
+		"unless": {
+			"toomanykeepers": ["morethan",["overlapsize","mygoal","myunits"],1],
+			"insideoppgoal": ["overlaps","myunits","oppgoal"]
+		},
+		"endgame": {
+			"goal": {"condition":["overlaps","ball","oppgoal"]}
+		}
+	},
+	"startturn": {
+		"allow": ["selectunit"]
+	},
+	"marks": {
+		"selectunit": {
+			"from": ["union","myunits","ball"],
+			"runGenerators": ["findjumptargets",["if",["noneat","ball","selectunit"],"findsteptargets"]],
+			"allow": ["selectjumptarget","selectsteptarget"]
+		},
+		"selectsteptarget": {
+			"from": "steptargets",
+			"allow": ["step"]
+		},
+		"selectjumptarget": {
+			"from": "jumptargets",
+			"allow": ["jump"]
+		}
+	},
+	"commands": {
+		"step": {
+			"applyEffects": [["move","selectunit","selectsteptarget"]],
+			"allow": ["endturn"]
+		},
+		"jump": {
+			"applyEffects": [
+				["move",["firstposin",["union","selectunit",["contextpos","jumpedto"]]],"selectjumptarget"],
+				["setcontextpos","jumpedto","selectjumptarget"]
+			],
+			"runGenerators": ["findjumptargets"],
+			"allow": ["endturn","selectjumptarget"]
+		}
+	},
+	"generators": {
+		"findjumptargets": {
+			"type": "walker",
+			"starts": ["coalesce","selectunit",["contextpos","jumpedto"]],
+			"steps": ["subtract","units","ball"],
+			"blocks": ["subtract","board","units"],
+			"prioritizeblocksoversteps": true,
+			"draw": {
+				"block": {
+					"condition": ["truthy",["contextval","linelength"]],
+					"tolayer": "jumptargets"
+				}
+			}
+		},
+		"findsteptargets": {
+			"type": "nextto",
+			"starts": "selectunit",
+			"condition": ["noneat","units",["contextpos","target"]],
+			"draw": {
+				"target": {
+					"tolayer": "steptargets"
+				}
+			}
+		}
+	}
+}

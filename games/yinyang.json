@@ -1,0 +1,95 @@
+{
+	"meta": {
+		"name": "Yin yang",
+		"source": "http://www.di.fc.ul.pt/~jpn/gv/yinyang.htm",
+		"tags": ["deploy","commonunits"],
+		"author": "North Berkshire Game Group",
+		"year": 2003,
+		"rules": [
+			"Queens are happy on light squares, kings on dark. Happy pieces are red, sad are blue.",
+			"Each turn players slide any 1 unit over a number of empty cells equal to the number of adjacent (all dirs) units of the same type.",
+			"After moving, a new unit of the opposite type (king if moved queen etc) is dropped on the starting square.",
+			"When there are no valid moves, player 1 wins if more units are happy than sad, otherwise player 2 wins."
+		]
+	},
+	"graphics": {
+		"icons":{"good":"queens","bad":"kings"},
+		"battlevals": {"happy":"happy","sad":"sad"}
+	},
+	"board": {"height":6,"width":6},
+	"battlevals": {
+		"happy": 0,
+		"sad": 4
+	},
+	"setup": {
+		"good": {"2": ["c3","d4"] },
+		"bad": {"2": ["c4","d3"] }
+	},
+	"endturn": {
+		"winner": ["ifelse",
+			["morethan",["battleval","happy"],["battleval","sad"]],
+			1,
+			2
+		]
+	},
+	"startturn": {
+		"allow": ["selectunit"]
+	},
+	"afterstep": {
+		"applyEffects": [
+			["setbattleval","happy",["sum",["overlapsize","good","light"],["overlapsize","bad","dark"]]],
+			["setbattleval","sad",["sum",["overlapsize","good","dark"],["overlapsize","bad","light"]]],
+			["forallin",["intersect","good","light"],["setunitdata",["loopid"],"owner",1]],
+			["forallin",["intersect","bad","dark"],["setunitdata",["loopid"],"owner",1]],
+			["forallin",["intersect","good","dark"],["setunitdata",["loopid"],"owner",2]],
+			["forallin",["intersect","bad","light"],["setunitdata",["loopid"],"owner",2]]
+		]
+	},
+	"marks": {
+		"selectunit": {
+			"from": "units",
+			"runGenerators": ["findcapacity","findmovetargets"],
+			"allow": ["selectmovetarget"]
+		},
+		"selectmovetarget": {
+			"from": "movetargets",
+			"allow": ["move"]
+		}
+	},
+	"commands": {
+		"move": {
+			"applyEffects": [
+				["move","selectunit","selectmovetarget"],
+				["spawnunit","selectunit",["ifelse",["anyat","bad","selectunit"],"good","bad"]]
+			],
+			"allow": ["endturn"]
+		}
+	},
+	"generators": {
+		"findmovetargets": {
+			"type": "walker",
+			"starts": "capacity",
+			"blocks": "units",
+			"draw": {
+				"steps": {
+					"condition": ["same",["contextval","step"],["lookup","capacity",["contextpos","start"],"length"]],
+					"tolayer": "movetargets"
+				}
+			}
+		},
+		"findcapacity": {
+			"type": "nextto",
+			"starts": "selectunit",
+			"condition": ["anyat",["ifelse",["anyat","bad","selectunit"],"bad","good"],["contextpos","target"]],
+			"draw": {
+				"start": {
+					"condition": ["truthy",["contextval","neighbourcount"]],
+					"tolayer": "capacity",
+					"include": {
+						"length": ["contextval","neighbourcount"]
+					}
+				}
+			}
+		}
+	}
+}

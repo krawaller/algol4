@@ -14,8 +14,8 @@ var Status = React.createClass({
                 return ""+str+": "+s.getIn(["context",name])+"  ";
             },""),
             battlevals = (s.getIn(["gamedef","graphics","battlevals"])||I.Map()).reduce(function(ret,str,name){
-                var val = s.getIn(["data",name]);
-                return val ? ret+" "+str+": "+val+"  " : ret;
+                var val = s.getIn(["data","battlevals",name]);
+                return val!==undefined ? ret+" "+str+": "+val+"  " : ret;
             },""),
             plrvars = (s.getIn(["data","playervars"])).reduce(function(ret,values,name){
                 return ret+name+": "+values.reduce(function(arr,current,plr){

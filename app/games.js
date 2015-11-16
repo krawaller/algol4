@@ -30,6 +30,7 @@ var _ = require('lodash'),
         gravity: require("../games/gravity.json"),
         grensholm: require("../games/grensholm.json"),
         jackrabbits: require("../games/jackrabbits.json"),
+        jumpjack: require("../games/jumpjack.json"),
         //khan: require("../games/khan.json"), // Needs conversion!
         kickrun: require("../games/kickrun.json"),
         krieg: require("../games/krieg.json"),
@@ -77,6 +78,7 @@ var _ = require('lodash'),
         vanakriget: require("../games/vanakriget.json"),
         vilbergen: require("../games/vilbergen.json"),
         wizardsgarden: require("../games/wizardsgarden.json"),
+        yinyang: require("../games/yinyang.json"),
         zonesh: require("../games/zonesh.json")
     };
 
