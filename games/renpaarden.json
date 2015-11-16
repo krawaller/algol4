@@ -2,7 +2,9 @@
 	"meta": {
 		"name": "Renpaarden",
 		"source": "http://www.di.fc.ul.pt/~jpn/gv/renpaarden.htm",
-		"tags": ["jump","infiltrate"]
+		"tags": ["jump","infiltrate"],
+		"author": "Fred Horn",
+		"year": 1981
 	},
 	"graphics": {"icons": {"soldiers":"knights"}, "tiles": {"bases":"playercolour"}},
 	"terrain": {"bases": { "1": [["rect","a1","i2"]], "2": [["rect","a8","i9"]] } },

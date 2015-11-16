@@ -76,6 +76,7 @@ var _ = require('lodash'),
         uglyduck: require("../games/uglyduck.json"),
         vanakriget: require("../games/vanakriget.json"),
         vilbergen: require("../games/vilbergen.json"),
+        wizardsgarden: require("../games/wizardsgarden.json"),
         zonesh: require("../games/zonesh.json")
     };
 
@@ -162,5 +163,3 @@ function defaultify(def){
     // done
     return def;
 }
-
-

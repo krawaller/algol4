@@ -1,0 +1,195 @@
+{
+	"meta": {
+		"name": "Wizard's garden",
+		"source": "http://www.di.fc.ul.pt/~jpn/gv/wizgarden.htm",
+		"tags": ["formation"],
+		"author": "Tim Schutz",
+		"year": 2003
+	},
+	"graphics": { "icons": {"soldiers":"pawns","kings":"kings"} },
+	"board": {"height":4,"width":4},
+	"terrain": {
+		"lookdirs":[
+			["pos",["a1","b2"],0,{"lookdirs":[1,2,3]}],
+			["pos",["a2","a3","b1","c1"],0,{"lookdirs":[1,3]}],
+			["pos",["a4","b3"],0,{"lookdirs":[3,4,5]}],
+			["pos",["b4","c4","d3","d2"],0,{"lookdirs":[5,7]}],
+			["pos",["c3","d4"],0,{"lookdirs":[5,6,7]}],
+			["pos",["d1","c2"],0,{"lookdirs":[1,7,8]}]
+		]
+	},
+	"playervars": {
+		"points": [0,0],
+		"lastking": [0,0]
+	},
+	"endturn": {
+		"endgame": {
+			"limitreached": {
+				"condition": ["same",20,["sum",
+					["positionsin","units"],
+					["sum",
+						["playervar","points",1],
+						["playervar","points",2]
+					]
+				]],
+				"who": ["ifelse",
+					["morethan",
+						["sum",["playervar","points",1],["playervar","lastking",1]],
+						["sum",["playervar","points",2],["playervar","lastking",2]]
+					],
+					1,
+					2
+				]
+			},
+			"fullboard": {
+				"condition": ["same",["positionsin","units"],16],
+				"who": ["ifelse",
+					["morethan",
+						["sum",["playervar","points",1],["playervar","lastking",1]],
+						["sum",["playervar","points",2],["playervar","lastking",2]]
+					],
+					1,
+					2
+				]
+			},
+			"emptyboard": {
+				"condition": ["same",["positionsin","units"],0],
+				"who": ["ifelse",
+					["morethan",
+						["sum",["playervar","points",1],["playervar","lastking",1]],
+						["sum",["playervar","points",2],["playervar","lastking",2]]
+					],
+					1,
+					2
+				]
+			}
+		}
+	},
+	"startturn": {
+		"runGenerators": ["finddroptargets"],
+		"allow": ["selectdroptarget",["if",["same",2,["contextval","turn"]],"endturn"]]
+	},
+	"afterstep": {
+		"runGenerators": [["ifelse",
+			["same",1,["contextval","turn"]],
+			"finddroptargets",
+			["findroots","findlines"]
+		]],
+		"allow": [["ifelse",
+			["same",1,["contextval","turn"]],
+			["ifelse",
+				["same",4,["positionsin","units"]],
+				"endturn",
+				"selectdroptarget"
+			],
+			["ifelse",
+				["isempty","pullhere"],
+				"endturn",
+				["ifelse",
+					["same",["positionsin","pullhere"],1],
+					["auto","harvest"],
+					"selectharvest"
+				]
+			]
+		]]
+	},
+	"marks": {
+		"selectdroptarget": {
+			"from": ["ifelse",
+				["same",["contextval","turn"],1],
+				["subtract","board",["union","units","droptargets"]],
+				"droptargets"
+			],
+			"allow": ["droppawn","dropking"]
+		},
+		"selectharvest": {
+			"from": "pullhere",
+			"runGenerators": ["findvictims"],
+			"allow": ["harvest"]
+		}
+	},
+	"commands": {
+		"droppawn": {
+			"applyEffects": [["spawnunit","selectdroptarget","soldiers"],["setcontextpos","droppedat","selectdroptarget"]]
+		},
+		"dropking": {
+			"applyEffects": [["spawnunit","selectdroptarget","kings"],["setcontextpos","droppedat","selectdroptarget"]]
+		},
+		"harvest": {
+			"applyEffects": [
+				["if",
+					["overlaps",["coalesce","victims","harvest"],"kings"],
+					["multieffect",[
+						["setplayervar","lastking",["contextval","currentplayer"],1],
+						["setplayervar","lastking",["contextval","nextplayer"],0]
+					]]
+				],
+				["addtoplayervar","points",["contextval","currentplayer"],1],
+				["forallin",["coalesce","victims","harvest"],["killunit",["loopid"]]]
+			],
+			"allow": ["endturn"]
+		}
+	},
+	"generators": {
+		"findvictims": {
+			"type": "filter",
+			"layer": "harvest",
+			"matching": {
+				"dir": ["is",["lookup","pullhere","selectharvest","dir"]]
+			},
+			"tolayer": "victims"
+		},
+		"findlines": {
+			"type": "walker",
+			"starts": "roots",
+			"dirs": ["relativedir",5,["lookup","roots",["contextpos","start"],"dir"]],
+			"steps": "units",
+			"count": "kings",
+			"startasstep": true,
+			"draw": {
+				"start": {
+					"condition": ["and",[
+						["same",["contextval","linelength"],4],
+						["valinlist",["contextval","counttotal"],[0,4]]
+					]],
+					"tolayer": "pullhere",
+					"include": { "dir": ["contextval","dir"] }
+				},
+				"all": {
+					"condition": ["and",[
+						["same",["contextval","linelength"],4],
+						["valinlist",["contextval","counttotal"],[0,4]]
+					]],
+					"tolayer": "harvest",
+					"include": { "dir": ["contextval","dir"] }
+				}
+			}
+		},
+		"findroots": {
+			"type": "walker",
+			"starts": ["contextpos","droppedat"],
+			"dirsX": ["dirs",[1,3]],
+			"dirs": ["lookuplist","lookdirs",["contextpos","droppedat"],"lookdirs"],
+			"draw": {
+				"last": {
+					"condition": ["anyat","units",["contextpos","target"]],
+					"tolayer": "roots",
+					"include": {
+						"dir": ["contextval","dir"]
+					}
+				}
+			}
+		},
+		"finddroptargets": {
+			"type": "nextto",
+			"starts": "units",
+			"dirs": ["dirs",[1,3,5,7]],
+			"condition": ["noneat","units",["contextpos","target"]],
+			"draw": {
+				"target": {
+					"tolayer": "droptargets"
+				}
+			}
+		}
+	}
+}

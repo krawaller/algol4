@@ -25,6 +25,9 @@ var dirlistmethods = {
 	dir: function(state,dir){
 		return I.List([this.evaluateValue(state,dir)]);
 	},
+	lookuplist: function(state,layername,position,prop){
+		return state.getIn(["layers",layername,this.evaluatePosition(state,position),0,prop]);
+	},
 	case: function(state,val,listofpairs,defaultval){
 		var val = this.evaluateValue(state,val),
 			find = listofpairs.filter(function(pair){
@@ -92,6 +95,11 @@ var positionsetmethods = {
 	subtract: function(state,set1,set2){ return this.evaluatePositionSet(state,set1).subtract(this.evaluatePositionSet(state,set2)); },
 	layer: function(state,layername){
 		return (state.getIn(["layers",this.evaluateValue(state,layername)])||I.Map()).keySeq().toSet();
+	},
+	coalesce: function(state,set1,set2){
+		var r1 = this.evaluatePositionSet(state,set1);
+		//console.log("Called coalesce",r1.toJS());
+		return r1.isEmpty() ? this.evaluatePositionSet(state,set2) : r1;
 	}
 };
 

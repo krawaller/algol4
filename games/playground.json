@@ -2,7 +2,9 @@
 	"meta": {
 		"name": "Playground commandos",
 		"source": "http://www.di.fc.ul.pt/~jpn/gv/playground.htm",
-		"tags": ["asymmetric","differentunits","capture","multiplegoals"]
+		"tags": ["asymmetric","differentunits","capture","multiplegoals"],
+		"author": "L. Lynn Smith",
+		"year": 2001
 	},
 	"graphics": {
 		"icons":{"attackers":"kings","defenders":"rooks","obstacles":"pawns"},
