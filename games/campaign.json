@@ -1,0 +1,63 @@
+{
+	"meta": {
+		"name": "Campaign",
+		"source": "http://www.di.fc.ul.pt/~jpn/gv/campaign.htm",
+		"tags": ["deploy","formation"],
+		"author": "Chris Huntoon",
+		"year": 2001
+	},
+	"graphics": {"icons":{"knight":"knights","markers":"pawns"}},
+	"board": {"height":10,"width":10},
+	"endturn": {
+		"endgame": {
+			"madewinline": {"condition":["notempty","winline"]}
+		}
+	},
+	"startturn": {
+		"runGenerators": ["findmovetargets"],
+		"allow": ["selecttarget"]
+	},
+	"marks": {
+		"selecttarget": {
+			"from": ["coalesce","movetargets",["subtract","board","units"]],
+			"allow": ["move"]
+		}
+	},
+	"commands": {
+		"move": {
+			"applyEffects": [["ifelse",
+				["isempty","myknight"],
+				["spawnunit","selecttarget","knight",["contextval","currentplayer"]],
+				["multieffect",[
+					["move",["firstposin","myknight"],"selecttarget"],
+					["spawnunit",["firstposin","myknight"],"markers",["contextval","currentplayer"]]
+				]]
+			]],
+			"runGenerators": ["findwinline"],
+			"allow": ["endturn"]
+		}
+	},
+	"generators": {
+		"findwinline": {
+			"type": "walker",
+			"starts": "mymarkers",
+			"steps": "mymarkers",
+			"draw": {
+				"start": {
+					"condition": ["morethan",["contextval","linelength"],3],
+					"tolayer": "winline"
+				}
+			}
+		},
+		"findmovetargets": {
+			"type": "offset",
+			"starts": "myknight",
+			"dirs": ["dir",1],
+			"offsets": [[2,-1],[2,1],[1,-2],[1,2],[-2,-1],[-2,1],[-1,-2],[-1,2]],
+			"condition": ["noneat","units",["contextpos","target"]],
+			"draw": {
+				"target": {"tolayer":"movetargets"}
+			}
+		}
+	}
+}

@@ -2,7 +2,9 @@
 	"meta": {
 		"name": "Amazons",
 		"source": "http://www.chessvariants.org/other.dir/amazons.html",
-		"tags": ["deploy","starve"]
+		"tags": ["deploy","starve"],
+		"author": "Walter Zamkauskas",
+		"year": 1988
 	},
 	"graphics": {
 		"icons": { "queens": "queens", "fires": "pawns" }
