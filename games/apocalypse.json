@@ -86,7 +86,7 @@
 			"starts": "selectunit",
 			"offsets": [[2,1],[2,-1]],
 			"dirs": ["dirs",[1,3,5,7]],
-			"condition": ["noneat","myunits",["contextpos","target"]],
+			"unlessover": "myunits",
 			"draw": {
 				"target": {
 					"tolayer": "movetargets"

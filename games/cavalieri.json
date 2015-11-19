@@ -1,0 +1,63 @@
+{
+	"meta": {
+		"name": "Cavalieri all'Assalto de Re",
+		"source": "http://www.beppi.it/beppi_cavalieri1.html",
+		"tags": ["infiltration"],
+		"author": ["Beppi Menozzi","Alessandro Gatti"],
+		"year": 1995
+	},
+	"graphics": {"icons":{"soldiers":"knights"},"tiles":{"base":"playercolour"}},
+	"board": {"height":8,"width":8},
+	"terrain": {
+		"base": {
+			"1": [["rect","a1","h1"]],
+			"2": [["rect","a8","h8"]]
+		}
+	},
+	"setup": {
+		"soldiers": {
+			"1": ["a1","h1",["holerect","b1","g4",["b3","b4","c4","f4","g4","g3"]]],
+			"2": ["a8","h8",["holerect","b5","g8",["b5","b6","c5","f5","g5","g6"]]]
+		}
+	},
+	"endturn": {
+		"endgame": {
+			"infiltration": ["overlaps","myunits","oppbase"]
+		}
+	},
+	"startturn": { "allow": ["selectunit"] },
+	"marks": {
+		"selectunit": {
+			"from": "myunits",
+			"runGenerators": ["findmoves"],
+			"allow": ["selectmovetarget"]
+		},
+		"selectmovetarget": {
+			"from": "movetargets",
+			"allow": ["move"]
+		}
+	},
+	"commands": {
+		"move": {
+			"applyEffects": [
+				["kill","selectmovetarget"],
+				["move","selectunit","selectmovetarget"]
+			],
+			"allow": ["endturn"]
+		}
+	},
+	"generators": {
+		"findmoves": {
+			"type": "offset",
+			"starts": "selectunit",
+			"dirs": ["dir",1],
+			"offsets": [[2,-1],[2,1],[1,-2],[1,2],[-2,-1],[-2,1],[-1,-2],[-1,2]],
+			"draw": {
+				"target": {
+					"unlessover": "myunits",
+					"tolayer": "movetargets"
+				}
+			}
+		}
+	}
+}

@@ -2,7 +2,7 @@
 	"meta": {
 		"name": "Vilbergen",
 		"source": "http://www.di.fc.ul.pt/~jpn/gv/vilbergen.htm",
-		"tags": ["deploy"],
+		"tags": ["deploy","jump"],
 		"author": "Markus Salo",
 		"year": 2003
 	},

@@ -89,7 +89,7 @@
 		"findsteptargets": {
 			"type": "nextto",
 			"starts": "selectunit",
-			"condition": ["noneat","units",["contextpos","target"]],
+			"unlessover": "units",
 			"draw": {
 				"target": {
 					"tolayer": "steptargets"

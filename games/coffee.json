@@ -5,76 +5,76 @@
 		"tags": ["deploy","formation","limitmoves"],
 		"author": "Néstor Romeral Andrés"
 	},
-	"graphics": {"icons": {"soldiers":"pawns"}, "battlevals": {"slant":"slant"}, "highlight":"droptargets"},
+	"graphics": {"icons": {"soldiers":"pawns","markers":"pawns"}},
 	"board": {"height":5,"width":5},
 	"endturn": {
 		"unless": {
-			"nolegal": ["isempty","droptargets"]
+			"nolegal": ["isempty","markers"]
 		},
 		"endgame": {
-			"madeline": {"condition":["notempty","winline"]}
+			"madeline": ["notempty","winline"]
 		}
 	},
 	"startturn": {
-		"runGenerators": ["finddroptargets"],
 		"allow": ["selectdrop"]
+	},
+	"afterstep": {
+		"runGenerators": ["findwinlines"],
+		"allow": ["endturn"]
 	},
 	"marks": {
 		"selectdrop": {
-			"from": ["ifelse",["same",["contextpos","turn"],1],"board","droptargets"],
-			"allow": ["uphill","downhill","vertical","horisontal"]
+			"from": ["ifelse",["same",["contextval","turn"],1],"board","markers"],
+			"runGenerators": ["findgeneratees"],
+			"allow": [
+				["if",["notempty","uphill"],"uphill"],
+				["if",["notempty","downhill"],"downhill"],
+				["if",["notempty","vertical"],"vertical"],
+				["if",["notempty","horisontal"],"horisontal"]
+			]
 		}
 	},
 	"commands": {
 		"uphill": {
 			"applyEffects": [
+				["forallin","markers",["killunit",["loopid"]]],
 				["spawnunit","selectdrop","soldiers",["contextval","currentplayer"]],
-				["setbattleval","spot",["markpos","selectdrop"]],
-				["setbattleval","slant","uphill"]
-			],
-			"runGenerators": ["findwinlines","finddroptargets"],
-			"allow": ["endturn"]
+				["forallposin","uphill",["spawnunit",["contextpos","target"],"markers",0]]
+			]
 		},
 		"downhill": {
 			"applyEffects": [
+				["forallin","markers",["killunit",["loopid"]]],
 				["spawnunit","selectdrop","soldiers",["contextval","currentplayer"]],
-				["setbattleval","spot",["markpos","selectdrop"]],
-				["setbattleval","slant","downhill"]
-			],
-			"runGenerators": ["findwinlines","finddroptargets"],
-			"allow": ["endturn"]
+				["forallposin","downhill",["spawnunit",["contextpos","target"],"markers",0]]
+			]
 		},
 		"horisontal": {
 			"applyEffects": [
+				["forallin","markers",["killunit",["loopid"]]],
 				["spawnunit","selectdrop","soldiers",["contextval","currentplayer"]],
-				["setbattleval","spot",["markpos","selectdrop"]],
-				["setbattleval","slant","horisontal"]
-			],
-			"runGenerators": ["findwinlines","finddroptargets"],
-			"allow": ["endturn"]
+				["forallposin","horisontal",["spawnunit",["contextpos","target"],"markers",0]]
+			]
 		},
 		"vertical": {
 			"applyEffects": [
+				["forallin","markers",["killunit",["loopid"]]],
 				["spawnunit","selectdrop","soldiers",["contextval","currentplayer"]],
-				["setbattleval","spot",["markpos","selectdrop"]],
-				["setbattleval","slant","vertical"]
-			],
-			"runGenerators": ["findwinlines","finddroptargets"],
-			"allow": ["endturn"]
+				["forallposin","vertical",["spawnunit",["contextpos","target"],"markers",0]]
+			]
 		}
 	},
 	"generators": {
-		"finddroptargets": {
+		"findgeneratees": {
 			"type": "walker",
-			"starts": ["pos",["battleval","spot"]],
-			"dirs": ["case",["battleval","slant"],
-				[ ["horisontal",["dirs",[3,7]]], ["vertical",["dirs",[1,5]]], ["uphill",["dirs",[2,6]]] ],
-				["dirs",[4,8]]
-			],
+			"starts": "selectdrop",
 			"draw": {
 				"steps": {
-					"condition": ["noneat",["union","units",["pos",["battleval","spot"]]],["contextpos","target"]],
-					"tolayer": "droptargets"
+					"unlessover": "units",
+					"tolayer": ["case",
+						["contextval","dir"],
+						[[1,"vertical"],[2,"uphill"],[3,"horisontal"],[4,"downhill"],[5,"vertical"],[6,"uphill"],[7,"horisontal"],[8,"downhill"]]
+					]
 				}
 			}
 		},

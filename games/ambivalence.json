@@ -47,7 +47,7 @@
 		"findtouchedfoes": {
 			"type": "nextto",
 			"starts": "selecttarget",
-			"condition": ["anyat","oppunits",["contextpos","target"]],
+			"ifover": "oppunits",
 			"draw": {
 				"target": {
 					"tolayer": "touchedfoes",
@@ -72,7 +72,7 @@
 			"starts": "touchedfoes",
 			"dirs": ["relativedir",5,["lookup","touchedfoes",["contextpos","start"],"dir"]],
 			"offsets": [[2,0]],
-			"condition": ["anyat","oppunits",["contextpos","target"]],
+			"ifover": "oppunits",
 			"draw": {
 				"target": {
 					"tolayer": "victims"

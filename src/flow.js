@@ -415,7 +415,7 @@ Algol.newGame = function(gamedef,nbrofplayers){
 		data: {
 			units: startunits,
 			playervars: this.prepareInitialPlayerVarsForGame(gamedef),
-			battlevals: gamedef.get("battlevals")
+			battlevals: gamedef.get("battlevals") || I.Map()
 		},
 		startunits: startunits,
 		baselayers: this.prepareBaseLayers(gamedef,nbrofplayers),

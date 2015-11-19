@@ -1,6 +1,105 @@
 {
 	"meta": {
 		"name": "Kingdom",
-		"source": "http://homepages.di.fc.ul.pt/~jpn/gv/kingdom.htm"
+		"source": "http://homepages.di.fc.ul.pt/~jpn/gv/kingdom.htm",
+		"tags": ["multiplegoals","infiltration","kingkill","differentunits","jump"],
+		"author": ["Max Gerchambeau", "Dujardin"],
+		"year": 2000
+	},
+	"graphics": {
+		"icons": {"1knights":"pawns","2knights":"bishops","3knights":"knights","4knights":"rooks","king":"kings"},
+		"tiles": {"throne":"playercolour"}
+	},
+	"board": {"height":9,"width":9},
+	"terrain": {
+		"throne": { "1": ["e1"], "2": ["e9"] }
+	},
+	"setup": {
+		"1knights": { "1": ["a1","i1"], "2": ["a9","i9"] },
+		"2knights": { "1": ["b1","h1"], "2": ["b9","h9"] },
+		"3knights": { "1": ["c1","g1"], "2": ["c9","g9"] },
+		"4knights": { "1": ["d1","f1"], "2": ["d9","f9"] },
+		"king": { "1": ["e1"], "2": ["e9"] }
+	},
+	"endturn": {
+		"endgame": {
+			"killedking": ["isempty","oppking"],
+			"tookthrone": ["overlaps","myking","oppthrone"]
+		}
+	},
+	"startturn": {
+		"allow": ["selectunit"]
+	},
+	"marks": {
+		"selectunit": {
+			"from": "myunits",
+			"runGenerators": ["findsteptargets","findjumptargets"],
+			"allow": ["selectsteptarget","selectjumptarget"]
+		},
+		"selectsteptarget": {
+			"from": "steptargets",
+			"allow": [["ifelse",["anyat",["subtract","units","king"],"selectsteptarget"],"selectdeporttarget","step"]]
+		},
+		"selectdeporttarget": {
+			"from": ["subtract","noterrain","units"],
+			"allow": ["step"]
+		},
+		"selectjumptarget": {
+			"from": "jumptargets",
+			"allow": ["jump"]
+		}
+	},
+	"commands": {
+		"step": {
+			"applyEffects": [
+				["if",["anyat","oppking","selectsteptarget"],["kill","selectsteptarget"]],
+				["if",["truthy",["markpos","selectdeporttarget"]],["move","selectsteptarget","selectdeporttarget"]],
+				["move","selectunit","selectsteptarget"]
+			],
+			"allow": ["endturn"]
+		},
+		"jump": {
+			"applyEffects": [
+				["move",["firstposin",["union","selectunit",["contextpos","jumpedto"]]],"selectjumptarget"],
+				["setcontextpos","jumpedto","selectjumptarget"]
+			],
+			"runGenerators": ["findjumptargets"],
+			"allow": ["endturn","selectjumptarget"]
+		}
+	},
+	"generators": {
+		"findjumptargets": {
+			"type": "walker",
+			"starts": ["coalesce","selectunit",["contextpos","jumpedto"]],
+			"steps": ["case",["lookup","units",["contextpos","start"],"group"],[
+				["king","units"],
+				["4knights",["union",["subtract","myunits",["union","king","throne"]],["union","opp3knights",["union","opp2knights","opp1knights"]]]],
+				["3knights",["union",["subtract","myunits",["union","king","throne"]],["union","opp2knights","opp1knights"]]],
+				["2knights",["union",["subtract","myunits",["union","king","throne"]],"opp1knights"]],
+				["1knights",["union",["subtract","myunits",["union","king","throne"]],"opp4knights"]]
+			]],
+			"max": 2,
+			"blocks": ["subtract",["ifelse",["anyat","king",["contextpos","start"]],"board","noterrain"],"units"],
+			"prioritizeblocksoversteps": true,
+			"draw": {
+				"steps": {
+					"tolayer": "gonnajumpjooo"
+				},
+				"block": {
+					"condition": ["same",1,["contextval","linelength"]],
+					"tolayer": "jumptargets"
+				}
+			}
+		},
+		"findsteptargets": {
+			"type": "nextto",
+			"starts": "selectunit",
+			"unlessover": ["ifelse",["anyat","king","selectunit"],"myunits",["union",["subtract","units","oppking"],"throne"]],
+			"draw": {
+				"target": {
+					"tolayer": "steptargets"
+				}
+			}
+		}
 	}
 }

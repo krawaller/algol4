@@ -1,0 +1,80 @@
+{
+	"meta": {
+		"name": "Diagonals",
+		"source": "http://www.di.fc.ul.pt/~jpn/gv/diagonals2.htm",
+		"tags": ["deploy"],
+		"author": "Walter Joris",
+		"year": 2002,
+		"rules": [
+			"Each turn players can place a new unit within an unimpeded diagonal line of sight from one of their existing unit.",
+			"Alternatively they can demote a similarly visible enemy unit to a neutral wall.",
+			"The game ends when a player has no valid moves, and the winner is the player with the most units."
+		]
+	},
+	"graphics": {"icons":{"walls":"pawns","soldiers":"bishops"}},
+	"board": {"height":5,"width":10},
+	"setup": {
+		"soldiers": {
+			"1": ["a4","a5"], "2": ["j1","j2"]
+		}
+	},
+	"endturn": {
+		"winner": ["ifelse",
+			["same",["positionsin","myunits"],["positionsin","oppunits"]],
+			0,
+			["ifelse",
+				["morethan",["positionsin","myunits"],["positionsin","oppunits"]],
+				["contextval","currentplayer"],
+				["contextval","nextplayer"]
+			]
+		]
+	},
+	"startturn": {
+		"allow": ["selectunit"]
+	},
+	"marks": {
+		"selectunit": {
+			"from": "myunits",
+			"runGenerators": ["findtargets"],
+			"allow": ["selectspawntarget","selectdemotetarget"]
+		},
+		"selectspawntarget": {
+			"from": "spawnpoints",
+			"allow": ["spawn"]
+		},
+		"selectdemotetarget": {
+			"from": "demotetargets",
+			"allow": ["demote"]
+		}
+	},
+	"commands": {
+		"spawn": {
+			"applyEffects": [["spawnunit","selectspawntarget","soldiers",["contextval","currentplayer"]]],
+			"allow": ["endturn"]
+		},
+		"demote": {
+			"applyEffects": [
+				["setunitdata",["idofunitat","selectdemotetarget"],"owner",0],
+				["setunitdata",["idofunitat","selectdemotetarget"],"group","walls"]
+			],
+			"allow": ["endturn"]
+		}
+	},
+	"generators": {
+		"findtargets": {
+			"type": "walker",
+			"starts": "selectunit",
+			"dirs": ["dirs",[2,4,6,8]],
+			"blocks": "units",
+			"draw": {
+				"steps": {
+					"tolayer": "spawnpoints"
+				},
+				"block": {
+					"condition": ["anyat","oppunits",["contextpos","target"]],
+					"tolayer": "demotetargets"
+				}
+			}
+		}
+	}
+}

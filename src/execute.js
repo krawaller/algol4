@@ -93,6 +93,7 @@ var effectmethods = {
 		return state.setIn(["context",this.evaluateValue(state,prop)],this.evaluatePosition(state,pos));
 	},
 	setbattleval: function(state,prop,val){
+		//console.log("Gonna set battle prop",this.evaluateValue(state,prop),"to",this.evaluateValue(state,val),"and now we have",state.toJS());
 		return state.setIn(["data","battlevals",this.evaluateValue(state,prop)],this.evaluateValue(state,val));
 	},
 	spawnunit: function(state,pos,group,owner,obj){

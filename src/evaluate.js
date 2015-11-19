@@ -10,6 +10,9 @@ var dirlistmethods = {
 	dirs: function(state,dirs){
 		return dirs;
 	},
+	diagonals: function(){ return [2,4,6,8]; },
+	orthogonals: function(){ return [1,3,5,7]; },
+	alldirs: function(){ return [1,2,3,4,5,6,7,8]; },
 	relativedirs: function(state,dirs,reldir){
 		var rd = this.evaluateValue(state,reldir);
 		return this.evaluateDirList(state,dirs).map(function(d){
@@ -100,7 +103,20 @@ var positionsetmethods = {
 		var r1 = this.evaluatePositionSet(state,set1);
 		//console.log("Called coalesce",r1.toJS());
 		return r1.isEmpty() ? this.evaluatePositionSet(state,set2) : r1;
-	}
+	},
+	case: function(state,val,listofpairs,defaultval){
+		var val = this.evaluateValue(state,val),
+			find = listofpairs.filter(function(pair){
+				return this.evaluateValue(state,pair.first()) === val;
+			},this);
+		/*if (find && !find.get || !find.get(0) || !find.get(0).get || !find.get(0).get(1)){
+			console.log("BOGUS CASE",find.toJS && find.toJS() || find,"full",listofpairs.toJS());
+		}*/
+		//console.log("CASE",val,find && find.toJS());
+		var ret = this.evaluatePositionSet(state,find&&find.size?find.get(0).get(1):defaultval);
+		//console.log("CASE",val,"FOUND",find && find.get(0).get(1).toJS(),"ret",ret.toJS && ret.toJS() || ret);
+		return ret;
+	},
 };
 
 Algol.evaluatePositionSet = function(state,def){
@@ -271,6 +287,9 @@ var valuemethods = {
 		var c1 = this.posNameToObj(this.evaluatePosition(state,pos1),state.getIn(["gamedef","board"])),
 			c2 = this.posNameToObj(this.evaluatePosition(state,pos2),state.getIn(["gamedef","board"]));
 		return Math.sqrt(Math.pow(c1.x-c2.x,2)+Math.pow(c1.y-c2.y,2));
+	},
+	list: function(state,list){
+		return list;
 	}
 };
 
@@ -287,6 +306,11 @@ var positionmethods = {
 	contextpos: function(state,ctxposname){ return state.getIn(["context",ctxposname]); },
 	pos: function(state,pos){ return this.evaluateValue(state,pos); },
 	ifelse: function(state,cond,val1,val2){ return this.evaluatePosition(state, this.evaluateBoolean(state,cond) ? val1 : val2); },
+	coalesce: function(state,set1,set2){
+		var r1 = this.evaluatePosition(state,set1);
+		//console.log("Called coalesce",r1.toJS());
+		return r1.isEmpty() ? this.evaluatePosition(state,set2) : r1;
+	},
 };
 
 Algol.evaluatePosition = function(state,def){

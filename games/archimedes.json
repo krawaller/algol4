@@ -64,7 +64,8 @@
 			"blocks": "units",
 			"draw": {
 				"steps": {
-					"condition": ["noneat","mycorner",["contextpos","target"]],
+					"Xcondition": ["noneat","mycorner",["contextpos","target"]],
+					"unlessover": "mycorner",
 					"tolayer": "movetargets"
 				}
 			}
@@ -75,7 +76,8 @@
 			"blocks": "units",
 			"draw": {
 				"block": {
-					"condition": ["anyat","oppunits",["contextpos","target"]],
+					"Xcondition": ["anyat","oppunits",["contextpos","target"]],
+					"ifover": "oppunits",
 					"tolayer": "threat"
 				}
 			}
